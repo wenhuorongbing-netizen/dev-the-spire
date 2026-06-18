@@ -13,10 +13,10 @@ Target manifest id: `EZMicroBalance`
 
 ## Build And Publish
 
-Current status note (2026-06-11): the `v0.1.0-private-beta.85` package/hash rows below describe the current packaged tester artifact after the runtime-fix/package sync pass. Fresh isolated `v0.107.0` Off smoke is clean under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510`; live-ready and release-ready claims still require gameplay, UI, save-load, co-op, and independent QA evidence.
+Current status note (2026-06-18): the `v0.1.0-private-beta.86` package/hash rows below describe the current packaged tester artifact after the package/source alignment pass. Fresh direct `v0.107.0` AdditiveBatch1 smoke is clean under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`; live-ready and release-ready claims still require gameplay, UI, save-load, co-op, and independent QA evidence.
 
 - [x] `dotnet build` succeeds.
-- [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln` after the beta.85 runtime-fix package refresh.
+- [x] Latest source/package build check passed with `dotnet build EZMicroBalance.sln -m:1 --no-incremental` after the beta.86 package/source alignment refresh.
 - [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with a rebuilt `SpirePlus` private-beta zip.
 - [x] `dotnet publish` succeeds.
 - [x] Published `EZMicroBalance.json` exists.
@@ -28,8 +28,8 @@ Current status note (2026-06-11): the `v0.1.0-private-beta.85` package/hash rows
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.85.zip` was rebuilt from the beta.85 source/package refresh and copied to the local game root for manual testing.
-- Current package hashes: DLL `F35E2706140AC7B0560FDB950AC479529D4DBA3CA08DA5341FBE987B4106E062`; manifest `CE446422CA44864E993A45949C923EDAD516DD703687B990E76CC3BD614207D8`; PCK `9F1595C7401CACE4E7A4345CCC3CA1E256EBD2615B56A32E5908D61682E024B9`; README `004F7E2086C336F7804336FFC3FCD4061B0694F06C2B9B55459993C6737A498D`; zip `B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.86.zip` was rebuilt from the beta.86 source/package refresh and copied to the local game root for manual testing.
+- Current package hashes: DLL `B89D89A502BB98950EEAE3E101559FA3E5BA74BFF264BA5D59D43A70A4268EAD`; manifest `ABD6AEAFCF73F7CF74E31D01D4EBD17C667F36B4969724666DFDFC42997AD17E`; PCK `C5619646CEB02FC1D611554EC689CD2F9C81518BED9B6D5CB4CDCE90AED63F75`; README `65293B1557BEBEE42E4DE1BBF162B23414CC436E6BBF748682D74299C356265D`; zip `3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE`.
   - This hash refresh records automated source/package validation only. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
@@ -40,15 +40,15 @@ Current status note (2026-06-11): the `v0.1.0-private-beta.85` package/hash rows
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Spire Plus appears in a refreshed Mod Settings UI screenshot after the display-name refresh package is installed.
 - [x] Historical pre-display-name-refresh Mod Settings evidence exists for the same technical manifest id.
-- [x] Fresh loader smoke for the current beta.85 ZIP hash is clean under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510`. The beta.19 smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` remains historical startup evidence only.
-- [x] Historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes with clean audits and 25/25 Spire Plus ModPatcher patches; the current beta.85 Off smoke is the fresh `v0.107.0` package proof only, while current CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls remain unproven.
+- [x] Fresh loader smoke for the current beta.86 ZIP hash is clean under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`. The beta.19 smoke under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` remains historical startup evidence only.
+- [x] Historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes with clean audits and 25/25 Spire Plus ModPatcher patches; beta.85 Off and CanaryOnly are previous-package `v0.107.0` loader proof, while current beta.86 AdditiveBatch1 proof has 10 event types / 14 registration calls with exact tuple parity.
 - [x] Historical normal Steam-client startup/log verification under `.tools\runtime-evidence\beta17-loader-smoke-20260525-194311` remains beta.17 context for the same 30-field source family; beta.13 loader/startup evidence remains older historical context.
-- [x] Latest loader smoke for the current beta.85 package hash reached main menu, loaded BaseLib/RitsuLib/Spire Plus, applied 25/25 Spire Plus ModPatcher patches, and audited clean.
+- [x] Latest loader smoke for the current beta.86 package hash reached main menu, loaded BaseLib/RitsuLib/Spire Plus, applied 25/25 Spire Plus ModPatcher patches, registered AdditiveBatch1 as 10 event types / 14 calls, and audited clean.
 - [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only BaseLib and Spire Plus, reported `Found 22 SavedSpireFields`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context now superseded for runtime binaries by the 30-field loader smoke.
 - [x] Repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only BaseLib and Spire Plus, reported `Found 16 SavedSpireFields`, restored settings plus 24 moved mod entries, and audited clean.
 - [x] BaseLib-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized BaseLib only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
-- [x] `godot.log` reviewed after fresh beta.85 normal Steam-client isolated startup/log verification.
+- [x] `godot.log` reviewed after fresh beta.86 direct enabled-mode isolated startup/log verification.
 - [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.
 
 ## Content Verification
@@ -108,7 +108,7 @@ Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-ap
 
 ## Known Issues
 
-- Fresh loader smoke for the current beta.85 package hash is clean under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510`: it loaded BaseLib, RitsuLib, and `EZMicroBalance`, selected RitsuLib compat branch `0.107.0`, reported `v0.1.0-private-beta.85`, applied 25/25 Spire Plus ModPatcher patches, reached main menu, audited clean, stopped the game, and restored 25 isolated mod entries. This is loader/startup evidence, not gameplay proof.
+- Fresh loader smoke for the current beta.86 package hash is clean under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`: it loaded BaseLib, RitsuLib, and `EZMicroBalance`, selected RitsuLib compat branch `0.107.0`, reported `v0.1.0-private-beta.86`, applied 25/25 Spire Plus ModPatcher patches, registered AdditiveBatch1 as 10 event types / 14 calls, reached main menu, audited clean, stopped the game, and restored 25 isolated mod entries. This is loader/startup evidence, not gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. BaseLib-only plug-off evidence loaded only BaseLib; the earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
   - Refreshed normal Steam-client Mod Settings UI evidence at `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` shows `Spire Plus` in the Mods list. Earlier page-level Mod Settings evidence predates the display-name refresh.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.
@@ -117,11 +117,11 @@ Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-ap
 - The misleading multiplayer "game version differs" popup can also mean the vanilla `ModelDb` hash check failed after the visible game version matched. The current package logs host/local version, ModelDb hash, and gameplay-relevant mod-list differences before vanilla disconnects; it does not bypass the hash check.
 - Urda source behavior is packaged, but live selection, reward-screen timing, room-entry rewards, act-transition cleanup, save/load, UI, and co-op behavior remain pending.
 - StS1 event prototype remains default-Off for normal users.
-  Current beta.85 proof covers default-Off loader startup only, not CanaryOnly/AdditiveBatch1 enabled-mode or gameplay proof.
-  Before any event gameplay or handoff claim, CanaryOnly must show 4 event types / 6 registration calls and AdditiveBatch1 must show 10 event types / 14 registration calls on current beta.85 / `v0.107.0` evidence.
-  Use `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv`, guarded by `scripts/check-sts1-v19-gate-ledger.ps1`, for the current O0-O76 gate split before any event handoff claim.
+Current beta.86 proof covers AdditiveBatch1 loader registration only, not event gameplay proof.
+Before any simple-batch gameplay or handoff claim, AdditiveBatch1 gameplay screenshots/logs must be captured separately; before any canary gameplay claim, the retained CanaryOnly proof must stay tied to the current package/source shape and gameplay screenshots/logs must be captured separately.
+  Use `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv`, guarded by `scripts/check-sts1-v19-gate-ledger.ps1`, for the current O0-O76 gate split, plus `docs/features/sts1-events/v20-final-gate-overlay.csv`, guarded by `scripts/check-sts1-v20-final-gate-overlay.ps1`, for the O76-O84 final documentation/handoff overlay and `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` for the current v20 hard-stop/next-run start point before any event handoff claim.
   A 2026-06-11 static scan also found 33 source-referenced StS1 result-page localization keys missing from both EN and ZHS; see `docs/features/sts1-events/localization-source-gap-scan-20260611.md` and the static closure order in `docs/features/sts1-events/localization-gap-closure-plan.md`.
-  Closing only the direct Golden Idol missing key remains a localization unblocker, not O25/O33 enabled-mode proof or a replacement for verifier reports.
+Closing only the direct Golden Idol missing key remains a localization unblocker, not gameplay proof or a replacement for verifier reports.
 - Latest source hardening also filters Urda/Morvi player loops to active hook players and recovers deck-mirrored state only from owned, non-removed cards. This source pass is build/publish/package-refreshed, and release-artifact tests pass; live verification remains pending.
 - The 2026-05-13 A14 Rootblight art-hover probe found pre-fix missing Urda vanilla-derived asset paths before combat. The Urda custom Ancient asset-path fix is packaged and the installed PCK resolves the custom Urda scene/icon in headless Godot, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
 - Forge Token no longer wraps special rest-site options; live A12 rest/Smith regression testing is still needed before closing that issue.

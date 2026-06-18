@@ -95,6 +95,12 @@ Future `DeathProtectionService` must:
 2. Not protect non-owner players unless explicitly designed for shared protection
 3. Log co-op evidence when death protection activates in multiplayer
 
+## Current Diagnostics Contracts
+
+`EZMicroBalanceCode/Core/Architecture/DeathProtectionDiagnosticsContracts.cs` contains the current diagnostics-only request, result, priority, check, and provider shapes used by architecture canaries. These contracts are not wired into Lotha, do not reference runtime `Creature`, `Player`, or `RunState` types, and do not prevent death in gameplay.
+
+`EZMicroBalanceCode/Core/Architecture/DeathProtectionService.cs` remains the no-op registry/check orchestrator for those diagnostics contracts. It can report which registered no-op provider would have handled a request, but current Lotha Death Reprieve behavior still lives in the Lotha files listed above.
+
 ## Future DeathProtectionService Contract
 
 When extracted into a dedicated service:

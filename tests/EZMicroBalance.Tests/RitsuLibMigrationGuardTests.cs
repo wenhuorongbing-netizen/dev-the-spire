@@ -55,6 +55,35 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
     private const int ExpectedTotalMigratedCount = 25;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 142;
+
+    private static readonly string[] ExpectedBatch4cCandidateClasses =
+    [
+        "AscensionLocalizationLocStringRawTextPatch",
+        "AscensionLocalizationGetTablePatch",
+        "AscensionLocalizationRawTextPatch",
+        "AscensionLocalizationLocStringPatch",
+        "AscensionLocalizationHasEntryPatch",
+        "AscensionLocalizationIsLocalKeyPatch",
+        "SereTalonAncientEventOptionButtonPatch",
+        "SereTalonRelicNodeReloadPatch",
+        "CombatHandInputSafetyPatch",
+        "CrystalSpherePeekFinishedPatch"
+    ];
+
+    private static readonly string[] ExpectedBatch4cInventoryRows =
+    [
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 6 | `[HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))]` |",
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 26 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))]` |",
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 38 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |",
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 59 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |",
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 80 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |",
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 92 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |",
+        "| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 71 | `[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]` |",
+        "| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 83 | `[HarmonyPatch(typeof(NRelic), \"Reload\")]` |",
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | 6 | `[HarmonyPatch(typeof(NPlayerHand), nameof(NPlayerHand._UnhandledInput))]` |",
+        "| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 98 | `[HarmonyPatch]` |"
+    ];
 
     /// <summary>
     /// All PatchId values registered in RegisterMigratedPatches must be unique.
@@ -198,10 +227,75 @@ public sealed class RitsuLibMigrationGuardTests
 
         // Total migrated line
         Assert.Contains("Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b)", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("**Remaining:** 142 `[HarmonyPatch]` declarations still on raw Harmony.", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains(
+            "Inventory rechecked on 2026-06-17 against the current source tree: 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, and 167 tracked patch units.",
+            migrationDoc,
+            StringComparison.Ordinal);
 
         // Should NOT contain the old wrong values
         Assert.DoesNotContain("Migrated 10 low-risk", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("Total migrated:** 26 classes", migrationDoc, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RawHarmonyPatchInventoryCountMatchesMigrationDoc()
+    {
+        var sourceFiles = Directory.GetFiles(
+            RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories);
+        var rawHarmonyPatchDeclarationCount = sourceFiles
+            .SelectMany(File.ReadLines)
+            .Count(line => line.Contains("[HarmonyPatch", StringComparison.Ordinal));
+
+        Assert.Equal(ExpectedRawHarmonyPatchDeclarationCount, rawHarmonyPatchDeclarationCount);
+    }
+
+    [Fact]
+    public void Batch4cCandidatesRemainProposalOnly()
+    {
+        var proposal = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
+        var migrationDoc = ReadRepoText("docs", "migration.md");
+        var inventory = ReadRepoText("docs", "patch-inventory.md");
+        var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
+
+        Assert.Contains("Status: proposal only. Do not migrate these patches without explicit owner approval.", proposal, StringComparison.Ordinal);
+        Assert.Contains("Candidate count is 10", proposal, StringComparison.Ordinal);
+        Assert.Contains("Before any Batch 4c source migration:", proposal, StringComparison.Ordinal);
+        Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
+        Assert.Contains("Current `v0.107.0` beta.86 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
+        Assert.Contains("retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence", proposal, StringComparison.Ordinal);
+        Assert.Contains("Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c", migrationDoc, StringComparison.Ordinal);
+
+        var candidateSectionStart = proposal.IndexOf("## Candidates", StringComparison.Ordinal);
+        var candidateSectionEnd = proposal.IndexOf("## Per-Candidate Evidence", StringComparison.Ordinal);
+        var candidateSection = proposal[candidateSectionStart..candidateSectionEnd];
+        var candidateRows = Regex.Matches(candidateSection, @"^\| \d+ \|", RegexOptions.Multiline);
+        Assert.Equal(ExpectedBatch4cCandidateClasses.Length, candidateRows.Count);
+
+        var sourceFiles = Directory.GetFiles(
+            RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories);
+        var allSource = string.Join(
+            Environment.NewLine,
+            sourceFiles.Select(path => File.ReadAllText(path)));
+
+        foreach (var candidateClass in ExpectedBatch4cCandidateClasses)
+        {
+            Assert.Contains(candidateClass, proposal, StringComparison.Ordinal);
+            Assert.DoesNotContain($"RegisterPatch<{candidateClass}>", bootstrap, StringComparison.Ordinal);
+
+            var classPattern = new Regex(
+                @"\[HarmonyPatch[^\]]*\]\s*(?:\r?\n\s*\[[^\]]+\]\s*)*(?:internal\s+)?(?:static\s+)?(?:partial\s+)?class\s+" +
+                Regex.Escape(candidateClass) +
+                @"\b");
+            Assert.True(
+                classPattern.IsMatch(allSource),
+                $"Batch 4c candidate '{candidateClass}' must remain a raw HarmonyPatch until owner approval and runtime validation are complete.");
+        }
+
+        foreach (var inventoryRow in ExpectedBatch4cInventoryRows)
+        {
+            Assert.Contains(inventoryRow, inventory, StringComparison.Ordinal);
+        }
     }
 
     /// <summary>

@@ -3,7 +3,7 @@ param(
     [string]$ExpectedGameVersion = 'v0.107.0',
     [string]$ExpectedRitsuLibVersion = '0.4.16',
     [string]$ExpectedRitsuCompatBranch = '0.107.0',
-    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.85',
+    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.86',
     [string]$ExpectedModId = 'EZMicroBalance',
     [string]$ExpectedRitsuModId = 'STS2-RitsuLib',
     [string]$OutFile,
@@ -81,6 +81,7 @@ function Invoke-ExpectedShape {
 }
 
 $resolvedGameRoot = [System.IO.Path]::GetFullPath($GameRoot)
+$repoSpirePlusManifestPath = Join-Path $repoRoot 'EZMicroBalance.json'
 $releaseInfoPath = Join-Path $resolvedGameRoot 'release_info.json'
 $ritsuRoot = Join-Path $resolvedGameRoot 'mods\STS2-RitsuLib'
 $ritsuManifestPath = Join-Path $ritsuRoot 'mod_manifest.json'
@@ -94,6 +95,18 @@ Write-Output "expected_game_version=$ExpectedGameVersion"
 Write-Output "expected_ritsu_lib_version=$ExpectedRitsuLibVersion"
 Write-Output "expected_ritsu_compat_branch=$ExpectedRitsuCompatBranch"
 Write-Output "expected_package_version=$ExpectedPackageVersion"
+
+Add-Check -Name 'repo_spire_plus_manifest_exists' -Passed (Test-Path -LiteralPath $repoSpirePlusManifestPath -PathType Leaf) -Detail $repoSpirePlusManifestPath
+if (Test-Path -LiteralPath $repoSpirePlusManifestPath -PathType Leaf) {
+    $repoSpireManifest = Read-JsonFile $repoSpirePlusManifestPath
+    Write-Output "repo_spire_plus_manifest=$repoSpirePlusManifestPath"
+    Write-Output "repo_spire_plus_id=$($repoSpireManifest.id)"
+    Write-Output "repo_spire_plus_name=$($repoSpireManifest.name)"
+    Write-Output "repo_spire_plus_version=$($repoSpireManifest.version)"
+    Add-Check -Name 'repo_spire_plus_id_matches_expected' -Passed ("$($repoSpireManifest.id)" -eq $ExpectedModId) -Detail "actual=$($repoSpireManifest.id)"
+    Add-Check -Name 'repo_spire_plus_name_is_player_facing' -Passed ("$($repoSpireManifest.name)" -eq 'Spire Plus') -Detail "actual=$($repoSpireManifest.name)"
+    Add-Check -Name 'repo_spire_plus_version_matches_expected' -Passed ("$($repoSpireManifest.version)" -eq $ExpectedPackageVersion) -Detail "actual=$($repoSpireManifest.version)"
+}
 
 Add-Check -Name 'game_root_exists' -Passed (Test-Path -LiteralPath $resolvedGameRoot -PathType Container) -Detail $resolvedGameRoot
 Add-Check -Name 'game_release_info_exists' -Passed (Test-Path -LiteralPath $releaseInfoPath -PathType Leaf) -Detail $releaseInfoPath

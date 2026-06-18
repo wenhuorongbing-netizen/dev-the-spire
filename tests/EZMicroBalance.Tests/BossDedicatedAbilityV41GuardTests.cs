@@ -121,7 +121,7 @@ public sealed class BossDedicatedAbilityV41GuardTests
     [Fact]
     public void BossCatalogMapsEveryV41AbilityToSpecificEncounter()
     {
-        var catalog = ReadRepoText("EZMicroBalanceCode", "Ascension", "Rewards", "BossSealCatalog.Definitions.cs");
+        var catalog = ReadSourceTree("EZMicroBalanceCode", "Ascension", "Rewards");
 
         AssertSourceContains(
             catalog,

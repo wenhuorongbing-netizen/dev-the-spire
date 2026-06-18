@@ -84,7 +84,7 @@ Priority for the next validated localization/resource pass:
 2. Fix the remaining 32 keys before any `AdditiveAllDraft` / RegisterAll gameplay or source-complete localization claim.
 3. Keep combat-event runtime proof blocked separately until encounter models exist.
 
-Fixing the direct Golden Idol key only removes a missing-key blocker. It does not close O25/O33, prove CanaryOnly/AdditiveBatch1 enabled-mode behavior, or replace `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`.
+Fixing the direct Golden Idol key only removes a missing-key blocker. It does not prove gameplay behavior or replace `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`.
 
 ## Required Follow-Up
 

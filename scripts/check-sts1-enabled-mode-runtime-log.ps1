@@ -269,12 +269,53 @@ function Get-RegisteredEventClassesFromLog {
     param([AllowEmptyString()][string[]]$Lines)
 
     $registeredMatches = [System.Collections.Generic.List[object]]::new()
-    $pattern = 'Registered\s+.*\bevent:\s+(Sts1[A-Za-z0-9_]+)\b'
+    $actPattern = 'Registered\s+act\s+event:\s+(Sts1[A-Za-z0-9_]+)\b.*?->\s*([A-Za-z0-9_]+)\b'
+    $sharedPattern = 'Registered\s+shared\s+event:\s+(Sts1[A-Za-z0-9_]+)\b'
+    $genericPattern = 'Registered\s+.*\bevent:\s+(Sts1[A-Za-z0-9_]+)\b'
 
     foreach ($line in $Lines) {
-        foreach ($match in [regex]::Matches($line, $pattern)) {
+        $matched = $false
+
+        foreach ($match in [regex]::Matches($line, $actPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
+            $eventClass = $match.Groups[1].Value
+            $actName = $match.Groups[2].Value
             $registeredMatches.Add([pscustomobject]@{
-                ClassName = $match.Groups[1].Value
+                ClassName = $eventClass
+                Kind = 'ActEvent'
+                Act = $actName
+                Tuple = "ActEvent:${actName}:${eventClass}"
+                Line = $line
+            }) | Out-Null
+            $matched = $true
+        }
+
+        if ($matched) {
+            continue
+        }
+
+        foreach ($match in [regex]::Matches($line, $sharedPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
+            $eventClass = $match.Groups[1].Value
+            $registeredMatches.Add([pscustomobject]@{
+                ClassName = $eventClass
+                Kind = 'SharedEvent'
+                Act = 'Shared'
+                Tuple = "SharedEvent:Shared:${eventClass}"
+                Line = $line
+            }) | Out-Null
+            $matched = $true
+        }
+
+        if ($matched) {
+            continue
+        }
+
+        foreach ($match in [regex]::Matches($line, $genericPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) {
+            $eventClass = $match.Groups[1].Value
+            $registeredMatches.Add([pscustomobject]@{
+                ClassName = $eventClass
+                Kind = 'UnknownEvent'
+                Act = 'Unknown'
+                Tuple = "UnknownEvent:Unknown:${eventClass}"
                 Line = $line
             }) | Out-Null
         }
@@ -376,6 +417,10 @@ $observedClasses = @($registeredEventMatches | Select-Object -ExpandProperty Cla
 $expectedClasses = @($expected.ExpectedEventClasses | Sort-Object -Unique)
 $missingClasses = @($expectedClasses | Where-Object { $observedClasses -notcontains $_ })
 $unexpectedClasses = @($observedClasses | Where-Object { $expectedClasses -notcontains $_ })
+$observedTuples = @($registeredEventMatches | Select-Object -ExpandProperty Tuple | Sort-Object)
+$expectedTuples = @($expected.ExpectedRegistrationTuples | Sort-Object)
+$missingTuples = @($expectedTuples | Where-Object { $observedTuples -notcontains $_ })
+$unexpectedTuples = @($observedTuples | Where-Object { $expectedTuples -notcontains $_ })
 
 $reasonHits = [regex]::Matches($logText, [regex]::Escape($expected.ReasonNeedle)).Count
 $enabledFeatureLineHits = [regex]::Matches($logText, 'Feature Sts1Events .*bootstrap=enabled, live=Enabled').Count
@@ -396,6 +441,9 @@ Write-Output "log_path=$resolvedLogPath"
 Write-Output "observed_registered_event_lines=$($registeredEventMatches.Count)"
 Write-Output "observed_event_types=$($observedClasses.Count)"
 Write-Output "observed_event_classes=$(($observedClasses | Sort-Object) -join ',')"
+Write-Output "observed_registration_tuples=$(($observedTuples | Sort-Object) -join ',')"
+Write-Output "missing_registration_tuples=$(($missingTuples | Sort-Object) -join ',')"
+Write-Output "unexpected_registration_tuples=$(($unexpectedTuples | Sort-Object) -join ',')"
 Write-Output "mode_reason_hits=$reasonHits"
 Write-Output "enabled_feature_line_hits=$enabledFeatureLineHits"
 Write-Output "disabled_feature_line_hits=$disabledFeatureLineHits"
@@ -458,6 +506,7 @@ if ($Mode -eq 'Off') {
     Add-Check -Name 'observed_registration_call_count' -Passed ($registeredEventMatches.Count -eq $expected.ExpectedRegistrationCalls) -Detail "expected $($expected.ExpectedRegistrationCalls) registered event lines, observed $($registeredEventMatches.Count)"
     Add-Check -Name 'observed_event_type_count' -Passed ($observedClasses.Count -eq $expected.ExpectedEventTypes) -Detail "expected $($expected.ExpectedEventTypes), observed $($observedClasses.Count)"
     Add-Check -Name 'observed_event_classes_match_expected' -Passed ($missingClasses.Count -eq 0 -and $unexpectedClasses.Count -eq 0) -Detail "missing=$($missingClasses -join ','); unexpected=$($unexpectedClasses -join ',')"
+    Add-Check -Name 'observed_registration_tuples_match_expected' -Passed ($missingTuples.Count -eq 0 -and $unexpectedTuples.Count -eq 0) -Detail "missing=$($missingTuples -join ','); unexpected=$($unexpectedTuples -join ',')"
     Add-Check -Name 'no_unsafe_mode_runtime_lines' -Passed ($unsafeModeHits -eq 0) -Detail 'CanaryOnly/AdditiveBatch1 proof logs must not use unsafe StS1 modes'
 }
 
@@ -478,6 +527,9 @@ $report['LogPath'] = $resolvedLogPath
 $report['ObservedRegisteredEventLines'] = $registeredEventMatches.Count
 $report['ObservedEventTypes'] = $observedClasses.Count
 $report['ObservedEventClasses'] = $observedClasses
+$report['ObservedRegistrationTuples'] = $observedTuples
+$report['MissingRegistrationTuples'] = $missingTuples
+$report['UnexpectedRegistrationTuples'] = $unexpectedTuples
 $report['ModeReasonHits'] = $reasonHits
 $report['EnabledFeatureLineHits'] = $enabledFeatureLineHits
 $report['DisabledFeatureLineHits'] = $disabledFeatureLineHits

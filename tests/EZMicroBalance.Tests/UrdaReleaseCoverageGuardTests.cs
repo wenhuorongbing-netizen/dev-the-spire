@@ -291,9 +291,10 @@ public sealed class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("OnSkipped", urdaRunHook, StringComparison.Ordinal);
         var seedbedRewardSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.Seedbed.cs");
         var seedbedCombatSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");
+        var seedbedPlantingQueueSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedPlantingQueue.cs");
         var seedbedStateSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedState.cs");
         var seedbedPatchSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedbedAfterCardDrawnPatch.cs");
-        var seedbedSource = string.Join(Environment.NewLine, seedbedRewardSource, seedbedCombatSource, seedbedStateSource, seedbedPatchSource);
+        var seedbedSource = string.Join(Environment.NewLine, seedbedRewardSource, seedbedCombatSource, seedbedPlantingQueueSource, seedbedStateSource, seedbedPatchSource);
         AssertSourceContains(
             urdaRunHook,
             "public override Task AfterCardChangedPiles",
@@ -313,11 +314,13 @@ public sealed class UrdaReleaseCoverageGuardTests
             "TryAddGeneratedCardToCombat(husk, PileType.Hand, player)",
             "Planting skipped play, discard, and Exhaust synergies");
         AssertSourceContains(
-            seedbedStateSource,
+            seedbedPlantingQueueSource,
             "Queue<SeedbedPlantingRequest> PendingRequests",
             "Task<bool> QueueSeedbedPlantFromHand",
             "bool IsProcessing",
-            "ProcessSeedbedPlantingQueue",
+            "ProcessSeedbedPlantingQueue");
+        AssertSourceContains(
+            seedbedStateSource,
             "ConditionalWeakTable<Player, SeedbedCombatState>",
             "ConditionalWeakTable<CardModel, SeedbedPlantMarker>",
             "GetOrRestoreSeedbed(Player player)",
@@ -553,19 +556,16 @@ public sealed class UrdaReleaseCoverageGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionCommit.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionGuard.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
         var seedBankExtraction = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs");
         var seedBankExtractionCommit = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionCommit.cs");
+        var seedBankExtractionGuard = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionGuard.cs");
         var seedBankExtractionState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs");
         AssertSourceContains(
             seedBank,
             "GetSeedBankCardIds(progress)",
-            "ConditionalWeakTable<Player, SeedBankExtractionState>",
-            "SeedBankExtractionInProgress.GetOrCreateValue(player)",
-            "if (extractionState.InProgress)",
-            "try",
-            "finally",
             "CardSelectCmd.FromSimpleGrid",
             "selected.Id.ToString()",
             "AncientCardHelpers.RemoveUnpiledRunCard(card)",
@@ -583,9 +583,19 @@ public sealed class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             seedBankExtractionState,
             "ConditionalWeakTable<Player, SeedBankExtractionState>",
+            "private sealed class SeedBankExtractionState",
+            "public bool InProgress { get; set; }",
+            "private static readonly ConditionalWeakTable<Player, SeedBankExtractionState> SeedBankExtractionInProgress = new()");
+        AssertSourceContains(
+            seedBankExtractionGuard,
+            "public static async Task TryExtractSeedBankFromRelicClick(Player player)",
             "SeedBankExtractionInProgress.GetOrCreateValue(player)",
             "if (extractionState.InProgress)",
+            "[Spire Plus] Urda Seed Bank extraction ignored: a Seed Bank selection is already open.",
+            "extractionState.InProgress = true",
+            "try",
             "TryExtractSeedBankFromRelicClickOnce(player)",
+            "finally",
             "extractionState.InProgress = false");
         Assert.DoesNotContain("ConditionalWeakTable<Player, SeedBankExtractionState>", seedBankExtraction, StringComparison.Ordinal);
         Assert.DoesNotContain("UrdaTrialPlantCard", seedBank, StringComparison.Ordinal);

@@ -26,6 +26,6 @@ Source evidence: `.tools/runtime-evidence/v01070-off-package-parity-20260610-092
 
 - Installed game DLL audit found the `v0.107.0` API includes the property accessors and `Ectoplasm.ModifyGoldGained(Player, decimal)`.
 - `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/godot.log.after-launch` later applied 25/25 patches with a clean audit, but that log still identifies Spire Plus as beta.84.
-- `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot.log.after-launch` is the current package proof: Spire Plus `v0.1.0-private-beta.85`, RitsuLib compat branch `0.107.0`, 25/25 patches, clean audit.
+- `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/godot.log.after-launch` is the current package proof: Spire Plus `v0.1.0-private-beta.86`, RitsuLib compat branch `0.107.0`, 25/25 patches, clean audit, and 10 event types / 14 registration calls. Retained beta.85 Off proof remains previous-package default-Off context.
 - The red beta.84 smoke reached main menu at lines 350-351, so this was an API/patch-cleanliness failure, not a startup crash.
-- Required next proof is no longer Off smoke; run fresh beta.85 CanaryOnly/AdditiveBatch1 only if StS1 staging proof is needed and process coordination is clear.
+- Required next proof is no longer loader smoke; run gameplay, save-load, render, replacement, multiplayer, and QA checks only if process coordination is clear.

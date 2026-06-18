@@ -8,7 +8,7 @@ TBD (next available runtime/manual QA session)
 
 **Manual QA + Batch 4c Owner Review After Clean Loader Proof.**
 
-The old hard blocker was missing or non-clean RitsuLib runtime smoke. That blocker is now closed for loader proof: historical Slay the Spire 2 `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic evidence is clean, and current `v0.107.0` beta.85 Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` reached main menu and audited clean after the Spire Plus API-target drift fix. The next run should upgrade this into manual gameplay proof and owner-reviewed Batch 4c planning. It is not approval to migrate more patches.
+The old hard blocker was missing or non-clean RitsuLib runtime smoke. That blocker is now closed for loader/registration proof: historical Slay the Spire 2 `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic evidence is clean, current `v0.107.0` beta.85 Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` reached main menu and audited clean after the Spire Plus API-target drift fix, current beta.85 CanaryOnly smoke under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` passed retained log/packet verifiers with 4 event types / 6 registration lines, and current beta.86 AdditiveBatch1 direct smoke under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` passed retained log/packet verifiers with 10 event types / 14 registration lines. The beta.85 AdditiveBatch1 13/14 mismatch is root-cause history only. The next run should move to gameplay, render, save-load, replacement, multiplayer, QA, and handoff proof after the validation coordination pause clears. It is not approval to migrate more patches.
 
 Coordination boundary: while the same-repository validation pause remains active, do not run this plan's `dotnet` validation, package/release, runtime/game smoke, staging, commit, or push steps. During the pause, use this plan only for read-only/static planning, source-only expected-shape output, and already-captured evidence review; run the pre-run checklist only after the pause is lifted and one controlled validation lane is assigned.
 
@@ -23,8 +23,9 @@ Coordination boundary: while the same-repository validation pause remains active
   - CanaryOnly: `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104`, exactly 4 canary registrations in the old source shape, clean audit. Current source expects 4 event types through 6 registration calls.
   - AdditiveBatch1: `.tools\runtime-evidence\additive-batch1-20260602-150445`, 10 event types through the old 11 registration calls, clean audit. Current source expects 10 event types through 14 registration calls.
   - Recorded smokes loaded BaseLib, RitsuLib, and Spire Plus, applied 25/25 migrated patches, and observed 30 SavedSpireFields.
-- Current `v0.107.0` beta.85 package runtime proof is clean for loader/patch application under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; installed package parity passes.
-- Current enabled-mode proof is still missing: before gameplay evidence, CanaryOnly must prove 4 event types / 6 registration calls and AdditiveBatch1 must prove 10 event types / 14 registration calls on beta.85 / `v0.107.0`, with retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` verifier reports.
+- Current `v0.107.0` beta.85 package runtime proof is clean for loader/patch application under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; installed package parity passed for that package line.
+- Current CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches.
+- Current AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`: 10 event types / 14 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches. The beta.85 AdditiveBatch1 13/14 verifier mismatch remains root-cause history only.
 - Dependency decision is recorded: keep the current dirty source and beta.85 package line at compile/manifest `0.3.2`; move both to `0.4.16` only in a future owner-approved versioned package pass for the `v0.107.0` runtime.
 - Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; migration requires explicit owner approval and fresh validation.
 - Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, clean-worktree decision, and tester-package handoff remain pending.
@@ -67,12 +68,12 @@ Get-ChildItem "E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\lib
 ### Step 1: Reconcile Loader Evidence
 
 1. Verify the evidence folders listed above still exist or record that only documentation references remain.
-2. Verify the current game version still has a matching RitsuLib variant and that the installed package under test matches the intended artifact; if either check fails, record the blocker instead of launching the game. The beta.85 package artifact currently matches and has clean current-runtime loader proof under `v0.107.0`.
+2. Verify the current game version still has a matching RitsuLib variant and that the installed package under test matches the intended artifact; if either check fails, record the blocker instead of launching the game. The beta.86 package artifact currently matches and has clean current-runtime AdditiveBatch1 loader/registration proof under `v0.107.0`.
 3. Re-audit the recorded logs if needed with `scripts\audit-godot-log.ps1`.
 4. Rerun loader smoke only if runtime compatibility is present and HEAD/package drift makes the old logs stale for the claim being made.
-5. Before any StS1 event gameplay claim, capture fresh current CanaryOnly smoke and verify 4 event types / 6 registration calls with `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` retained in the evidence folder.
-6. Before any AdditiveBatch1 gameplay claim, capture fresh current AdditiveBatch1 smoke and verify 10 event types / 14 registration calls with the same retained verifier reports.
-7. If current enabled-mode smoke cannot be captured, record the exact blocker instead of continuing into gameplay proof.
+5. Before any StS1 canary gameplay claim, cite the fresh current CanaryOnly packet at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`.
+6. Before any AdditiveBatch1 gameplay claim, cite the current beta.86 loader/registration packet at `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` and recapture it if package/source shape changes.
+7. If current AdditiveBatch1 loader/registration proof goes stale or cannot be recaptured, record the exact blocker instead of continuing into AdditiveBatch1 gameplay proof.
 8. Keep AdditiveAllDraft and ReplaceUnknownEventsPrototype out of tester/release paths.
 
 ### Step 2: Manual Gameplay Evidence
@@ -116,15 +117,16 @@ If a gate cannot be completed, record:
 
 - [x] Current STS2-RitsuLib installed locally (`v0.4.16`, `lib\0.107.0`).
 - [x] Historical `v0.106.1` Off loader gate proves 0 Sts1Events registrations.
-- [x] Historical `v0.106.1` CanaryOnly loader gate proves exactly 4 canary registrations in the old source shape; current proof still needs 4 event types / 6 registration calls.
-- [x] Historical `v0.106.1` AdditiveBatch1 loader gate proves 10 event types through the old 11 registration calls; current proof still needs 10 event types / 14 registration calls.
+- [x] Historical `v0.106.1` CanaryOnly loader gate proves exactly 4 canary registrations in the old source shape.
+- [x] Historical `v0.106.1` AdditiveBatch1 loader gate proves 10 event types through the old 11 registration calls.
 - [x] Current `v0.107.0` game install has matching STS2-RitsuLib `v0.4.16` / `lib\0.107.0` runtime files.
 - [x] Dependency bump decision recorded: defer compile/manifest `0.4.16` bump until an owner-approved versioned package pass.
 - [x] Installed beta.85 package parity verified after the 2026-06-11 package refresh.
+- [x] Installed beta.86 package parity verified after the 2026-06-18 package/source alignment pass.
 - [x] Clean current `v0.107.0` beta.85 Off loader smoke captured after the `v0.4.16` install.
 - [ ] Current HEAD validation refreshed after the latest dirty worktree changes, or explicitly recorded as stale under the validation coordination pause.
-- [ ] Current `v0.107.0` CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
-- [ ] Current `v0.107.0` AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports.
+- [x] Current `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
+- [x] Current `v0.107.0` beta.86 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
 - [ ] Mod Settings UI evidence captured.
 - [ ] CanaryOnly gameplay matrix completed or blocked with evidence.
 - [ ] Save/load evidence captured or blocked with evidence.

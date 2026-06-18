@@ -1,44 +1,44 @@
 gate_id,gate_group,requirement,current_status,evidence,next_action
-O0,O0-O10,Current HEAD and worktree snapshot,historical-pass-current-paused,PROJECT_STATE.md records beta.85 baseline; current dirty worktree exists,Refresh git status/log/diff in one controlled validation lane
-O1,O0-O10,Full build has 0 errors and 0 warnings,historical-pass-current-paused,PROJECT_STATE.md records beta.85 0 errors / 0 warnings,Rerun build after coordination pause
+O0,O0-O10,Current HEAD and worktree snapshot,historical-pass-current-paused,PROJECT_STATE.md records beta.86 package/runtime baseline; current dirty worktree exists,Refresh git status/log/diff in one controlled validation lane
+O1,O0-O10,Full build has 0 errors and 0 warnings,historical-pass-current-paused,PROJECT_STATE.md records beta.86 0 errors / 0 warnings,Rerun build after coordination pause
 O2,O0-O10,Automated tests pass at current expected count,historical-pass-current-paused,PROJECT_STATE.md records split lanes 475 / 0 / 21 / 496,Rerun non-overlapping test lanes after coordination pause
 O3,O0-O10,Skipped tests explained,historical-pass-current-paused,PROJECT_STATE.md records 21 skipped tests context,Refresh skipped-test explanation with current test output
-O4,O0-O10,Zero-warning proof preserved,historical-pass-current-paused,PROJECT_STATE.md records beta.85 zero-warning validation,Rerun build after coordination pause
+O4,O0-O10,Zero-warning proof preserved,historical-pass-current-paused,PROJECT_STATE.md records beta.86 zero-warning validation,Rerun build after coordination pause
 O5,O0-O10,Format validation clean,historical-pass-current-paused,PROJECT_STATE.md records format passed for migration lane,Rerun dotnet format after coordination pause
 O6,O0-O10,Diff whitespace check clean,static-pass,git diff --check is static and rerun during coordination pause,Keep rerunning after edits
 O7,O0-O10,Patch inventory current,historical-pass-current-paused,PROJECT_STATE.md records patch inventory passed for migration lane,Refresh patch inventory after coordination pause
 O8,O0-O10,Worktree batch classification current,historical-pass-current-paused,PROJECT_STATE.md records batch classifier passed for migration lane,Refresh classifier after coordination pause
-O9,O0-O10,Package and release-artifact validation current,historical-pass-current-paused,PROJECT_STATE.md records beta.85 package/artifact validation and ZIP SHA B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE,Refresh package/artifact lane only after pause
+O9,O0-O10,Package and release-artifact validation current,historical-pass-current-paused,PROJECT_STATE.md records beta.86 package refresh and ZIP SHA 3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE,Refresh package/artifact lane only after pause
 O10,O0-O10,Dirty worktree owner decision before commit or handoff,current-pending,Current git status has dirty tracked and untracked files,Owner/agent must classify exact scope before commit or handoff
 O11,O11-O20,Status board current and no generic Done,static-pass,docs/features/sts1-events/status-board.md plus current-doc checker,Keep current-doc checker passing
 O12,O11-O20,Canonical matrix and Act mapping current at 52 / 54 baseline,static-pass,canonical-event-matrix.csv plus registry-shape checker; Act 1 maps to Overgrowth + Underdocks and AdditiveBatch1 remains 10 types / 14 calls,Keep registry-shape and act-mapping evidence passing
-O13,O11-O20,Default Off gate source and current Off runtime state guarded,current-pass,beta.85 Off log plus feature-gate checker,Do not extend Off proof to enabled modes
-O14,O11-O20,CanaryOnly source identity exact 4 event types / 6 calls,static-pass,registry-shape checker prints canary identity,Fresh v0.107 CanaryOnly runtime proof still required
-O15,O11-O20,AdditiveBatch1 source identity exact 10 types / 14 calls,static-pass,registry-shape checker prints AdditiveBatch1 identity,Fresh v0.107 AdditiveBatch1 runtime proof still required
+O13,O11-O20,Default Off gate source and retained Off runtime state guarded,previous-package-pass,beta.85 Off log plus feature-gate checker,Do not extend Off proof to enabled modes
+O14,O11-O20,CanaryOnly source identity exact 4 event types / 6 calls,static-pass,registry-shape checker prints canary identity; current CanaryOnly runtime packet passed,Keep source identity aligned with runtime verifier expectations
+O15,O11-O20,AdditiveBatch1 source identity exact 10 types / 14 calls,static-pass,registry-shape checker prints AdditiveBatch1 identity; beta.86 AdditiveBatch1 runtime proof now matches,Keep source identity aligned with runtime verifier expectations
 O16,O11-O20,AdditiveAllDraft unsafe gate source guarded,static-pass,feature-gate checker,Keep unsafe-only gate
 O17,O11-O20,ReplacementPrototype compile-symbol and unsafe gate source guarded,source-guarded,feature-gate checker,Runtime replacement proof still required
 O18,O11-O20,Per-event spec registration notes current,static-pass,event-spec-registration-notes checker,Keep spec note checker passing
 O19,O11-O20,Localization source-reference gap recorded,known-gap,localization-source-gap and localization-gap-baseline checkers,Close 33-key gap only in versioned resource pass
 O20,O11-O20,Static StS1 suite aggregates source/doc checks,static-pass,check-sts1-event-static-suite.ps1,Rerun after every static edit
-O21,O21-O29,Current v0.107 game path and dependency path recorded,current-pass,PROJECT_STATE.md and status-board runtime path report for v0.107.0 and beta.85,Refresh only if installed game/dependencies change
+O21,O21-O29,Current v0.107 game path and dependency path recorded,current-pass,PROJECT_STATE.md and status-board runtime path report for v0.107.0 and beta.86,Refresh only if installed game/dependencies change
 O22,O21-O29,STS2-RitsuLib v0.4.16 with lib/0.107.0 installed,current-pass,PROJECT_STATE.md and status-board O22,Refresh if RitsuLib changes
-O23,O21-O29,Current beta.85 Off godot.log generated,current-pass,.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot.log.after-launch records v0.107.0 and v0.1.0-private-beta.85,Regenerate only after package/source changes require it
-O24,O21-O29,Current beta.85 Off loader audit clean,current-pass,.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot-log-audit.json; packet report .tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/runtime-evidence-packet-check.json checks=34 mismatches=0 nested log verifier checks=10 mismatches=0; default-Off only,Preserve as default-Off only
-O25,O21-O29,Current v0.107 CanaryOnly enabled-mode smoke exact 4 event types / 6 calls,current-pending,No beta.85 CanaryOnly evidence packet exists for v0.107.0,Capture fresh CanaryOnly smoke after coordination pause
-O26,O21-O29,Big Fish runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after O25 passes
-O27,O21-O29,Golden Idol runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after O25 passes
-O28,O21-O29,The Lab runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after O25 passes
-O29,O21-O29,Divine Fountain runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after O25 passes
+O23,O21-O29,Current beta.86 AdditiveBatch1 godot.log generated,current-pass,.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/godot.log.after-launch records v0.107.0 and v0.1.0-private-beta.86,Regenerate only after package/source changes require it
+O24,O21-O29,Current beta.86 AdditiveBatch1 loader audit clean,current-pass,.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/godot-log-audit.json; packet report .tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/runtime-evidence-packet-check.json checks=45 mismatches=0; enabled-mode log verifier checks=21 mismatches=0; loader-registration only,Preserve as AdditiveBatch1 loader proof only
+O25,O21-O29,Retained v0.107 CanaryOnly enabled-mode smoke exact 4 event types / 6 calls,previous-package-pass,.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/godot.log.after-launch; enabled-mode-log-check.json checks=20 mismatches=0; runtime-evidence-packet-check.json checks=45 mismatches=0,Preserve as beta.85 CanaryOnly loader proof only; gameplay rows remain separate
+O26,O21-O29,Big Fish runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after coordination pause
+O27,O21-O29,Golden Idol runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after coordination pause
+O28,O21-O29,The Lab runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after coordination pause
+O29,O21-O29,Divine Fountain runtime screenshot/result proof,blocked,No current encounter screenshot or result log,Capture gameplay proof after coordination pause
 O30,O30-O41,Canary event code review remains current,static-pass,canary-source-api-proof.md and static source/docs,Refresh review if canary source changes
-O31,O30-O41,Canary result logs for all four events,blocked,No current result logs,Capture result logs after O25 passes
-O32,O30-O41,Canary pre/post state evidence,blocked,No current pre/post state evidence,Capture state evidence after O25 passes
-O33,O30-O41,Current v0.107 AdditiveBatch1 enabled-mode smoke exact 10 types / 14 calls,current-pending,No beta.85 AdditiveBatch1 evidence packet exists for v0.107.0,Capture fresh AdditiveBatch1 smoke after coordination pause
+O31,O30-O41,Canary result logs for all four events,blocked,No current result logs,Capture result logs after coordination pause
+O32,O30-O41,Canary pre/post state evidence,blocked,No current pre/post state evidence,Capture state evidence after coordination pause
+O33,O30-O41,Current v0.107 AdditiveBatch1 enabled-mode smoke exact 10 types / 14 calls,current-pass,.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254 reached main menu and audited clean; enabled-mode-log-check.json checks=21 mismatches=0; runtime-evidence-packet-check.json checks=45 mismatches=0; exact act/shared tuple parity including Sts1TheCleric in Overgrowth and Underdocks,Loader-registration proof only; gameplay/render/save-load rows remain separate
 O34,O30-O41,Canary save/load proof,blocked,No save/load evidence,Capture save/reload proof after enabled-mode smoke
 O35,O30-O41,Canary EN render proof,blocked,No current EN screenshot/render proof,Capture EN render screenshots
 O36,O30-O41,Canary ZHS render proof,blocked,No current ZHS screenshot/render proof,Capture ZHS render screenshots
 O37,O30-O41,Canary image/license/render decision,blocked,No redistributable StS1 event art decision,Capture or document replacement-art decision
 O38,O30-O41,Canary parity-gap disposition,blocked,Golden Idol relic substitute and image gaps remain non-parity,Resolve or explicitly keep non-parity before handoff
-O39,O30-O41,Canary runtime audit packet complete,blocked,No current CanaryOnly packet,Run packet verifier on future evidence
+O39,O30-O41,Canary runtime audit packet complete,current-pass,.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/runtime-evidence-packet-check.json checks=45 mismatches=0; nested log verifier checks=20 mismatches=0,Preserve as loader/audit packet proof only; gameplay rows remain separate
 O40,O30-O41,Canary gameplay notes integrated into docs,blocked,No current gameplay evidence to summarize,Update docs after gameplay proof exists
 O41,O30-O41,Canary owner/QA acceptance,blocked,No independent QA after runtime proof,Run independent QA after evidence exists
 O42,O42-O52,Purifier runtime proof,blocked,No current encounter screenshot/result log,Capture AdditiveBatch1 gameplay proof
@@ -50,8 +50,8 @@ O47,O42-O52,Shining Light runtime proof,blocked,No current encounter screenshot/
 O48,O42-O52,Simple batch save/load proof,blocked,No current save/load evidence,Capture save/reload proof
 O49,O42-O52,Simple batch EN/ZHS render proof,blocked,No current bilingual render screenshots,Capture EN and ZHS screenshots
 O50,O42-O52,Simple batch image/license/render decision,blocked,No redistributable StS1 event art decision,Capture or document replacement-art decision
-O51,O42-O52,Simple batch runtime audit packet complete,blocked,No current AdditiveBatch1 packet,Run packet verifier on future evidence
-O52,O42-O52,Simple batch independent QA,blocked,QA impossible before runtime proof,Run independent QA after evidence exists
+O51,O42-O52,Simple batch runtime audit packet complete,blocked,Clean AdditiveBatch1 loader packet exists but no simple-batch gameplay packet,Run gameplay packet verifier after event encounters are captured
+O52,O42-O52,Simple batch independent QA,blocked,QA impossible before gameplay proof,Run independent QA after evidence exists
 O53,O53-O57,ReplacementPrototype source gate present,source-guarded,feature-gate checker and replacement source,Keep debug/unsafe gate
 O54,O53-O57,Replacement unknown-room proof,blocked,No debug runtime replacement evidence,Run debug replacement smoke after explicit owner approval
 O55,O53-O57,Replacement act-bucket proof,blocked,No debug runtime replacement evidence,Capture act-bucket evidence
@@ -66,7 +66,7 @@ O63,O58-O64,Asset/license safety current,static-pass,asset-safety checker,Keep z
 O64,O58-O64,ZHS screenshots for StS1 events,blocked,No current ZHS runtime screenshots,Capture after enabled-mode gameplay proof
 O65,O65-O76,Independent QA/Red-Team pass-fail,current-pending,No independent QA after current runtime evidence,Run QA after O25/O33/gameplay evidence
 O66,O65-O76,current-validation doc refreshed,documentation-in-progress,docs/reviews/current-validation.md references v19 map,Refresh after validation lane finishes
-O67,O65-O76,status-board refreshed,documentation-in-progress,status-board records current Off-only proof,Refresh after enabled-mode/runtime evidence
+O67,O65-O76,status-board refreshed,documentation-in-progress,status-board records beta.86 AdditiveBatch1 proof plus beta.85 Off/CanaryOnly previous-package context,Refresh after enabled-mode/runtime evidence
 O68,O65-O76,monthly review or hard-stop updated,documentation-in-progress,hard-stop report records coordination blocker,Update when validation lane resumes or evidence arrives
 O69,O65-O76,private beta handoff updated,documentation-in-progress,private-beta handoff references v19 map,Refresh after runtime proof exists
 O70,O65-O76,release checklist updated,documentation-in-progress,release checklist references v19 map,Refresh after runtime proof exists

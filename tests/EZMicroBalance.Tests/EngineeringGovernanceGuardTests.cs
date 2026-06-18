@@ -13,6 +13,7 @@ public sealed class EngineeringGovernanceGuardTests
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "IFeatureModule.cs");
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureGateResult.cs");
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.Environment.cs");
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "SpirePlusFeatureRegistry.cs");
         AssertRepoFileExists("EZMicroBalanceCode", "Core", "Features", "FeatureOrders.cs");
 
@@ -985,15 +986,33 @@ public sealed class EngineeringGovernanceGuardTests
     [Fact]
     public void FeatureRegistryAppliesUnifiedEnvironmentOverrides()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        var registrySource = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.cs");
+        var environmentSource = ReadRepoText("EZMicroBalanceCode", "Core", "Features", "FeatureRegistry.Environment.cs");
 
-        AssertSourceContains(source,
-            "ApplyEnvironmentOverrides(module, module.EvaluateGate())",
+        AssertSourceContains(registrySource,
+            "ApplyEnvironmentOverrides(module, module.EvaluateGate())");
+
+        Assert.DoesNotContain("private static FeatureGateResult ApplyEnvironmentOverrides(IFeatureModule module, FeatureGateResult gate)", registrySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("private static string? FirstTruthyEnvironmentKey(IEnumerable<string> keys)", registrySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("private static bool IsTruthyEnvironmentValue(string? value) =>", registrySource, StringComparison.Ordinal);
+
+        AssertSourceContains(environmentSource,
+            "internal sealed partial class FeatureRegistry",
+            "private static FeatureGateResult ApplyEnvironmentOverrides(IFeatureModule module, FeatureGateResult gate)",
             "FirstTruthyEnvironmentKey(module.ForceEnvKeys)",
             "FirstTruthyEnvironmentKey(module.DisableEnvKeys)",
             "forced by {forceKey}; original gate:",
             "disabled by {disableKey}; original gate:",
-            "IsTruthyEnvironmentValue");
+            "private static string? FirstTruthyEnvironmentKey(IEnumerable<string> keys)",
+            "private static bool IsTruthyEnvironmentValue(string? value) =>",
+            "!string.Equals(value, \"0\", StringComparison.OrdinalIgnoreCase)",
+            "!string.Equals(value, \"false\", StringComparison.OrdinalIgnoreCase)",
+            "!string.Equals(value, \"off\", StringComparison.OrdinalIgnoreCase)",
+            "!string.Equals(value, \"no\", StringComparison.OrdinalIgnoreCase)");
+
+        AssertBefore(environmentSource,
+            "FirstTruthyEnvironmentKey(module.ForceEnvKeys)",
+            "FirstTruthyEnvironmentKey(module.DisableEnvKeys)");
     }
 
     private static (int ExitCode, string Output, string Error) RunPowerShell(string scriptPath, params string[] arguments)

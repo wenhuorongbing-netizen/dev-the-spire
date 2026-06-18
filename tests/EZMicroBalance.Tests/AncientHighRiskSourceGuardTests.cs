@@ -110,6 +110,7 @@ public sealed class AncientHighRiskSourceGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionCommit.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionGuard.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"));
         var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.State.cs");
@@ -160,6 +161,7 @@ public sealed class AncientHighRiskSourceGuardTests
             rootSightEntryCommit);
         var rootSightStatus = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightStatus.cs");
         var rootSightHover = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightHover.cs");
+        var rootSightHoverText = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightHoverText.cs");
         var mapHoverComposer = ReadRepoText("EZMicroBalanceCode", "Map", "SpirePlusMapPointHoverComposer.cs");
         var rootSightPreview = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightPreviewGeneration.cs");
         var rootSightEncounters = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightEncounters.cs");
@@ -328,11 +330,27 @@ public sealed class AncientHighRiskSourceGuardTests
         AssertSourceContains(
             rootSightHover,
             "TryGetRootSightPreviewTitle(preview, out var title)",
-            "IsRootSightPreviewStillValidForEntry(runState, preview)",
+            "IsRootSightPreviewStillValidForEntry(runState, preview)");
+        AssertSourceContains(
+            rootSightHoverText,
+            "private static bool TryGetRootSightPreviewTitle(RootSightPreview preview, out LocString title)",
+            "private static bool TryGetRootSightPreviewDescription(RootSightPreview preview, out LocString description)",
+            "var id = ModelId.Deserialize(preview.ModelId)",
             "ModelDb.GetByIdOrNull<EventModel>(id)",
             "title = eventModel.Title",
             "ModelDb.GetByIdOrNull<EncounterModel>(id)",
-            "title = encounter.Title");
+            "title = encounter.Title",
+            "description = new LocString(\"ancients\", \"EZMB_URDA.root_sight.map_hover.preview_description\")",
+            "eventModel.GameInfoOptions",
+            "NormalizeRootSightEventOptionPreview(option.GetFormattedText())",
+            ".Distinct(StringComparer.Ordinal)",
+            ".Take(3)",
+            "if (optionPreview.Length > 220)",
+            "optionPreview = optionPreview[..217] + \"...\";",
+            "description = new LocString(\"ancients\", \"EZMB_URDA.root_sight.map_hover.event_preview_description\")",
+            "description.Add(\"Options\", optionPreview)",
+            ".Replace(\"\\r\", \" \", StringComparison.Ordinal)",
+            ".Replace(\"\\n\", \" \", StringComparison.Ordinal)");
         Assert.DoesNotContain("ClearStaleRootSightPreview(", rootSightHover, StringComparison.Ordinal);
         AssertSourceContains(
             mapHoverComposer,

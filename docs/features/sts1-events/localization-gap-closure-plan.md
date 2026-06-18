@@ -84,7 +84,7 @@ Required changes in that validated resource pass:
 5. Increment the Spire Plus private-beta package version and align package names, hashes, release docs, and tester handoff docs.
 6. After the coordination pause is lifted, run the required build, publish, package, and static checks for a localization/resource change.
 
-Pass A does not by itself prove CanaryOnly or AdditiveBatch1 runtime behavior. It only removes the direct source-referenced missing-key blocker for those modes. It also does not replace the required enabled-mode log verifier or runtime evidence packet; O25 and O33 stay open until those verifier reports exist for beta.85 / `v0.107.0`.
+Pass A does not by itself prove CanaryOnly or AdditiveBatch1 gameplay, save-load, or render behavior. It only removes the direct source-referenced missing-key blocker for those modes. It also does not replace retained enabled-mode log verifier or runtime evidence packets. O25 and O33 have loader/registration proof only; gameplay, localization render, save-load, image/render, replacement, multiplayer, QA, and handoff rows stay open.
 
 ### Pass B - Full Source-Reference Closure
 

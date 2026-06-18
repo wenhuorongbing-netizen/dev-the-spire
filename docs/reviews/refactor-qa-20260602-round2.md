@@ -2,7 +2,7 @@
 
 ## 2026-06-11 Revision M Supersession Note
 
-This 2026-06-02 Round 2 QA report is historical `v0.106.1` loader-gate context only. Do not use its `CONDITIONAL PASS`, Off/CanaryOnly/AdditiveBatch1 `PASS`, RitsuLib `v0.3.10`, beta.84, warning-count, dirty-worktree, mod-isolation, or package status as current `event.md` proof. Current StS1 event work routes through `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md`: beta.85 proves current `v0.107.0` default-Off loader behavior only, while CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending.
+This 2026-06-02 Round 2 QA report is historical `v0.106.1` loader-gate context only. Do not use its `CONDITIONAL PASS`, Off/CanaryOnly/AdditiveBatch1 `PASS`, RitsuLib `v0.3.10`, beta.84, warning-count, dirty-worktree, mod-isolation, or package status as current `event.md` proof. Current StS1 event work routes through `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md`: beta.85 proves current `v0.107.0` default-Off and CanaryOnly loader behavior, beta.86 proves AdditiveBatch1 loader/registration behavior, and gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending or blocked.
 
 ## Verdict
 

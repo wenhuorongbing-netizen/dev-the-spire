@@ -2,9 +2,9 @@
 
 Created: 2026-05-29 | Status: source-verified
 
-## 2026-06-11 Revision M Current Boundary
+## 2026-06-18 Revision M Current Boundary
 
-This source-research note documents current intended StS1 registration shape and static source evidence. It is not current `v0.107.0` runtime proof. Beta.85 proves default-Off loader behavior only; CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof still require fresh current evidence.
+This source-research note documents current intended StS1 registration shape and static source evidence. It is not current `v0.107.0` gameplay proof. Beta.85 proves default-Off and CanaryOnly loader behavior, and beta.86 proves AdditiveBatch1 loader/registration behavior. Gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof still require fresh current evidence.
 
 ## Act Mapping (Verified)
 

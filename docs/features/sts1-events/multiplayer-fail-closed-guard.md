@@ -58,7 +58,7 @@ Static reproduction:
 
 ## Runtime Verification Status
 
-Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for the recorded `v0.106.1` smokes. Installed beta.85 package parity is restored, and the current `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` is clean for loader proof; current multiplayer evidence remains pending until co-op is directly proven or explicitly blocked.
+Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for the recorded `v0.106.1` smokes. Installed beta.85 package parity is restored, the current `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` is clean for loader proof, and current CanaryOnly proof under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` is clean for loader registration only; current multiplayer evidence remains pending until co-op is directly proven or explicitly blocked.
 
 **UNVERIFIED** — requires game launch with:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear
@@ -70,4 +70,4 @@ Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate
 
 **Source-level fail-closed: VERIFIED by guard tests.**
 **Historical loader-level fail-closed: VERIFIED only for the recorded `v0.106.1` diagnostic smokes.**
-**Current runtime/co-op fail-closed: PENDING for multiplayer and enabled-mode proof; current `v0.107.0` beta.85 Off loader proof is clean, but it is not co-op or gameplay evidence.**
+**Current runtime/co-op fail-closed: PENDING for multiplayer, gameplay, and AdditiveBatch1 proof; current `v0.107.0` beta.85 Off and CanaryOnly loader proof is clean, but it is not co-op or gameplay evidence.**

@@ -1,7 +1,7 @@
 我已经把 `dev-the-spire` 当前 repo、两个上传包和 RitsuLib 官方文档都过了一遍。我的判断是：**不要做“一次性大爆炸重构”**，应该拆成 5 个可验证阶段；尤其不要直接把两个 zip 解压进项目根目录，否则会覆盖现有 `AGENTS.md`、引入 DLL/ZIP、打乱当前 release evidence 体系。
 
 我也整理了一份可交给 Codex 执行的详细计划文件：
-Legacy sandbox export link removed. Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; beta.85 proves only current `v0.107.0` default-Off loader behavior while CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending.
+Legacy sandbox export link removed. Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; beta.85 proves only current `v0.107.0` default-Off and CanaryOnly loader behavior while AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending or blocked.
 
 ## 核心结论
 

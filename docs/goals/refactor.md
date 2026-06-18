@@ -3,11 +3,15 @@
 **不能判定“全部完成”。**
 当前最准确的状态是：
 
-> **当前 source/static/no-game 治理继续收敛，beta.85 在 v0.107.0 下的默认 Off loader proof 已经通过；但 CanaryOnly / AdditiveBatch1 当前启用模式、gameplay、Mod Settings UI、save-load、co-op、replacement、independent QA、versioned handoff 仍未完成。当前应判定为：PARTIAL PASS / RELEASE STILL BLOCKED。**
+> **当前 source/static/no-game 治理继续收敛，beta.85 在 v0.107.0 下的默认 Off loader proof 和 CanaryOnly loader proof 已经通过；但 AdditiveBatch1 当前启用模式、gameplay、Mod Settings UI、save-load、co-op、replacement、independent QA、versioned handoff 仍未完成。当前应判定为：PARTIAL PASS / RELEASE STILL BLOCKED。**
 
-最新 `current-validation.md` 记录：6 月 15 的 addendum 没有启动 build/test/publish/package/runtime smoke/commit/push，只做 pause-safe static verification；静态套件、doc-claims、gate-ledger、static hygiene、subagent coverage 等检查为 0 mismatch / 0 suite failures；但这些检查**不关闭** O25、O33、enabled-mode、gameplay、save/load、replacement、multiplayer、image/render、QA、release、handoff gates。
+最新 `current-validation.md` 记录：6 月 15 的 addendum 没有启动 build/test/publish/package/runtime smoke/commit/push，只做 pause-safe static verification；静态套件、doc-claims、gate-ledger、static hygiene、subagent coverage 等检查为 0 mismatch / 0 suite failures；但这些检查**不关闭** O33、gameplay、save/load、replacement、multiplayer、image/render、QA、release、handoff gates。O25 由后续 beta.85 CanaryOnly retained packet 关闭，不是由静态检查关闭。
 
-当前 runtime 方面，beta.85 的 **Off loader proof** 已经可用：在 v0.107.0 / RitsuLib 0.4.16 下，25/25 ModPatcher patches applied，Sts1Events default Off，main menu reached，audit clean。 但同一份文档明确说：这不能证明 CanaryOnly、AdditiveBatch1、gameplay、save-load、replacement、multiplayer 或 QA。
+当前 runtime 方面，beta.85 的 **Off loader proof** 和 **CanaryOnly loader proof** 已经可用：在 v0.107.0 / RitsuLib 0.4.16 下，Off 25/25 ModPatcher patches applied，Sts1Events default Off，main menu reached，audit clean；CanaryOnly retained verifiers 证明 4 event types / 6 registration calls。 但同一份文档明确说：这不能证明 AdditiveBatch1、gameplay、save-load、replacement、multiplayer 或 QA。
+
+## 2026-06-18 Current Override
+
+Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85 Off and CanaryOnly loader proof exists, and current beta.86 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`. Any older lines above or below that describe CanaryOnly/AdditiveBatch1 proof as beta.85 pending, beta.85 blocked, or the next active runtime target are historical working notes only. Gameplay, Mod Settings UI, save-load, replacement, multiplayer, QA, release, and handoff proof remain pending, and the same-repo validation pause still forbids starting build/test/publish/package/runtime/stage/commit/push work from this thread.
 
 ---
 
@@ -17,8 +21,8 @@
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | Validation truth             | 6 月 15 只做 pause-safe static verification；之前 beta.85 split validation 记录 build/test/artifact lanes 通过。                                              | **部分通过**   |
 | v0.107.0 Off loader proof    | beta.85 Off loader proof clean，25/25 patches，Sts1Events default Off。                                                                               | **通过**     |
-| CanaryOnly current proof     | runtime checklist 明确 CanaryOnly 当前是 pending；历史 K1 证明旧 4 canary registrations，但需在 beta.85 / v0.107.0 重跑，当前期望为 4 event types / 6 registration calls。 | **未完成**    |
-| AdditiveBatch1 current proof | 当前 pending；历史 proof 是旧 10 event types / 11 calls，当前 source 期望 10 event types / 14 calls。                                                           | **未完成**    |
+| CanaryOnly current proof     | beta.85 / v0.107.0 retained verifier packet 已证明 4 event types / 6 registration calls；这只是 loader proof，不是 gameplay proof。 | **通过（loader only）**    |
+| AdditiveBatch1 current proof | 当前 blocked；beta.85 evidence 到达 main menu 且 audit clean，但 retained verifier 只看到 13 registered-event lines，current source 期望 10 event types / 14 calls。                                                           | **未完成**    |
 | Gameplay proof               | Mod Settings UI、basic gameplay、save-load、multiplayer 全部 pending。                                                                                   | **未完成**    |
 | Independent QA               | 当前 gate map 仍把 QA / release / handoff 留为 pending 或 blocked。                                                                                        | **未完成**    |
 | Batch 4c                     | 只允许 candidate review；monthly spec 明确 Batch 4c 是 proposal-only，迁移需要 owner approval 和 fresh validation。                                              | **不能执行迁移** |
@@ -50,9 +54,9 @@
 
 ## Step 3 — CanaryOnly enabled-mode proof
 
-**Observation:** current checklist 明确 CanaryOnly 当前还是 pending；历史 K1 smoke 只证明旧 4 canary registrations，必须在 beta.85 / v0.107.0 重跑，当前期望是 4 event types / 6 registration calls。
+**Observation:** current checklist 现在记录 CanaryOnly 已由 beta.85 / v0.107.0 retained verifier packet 证明 4 event types / 6 registration calls；历史 K1 smoke 仍只能作为旧 evidence，不是当前依据。
 
-**Inference:** 不能把历史 CanaryOnly proof 当作当前 beta.85 proof。
+**Inference:** 可以把当前 beta.85 CanaryOnly packet 当作 loader proof，但不能把它当作 gameplay、save-load、render、replacement、multiplayer 或 QA proof。
 
 **Verdict:** **NOT COMPLETE。**
 
@@ -104,7 +108,7 @@
 
 * **Severity:** 4
 * **Priority:** P0
-* **Observation:** 当前 beta.85 Off proof 通过，但 CanaryOnly 和 AdditiveBatch1 仍是 current pending；历史 proof 不适用当前 expected shape。
+* **Observation:** 当前 beta.85 Off proof 和 CanaryOnly proof 通过，但 AdditiveBatch1 仍是 blocked/current pending；历史 proof 不适用当前 expected shape。
 * **Impact:** Sts1Events 不能进入 current tester-ready，AdditiveBatch1 也不能进入 staging claim。
 * **Recommendation:** 下一次 controlled runtime lane 先跑 CanaryOnly，再跑 AdditiveBatch1。
 * **Acceptance:** 产生 `enabled-mode-log-check.json` 和 `runtime-evidence-packet-check.json`，CanaryOnly = 4 types / 6 calls，AdditiveBatch1 = 10 types / 14 calls。

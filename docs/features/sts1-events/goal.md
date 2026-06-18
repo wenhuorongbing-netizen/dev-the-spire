@@ -7,9 +7,9 @@ the Spire Plus mod (`EZMicroBalance`) and prove a playable StS1-like event
 experience in Slay the Spire 2. Current source status is a gated prototype, not
 runtime gameplay proof.
 
-## Current Boundary (Revision M / beta.85)
+## Current Boundary (Revision M / beta.86)
 
-This goal is not complete. Current beta.85 `v0.107.0` proof covers default-Off loader startup and patch application only. It does not prove CanaryOnly, AdditiveBatch1, event gameplay, save-load, replacement-pool behavior, image/render, multiplayer, QA, build/publish handoff, or full parity. Historical `v0.106.1` CanaryOnly/AdditiveBatch1 loader evidence must stay historical until fresh `v0.107.0` evidence exists.
+This goal is not complete. Current beta.85 `v0.107.0` proof covers default-Off loader startup/patch application and CanaryOnly enabled-mode loader registration; current beta.86 proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` covers AdditiveBatch1 loader/registration shape with 10 event types / 14 registration calls. These are loader/registration proofs only. They do not prove event gameplay, save-load, replacement-pool behavior, image/render, multiplayer, QA, build/publish handoff, or full parity. Historical `v0.106.1` CanaryOnly/AdditiveBatch1 loader evidence must stay historical, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
 
 ## Success Criteria
 

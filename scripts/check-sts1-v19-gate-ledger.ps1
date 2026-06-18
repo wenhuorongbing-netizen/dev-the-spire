@@ -74,6 +74,7 @@ $expectedIds = @(0..76 | ForEach-Object { "O$_" })
 $actualIds = @($rows | Select-Object -ExpandProperty gate_id)
 $allowedStatuses = @(
     'historical-pass-current-paused',
+    'previous-package-pass',
     'static-pass',
     'current-pass',
     'current-pending',
@@ -97,7 +98,7 @@ $expectedStatuses = @{
     O10 = 'current-pending'
     O11 = 'static-pass'
     O12 = 'static-pass'
-    O13 = 'current-pass'
+    O13 = 'previous-package-pass'
     O14 = 'static-pass'
     O15 = 'static-pass'
     O16 = 'static-pass'
@@ -109,7 +110,7 @@ $expectedStatuses = @{
     O22 = 'current-pass'
     O23 = 'current-pass'
     O24 = 'current-pass'
-    O25 = 'current-pending'
+    O25 = 'previous-package-pass'
     O26 = 'blocked'
     O27 = 'blocked'
     O28 = 'blocked'
@@ -117,13 +118,13 @@ $expectedStatuses = @{
     O30 = 'static-pass'
     O31 = 'blocked'
     O32 = 'blocked'
-    O33 = 'current-pending'
+    O33 = 'current-pass'
     O34 = 'blocked'
     O35 = 'blocked'
     O36 = 'blocked'
     O37 = 'blocked'
     O38 = 'blocked'
-    O39 = 'blocked'
+    O39 = 'current-pass'
     O40 = 'blocked'
     O41 = 'blocked'
     O42 = 'blocked'
@@ -184,16 +185,16 @@ $unknownStatuses = @($rows | Where-Object { $allowedStatuses -notcontains $_.cur
 Add-Check -Name 'all_statuses_allowed' -Passed ($unknownStatuses.Count -eq 0) -Detail "unknown statuses: $((@($unknownStatuses | Select-Object -ExpandProperty current_status -Unique)) -join ',')"
 
 $rowContentNeedles = @(
-    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.85 baseline; current dirty worktree exists' },
+    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline; current dirty worktree exists' },
     [pscustomobject]@{ GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after coordination pause' },
     [pscustomobject]@{ GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records split lanes 475 / 0 / 21 / 496' },
     [pscustomobject]@{ GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output' },
-    [pscustomobject]@{ GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.85 zero-warning validation' },
+    [pscustomobject]@{ GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 zero-warning validation' },
     [pscustomobject]@{ GateId = 'O5'; Field = 'next_action'; Needle = 'Rerun dotnet format after coordination pause' },
     [pscustomobject]@{ GateId = 'O6'; Field = 'evidence'; Needle = 'git diff --check is static and rerun during coordination pause' },
     [pscustomobject]@{ GateId = 'O7'; Field = 'next_action'; Needle = 'Refresh patch inventory after coordination pause' },
     [pscustomobject]@{ GateId = 'O8'; Field = 'next_action'; Needle = 'Refresh classifier after coordination pause' },
-    [pscustomobject]@{ GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE' },
+    [pscustomobject]@{ GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA 3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE' },
     [pscustomobject]@{ GateId = 'O10'; Field = 'next_action'; Needle = 'Owner/agent must classify exact scope before commit or handoff' },
     [pscustomobject]@{ GateId = 'O11'; Field = 'requirement'; Needle = 'Status board current and no generic Done' },
     [pscustomobject]@{ GateId = 'O12'; Field = 'requirement'; Needle = 'Act mapping' },
@@ -201,9 +202,9 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O12'; Field = 'evidence'; Needle = '10 types / 14 calls' },
     [pscustomobject]@{ GateId = 'O13'; Field = 'next_action'; Needle = 'Do not extend Off proof to enabled modes' },
     [pscustomobject]@{ GateId = 'O14'; Field = 'requirement'; Needle = 'CanaryOnly source identity exact 4 event types / 6 calls' },
-    [pscustomobject]@{ GateId = 'O14'; Field = 'next_action'; Needle = 'Fresh v0.107 CanaryOnly runtime proof still required' },
+    [pscustomobject]@{ GateId = 'O14'; Field = 'next_action'; Needle = 'Keep source identity aligned with runtime verifier expectations' },
     [pscustomobject]@{ GateId = 'O15'; Field = 'requirement'; Needle = 'AdditiveBatch1 source identity exact 10 types / 14 calls' },
-    [pscustomobject]@{ GateId = 'O15'; Field = 'next_action'; Needle = 'Fresh v0.107 AdditiveBatch1 runtime proof still required' },
+    [pscustomobject]@{ GateId = 'O15'; Field = 'next_action'; Needle = 'Keep source identity aligned with runtime verifier expectations' },
     [pscustomobject]@{ GateId = 'O16'; Field = 'requirement'; Needle = 'AdditiveAllDraft unsafe gate source guarded' },
     [pscustomobject]@{ GateId = 'O17'; Field = 'next_action'; Needle = 'Runtime replacement proof still required' },
     [pscustomobject]@{ GateId = 'O18'; Field = 'requirement'; Needle = 'Per-event spec registration notes current' },
@@ -211,17 +212,18 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O20'; Field = 'evidence'; Needle = 'check-sts1-event-static-suite.ps1' },
     [pscustomobject]@{ GateId = 'O21'; Field = 'requirement'; Needle = 'Current v0.107 game path and dependency path recorded' },
     [pscustomobject]@{ GateId = 'O21'; Field = 'evidence'; Needle = 'v0.107.0' },
-    [pscustomobject]@{ GateId = 'O21'; Field = 'evidence'; Needle = 'beta.85' },
+    [pscustomobject]@{ GateId = 'O21'; Field = 'evidence'; Needle = 'beta.86' },
     [pscustomobject]@{ GateId = 'O22'; Field = 'requirement'; Needle = 'STS2-RitsuLib v0.4.16 with lib/0.107.0 installed' },
-    [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = '.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/godot.log.after-launch' },
+    [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = '.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/godot.log.after-launch' },
     [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = 'v0.107.0' },
-    [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = 'v0.1.0-private-beta.85' },
-    [pscustomobject]@{ GateId = 'O24'; Field = 'evidence'; Needle = 'runtime-evidence-packet-check.json checks=34 mismatches=0 nested log verifier checks=10 mismatches=0' },
-    [pscustomobject]@{ GateId = 'O24'; Field = 'evidence'; Needle = 'default-Off only' },
-    [pscustomobject]@{ GateId = 'O24'; Field = 'next_action'; Needle = 'Preserve as default-Off only' },
-    [pscustomobject]@{ GateId = 'O25'; Field = 'requirement'; Needle = 'Current v0.107 CanaryOnly enabled-mode smoke exact 4 event types / 6 calls' },
-    [pscustomobject]@{ GateId = 'O25'; Field = 'evidence'; Needle = 'No beta.85 CanaryOnly evidence packet exists for v0.107.0' },
-    [pscustomobject]@{ GateId = 'O25'; Field = 'next_action'; Needle = 'Capture fresh CanaryOnly smoke after coordination pause' },
+    [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = 'v0.1.0-private-beta.86' },
+    [pscustomobject]@{ GateId = 'O24'; Field = 'evidence'; Needle = 'runtime-evidence-packet-check.json checks=45 mismatches=0' },
+    [pscustomobject]@{ GateId = 'O24'; Field = 'evidence'; Needle = 'enabled-mode log verifier checks=21 mismatches=0' },
+    [pscustomobject]@{ GateId = 'O24'; Field = 'next_action'; Needle = 'Preserve as AdditiveBatch1 loader proof only' },
+    [pscustomobject]@{ GateId = 'O25'; Field = 'requirement'; Needle = 'Retained v0.107 CanaryOnly enabled-mode smoke exact 4 event types / 6 calls' },
+    [pscustomobject]@{ GateId = 'O25'; Field = 'evidence'; Needle = '.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/godot.log.after-launch' },
+    [pscustomobject]@{ GateId = 'O25'; Field = 'evidence'; Needle = 'enabled-mode-log-check.json checks=20 mismatches=0' },
+    [pscustomobject]@{ GateId = 'O25'; Field = 'next_action'; Needle = 'Preserve as beta.85 CanaryOnly loader proof only' },
     [pscustomobject]@{ GateId = 'O26'; Field = 'requirement'; Needle = 'Big Fish runtime screenshot/result proof' },
     [pscustomobject]@{ GateId = 'O26'; Field = 'evidence'; Needle = 'No current encounter screenshot or result log' },
     [pscustomobject]@{ GateId = 'O27'; Field = 'requirement'; Needle = 'Golden Idol runtime screenshot/result proof' },
@@ -237,8 +239,8 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O32'; Field = 'requirement'; Needle = 'Canary pre/post state evidence' },
     [pscustomobject]@{ GateId = 'O32'; Field = 'evidence'; Needle = 'No current pre/post state evidence' },
     [pscustomobject]@{ GateId = 'O33'; Field = 'requirement'; Needle = 'Current v0.107 AdditiveBatch1 enabled-mode smoke exact 10 types / 14 calls' },
-    [pscustomobject]@{ GateId = 'O33'; Field = 'evidence'; Needle = 'No beta.85 AdditiveBatch1 evidence packet exists for v0.107.0' },
-    [pscustomobject]@{ GateId = 'O33'; Field = 'next_action'; Needle = 'Capture fresh AdditiveBatch1 smoke after coordination pause' },
+    [pscustomobject]@{ GateId = 'O33'; Field = 'evidence'; Needle = 'enabled-mode-log-check.json checks=21 mismatches=0' },
+    [pscustomobject]@{ GateId = 'O33'; Field = 'next_action'; Needle = 'Loader-registration proof only; gameplay/render/save-load rows remain separate' },
     [pscustomobject]@{ GateId = 'O34'; Field = 'requirement'; Needle = 'Canary save/load proof' },
     [pscustomobject]@{ GateId = 'O34'; Field = 'evidence'; Needle = 'No save/load evidence' },
     [pscustomobject]@{ GateId = 'O35'; Field = 'requirement'; Needle = 'Canary EN render proof' },
@@ -250,7 +252,7 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O38'; Field = 'requirement'; Needle = 'Canary parity-gap disposition' },
     [pscustomobject]@{ GateId = 'O38'; Field = 'evidence'; Needle = 'Golden Idol relic substitute and image gaps remain non-parity' },
     [pscustomobject]@{ GateId = 'O39'; Field = 'requirement'; Needle = 'Canary runtime audit packet complete' },
-    [pscustomobject]@{ GateId = 'O39'; Field = 'evidence'; Needle = 'No current CanaryOnly packet' },
+    [pscustomobject]@{ GateId = 'O39'; Field = 'evidence'; Needle = 'runtime-evidence-packet-check.json checks=45 mismatches=0' },
     [pscustomobject]@{ GateId = 'O40'; Field = 'requirement'; Needle = 'Canary gameplay notes integrated into docs' },
     [pscustomobject]@{ GateId = 'O40'; Field = 'evidence'; Needle = 'No current gameplay evidence to summarize' },
     [pscustomobject]@{ GateId = 'O41'; Field = 'requirement'; Needle = 'Canary owner/QA acceptance' },
@@ -274,9 +276,9 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O50'; Field = 'requirement'; Needle = 'Simple batch image/license/render decision' },
     [pscustomobject]@{ GateId = 'O50'; Field = 'evidence'; Needle = 'No redistributable StS1 event art decision' },
     [pscustomobject]@{ GateId = 'O51'; Field = 'requirement'; Needle = 'Simple batch runtime audit packet complete' },
-    [pscustomobject]@{ GateId = 'O51'; Field = 'evidence'; Needle = 'No current AdditiveBatch1 packet' },
+    [pscustomobject]@{ GateId = 'O51'; Field = 'evidence'; Needle = 'Clean AdditiveBatch1 loader packet exists but no simple-batch gameplay packet' },
     [pscustomobject]@{ GateId = 'O52'; Field = 'requirement'; Needle = 'Simple batch independent QA' },
-    [pscustomobject]@{ GateId = 'O52'; Field = 'evidence'; Needle = 'QA impossible before runtime proof' },
+    [pscustomobject]@{ GateId = 'O52'; Field = 'evidence'; Needle = 'QA impossible before gameplay proof' },
     [pscustomobject]@{ GateId = 'O53'; Field = 'requirement'; Needle = 'ReplacementPrototype source gate present' },
     [pscustomobject]@{ GateId = 'O53'; Field = 'evidence'; Needle = 'feature-gate checker and replacement source' },
     [pscustomobject]@{ GateId = 'O53'; Field = 'next_action'; Needle = 'Keep debug/unsafe gate' },
@@ -300,7 +302,7 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O64'; Field = 'evidence'; Needle = 'No current ZHS runtime screenshots' },
     [pscustomobject]@{ GateId = 'O65'; Field = 'evidence'; Needle = 'No independent QA after current runtime evidence' },
     [pscustomobject]@{ GateId = 'O66'; Field = 'evidence'; Needle = 'docs/reviews/current-validation.md references v19 map' },
-    [pscustomobject]@{ GateId = 'O67'; Field = 'evidence'; Needle = 'status-board records current Off-only proof' },
+    [pscustomobject]@{ GateId = 'O67'; Field = 'evidence'; Needle = 'status-board records beta.86 AdditiveBatch1 proof plus beta.85 Off/CanaryOnly previous-package context' },
     [pscustomobject]@{ GateId = 'O68'; Field = 'evidence'; Needle = 'hard-stop report records coordination blocker' },
     [pscustomobject]@{ GateId = 'O69'; Field = 'evidence'; Needle = 'private-beta handoff references v19 map' },
     [pscustomobject]@{ GateId = 'O70'; Field = 'evidence'; Needle = 'release checklist references v19 map' },
@@ -323,6 +325,7 @@ $claimText = ($rows | ForEach-Object { "$($_.current_status) $($_.evidence) $($_
 Add-Check -Name 'no_green_or_done_status_claims' -Passed (-not [regex]::IsMatch($claimText, '\b(GREEN|Done|release-ready|live-ready)\b', [System.Text.RegularExpressions.RegexOptions]::IgnoreCase)) -Detail 'ledger must not contain green/done/release-ready/live-ready claims'
 
 $blockedRows = @($rows | Where-Object { $_.current_status -eq 'blocked' })
+$previousPackageRows = @($rows | Where-Object { $_.current_status -eq 'previous-package-pass' })
 $currentPendingRows = @($rows | Where-Object { $_.current_status -eq 'current-pending' })
 $currentPassRows = @($rows | Where-Object { $_.current_status -eq 'current-pass' })
 $staticPassRows = @($rows | Where-Object { $_.current_status -eq 'static-pass' })
@@ -331,9 +334,10 @@ $documentationRows = @($rows | Where-Object { $_.current_status -eq 'documentati
 $knownGapRows = @($rows | Where-Object { $_.current_status -eq 'known-gap' })
 $historicalPausedRows = @($rows | Where-Object { $_.current_status -eq 'historical-pass-current-paused' })
 
-Add-Check -Name 'blocked_gate_count' -Passed ($blockedRows.Count -eq 32) -Detail "expected 32 blocked gates, found $($blockedRows.Count)"
-Add-Check -Name 'current_pending_gate_count' -Passed ($currentPendingRows.Count -eq 7) -Detail "expected 7 current-pending gates, found $($currentPendingRows.Count)"
-Add-Check -Name 'current_pass_gate_count' -Passed ($currentPassRows.Count -eq 5) -Detail "expected 5 current-pass gates, found $($currentPassRows.Count)"
+Add-Check -Name 'blocked_gate_count' -Passed ($blockedRows.Count -eq 31) -Detail "expected 31 blocked gates, found $($blockedRows.Count)"
+Add-Check -Name 'previous_package_gate_count' -Passed ($previousPackageRows.Count -eq 2) -Detail "expected 2 previous-package-pass gates, found $($previousPackageRows.Count)"
+Add-Check -Name 'current_pending_gate_count' -Passed ($currentPendingRows.Count -eq 5) -Detail "expected 5 current-pending gates, found $($currentPendingRows.Count)"
+Add-Check -Name 'current_pass_gate_count' -Passed ($currentPassRows.Count -eq 6) -Detail "expected 6 current-pass gates, found $($currentPassRows.Count)"
 Add-Check -Name 'static_pass_gate_count' -Passed ($staticPassRows.Count -eq 15) -Detail "expected 15 static-pass gates, found $($staticPassRows.Count)"
 Add-Check -Name 'source_guarded_gate_count' -Passed ($sourceGuardedRows.Count -eq 2) -Detail "expected 2 source-guarded gates, found $($sourceGuardedRows.Count)"
 Add-Check -Name 'documentation_gate_count' -Passed ($documentationRows.Count -eq 6) -Detail "expected 6 documentation-in-progress gates, found $($documentationRows.Count)"
@@ -344,14 +348,17 @@ $expectedBlockedGateIds = @(
     @(26..29 | ForEach-Object { "O$_" })
     'O31'
     'O32'
-    @(34..41 | ForEach-Object { "O$_" })
+    @(34..38 | ForEach-Object { "O$_" })
+    'O40'
+    'O41'
     @(42..52 | ForEach-Object { "O$_" })
     @(54..58 | ForEach-Object { "O$_" })
     'O64'
     'O75'
 )
-$expectedCurrentPendingGateIds = @('O10', 'O25', 'O33', 'O65', 'O72', 'O73', 'O74')
-$expectedCurrentPassGateIds = @('O13', 'O21', 'O22', 'O23', 'O24')
+$expectedCurrentPendingGateIds = @('O10', 'O65', 'O72', 'O73', 'O74')
+$expectedPreviousPackageGateIds = @('O13', 'O25')
+$expectedCurrentPassGateIds = @('O21', 'O22', 'O23', 'O24', 'O33', 'O39')
 $expectedStaticPassGateIds = @('O6', 'O11', 'O12', 'O14', 'O15', 'O16', 'O18', 'O20', 'O30', 'O59', 'O60', 'O61', 'O62', 'O63', 'O76')
 $expectedSourceGuardedGateIds = @('O17', 'O53')
 $expectedDocumentationGateIds = @('O66', 'O67', 'O68', 'O69', 'O70', 'O71')
@@ -359,6 +366,7 @@ $expectedKnownGapGateIds = @('O19')
 $expectedHistoricalPausedGateIds = @('O0', 'O1', 'O2', 'O3', 'O4', 'O5', 'O7', 'O8', 'O9')
 
 Add-GateIdSetCheck -Name 'blocked_gate_ids' -RowsForStatus $blockedRows -ExpectedIds $expectedBlockedGateIds
+Add-GateIdSetCheck -Name 'previous_package_gate_ids' -RowsForStatus $previousPackageRows -ExpectedIds $expectedPreviousPackageGateIds
 Add-GateIdSetCheck -Name 'current_pending_gate_ids' -RowsForStatus $currentPendingRows -ExpectedIds $expectedCurrentPendingGateIds
 Add-GateIdSetCheck -Name 'current_pass_gate_ids' -RowsForStatus $currentPassRows -ExpectedIds $expectedCurrentPassGateIds
 Add-GateIdSetCheck -Name 'static_pass_gate_ids' -RowsForStatus $staticPassRows -ExpectedIds $expectedStaticPassGateIds
@@ -370,6 +378,7 @@ Add-GateIdSetCheck -Name 'historical_paused_gate_ids' -RowsForStatus $historical
 Write-Output "ledger_path=$resolvedLedger"
 Write-Output "ledger_rows=$($rows.Count)"
 Write-Output "blocked_gates=$($blockedRows.Count)"
+Write-Output "previous_package_gates=$($previousPackageRows.Count)"
 Write-Output "current_pending_gates=$($currentPendingRows.Count)"
 Write-Output "current_pass_gates=$($currentPassRows.Count)"
 Write-Output "static_pass_gates=$($staticPassRows.Count)"

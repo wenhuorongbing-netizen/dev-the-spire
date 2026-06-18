@@ -2,9 +2,9 @@
 
 This guide explains how to clone this private repository on another Windows machine and recreate the local-only development environment.
 
-## 2026-06-11 Revision M Current Boundary
+## 2026-06-18 Revision M Current Boundary
 
-The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.0` with BaseLib `v3.1.4`, RitsuLib `v0.4.16`, and beta.85 default-Off loader proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`. That proof covers startup/default-Off patch application only; remote setup, CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
+The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.0` with BaseLib `v3.1.4`, RitsuLib `v0.4.16`, previous-package beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`, previous-package beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`, and current beta.86 AdditiveBatch1 loader/registration proof at `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
 ## Baseline
 

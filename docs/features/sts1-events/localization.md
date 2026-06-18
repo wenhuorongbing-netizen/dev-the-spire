@@ -65,7 +65,7 @@ Impact split:
 
 Do not add these resource keys in isolation during a validation pause. Adding them changes player-visible localization resources and therefore requires package versioning, build/publish/package validation, and updated handoff docs before delivery. The closure plan separates the one direct enabled-mode blocker from the remaining 32 later/blocked keys so a future validated pass can choose either a minimal unblocker or full source-reference closure.
 
-Closing only `STS1_GOLDEN_IDOL.pages.LEAVE.description` remains a localization unblocker; it does not close O25/O33 enabled-mode proof or replace `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` verifier reports.
+Closing only `STS1_GOLDEN_IDOL.pages.LEAVE.description` remains a localization unblocker; it does not prove gameplay, and it does not replace `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` verifier reports.
 
 ## Dynamic Variables
 

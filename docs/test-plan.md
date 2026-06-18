@@ -72,6 +72,85 @@ Required artifact checks after publish:
 9. Start a run and reach Ancient rewards.
 10. Inspect `godot.log` for `EZMicroBalance`, `BaseLib`, old scaffold mod names, `error`, and `exception`; specifically confirm no `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` appears after opening the card encyclopedia.
 
+## Runtime Monkey Stability Lane
+
+Use `docs/testing/runtime-monkey-stability.md` and
+`scripts/run-spire-plus-monkey-stability.ps1` for long-run stability planning
+and controlled launch loops.
+
+Dry-run plan, no game launch:
+
+```powershell
+.\scripts\check-local-godot-source-workspace.ps1
+.\scripts\run-spire-plus-monkey-stability.ps1 `
+  -Iterations 1000 `
+  -Scenario AncientUiPlusVakuuFight `
+  -CommandSelectionMode RoundRobin
+```
+
+The source-workspace checker is expected to warn when local `source code/`
+metadata does not match the installed game. Use
+`-RequireCurrentSourceSnapshot -FailOnMismatch` only when a fresh recovered
+source snapshot is required for the task.
+
+Small controlled smoke, only when a live validation lane is assigned:
+
+```powershell
+.\scripts\run-spire-plus-monkey-stability.ps1 `
+  -Scenario AncientUiSmoke `
+  -Iterations 5 `
+  -Launch `
+  -MoveOtherMods `
+  -MoveCurrentRuns `
+  -MainMenuTimeoutSeconds 240 `
+  -NoLogGrowthTimeoutSeconds 120 `
+  -ObservationIntervalSeconds 2 `
+  -PostCommandSeconds 20
+```
+
+Use `-Scenario VakuuFightSmoke` for the focused hidden Vakuu child-combat
+freeze lane, and `-Scenario AncientUiPlusVakuuFight` when a long run should
+balance normal Ancient UI setup with gated Vakuu fight setup. The default
+command selection mode is round-robin so retained plans record balanced command
+coverage; use `-CommandSelectionMode Random -RandomSeed <seed>` only when
+random distribution is intentional.
+
+The lane fails on main-menu timeout, current `SlayTheSpire2` process
+disappearance, sustained hung/not-responding window samples, pre-main-menu
+`godot.log` growth stall, missing copied `godot.log`, release-blocking
+`audit-godot-log.ps1` hits, package/game/RitsuLib/patch-count expectation
+mismatch, actual StS1 mode verifier mismatch, missing source-backed DevConsole
+command acknowledgement when a command requires one, DevConsole command failure
+when commands are enabled, or restore failure. It writes `monkey-plan.json`,
+per-iteration `iteration-result.json`, retained `runtime-probe-samples.json`,
+retained logs/audits, `sts1-mode-log-check.json`, and a `monkey-summary.json`
+under `.tools/runtime-evidence/`. The runner records a pre-launch log baseline
+and ignores pre-existing game processes so stale sessions cannot prove a new
+iteration.
+
+After a launched run, check the retained packet without launching the game:
+
+```powershell
+.\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
+  -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
+  -ExpectedIterations 5 `
+  -ExpectedPackageVersion v0.1.0-private-beta.86 `
+  -ExpectedPatchCount 25 `
+  -FailOnMismatch
+```
+
+If the packet fails, triage retained evidence before editing source:
+
+```powershell
+.\scripts\analyze-spire-plus-runtime-failure.ps1 `
+  -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
+  -OutFile .tools\runtime-evidence\<monkey-stability-dir>\runtime-failure-analysis.json
+```
+
+This is stability evidence only. It does not close clicked UI, gameplay,
+save-load, death/failure, co-op, StS1 enabled-mode packet, or release handoff
+rows.
+
 ## Spire Plus Feature Verification Matrix
 
 Detailed execution rows are tracked in `docs/features/ancients-rework-v4/manual-verification-matrix.md`.
@@ -128,7 +207,12 @@ The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings 
 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
-Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes. Installed beta.85 package parity is restored, and the current beta.85 `v0.107.0` Off smoke under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510` reached main menu, applied 25/25 Spire Plus patches, and audited clean. This is loader proof only; current StS1 enabled-mode proof is still missing, with CanaryOnly requiring 4 event types / 6 registration calls and AdditiveBatch1 requiring 10 event types / 14 registration calls before gameplay evidence, handoff, or release-ready claims.
+Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes.
+Installed beta.86 package parity is restored, and current beta.86 `v0.107.0` direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed retained log/packet verifiers with 10 event types / 14 registration calls.
+This is loader/registration proof only; gameplay, clicked UI, save-load, replacement behavior, co-op, QA, and handoff rows remain open.
+The earlier beta.86 Steam-client attempt under `.tools/runtime-evidence/v01070-beta86-additive-batch1-20260618-031043/` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not inherit the transient environment.
+The beta.85 Off/CanaryOnly smokes remain previous-package context, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
+Current RitsuLib logs are class-only for some checks, so gameplay evidence still has to prove actual event behavior directly.
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
 - Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with BaseLib plus Spire Plus.

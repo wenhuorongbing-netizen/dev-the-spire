@@ -1,4 +1,3 @@
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.Gold;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
@@ -58,7 +57,7 @@ internal static partial class MorviBlessingService
         if (player.Gold >= ForbiddenLoanKeepGoldCost)
         {
             await PlayerCmd.LoseGold(ForbiddenLoanKeepGoldCost, player, GoldLossType.Spent);
-            AncientSavedStateFields.MorviBorrowedAncientCard[borrowed] = false;
+            ClearBorrowedAncientCardMarker(borrowed);
             SetProgress(player, progress with { BorrowedSettled = true });
             MainFile.Logger.Info("[Spire Plus] Morvi Forbidden Loan auto-settled after Act 2 boss: paid 180 Gold and kept the borrowed card.");
             return;
@@ -68,20 +67,4 @@ internal static partial class MorviBlessingService
         SetProgress(player, progress with { BorrowedSettled = true });
         MainFile.Logger.Info("[Spire Plus] Morvi Forbidden Loan auto-settled after Act 2 boss: insufficient Gold, removed the borrowed card.");
     }
-
-    private static void ClearBorrowedAncientCards(Player player)
-    {
-        foreach (var card in player.Deck.Cards.Where(card => card.Owner == player))
-        {
-            AncientSavedStateFields.MorviBorrowedAncientCard[card] = false;
-        }
-    }
-
-    private static bool IsBorrowedAncientDeckCard(CardModel card) =>
-        AncientSavedStateFields.MorviBorrowedAncientCard[card];
-
-    private static bool IsBorrowedAncientCombatCard(CardModel card) =>
-        card.DeckVersion is { } deckCard
-            ? AncientSavedStateFields.MorviBorrowedAncientCard[deckCard]
-            : AncientSavedStateFields.MorviBorrowedAncientCard[card];
 }

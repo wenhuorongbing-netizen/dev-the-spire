@@ -1,10 +1,10 @@
 # StS1 Events Test Plan
 
-Current coordination note, 2026-06-11: do not start new `dotnet build`, `dotnet test`, `dotnet publish`, package/release-evidence validation, or game/runtime smoke from a parallel same-repository thread while the migration validation lane is active. Use this plan only after the coordination pause is lifted, or for read-only/static planning. The current hard-stop trace is `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md`.
+Current coordination note, 2026-06-11, v20 trace refreshed 2026-06-17: do not start new `dotnet build`, `dotnet test`, `dotnet publish`, package/release-evidence validation, or game/runtime smoke from a parallel same-repository thread while the migration validation lane is active. Use this plan only after the coordination pause is lifted, or for read-only/static planning. The current v20 hard-stop trace is `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`; the v19 trace remains `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md`.
 
-Current beta.85 proof is limited to default-Off startup and patch application on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.16`. It does not prove CanaryOnly, AdditiveBatch1, event gameplay, save/load, EN/ZHS render, image/license, replacement-pool behavior, multiplayer behavior, or QA.
+Current beta.86 proof covers AdditiveBatch1 enabled-mode startup on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.16`. It does not prove event gameplay, save/load, EN/ZHS render, image/license, replacement-pool behavior, multiplayer behavior, or QA. The retained beta.86 packet passed with 10 observed event types / 14 registered-event lines and exact act/shared tuple parity.
 
-Gate mapping while the pause is active: `O25` (current CanaryOnly smoke), `O33` (current AdditiveBatch1 smoke), `O26-O29` and `O31-O41` (canary gameplay/save-load/render/docs/owner rows), `O42-O52` (simple-batch gameplay/save-load/render/QA rows), `O54-O57` (replacement functional proof), `O58` and `O64` (multiplayer/ZHS runtime rows), and `O65` plus `O72-O75` (independent QA/final handoff rows) remain blocked or current-pending in this thread. `O53` is source-guarded only, `O59-O63` are static classification/safety rows, `O66-O71` are documentation-in-progress rows, and `O76` is a static non-completion invariant; none of those static/documentation rows close runtime or handoff gates.
+Gate mapping after the 2026-06-18 enabled-mode lane: `O33` (current AdditiveBatch1 smoke) is current-pass with retained verifier reports. `O25` (CanaryOnly smoke) remains beta.85 previous-package context, and `O26-O29` plus `O31-O41` (canary gameplay/save-load/render/docs/owner rows), `O42-O52` (simple-batch gameplay/save-load/render/QA rows), `O54-O57` (replacement functional proof), `O58` and `O64` (multiplayer/ZHS runtime rows), and `O65` plus `O72-O75` (independent QA/final handoff rows) remain blocked or current-pending in this thread. `O53` is source-guarded only, `O59-O63` are static classification/safety rows, `O66-O71` are documentation-in-progress rows, and `O76` is a static non-completion invariant; none of those static/documentation rows close runtime or handoff gates.
 
 ## Automated Tests
 
@@ -23,7 +23,7 @@ Verify that every event class has all required localization keys:
 - Every `InitialOptionKey("...")` title/description key
 - Every custom `OptionKey(page, option)` title/description key
 
-Current known gap: `docs/features/sts1-events/localization-source-gap-scan-20260611.md` lists 33 source-referenced keys missing from both EN and ZHS. `STS1_GOLDEN_IDOL.pages.LEAVE.description` affects current CanaryOnly/AdditiveBatch1 directly and should be fixed first. `docs/features/sts1-events/localization-gap-closure-plan.md` records the safe validated resource-pass order. Close the full gap before claiming source-complete localization. Fixing the direct Golden Idol key only removes the missing-key blocker; it does not close O25/O33 or replace the enabled-mode log verifier/runtime evidence packet.
+Current known gap: `docs/features/sts1-events/localization-source-gap-scan-20260611.md` lists 33 source-referenced keys missing from both EN and ZHS. `STS1_GOLDEN_IDOL.pages.LEAVE.description` affects current CanaryOnly/AdditiveBatch1 directly and should be fixed first. `docs/features/sts1-events/localization-gap-closure-plan.md` records the safe validated resource-pass order. Close the full gap before claiming source-complete localization. Fixing the direct Golden Idol key only removes the missing-key blocker; it does not prove gameplay behavior or replace the enabled-mode log verifier/runtime evidence packet.
 
 Static checker:
 
@@ -54,7 +54,7 @@ Reproduce current doc-claim drift coverage with:
 .\scripts\check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 ```
 
-This verifies active current-facing docs keep the `57 / 14` count matrix, beta.85 default-Off-only proof boundary, and current-pending CanaryOnly/AdditiveBatch1 enabled-mode rows.
+This verifies active current-facing docs keep the `57 / 14` count matrix, beta.86 AdditiveBatch1 proof boundary, and current gameplay/handoff rows open.
 
 Reproduce the individual O0-O76 gate-status ledger with:
 
@@ -63,6 +63,14 @@ Reproduce the individual O0-O76 gate-status ledger with:
 ```
 
 The ledger file is `docs/features/sts1-events/v19-gate-ledger.csv`. This verifies every O0-O76 gate has one row and that current runtime/gameplay gates are not accidentally marked as passing.
+
+Reproduce the v20 final-gate overlay for `docs/goals/event.md` O76-O84 with:
+
+```powershell
+.\scripts\check-sts1-v20-final-gate-overlay.ps1 -FailOnMismatch
+```
+
+The overlay file is `docs/features/sts1-events/v20-final-gate-overlay.csv`. This does not replace the v19 O0-O76 ledger; it tracks the v20 final documentation, owner-action, no-unsupported-commit/push, release-claim, final-summary, and next-run boundaries without closing runtime or handoff gates.
 
 Reproduce v19 subagent role coverage with:
 
@@ -138,7 +146,7 @@ This reads the game `release_info.json`, installed `STS2-RitsuLib` manifest and 
 Verify an already-captured helper evidence packet without launching the game:
 
 ```powershell
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode Off -EvidenceDir ".tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile ".tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir ".tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254" -ExpectedPackageVersion v0.1.0-private-beta.86 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile ".tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254\runtime-evidence-packet-check.json" -FailOnMismatch
 ```
 
 Use the same packet checker with `-Mode CanaryOnly` or `-Mode AdditiveBatch1` after future enabled-mode smoke folders exist. This validates the packet shape, StS1 mode environment metadata, and nested log/audit result; it does not launch the game.
@@ -160,11 +168,11 @@ Automated tests and package checks are not gameplay evidence.
 
 Before event screenshots or gameplay proof can count as current evidence:
 
-1. Preserve beta.85 Off proof as default-Off proof only.
-2. Run `.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch` and stop before launching if the installed game, RitsuLib, Spire Plus package, or source-only expected shapes do not match the current beta.85 target.
-3. Run a fresh current `v0.107.0` CanaryOnly smoke and verify 4 event types / 6 registration calls: Big Fish and Golden Idol in both Act 1 buckets, plus The Lab and Divine Fountain as shared events.
-4. Run a fresh current `v0.107.0` AdditiveBatch1 smoke and verify 10 event types / 14 registration calls: Big Fish, Golden Idol, The Cleric, and Shining Light in both Act 1 buckets; shared Divine Fountain, The Lab, Purifier, Golden Shrine, and Old Beggar; plus Upgrade Shrine in Glory.
-5. Only after enabled-mode smoke is clean, capture event encounters, result logs, pre/post state, save/load, EN/ZHS render, and image/license disposition.
+1. Preserve beta.85 Off and CanaryOnly proof as previous-package loader context only.
+2. Run `.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch` and stop before launching if the installed game, RitsuLib, repo/installed Spire Plus package manifests, or source-only expected shapes do not match the retained beta.85 evidence target or a newly documented post-pause package target.
+3. Use `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254` as the fresh current `v0.107.0` AdditiveBatch1 smoke: 10 event types / 14 registration calls, retained log verifier 21 / 0, retained packet verifier 45 / 0.
+4. The first beta.86 Steam-client AdditiveBatch1 attempt at `.tools\runtime-evidence\v01070-beta86-additive-batch1-20260618-031043` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not propagate the transient PowerShell environment. Use direct launch with a temporary `steam_appid.txt` when validating enabled modes if Steam is already running.
+5. Only after the relevant enabled-mode smoke is clean, capture event encounters, result logs, pre/post state, save/load, EN/ZHS render, and image/license disposition.
 
 Use a fresh evidence folder for each mode. Replace `REPLACE_WITH_STEAM_USER_ID` and timestamp placeholders before running:
 
@@ -176,9 +184,9 @@ $evidence = '.tools\runtime-evidence\sts1-canary-v01070-YYYYMMDD-HHMMSS'
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.after-launch" -OutFile "$evidence\godot-log-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.after-launch" -AuditPath "$evidence\godot-log-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.after-launch" -AuditPath "$evidence\godot-log-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.86 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.86 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 
@@ -190,13 +198,15 @@ $evidence = '.tools\runtime-evidence\sts1-additive-batch1-v01070-YYYYMMDD-HHMMSS
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.after-launch" -OutFile "$evidence\godot-log-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.after-launch" -AuditPath "$evidence\godot-log-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.after-launch" -AuditPath "$evidence\godot-log-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.86 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.85 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.86 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.16 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 
-For each smoke, keep `session-state.json`, `settings.save.before`, `game-release-info.json`, `godot.log.after-launch`, `godot-log-audit.json`, `enabled-mode-log-check.json`, `runtime-evidence-packet-check.json`, and `restore-state.json`. Current helper-created `session-state.json` records `Sts1EventModeEnvironment`; the copied-log verifier and packet verifier require explicit `-ExpectedPackageVersion`, `-ExpectedRitsuCompatBranch`, `-ExpectedRitsuLibVersion`, and `-ExpectedGameVersion` checks for enabled-mode evidence, and enabled-mode packet checks must not use `-AllowMissingSessionState` or `-AllowMissingRestoreState`. The packet verifier requires the session StS1 mode metadata to match `CanaryOnly` or `AdditiveBatch1` and rejects unsafe-mode environment leakage. If the log, game release info, or session metadata does not show the requested StS1 mode and runtime target, stop the game and Steam client, clear the environment variable, and rerun in a fresh evidence folder rather than reusing ambiguous evidence. The copied-log verifier requires the observed registered event-line count to match the source-derived registration-call count and the observed event classes to match the source-derived class set; it now prints source-derived registration tuples for review, but current RitsuLib logs are class-only, so Act-bucket tuple proof remains source-derived until future logs or gameplay evidence prove those targets directly. Replace the hardcoded beta.85 package version with the newly built/installed package version after any versioned code, resource, localization, package, or handoff change.
+For each smoke, keep `session-state.json`, `settings.save.before`, `game-release-info.json`, `godot.log.after-launch`, `godot-log-audit.json`, `enabled-mode-log-check.json`, `runtime-evidence-packet-check.json`, and `restore-state.json`. Current helper-created `session-state.json` records `Sts1EventModeEnvironment`; the copied-log verifier and packet verifier require explicit `-ExpectedPackageVersion`, `-ExpectedRitsuCompatBranch`, `-ExpectedRitsuLibVersion`, and `-ExpectedGameVersion` checks for enabled-mode evidence, and enabled-mode packet checks must not use `-AllowMissingSessionState` or `-AllowMissingRestoreState`. The packet verifier requires the session StS1 mode metadata to match `CanaryOnly` or `AdditiveBatch1` and rejects unsafe-mode environment leakage. If the log, game release info, or session metadata does not show the requested StS1 mode and runtime target, stop the game and Steam client, clear the environment variable, and rerun in a fresh evidence folder rather than reusing ambiguous evidence. The copied-log verifier requires the observed registered event-line count to match the source-derived registration-call count, the observed event classes to match the source-derived class set, and observed `Registered act event` / `Registered shared event` tuples to match the source-derived tuple set when tuple detail is present. If future logs lose act/shared tuple detail, Act-bucket proof remains source-derived until gameplay evidence proves those targets directly. Replace the hardcoded beta.86 package version with the newly built/installed package version after any versioned code, resource, localization, package, or handoff change.
+
+Older RitsuLib logs were class-only, so Act-bucket tuple proof for those historical packets remains source-derived. Current beta.86 AdditiveBatch1 direct evidence includes tuple-aware verifier parity, but gameplay evidence is still required before claiming event-pool behavior.
 
 ### Debug Spawn Test (Canary Events)
 

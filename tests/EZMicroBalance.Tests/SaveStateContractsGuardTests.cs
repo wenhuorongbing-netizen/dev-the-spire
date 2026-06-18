@@ -102,6 +102,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBank.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtraction.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionCommit.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionGuard.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"]
             ],
@@ -117,6 +118,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.CombatState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.State.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCards.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCardState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBook.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBookState.cs"],
@@ -133,6 +135,7 @@ public sealed class SaveStateContractsGuardTests
             [
                 ["EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveState.cs"],
+                ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveCombatState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.State.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs"],

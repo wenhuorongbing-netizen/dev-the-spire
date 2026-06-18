@@ -9,7 +9,12 @@ public sealed class RuntimeCrashRegressionGuardTests
     {
         var runHook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRunHook.cs");
         var seedbedCombat = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedCombat.cs");
-        var seedbedState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedbedState.cs");
+        var seedbedPlantingQueue = ReadRepoText(
+            "EZMicroBalanceCode",
+            "Ancients",
+            "Expansion",
+            "Urda",
+            "UrdaBlessingService.SeedbedPlantingQueue.cs");
         var seedbedAfterCardDrawnPatch = ReadRepoText(
             "EZMicroBalanceCode",
             "Ancients",
@@ -22,7 +27,7 @@ public sealed class RuntimeCrashRegressionGuardTests
             "_ = UrdaBlessingService.QueueSeedbedPlantFromHand(card, \"card entered hand\")",
             "UrdaBlessingService.SyncPersistentState(card.Owner)");
         AssertSourceContains(
-            seedbedState,
+            seedbedPlantingQueue,
             "await Task.Yield();",
             "while (IsSeedbedDrawInProgress(player))",
             "!IsSeedbedSeedableCard(card)",

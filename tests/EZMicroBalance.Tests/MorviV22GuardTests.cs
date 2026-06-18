@@ -126,6 +126,7 @@ public sealed class MorviV22GuardTests
     public void MorviSourceConstantsAndStatefulBlessingsMatchV22Numbers()
     {
         var runHook = ReadMorviSource();
+        var forbiddenLoanBorrowedCardState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCardState.cs");
 
         AssertSourceContains(
             runHook,
@@ -141,9 +142,13 @@ public sealed class MorviV22GuardTests
             "CardSelectCmd.FromChooseACardScreen",
             "var addResult = await CardPileCmd.Add(selected, PileType.Deck)",
             "if (!addResult.success)",
-            "AncientSavedStateFields.MorviBorrowedAncientCard[borrowedCard] = true",
+            "MarkBorrowedAncientCard(borrowedCard)",
             "player.RunState.CurrentActIndex == 1",
             "AutoSettleForbiddenLoan");
+        AssertSourceContains(
+            forbiddenLoanBorrowedCardState,
+            "private static void MarkBorrowedAncientCard(CardModel card) =>",
+            "AncientSavedStateFields.MorviBorrowedAncientCard[card] = true");
 
         AssertSourceContains(
             runHook,
@@ -215,6 +220,7 @@ public sealed class MorviV22GuardTests
     {
         var forbiddenLoan = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoan.cs");
         var forbiddenLoanBorrowedCards = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCards.cs");
+        var forbiddenLoanBorrowedCardState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.ForbiddenLoanBorrowedCardState.cs");
         var redInk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.RedInkOverdraft.cs");
         var openBook = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBook.cs");
         var openBookState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.OpenBookState.cs");
@@ -234,7 +240,14 @@ public sealed class MorviV22GuardTests
             forbiddenLoanBorrowedCards,
             "private static async Task ResolveBorrowedAncientPlayCost",
             "private static async Task AutoSettleForbiddenLoan",
-            "private static void ClearBorrowedAncientCards");
+            "ClearBorrowedAncientCardMarker(borrowed)");
+        AssertSourceContains(
+            forbiddenLoanBorrowedCardState,
+            "private static void ClearBorrowedAncientCards",
+            "private static bool IsBorrowedAncientDeckCard",
+            "private static bool IsBorrowedAncientCombatCard",
+            "card.DeckVersion is { } deckCard",
+            "AncientSavedStateFields.MorviBorrowedAncientCard[");
         AssertSourceContains(
             redInk,
             "public static bool CanUseRedInkOverdraft(Player player)",
@@ -309,6 +322,8 @@ public sealed class MorviV22GuardTests
         Assert.DoesNotContain("public static async Task AutoSettleForbiddenLoan", forbiddenLoanBorrowedCards, StringComparison.Ordinal);
         Assert.DoesNotContain("public static async Task DamagePlayerNonlethal", payments, StringComparison.Ordinal);
         Assert.DoesNotContain("ReleaseEvidenceLog.Log(", openBook, StringComparison.Ordinal);
+        Assert.DoesNotContain("AncientSavedStateFields.MorviBorrowedAncientCard[", forbiddenLoan, StringComparison.Ordinal);
+        Assert.DoesNotContain("AncientSavedStateFields.MorviBorrowedAncientCard[", forbiddenLoanBorrowedCards, StringComparison.Ordinal);
     }
 
     [Fact]

@@ -91,21 +91,24 @@ Add-ContainsCheck -Name 'coverage_current_thread_static_only' -Text $coverageTex
 Add-ContainsCheck -Name 'coverage_current_20260615_pause_audit' -Text $coverageText -Needle '2026-06-15 current-proof and coordination-pause wording audit'
 Add-ContainsCheck -Name 'coverage_current_20260617_role_audit' -Text $coverageText -Needle '2026-06-17 subagent role coverage audit against `docs/goals/event.md` and `scripts/check-sts1-v19-subagent-coverage.ps1`'
 Add-ContainsCheck -Name 'coverage_runtime_pause_boundary' -Text $coverageText -Needle 'The current coordination pause allows only read-only/static work'
-Add-ContainsCheck -Name 'coverage_no_runtime_proof_claim' -Text $coverageText -Needle 'These audits do not create CanaryOnly, AdditiveBatch1, gameplay, replacement, multiplayer, or QA proof.'
+Add-ContainsCheck -Name 'coverage_no_runtime_proof_claim' -Text $coverageText -Needle 'These audits did not create loader, gameplay, replacement, multiplayer, or QA proof.'
+Add-ContainsCheck -Name 'coverage_shared_additive_loader_proof' -Text $coverageText -Needle 'later shared validation supplied separate CanaryOnly loader proof and AdditiveBatch1 loader/registration proof.'
 Add-ContainsCheck -Name 'coverage_no_independent_qa_claim' -Text $coverageText -Needle 'Read-only explorer audits are not independent QA/Red-Team acceptance.'
 Add-ContainsCheck -Name 'coverage_no_commit_push_release_authorization' -Text $coverageText -Needle 'This ledger does not authorize commit, push, release, or private-beta readiness claims.'
 Add-ContainsCheck -Name 'coverage_post_pause_packet_checklist' -Text $coverageText -Needle '## Post-Pause Evidence Packet Checklist'
-Add-ContainsCheck -Name 'coverage_packet_checklist_future_only' -Text $coverageText -Needle 'They are not current evidence, and their absence keeps the mapped runtime gates open.'
-Add-ContainsCheck -Name 'coverage_canary_packet_required_files' -Text $coverageText -Needle 'CanaryOnly packet with `session-state.json`, `settings.save.before`, `game-release-info.json`, `godot.log.after-launch`, `godot-log-audit.json`, `enabled-mode-log-check.json`, `runtime-evidence-packet-check.json`, and `restore-state.json`'
-Add-ContainsCheck -Name 'coverage_enabled_log_expected_switches' -Text $coverageText -Needle 'copied-log verifier must use `-ExpectedPackageVersion`, `-ExpectedRitsuCompatBranch`, `-ExpectedRitsuLibVersion`, `-ExpectedGameVersion`, `-OutFile`, and `-FailOnMismatch`'
-Add-ContainsCheck -Name 'coverage_enabled_packet_metadata' -Text $coverageText -Needle 'packet verifier must show matching `Sts1EventModeEnvironment`, explicit package/Ritsu-compat/RitsuLib-version/game-version targets, no unsafe-mode env leakage'
+Add-ContainsCheck -Name 'coverage_packet_checklist_future_only' -Text $coverageText -Needle 'The retained CanaryOnly and AdditiveBatch1 packets are loader evidence only; missing future gameplay packets keep the mapped gameplay, replacement, multiplayer, QA, and handoff gates open.'
+Add-ContainsCheck -Name 'coverage_canary_packet_required_files' -Text $coverageText -Needle 'Retained CanaryOnly packet at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` with `session-state.json`, `settings.save.before`, `game-release-info.json`, `godot.log.after-launch`, `godot-log-audit.json`, `enabled-mode-log-check.json`, `runtime-evidence-packet-check.json`, and `restore-state.json`'
+Add-ContainsCheck -Name 'coverage_enabled_log_expected_switches' -Text $coverageText -Needle 'copied-log verifier used `-ExpectedPackageVersion`, `-ExpectedRitsuCompatBranch`, `-ExpectedRitsuLibVersion`, `-ExpectedGameVersion`, `-OutFile`, and `-FailOnMismatch`'
+Add-ContainsCheck -Name 'coverage_enabled_packet_metadata' -Text $coverageText -Needle 'packet verifier shows matching `Sts1EventModeEnvironment`, explicit package/Ritsu-compat/RitsuLib-version/game-version targets, no unsafe-mode env leakage'
 Add-ContainsCheck -Name 'coverage_enabled_packet_no_legacy_bypass' -Text $coverageText -Needle 'no `-AllowMissingSessionState` / `-AllowMissingRestoreState` bypass'
 Add-ContainsCheck -Name 'coverage_copied_log_class_only_boundary' -Text $coverageText -Needle 'Copied-log proof covers registration-call count and class set; Act-target tuple proof remains source-derived until future logs or gameplay evidence prove those targets directly.'
 Add-ContainsCheck -Name 'coverage_canary_expected_runtime_shape' -Text $coverageText -Needle 'CanaryOnly 4 event types / 6 registration calls'
 Add-ContainsCheck -Name 'coverage_additive_expected_runtime_shape' -Text $coverageText -Needle 'AdditiveBatch1 10 event types / 14 registration calls'
 Add-ContainsCheck -Name 'coverage_canary_gameplay_packet' -Text $coverageText -Needle 'Big Fish, Golden Idol, The Lab, and Divine Fountain screenshots, result logs, pre/post state notes, save-load proof, EN/ZHS render screenshots, and image/license disposition after CanaryOnly proof exists.'
-Add-ContainsCheck -Name 'coverage_simple_batch_gameplay_packet' -Text $coverageText -Needle 'Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light screenshots, result logs, save-load proof, EN/ZHS render screenshots, image/license disposition, and independent QA after AdditiveBatch1 proof exists.'
-Add-ContainsCheck -Name 'coverage_direct_key_not_enabled_mode_proof' -Text $coverageText -Needle 'Closing only the direct Golden Idol key is not O25/O33 proof.'
+Add-ContainsCheck -Name 'coverage_additive_retained_loader_packet' -Text $coverageText -Needle 'Retained AdditiveBatch1 packet at `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`'
+Add-ContainsCheck -Name 'coverage_additive_loader_only_boundary' -Text $coverageText -Needle 'This closes O33 as loader/registration proof only; O51 still requires gameplay packet proof.'
+Add-ContainsCheck -Name 'coverage_simple_batch_gameplay_packet' -Text $coverageText -Needle 'Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light screenshots, result logs, save-load proof, EN/ZHS render screenshots, image/license disposition, and independent QA with AdditiveBatch1 loader proof already retained.'
+Add-ContainsCheck -Name 'coverage_direct_key_not_enabled_mode_proof' -Text $coverageText -Needle 'Closing only the direct Golden Idol key is not O33 AdditiveBatch1 proof or gameplay proof.'
 Add-ContainsCheck -Name 'coverage_replacement_packet' -Text $coverageText -Needle 'Owner-approved debug/unsafe replacement packet proving unknown-room draw, act bucket, event-bag/no-repeat behavior, and save-load stability.'
 Add-ContainsCheck -Name 'coverage_multiplayer_fail_closed_packet' -Text $coverageText -Needle 'Runtime fail-closed multiplayer proof before any multiplayer gameplay claim'
 Add-ContainsCheck -Name 'coverage_qa_after_runtime_packets' -Text $coverageText -Needle 'Independent pass/fail QA only after current runtime/gameplay packets exist'
@@ -120,15 +123,17 @@ foreach ($role in $requiredRoles) {
 $blockedOrPendingRows = @($ledgerRows | Where-Object {
     $_.current_status -in @('blocked', 'current-pending', 'documentation-in-progress', 'known-gap', 'source-guarded')
 })
-$runtimeProofRows = @($ledgerRows | Where-Object { $_.gate_id -in @('O25', 'O33', 'O41', 'O52', 'O58', 'O65', 'O75') })
+$additiveLoaderRow = @($ledgerRows | Where-Object { $_.gate_id -eq 'O33' })
+$runtimeProofRows = @($ledgerRows | Where-Object { $_.gate_id -in @('O41', 'O52', 'O58', 'O65', 'O75') })
 $runtimeProofRowsStillOpen = @($runtimeProofRows | Where-Object { $_.current_status -ne 'current-pass' -and $_.current_status -ne 'static-pass' })
 
-Add-Check -Name 'runtime_subagent_gates_still_open' -Passed ($runtimeProofRowsStillOpen.Count -eq $runtimeProofRows.Count) -Detail 'runtime/QA gates must remain open until evidence exists'
+Add-Check -Name 'additive_loader_gate_current_pass' -Passed ($additiveLoaderRow.Count -eq 1 -and $additiveLoaderRow[0].current_status -eq 'current-pass') -Detail 'O33 must remain current-pass for beta.86 loader/registration proof'
+Add-Check -Name 'runtime_subagent_gates_still_open' -Passed ($runtimeProofRowsStillOpen.Count -eq $runtimeProofRows.Count) -Detail 'gameplay/QA/handoff runtime gates must remain open until evidence exists'
 Add-Check -Name 'ledger_has_open_subagent_related_rows' -Passed ($blockedOrPendingRows.Count -gt 0) -Detail 'ledger must still expose blocked/current-pending rows'
 
 Add-ContainsCheck -Name 'coverage_buildgate_paused' -Text $coverageText -Needle 'BuildGate / Repo Health | runtime-validation-paused'
-Add-ContainsCheck -Name 'coverage_runtime_bootstrap_paused' -Text $coverageText -Needle 'Runtime Environment Bootstrap | runtime-validation-paused'
-Add-ContainsCheck -Name 'coverage_enabled_loader_blocked' -Text $coverageText -Needle 'Enabled-Mode Loader Subagent | runtime-blocked'
+Add-ContainsCheck -Name 'coverage_runtime_bootstrap_paused' -Text $coverageText -Needle 'Runtime Environment Bootstrap | runtime-validation-paused / shared-loader-pass'
+Add-ContainsCheck -Name 'coverage_enabled_loader_shared_pass' -Text $coverageText -Needle 'Enabled-Mode Loader Subagent | shared-loader-pass'
 Add-ContainsCheck -Name 'coverage_canary_runtime_blocked' -Text $coverageText -Needle 'Canary Gameplay Subagent | runtime-blocked'
 Add-ContainsCheck -Name 'coverage_simple_batch_runtime_blocked' -Text $coverageText -Needle 'Simple Batch Gameplay Subagent | runtime-blocked'
 Add-ContainsCheck -Name 'coverage_replacement_runtime_blocked' -Text $coverageText -Needle 'Event Pool / RNG / Save Subagent | runtime-blocked'

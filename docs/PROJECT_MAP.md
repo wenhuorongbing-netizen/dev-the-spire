@@ -57,7 +57,7 @@
 | `docs/architecture/` | Current support | Bounded context, patch boundary, and save-state contract maps. |
 | `docs/month-plan/` | Current support | 30-day plan outputs such as baseline freeze and commit boundaries. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
-| `docs/features/sts1-events/` | Current planning | StS1 events migration: public 52-event baseline tracked; 54 canonical rows, 50 registry identities, 48 model files, and 47 compiling models reconciled. RegisterAll is now 57 calls; AdditiveBatch1 is 10 event types / 14 calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to Act 1 bucket registration. Historical `v0.106.1` loader proof exists, and current `v0.107.0` beta.85 Off loader proof audits clean. Use `v19-gate-evidence-map.md`, `v19-gate-ledger.csv`, and `v19-subagent-coverage.md` for the current O0-O76 gate and subagent split. |
+| `docs/features/sts1-events/` | Current planning | StS1 events migration: public 52-event baseline tracked; 54 canonical rows, 50 registry identities, 48 model files, and 47 compiling models reconciled. RegisterAll is now 57 calls; AdditiveBatch1 is 10 event types / 14 calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to Act 1 bucket registration. Historical `v0.106.1` loader proof exists, and current `v0.107.0` beta.85 Off loader proof audits clean. Use `v19-gate-evidence-map.md`, `v19-gate-ledger.csv`, `v20-final-gate-overlay.csv`, `hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `v19-subagent-coverage.md` for the current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent split. |
 | `EZMicroBalanceCode/Sts1Events/` | Current implementation | StS1 event code: Runtime registry, Shared/Act1/Act2/Act3 event models. |
 | `manifests/` | Current support | StS1 event manifest CSV/JSON and asset manifest for extraction scripts. |
 
@@ -170,7 +170,7 @@ Start at `docs/README.md`.
 | Urda support evidence | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |
 | Preview tools | `docs/features/preview-tools/README.md` |
-| StS1 event prototype | `docs/features/sts1-events/README.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, and `docs/features/sts1-events/v19-subagent-coverage.md` |
+| StS1 event prototype | `docs/features/sts1-events/README.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `docs/features/sts1-events/v19-subagent-coverage.md` |
 | Architecture decision | `docs/architecture-ez-micro-balance.md` |
 | Historical planning | `docs/archive/README.md` |
 

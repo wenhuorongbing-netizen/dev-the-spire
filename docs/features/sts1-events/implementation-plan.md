@@ -1,6 +1,6 @@
 # StS1 Events Implementation Plan
 
-Current boundary, Revision M / beta.85: this roadmap is source planning, not current runtime proof. The only current `v0.107.0` loader evidence is beta.85 default-Off startup/patch application; CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, QA, and handoff proof remain pending. Historical `v0.106.1` enabled-mode loader logs remain history only, and the current source expectation is CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls.
+Current boundary, Revision M / beta.86: this roadmap is source planning, not gameplay proof. Current `v0.107.0` loader evidence covers beta.85 default-Off startup/patch application, beta.85 CanaryOnly 4 event types / 6 registration calls, and beta.86 AdditiveBatch1 10 event types / 14 registration calls under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`. Gameplay, save-load, replacement, multiplayer, image/render, QA, and handoff proof remain pending. Historical `v0.106.1` enabled-mode loader logs remain history only, and the beta.85 AdditiveBatch1 13/14 verifier mismatch remains root-cause history only.
 
 ## Phase 0: Infrastructure (Current)
 

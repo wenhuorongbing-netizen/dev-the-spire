@@ -30,7 +30,9 @@ Historical prompt/spec material lives in `docs/archive/feature-inputs/ascension-
 | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` and `AscensionSelectionRunStartPatches.cs` | A11-A20 lobby selection exposure and run-start gating. |
 | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | A20 boss path/courtyard hooks. |
 | `EZMicroBalanceCode/Ascension/Map/AscensionMapService*.cs` | A11 map extension, A17 deep branches, A20 boss path metadata. |
-| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MarkerSelection.cs` | Stable map marker ordering, Firemarked Elite spacing, and kind assignment. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MarkerSelection.cs` | Generic stable candidate selection for map markers. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MarkerSelection.Firemarks.cs` | Firemarked Elite spacing and optional-route placement. |
+| `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MarkerOrdering.cs` | Stable marker ordering and kind assignment. |
 | `EZMicroBalanceCode/Ascension/Map/AscensionMapService.MapGraphHelpers.cs` | Shared map reachability, rest-row, and route-safety helpers. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.cs` | Combat-time Ascension modifier entrypoints and node metadata refresh. |
 | `EZMicroBalanceCode/Ascension/Combat/AscensionCombatModifierService.Banners*.cs` | A16 Banner Room dispatch, single-enemy fallback, per-banner combat behavior, rewards, and per-turn Banner state. |

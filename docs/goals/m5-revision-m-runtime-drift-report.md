@@ -1,7 +1,7 @@
 # M5 Revision M Runtime Drift Report
 
-Date: 2026-06-11
-Status: Off loader/runtime drift closed for beta.85; live gameplay/release proof still pending.
+Date: 2026-06-18
+Status: Loader/runtime drift closed through beta.86 AdditiveBatch1 registration proof; live gameplay/release proof still pending.
 
 ## Current Truth
 
@@ -12,20 +12,20 @@ Status: Off loader/runtime drift closed for beta.85; live gameplay/release proof
   - ModPatcher property targets use property names with `MethodType.Getter` instead of compiler `get_*` method names.
 - Local RitsuLib XML documentation for compile package `STS2.RitsuLib` `0.3.2` documents `ModPatchTarget(..., HarmonyLib.MethodType)` and says non-normal `MethodType` values resolve through Harmony `AccessTools` helpers.
 - `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/` is useful source-fix smoke context: it reached main menu on game `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and has a clean audit. It still logs Spire Plus as beta.84, so it is source-direction evidence rather than current package proof.
-- Current manifest is dirty at `v0.1.0-private-beta.85`. `PROJECT_STATE.md` records installed beta.85 package parity as passed via `scripts\check-installed-spire-plus-package.ps1`.
-- Current beta.85 Off proof is `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`: the log reports Spire Plus `v0.1.0-private-beta.85`, RitsuLib `0.4.16` with compat branch `0.107.0`, 25/25 Spire Plus ModPatcher patches applied, StS1Events default Off, main menu reached, and a clean `godot-log-audit.json`.
+- Current manifest is dirty at `v0.1.0-private-beta.86`. `PROJECT_STATE.md` records installed beta.86 package parity as passed via `scripts\check-installed-spire-plus-package.ps1`.
+- Current beta.86 AdditiveBatch1 proof is `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/`: the log reports Spire Plus `v0.1.0-private-beta.86`, RitsuLib `0.4.16` with compat branch `0.107.0`, 25/25 Spire Plus ModPatcher patches applied, 10 event types / 14 registration calls, main menu reached, clean `godot-log-audit.json`, retained enabled-mode log verifier 21 / 0, and retained runtime packet verifier 45 / 0. Beta.85 Off/CanaryOnly proof remains previous-package loader context.
 - The checked-in local `source code/` snapshot is not authoritative for `v0.107.0` API drift; installed DLL/API inspection is the deciding source for `Ectoplasm.ModifyGoldGained`, `Vakuu.GenerateInitialOptions`, and canonical getter availability.
 
 ## What This Closes
 
-- The beta.84 package API drift is fixed in the beta.85 loader lane.
-- `EctoplasmGoldGatePatch` no longer throws during mod initialization in the beta.85 Off smoke.
+- The beta.84 package API drift is fixed in the beta.85 Off lane and remains clean in the beta.86 AdditiveBatch1 loader/registration lane.
+- `EctoplasmGoldGatePatch` no longer throws during mod initialization in the retained beta.85 Off smoke or the beta.86 AdditiveBatch1 smoke.
 - The getter ModPatcher targets apply under RitsuLib `v0.4.16` / compat `0.107.0`.
-- Off-mode StS1Events remains disabled by default in the beta.85 Off smoke.
+- AdditiveBatch1 source/runtime registration shape now matches 10 event types / 14 registration calls in the beta.86 direct packet.
 
 ## What Remains Open
 
-- Fresh CanaryOnly and AdditiveBatch1 `v0.107.0` smokes for beta.85 are not recorded.
+- Fresh beta.86 default-Off and CanaryOnly smokes are not recorded; retained beta.85 Off/CanaryOnly evidence is previous-package loader context.
 - Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, and release handoff proof remain pending.
 - Active same-repo `dotnet` / `testhost` processes were observed during the continuation, so do not start overlapping validation lanes. Treat any in-flight validation as external state until it reports back.
 
@@ -36,8 +36,8 @@ For the next validation lane:
 1. Confirm no `dotnet`, `testhost`, `vstest.console`, `MSBuild`, `VBCSCompiler`, `SlayTheSpire2`, or Godot process is active for this repo/runtime lane.
 2. Reconcile any in-flight build/test/package results with this document.
 3. If no current static replay has been recorded for the final dirty worktree, replay static validation.
-4. If StS1 staging proof is needed, run fresh beta.85 CanaryOnly and AdditiveBatch1 smokes.
+4. If StS1 staging proof needs to be refreshed, run fresh beta.86 Off/CanaryOnly loader smokes only after coordination clears; preserve the existing beta.86 AdditiveBatch1 loader/registration packet unless package/source changes require recapture.
 
 ## Stop Line
 
-Current result for Revision M Off runtime drift is complete at loader scope. Do not extend that to runtime-ready, live-ready, or release-ready; those broader claims still require gameplay/manual evidence and any remaining validation lanes.
+Current result for Revision M runtime drift is complete at loader scope. Do not extend that to runtime-ready, live-ready, or release-ready; those broader claims still require gameplay/manual evidence and any remaining validation lanes.

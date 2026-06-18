@@ -27,6 +27,7 @@ Per AGENTS.md hard rules:
 - Original StS1 art may not be committed without confirmed redistribution permission.
 - Acceptable sources are Spire Plus-owned/generated replacement art, local extraction outside the repository, or confirmed redistributable sources.
 - Current approach is no custom StS1 event portrait in tracked files until the asset policy is resolved.
+- Local extraction is local QA evidence only. Extracted original StS1 images must not be included in a tester package, release package, handoff bundle, tracked file, or public artifact unless redistribution permission is confirmed and documented.
 
 ## Per-Event Image Status
 
@@ -88,5 +89,6 @@ No redistributable StS1 art source is confirmed. Runtime-loadable images cannot 
 1. Redistribution permission exists for original StS1 event art.
 2. Spire Plus-owned replacement art is generated or commissioned.
 3. A local extraction path is documented and the extracted art stays outside tracked files.
+4. The owner explicitly accepts non-parity/no-custom-portrait placeholders for the relevant gate.
 
 O12 verdict: blocked. There are no StS1 event images to hash, load, or screenshot in tracked files.

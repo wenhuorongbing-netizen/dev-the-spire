@@ -57,6 +57,7 @@ Invoke-StaticStep -Name 'enabled-log-additive-batch1-expected-shape' -ScriptName
 Invoke-StaticStep -Name 'current-doc-claims' -ScriptName 'check-sts1-event-current-doc-claims.ps1' -Parameters @{ FailOnMismatch = $true }
 Invoke-StaticStep -Name 'static-file-hygiene' -ScriptName 'check-sts1-static-file-hygiene.ps1' -Parameters @{ FailOnMismatch = $true }
 Invoke-StaticStep -Name 'v19-gate-ledger' -ScriptName 'check-sts1-v19-gate-ledger.ps1' -Parameters @{ FailOnMismatch = $true }
+Invoke-StaticStep -Name 'v20-final-gate-overlay' -ScriptName 'check-sts1-v20-final-gate-overlay.ps1' -Parameters @{ FailOnMismatch = $true }
 Invoke-StaticStep -Name 'v19-subagent-coverage' -ScriptName 'check-sts1-v19-subagent-coverage.ps1' -Parameters @{ FailOnMismatch = $true }
 Invoke-StaticStep -Name 'event-spec-registration-notes' -ScriptName 'check-sts1-event-spec-registration-notes.ps1' -Parameters @{ FailOnMismatch = $true }
 Invoke-StaticStep -Name 'feature-gates' -ScriptName 'check-sts1-event-feature-gates.ps1' -Parameters @{ FailOnMismatch = $true }

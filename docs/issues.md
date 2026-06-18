@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-11:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE` |
-| DLL | `F35E2706140AC7B0560FDB950AC479529D4DBA3CA08DA5341FBE987B4106E062` |
-| PCK | `9F1595C7401CACE4E7A4345CCC3CA1E256EBD2615B56A32E5908D61682E024B9` |
-| Manifest | `CE446422CA44864E993A45949C923EDAD516DD703687B990E76CC3BD614207D8` |
-| README_INSTALL | `004F7E2086C336F7804336FFC3FCD4061B0694F06C2B9B55459993C6737A498D` |
+| ZIP | `3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE` |
+| DLL | `B89D89A502BB98950EEAE3E101559FA3E5BA74BFF264BA5D59D43A70A4268EAD` |
+| PCK | `C5619646CEB02FC1D611554EC689CD2F9C81518BED9B6D5CB4CDCE90AED63F75` |
+| Manifest | `ABD6AEAFCF73F7CF74E31D01D4EBD17C667F36B4969724666DFDFC42997AD17E` |
+| README_INSTALL | `65293B1557BEBEE42E4DE1BBF162B23414CC436E6BBF748682D74299C356265D` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -28,15 +28,16 @@
 - `FISSION-EXHAUST-TRIGGERS` P1 source/package-fixed / live-pending: canonical Exhaust path guarded through Fission keyword, `CardCmd.Exhaust(...)`, `AfterCardExhausted(...)`, and Drum/Howl/power/relic listeners.
 - Strict source/BaseLib audit, 2026-05-20: `STRICT-AUDIT-LIVE-EVIDENCE`, `STRICT-AUDIT-VAKUU-FIGHT` P0 open; `STRICT-AUDIT-VAKUU-CULTURE-SAVE`, `STRICT-AUDIT-PATCH-SURFACE`, `STRICT-AUDIT-EVIDENCE-LOG` P1/P2 source-fixed / live-pending.
 ## Engineering governance blockers
-- `GOV-WIP-SPLIT` P0 source-fixed for the committed baseline; the latest pushed migration preflight/governance slice is clean at `f885d64d`, while final handoff must still recapture exact HEAD/worktree status after any later validation or package work.
+- `GOV-WIP-SPLIT` P0 source-fixed for the committed baseline; read latest pushed migration HEAD from `git log -1 --oneline --decorate`, and recapture worktree status before final handoff.
 - `GOV-CI-FIRST-RUN` P2 pending: self-hosted lane exists, but first run evidence is missing; 2026-05-26 API check found 0 completed `Full Local Validation` runs.
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after the beta.85 runtime-fix pass.
-  Phase 2 patch adapter rule started (checklist drafted). StS1Events feature-gated (default Off, guard tests active). Combat events now declare `IsShared`. See `docs/reviews/overnight-run-20260529.md`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean; beta.85 Off smoke reached main menu, applied 25/25 patches, and audited clean.
-  Current StS1 enabled-mode proof remains pending: CanaryOnly 4 types / 6 calls and AdditiveBatch1 10 types / 14 calls are required before gameplay or handoff claims; QA, final clean-worktree recapture, gameplay/UI/save-load/co-op, and handoff remain blocked.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader partly fixed / gameplay pending: historical `v0.106.1` smokes are clean; beta.85 Off and CanaryOnly remain previous-package loader context.
+  Fresh beta.86 AdditiveBatch1 direct proof under `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` reached main menu; applied 25/25 patches, audited clean, and passed retained verifiers with 10 types / 14 calls.
+  The earlier beta.85 AdditiveBatch1 packet remains diagnostic only: it reached main menu and audited clean, but retained verifiers saw 13 registered-event lines versus the current-source 14 expected.
+  Gameplay/UI/save-load/co-op, QA, final clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

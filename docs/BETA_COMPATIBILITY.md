@@ -1,8 +1,8 @@
 # Beta Compatibility
 
-## 2026-06-11 Revision M Current Compatibility Boundary
+## 2026-06-18 Revision M Current Compatibility Boundary
 
-The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.0` with BaseLib `v3.1.4` and RitsuLib `v0.4.16`; beta.85 has fresh default-Off loader proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` with 25/25 Spire Plus patches and a clean audit. Treat that as startup/default-Off proof only: CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, and release-ready compatibility proof remain pending.
+The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.0` with BaseLib `v3.1.4` and RitsuLib `v0.4.16`; beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` and beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` remain previous-package loader context. Current beta.86 AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01070-beta86-additive-batch1-direct-20260618-031254/` with 25/25 Spire Plus patches, a clean audit, 10 event types, and 14 registration calls. Treat these as loader proof only: gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, and release-ready compatibility proof remain pending or blocked.
 
 ## Tested Baseline
 
@@ -22,7 +22,7 @@ The `v0.106.1` baseline below is historical tested-baseline context. Current loc
 
 ## Compatibility Policy
 
-- Full compatibility is only confirmed for the tested public beta version above. Current `v0.107.0` compatibility evidence is limited to the beta.85 default-Off loader proof noted here.
+- Full compatibility is only confirmed for the tested public beta version above. Current `v0.107.0` compatibility evidence is limited to the beta.85 default-Off/CanaryOnly loader context and beta.86 AdditiveBatch1 loader/registration proof noted here.
 - Do not claim compatibility with future public beta versions until retested.
 - Re-run build, publish, and manual game verification after game, BaseLib, template, or SDK changes.
 - Keep runtime BaseLib and NuGet BaseLib package versions aligned.

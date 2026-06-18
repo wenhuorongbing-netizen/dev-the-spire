@@ -192,7 +192,7 @@ public sealed class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             devEnvironment,
-            "Last attempted default publish: `dotnet publish EZMicroBalance.sln` on 2026-06-11 after the beta.85 runtime-fix package refresh. Result: succeeded against the real installed mods root.",
+            "Last attempted default publish: `dotnet publish EZMicroBalance.sln -m:1` on 2026-06-18 after the beta.86 package/source alignment pass. Result: succeeded against the real installed mods root.",
             "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.",
             "is not the current package-parity source",
             "`E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
@@ -502,7 +502,7 @@ public sealed class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-06-11:",
+            "Current package hashes, 2026-06-18:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -512,13 +512,14 @@ public sealed class DocumentationCompactnessGuardTests
             "`GOV-WIP-SPLIT` P0 source-fixed",
             "`DOC-CONFLICT-GOVERNANCE` P2 source-fixed",
             "`PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending",
-            "latest pushed migration preflight/governance slice is clean at `f885d64d`",
-            "final handoff must still recapture exact HEAD/worktree status",
+            "read latest pushed migration HEAD from `git log -1 --oneline --decorate`",
+            "recapture worktree status before final handoff",
             "## Manual Proof Gates");
         Assert.DoesNotContain("Latest verified package hashes after", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("source-split/refactor passes", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("SERE-TALON/CLAWS-ROUTING", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("SERE-TALON-VISUAL-IDENTITYT P0 source-fixed / package/live-pending", issues, StringComparison.Ordinal);
+        Assert.DoesNotContain("latest pushed migration preflight/governance slice is clean at `f885d64d`", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("current worktree is clean after intentional batches", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("current local Runtime Proof + Governance Closure worktree is dirty", issues, StringComparison.Ordinal);
     }
@@ -541,7 +542,7 @@ public sealed class DocumentationCompactnessGuardTests
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "Current beta.85 evidence should be read from the latest validated HEAD");
+            "Current beta.86 evidence should be read from the latest validated HEAD");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");
@@ -562,7 +563,7 @@ public sealed class DocumentationCompactnessGuardTests
             "OnlySpirePlusIsAnActiveRootModSurface");
         AssertSourceContains(
             docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
-            "avoid copying stale historical commit labels into beta.85 handoff notes");
+            "avoid copying stale historical commit labels into beta.86 handoff notes");
 
         foreach (var staleFragment in new[]
                  {
@@ -907,7 +908,7 @@ public sealed class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.85 package hash is clean",
+            "Fresh loader smoke for the current beta.86 package hash is clean",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,
@@ -1039,7 +1040,7 @@ public sealed class DocumentationCompactnessGuardTests
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
         Assert.Contains("475 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("67 passed / 0 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("67 passed / 2 skipped", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -1053,7 +1054,7 @@ public sealed class DocumentationCompactnessGuardTests
             StringComparison.Ordinal);
         Assert.Contains("current-doc claims passed", checker, StringComparison.Ordinal);
         Assert.Contains("current-doc claims (744|745|746", checker, StringComparison.Ordinal);
-        Assert.Contains("|893|896)", checker, StringComparison.Ordinal);
+        Assert.Contains("|893|896|897|898|914|915)", checker, StringComparison.Ordinal);
     }
 
     [Fact]

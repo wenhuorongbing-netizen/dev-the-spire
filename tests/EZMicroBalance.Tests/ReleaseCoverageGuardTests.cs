@@ -519,7 +519,7 @@ public sealed class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("Current package hashes, 2026-06-11:", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-06-18:", issues, StringComparison.Ordinal);
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
@@ -697,7 +697,7 @@ public sealed class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest pushed cleanup/package evidence baseline", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest pushed migration validation baseline", projectState, StringComparison.Ordinal);
         Assert.Contains("runtime blocker is resolved for loader/patch application", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);

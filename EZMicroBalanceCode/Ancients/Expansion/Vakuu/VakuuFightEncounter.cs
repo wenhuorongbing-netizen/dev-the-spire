@@ -1,4 +1,3 @@
-using System.Globalization;
 using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.Monsters;
@@ -6,7 +5,7 @@ using MegaCrit.Sts2.Core.Rooms;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
+internal sealed partial class EzmbVakuuTrialEncounter : CustomEncounterModel
 {
     public const string VakuuSlot = "Vakuu";
     public const int MaxLocks = 3;
@@ -14,14 +13,6 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
     public const int GoldPerBrokenLock = 50;
     public const int GoldCostPerBloodDebt = 15;
     public const int HpLossPerDebtShortfall = 3;
-
-    private const string BrokenLocksKey = "BrokenLocks";
-    private const string BloodDebtKey = "BloodDebt";
-    private const string DamageRoundKey = "DamageRound";
-    private const string DamageThisRoundKey = "DamageThisRound";
-    private const string DamageLockRoundKey = "DamageLockRound";
-    private const string CashOutOfferedLockKey = "CashOutOfferedLock";
-    private const string CashedOutKey = "CashedOut";
 
     private int brokenLocks;
     private int bloodDebt;
@@ -133,44 +124,4 @@ internal sealed class EzmbVakuuTrialEncounter : CustomEncounterModel
 
     protected override IReadOnlyList<(MonsterModel, string?)> GenerateMonsters() =>
         [(ModelDb.Monster<EzmbVakuuTrialMonster>().ToMutable(), VakuuSlot)];
-
-    public override Dictionary<string, string> SaveCustomState()
-    {
-        return new Dictionary<string, string>
-        {
-            [BrokenLocksKey] = BrokenLocks.ToString(),
-            [BloodDebtKey] = BloodDebt.ToString(),
-            [DamageRoundKey] = DamageRound.ToString(),
-            [DamageThisRoundKey] = DamageThisRound.ToString(CultureInfo.InvariantCulture),
-            [DamageLockRoundKey] = DamageLockRound.ToString(),
-            [CashOutOfferedLockKey] = CashOutOfferedLock.ToString(),
-            [CashedOutKey] = CashedOut ? "1" : "0"
-        };
-    }
-
-    public override void LoadCustomState(Dictionary<string, string> state)
-    {
-        BrokenLocks = ReadInt(state, BrokenLocksKey);
-        BloodDebt = ReadInt(state, BloodDebtKey);
-        DamageRound = ReadInt(state, DamageRoundKey, -1);
-        DamageThisRound = ReadDecimal(state, DamageThisRoundKey);
-        DamageLockRound = ReadInt(state, DamageLockRoundKey, -1);
-        CashOutOfferedLock = ReadInt(state, CashOutOfferedLockKey);
-        CashedOut = ReadBool(state, CashedOutKey);
-    }
-
-    private static int ReadInt(IReadOnlyDictionary<string, string> state, string key, int fallback = 0) =>
-        state.TryGetValue(key, out var value) && int.TryParse(value, out var parsed)
-            ? parsed
-            : fallback;
-
-    private static decimal ReadDecimal(IReadOnlyDictionary<string, string> state, string key) =>
-        state.TryGetValue(key, out var value) &&
-        decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)
-            ? parsed
-            : 0m;
-
-    private static bool ReadBool(IReadOnlyDictionary<string, string> state, string key) =>
-        state.TryGetValue(key, out var value) &&
-        (value == "1" || bool.TryParse(value, out var parsed) && parsed);
 }

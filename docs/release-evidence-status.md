@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE` |
-| DLL | `F35E2706140AC7B0560FDB950AC479529D4DBA3CA08DA5341FBE987B4106E062` |
-| PCK | `9F1595C7401CACE4E7A4345CCC3CA1E256EBD2615B56A32E5908D61682E024B9` |
-| Manifest | `CE446422CA44864E993A45949C923EDAD516DD703687B990E76CC3BD614207D8` |
-| README_INSTALL | `004F7E2086C336F7804336FFC3FCD4061B0694F06C2B9B55459993C6737A498D` |
+| ZIP | `3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE` |
+| DLL | `B89D89A502BB98950EEAE3E101559FA3E5BA74BFF264BA5D59D43A70A4268EAD` |
+| PCK | `C5619646CEB02FC1D611554EC689CD2F9C81518BED9B6D5CB4CDCE90AED63F75` |
+| Manifest | `ABD6AEAFCF73F7CF74E31D01D4EBD17C667F36B4969724666DFDFC42997AD17E` |
+| README_INSTALL | `65293B1557BEBEE42E4DE1BBF162B23414CC436E6BBF748682D74299C356265D` |
 
 ## Automation Summary
 
@@ -22,15 +22,15 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.85 publish/package sync, split no-build tests, installed package parity, opt-in artifact/package tests, and fresh `v0.107.0` beta.85 Off loader smoke pass; gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, real installed package checker, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.86 publish/package sync, installed package parity, runtime preflight, and fresh `v0.107.0` beta.86 AdditiveBatch1 direct loader smoke pass; gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the current beta.85 `v0.107.0` loader smoke audited clean for runtime-blocker proof, while gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the current beta.86 `v0.107.0` AdditiveBatch1 direct loader smoke audited clean for loader/registration proof, while gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Partial | Codex/User | Runtime-blocker proof exists at `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510`: clean `godot.log.after-launch`, clean `godot-log-audit.json`, startup completion, stopped game, and restored mod isolation. To close the formal release-evidence row, add/promote the verifier-required `environment.json`, `package-hashes.json`, and `enabled-mods.txt` alongside this evidence or recapture through the release-evidence collector. |
+| fresh-current-package-loader-smoke | loader | Partial | Codex/User | Loader/registration proof exists at `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`: clean `godot.log.after-launch`, clean `godot-log-audit.json`, startup completion, retained enabled-mode log verifier 21 / 0, and retained runtime packet verifier 45 / 0. To close the formal release-evidence row, add/promote the verifier-required `environment.json`, `package-hashes.json`, and `enabled-mods.txt` alongside this evidence or recapture through the release-evidence collector. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

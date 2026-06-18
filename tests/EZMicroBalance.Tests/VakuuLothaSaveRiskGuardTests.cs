@@ -262,14 +262,45 @@ public sealed class VakuuLothaSaveRiskGuardTests
     public void VakuuEncounterCustomStateUsesCultureInvariantSaveValues()
     {
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
+        var encounterState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.State.cs");
 
         AssertSourceContains(
-            encounter,
+            encounterState,
             "using System.Globalization;",
+            "private const string BrokenLocksKey = \"BrokenLocks\"",
+            "private const string BloodDebtKey = \"BloodDebt\"",
+            "private const string DamageRoundKey = \"DamageRound\"",
+            "private const string DamageThisRoundKey = \"DamageThisRound\"",
+            "private const string DamageLockRoundKey = \"DamageLockRound\"",
+            "private const string CashOutOfferedLockKey = \"CashOutOfferedLock\"",
+            "private const string CashedOutKey = \"CashedOut\"",
+            "public override Dictionary<string, string> SaveCustomState()",
+            "[BrokenLocksKey] = BrokenLocks.ToString()",
+            "[BloodDebtKey] = BloodDebt.ToString()",
+            "[DamageRoundKey] = DamageRound.ToString()",
             "DamageThisRound.ToString(CultureInfo.InvariantCulture)",
-            "decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)");
-        Assert.DoesNotContain("DamageThisRound.ToString()", encounter, StringComparison.Ordinal);
-        Assert.DoesNotContain("decimal.TryParse(value, out var parsed)", encounter, StringComparison.Ordinal);
+            "[DamageLockRoundKey] = DamageLockRound.ToString()",
+            "[CashOutOfferedLockKey] = CashOutOfferedLock.ToString()",
+            "[CashedOutKey] = CashedOut ? \"1\" : \"0\"",
+            "public override void LoadCustomState(Dictionary<string, string> state)",
+            "BrokenLocks = ReadInt(state, BrokenLocksKey)",
+            "BloodDebt = ReadInt(state, BloodDebtKey)",
+            "DamageRound = ReadInt(state, DamageRoundKey, -1)",
+            "DamageThisRound = ReadDecimal(state, DamageThisRoundKey)",
+            "DamageLockRound = ReadInt(state, DamageLockRoundKey, -1)",
+            "CashOutOfferedLock = ReadInt(state, CashOutOfferedLockKey)",
+            "CashedOut = ReadBool(state, CashedOutKey)",
+            "private static int ReadInt(IReadOnlyDictionary<string, string> state, string key, int fallback = 0)",
+            ": fallback",
+            "decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)",
+            ": 0m",
+            "value == \"1\" || bool.TryParse(value, out var parsed) && parsed");
+        AssertSourceContains(encounter, "internal sealed partial class EzmbVakuuTrialEncounter : CustomEncounterModel");
+        Assert.DoesNotContain("using System.Globalization;", encounter, StringComparison.Ordinal);
+        Assert.DoesNotContain("SaveCustomState()", encounter, StringComparison.Ordinal);
+        Assert.DoesNotContain("LoadCustomState(Dictionary<string, string> state)", encounter, StringComparison.Ordinal);
+        Assert.DoesNotContain("DamageThisRound.ToString()", encounterState, StringComparison.Ordinal);
+        Assert.DoesNotContain("decimal.TryParse(value, out var parsed)", encounterState, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -277,6 +308,8 @@ public sealed class VakuuLothaSaveRiskGuardTests
     {
         var runHook = ReadLothaSource();
         var deathReprieve = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieve.cs");
+        var combatState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatState.cs");
+        var deathReprieveCombatState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveCombatState.cs");
         var deathReprieveState = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveState.cs");
         var deathReprieveTurn = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.DeathReprieveTurn.cs");
         var state = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.State.cs");
@@ -289,6 +322,19 @@ public sealed class VakuuLothaSaveRiskGuardTests
             savedFields,
             "SavedSpireField<Player, string> LothaStateKey",
             "SavedSpireField<CardModel, string> LothaDeckStateKey");
+        AssertSourceContains(
+            combatState,
+            "private sealed partial class LothaCombatState",
+            "private static readonly ConditionalWeakTable<Player, LothaCombatState> CombatStates = new();");
+        AssertSourceContains(
+            deathReprieveCombatState,
+            "private sealed partial class LothaCombatState",
+            "public bool DeathReprieveActive { get; set; }",
+            "public bool DeathReprievePendingStart { get; set; }",
+            "public bool DeathReprieveStarted { get; set; }");
+        Assert.DoesNotContain("public bool DeathReprieveActive { get; set; }", combatState, StringComparison.Ordinal);
+        Assert.DoesNotContain("public bool DeathReprievePendingStart { get; set; }", combatState, StringComparison.Ordinal);
+        Assert.DoesNotContain("public bool DeathReprieveStarted { get; set; }", combatState, StringComparison.Ordinal);
         AssertSourceContains(
             playerState,
             "runtimeField[player] = deckState",

@@ -10,22 +10,22 @@ Current naming note: testers should see `Spire Plus`. The technical manifest id 
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
-Latest package note, 2026-06-11: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
+Latest package note, 2026-06-18: the package hashes below identify the current manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
 
 Current source/package highlights:
 
 - Root Eyes uses map-click selection for future reachable Monster, Unknown, or Elite nodes. Normal/elite previews read the generated Act room set, and selected encounters/events are committed only when the marked room is entered.
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
-- Latest source/package validation on 2026-06-11: `dotnet build EZMicroBalance.sln`, `dotnet publish EZMicroBalance.sln`, package refresh, and the real installed-package checker against `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` passed for beta.85. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. The beta.85 current-package loader smoke is clean, but the verifier is still expected to fail closed until the remaining feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
-- The latest normal Steam smoke under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510` covered the beta.85 package on Slay the Spire 2 `v0.107.0`: BaseLib, RitsuLib, and Spire Plus loaded, RitsuLib selected compat branch `0.107.0`, `v0.1.0-private-beta.85` was logged, Spire Plus applied 25/25 ModPatcher patches, startup reached main menu, and the log audit was clean. Feature gameplay rows remain pending.
-- StS1 event prototype note: current beta.85 default-Off loader proof is not event gameplay proof.
-  Use `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv` for the current O0-O76 gate split; the ledger is guarded by `scripts/check-sts1-v19-gate-ledger.ps1`.
-  Static source/doc checks are passing, beta.85 default-Off loader proof is clean, and current CanaryOnly/AdditiveBatch1 enabled-mode, gameplay, save-load, replacement, multiplayer, image/render, and QA gates remain pending or blocked.
-  Current enabled-mode proof must show CanaryOnly 4 event types / 6 registration calls and AdditiveBatch1 10 event types / 14 registration calls before gameplay or handoff claims.
+- Latest source/package validation on 2026-06-18: `dotnet build EZMicroBalance.sln -m:1 --no-incremental`, `dotnet publish EZMicroBalance.sln -m:1`, package refresh, and fresh beta.86 AdditiveBatch1 direct smoke passed. The current installed folder and game-root zip match this handoff. `.tools\publish-game-root` is isolated tooling context only and is not the current package-parity source.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. The beta.86 current-package AdditiveBatch1 loader smoke and retained packet verifier are clean, but the release-evidence verifier is still expected to fail closed until the remaining feature screenshots, gameplay logs, save-load, route traversal, preview-tools, and co-op evidence are added.
+- The latest direct enabled-mode smoke under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254` covered the beta.86 package on Slay the Spire 2 `v0.107.0`: BaseLib, RitsuLib, and Spire Plus loaded, RitsuLib selected compat branch `0.107.0`, `v0.1.0-private-beta.86` was logged, Spire Plus applied 25/25 ModPatcher patches, startup reached main menu, and the log audit was clean. Feature gameplay rows remain pending.
+- StS1 event prototype note: current beta.86 AdditiveBatch1 loader proof is not event gameplay proof.
+  Use `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv` for the current O0-O76 gate split, plus `docs/features/sts1-events/v20-final-gate-overlay.csv` for the O76-O84 final documentation/handoff overlay and `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` for the current v20 hard-stop/next-run start point; the ledgers are guarded by `scripts/check-sts1-v19-gate-ledger.ps1` and `scripts/check-sts1-v20-final-gate-overlay.ps1`.
+Static source/doc checks are passing, beta.85 default-Off and CanaryOnly loader proof remain previous-package context, and beta.86 AdditiveBatch1 enabled-mode proof is clean with 10 event types / 14 registration calls. Gameplay, save-load, replacement, multiplayer, image/render, and QA gates remain pending or blocked.
+Current AdditiveBatch1 enabled-mode proof remains loader evidence only and does not prove gameplay.
   `docs/features/sts1-events/localization-source-gap-scan-20260611.md` records 33 source-referenced StS1 result-page keys missing from both EN and ZHS, and `docs/features/sts1-events/localization-gap-closure-plan.md` records the static closure order.
   Do not claim source-complete StS1 localization until that resource gap is closed, validated, and repackaged.
-  Closing only the direct Golden Idol missing key remains a localization unblocker, not O25/O33 enabled-mode proof or a replacement for verifier reports.
+Closing only the direct Golden Idol missing key remains a localization unblocker, not gameplay proof or a replacement for verifier reports.
 - Live gameplay, clicked Ancient UI, save-load, natural A11 route-click traversal, death/failure path, and co-op verification remain pending.
 
 Browser GPTimage2 art rebuild recheck, 2026-05-15:
@@ -48,21 +48,21 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.85.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.86.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `B182F6DCD8E88D9209C28997901C9EF5E9947F79E1CA93FD47E7F38625140CEE`
+- Zip SHA256: `3EDA50CCF8E2ECD49DCF1F6B4CEE7B7E3DE604793E8059253179914834781FFE`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `F35E2706140AC7B0560FDB950AC479529D4DBA3CA08DA5341FBE987B4106E062`
-- Manifest SHA256: `CE446422CA44864E993A45949C923EDAD516DD703687B990E76CC3BD614207D8`
-- PCK SHA256: `9F1595C7401CACE4E7A4345CCC3CA1E256EBD2615B56A32E5908D61682E024B9`
-- README_INSTALL SHA256: `004F7E2086C336F7804336FFC3FCD4061B0694F06C2B9B55459993C6737A498D`
+- DLL SHA256: `B89D89A502BB98950EEAE3E101559FA3E5BA74BFF264BA5D59D43A70A4268EAD`
+- Manifest SHA256: `ABD6AEAFCF73F7CF74E31D01D4EBD17C667F36B4969724666DFDFC42997AD17E`
+- PCK SHA256: `C5619646CEB02FC1D611554EC689CD2F9C81518BED9B6D5CB4CDCE90AED63F75`
+- README_INSTALL SHA256: `65293B1557BEBEE42E4DE1BBF162B23414CC436E6BBF748682D74299C356265D`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.85 passed `dotnet build`, split no-build tests, publish/package refresh, real installed-package checking, opt-in artifact/package tests, and fresh isolated `v0.107.0` loader smoke. Format and diff-check validation are still being refreshed for this beta.85 pass. Gameplay proof is still pending.
-- Current split no-build test coverage after beta.85 packaging: the isolated `ReleaseEvidenceGateTests` class passed 9 passed / 0 skipped / 0 failed / 9 total, and the complementary test-project lane excluding `ReleaseEvidenceGateTests` passed 466 passed / 21 skipped / 0 failed / 487 total, for combined coverage of 475 passed / 21 skipped / 0 failed / 496 total. Current opt-in artifact/package test coverage with `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2` and `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` passed 67 passed / 0 skipped / 0 failed. Fresh beta.85 loader smoke is clean; the stale local `godot.log` from beta.0 was archived so it is not treated as current evidence.
+- Current automated snapshot: beta.86 passed `dotnet build`, publish/package refresh, and fresh `v0.107.0` AdditiveBatch1 direct loader smoke with retained log/packet verifiers. Split no-build tests, installed-package checking, opt-in artifact/package tests, format, and diff-check are being refreshed for this beta.86 pass. Gameplay proof is still pending.
+- Previous split no-build test coverage after beta.85 packaging: the isolated `ReleaseEvidenceGateTests` class passed 9 passed / 0 skipped / 0 failed / 9 total, and the complementary test-project lane excluding `ReleaseEvidenceGateTests` passed 466 passed / 21 skipped / 0 failed / 487 total, for combined coverage of 475 passed / 21 skipped / 0 failed / 496 total. The previous opt-in artifact/package test coverage with `STS2_PATH=E:\Steam\steamapps\common\Slay the Spire 2` and `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` passed 67 passed / 0 skipped / 0 failed. Fresh beta.86 AdditiveBatch1 loader smoke is clean; the stale local `godot.log` from beta.0 was archived so it is not treated as current evidence.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory "E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
-- Historical loader/resource evidence remains useful context only. The current beta.85 loader proof covers startup/patch application only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
+- Historical loader/resource evidence remains useful context only. The current beta.86 AdditiveBatch1 loader proof covers loader behavior only. Gameplay, clicked UI, save-load, death/failure, route traversal, preview-tools, and co-op rows remain open.
 - Historical detailed command logs are preserved in `docs/archive/project-state-history-20260516.md`, `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`, and feature work logs; `docs/review.md` keeps compact current source-review context. This handoff intentionally keeps only the current tester-facing summary.
 - Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.
 
@@ -74,7 +74,7 @@ Historical RC1 notes now live at `docs/archive/implementation-records/rc1-live-v
 Current manual-proof summary:
 
 - Historical normal Steam-client startup/log verification passed for the beta.17 package hash and remains historical startup context only.
-- Normal Steam-client startup/log verification passed for the beta.85 package hash under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510`; beta.19 startup proof remains historical context only.
+- Direct AdditiveBatch1 startup/log verification passed for the beta.86 package hash under `.tools\runtime-evidence\v01070-beta86-additive-batch1-direct-20260618-031254`; beta.85 Off/CanaryOnly and beta.19 startup proof remain historical or previous-package context only.
 - Historical helper-driven startup/log verification confirms loader health only. This is loader/helper evidence, not live gameplay evidence.
 - Current Mod Settings list screenshot shows `Spire Plus`; page-level BaseLib/old-display-name evidence remains historical.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.

@@ -4,7 +4,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 internal static partial class LothaBlessingService
 {
-    private sealed class LothaCombatState
+    private sealed partial class LothaCombatState
     {
         public bool MirrorRebuttalCardPulled { get; set; }
 
@@ -25,12 +25,6 @@ internal static partial class LothaBlessingService
         public bool DeferredVerdictGranted { get; set; }
 
         public bool DeferredVerdictActiveThisTurn { get; set; }
-
-        public bool DeathReprieveActive { get; set; }
-
-        public bool DeathReprievePendingStart { get; set; }
-
-        public bool DeathReprieveStarted { get; set; }
 
         public bool SingleSentenceUsedThisTurn { get; set; }
 
