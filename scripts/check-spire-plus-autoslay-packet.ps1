@@ -183,6 +183,66 @@ function Test-OrderedTextSequence {
     return $true
 }
 
+function Test-AllJsonPropertiesPresent {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name $Name) -or $null -eq $item.$Name) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
+}
+
+function Test-AnyJsonPropertyTrue {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Test-NoJsonPropertyTrue {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-NoJsonPropertyFalse {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if ((Test-JsonProperty -Object $item -Name $Name) -and $null -ne $item.$Name -and -not [bool]$item.$Name) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
 function Test-BytePrefix {
     param(
         [Parameter(Mandatory = $true)][byte[]]$Prefix,
@@ -540,6 +600,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $eventKind = [string](Get-JsonValue -Object $run -Name 'EventKind' -DefaultValue '')
     $ancientId = [string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')
     $runResultPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ''))
+    $runtimeProbeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
     $autoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'AutoSlayLogPath' -DefaultValue ''))
     $beforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogBeforePath' -DefaultValue ''))
     $afterLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
@@ -549,6 +610,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $autoSlayLogSha256 = [string](Get-JsonValue -Object $run -Name 'AutoSlayLogSha256' -DefaultValue '')
     $currentLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationSha256' -DefaultValue '')
     $runResultExists = -not [string]::IsNullOrWhiteSpace($runResultPath) -and (Test-Path -LiteralPath $runResultPath -PathType Leaf)
+    $runtimeProbeSamplesExists = -not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath) -and (Test-Path -LiteralPath $runtimeProbeSamplesPath -PathType Leaf)
     $autoSlayLogExists = -not [string]::IsNullOrWhiteSpace($autoSlayLogPath) -and (Test-Path -LiteralPath $autoSlayLogPath -PathType Leaf)
     $beforeLogExists = -not [string]::IsNullOrWhiteSpace($beforeLogPath) -and (Test-Path -LiteralPath $beforeLogPath -PathType Leaf)
     $afterLogExists = -not [string]::IsNullOrWhiteSpace($afterLogPath) -and (Test-Path -LiteralPath $afterLogPath -PathType Leaf)
@@ -567,6 +629,10 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_run_result_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($runResultPath)) -Detail 'RunResultPath must retain launch provenance for each run'
     Add-Check -Name "${runName}_run_result_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runResultPath -Directory $resolvedEvidenceDir) -Detail 'RunResultPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_run_result_exists" -Passed $runResultExists -Detail 'RunResultPath must point at retained run-result.json'
+    Add-Check -Name "${runName}_runtime_probe_samples_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath)) -Detail 'RuntimeProbeSamplesPath must retain process/window/log timeline samples for hang triage'
+    Add-Check -Name "${runName}_runtime_probe_samples_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runtimeProbeSamplesPath -Directory $resolvedEvidenceDir) -Detail 'RuntimeProbeSamplesPath must stay inside the evidence directory'
+    Add-Check -Name "${runName}_runtime_probe_samples_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath)) -and [System.IO.Path]::GetFileName($runtimeProbeSamplesPath) -eq 'runtime-probe-samples.json') -Detail 'RuntimeProbeSamplesPath must end with runtime-probe-samples.json'
+    Add-Check -Name "${runName}_runtime_probe_samples_exists" -Passed $runtimeProbeSamplesExists -Detail 'RuntimeProbeSamplesPath must point at retained runtime-probe-samples.json'
     Add-Check -Name "${runName}_autoslay_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -Detail 'AutoSlayLogPath must be retained'
     Add-Check -Name "${runName}_autoslay_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $resolvedEvidenceDir) -Detail 'AutoSlayLogPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_autoslay_log_exists" -Passed $autoSlayLogExists -Detail 'AutoSlay log file must exist'
@@ -602,6 +668,37 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     }
     if (-not [string]::IsNullOrWhiteSpace($currentLogSha256) -and $currentLogExists) {
         Add-Check -Name "${runName}_current_iteration_log_hash_matches" -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $currentLogPath), $currentLogSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'GodotLogCurrentIterationSha256 must match GodotLogCurrentIterationPath'
+    }
+
+    if ($runtimeProbeSamplesExists) {
+        try {
+            $probeSamplesJson = [System.IO.File]::ReadAllText($runtimeProbeSamplesPath)
+            $probeSamplesParsed = $probeSamplesJson | ConvertFrom-Json
+            $probeSamples = @($probeSamplesParsed)
+            Add-Check -Name "${runName}_runtime_probe_samples_json_valid" -Passed $true -Detail 'runtime-probe-samples.json parsed'
+            Add-Check -Name "${runName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain process/window/log samples'
+            Add-Check -Name "${runName}_runtime_probe_samples_phase_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -Detail 'every probe sample must retain Phase'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -Detail 'every probe sample must retain ProcessObserved'
+            Add-Check -Name "${runName}_runtime_probe_samples_main_window_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -Detail 'every probe sample must retain MainWindowObserved'
+            Add-Check -Name "${runName}_runtime_probe_samples_hung_window_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -Detail 'every probe sample must retain HungWindow'
+            Add-Check -Name "${runName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding'
+            Add-Check -Name "${runName}_runtime_probe_samples_stale_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -Detail 'every probe sample must retain StaleProcessCount'
+            Add-Check -Name "${runName}_runtime_probe_samples_process_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved') -Detail 'at least one probe sample must observe SlayTheSpire2'
+            Add-Check -Name "${runName}_runtime_probe_samples_main_window_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved') -Detail 'at least one probe sample must observe the main game window'
+            Add-Check -Name "${runName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow') -Detail 'probe samples must not report hung windows'
+            Add-Check -Name "${runName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
+            $staleProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
+            Add-Check -Name "${runName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
+            $observedProcessIds = @($probeSamples |
+                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
+                Where-Object { $_ -gt 0 } |
+                Sort-Object -Unique)
+            Add-Check -Name "${runName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedProcessIds.Count)"
+        } catch {
+            Add-Check -Name "${runName}_runtime_probe_samples_json_valid" -Passed $false -Detail "invalid probe samples JSON in $runtimeProbeSamplesPath`: $($_.Exception.Message)"
+        }
     }
 
     if ($beforeLogExists -and $afterLogExists -and $currentLogExists) {
@@ -716,6 +813,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
         if ($null -ne $runResult) {
             Add-Check -Name "${runName}_run_result_json_valid" -Passed $true -Detail 'run-result.json parsed'
             $resultAutoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogPath' -DefaultValue ''))
+            $resultRuntimeProbeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
             $resultBeforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogBeforePath' -DefaultValue ''))
             $resultAfterLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
             $resultCurrentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
@@ -757,12 +855,37 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runResult -Name 'StaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'run-result.json StaleProcessCount must be 0 so shared godot.log evidence is attributable'
             Add-Check -Name "${runName}_run_result_autoslay_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAutoSlayLogPath, $autoSlayLogPath)) -Detail 'run-result.json AutoSlayLogPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_autoslay_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogSha256' -DefaultValue ''), $autoSlayLogSha256)) -Detail 'run-result.json AutoSlayLogSha256 must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_runtime_probe_samples_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultRuntimeProbeSamplesPath, $runtimeProbeSamplesPath)) -Detail 'run-result.json RuntimeProbeSamplesPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogPath, $beforeLogPath)) -Detail 'run-result.json GodotLogBeforePath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_after_launch_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAfterLogPath, $afterLogPath)) -Detail 'run-result.json GodotLogAfterLaunchPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_current_iteration_log_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentLogPath, $currentLogPath)) -Detail 'run-result.json GodotLogCurrentIterationPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_current_iteration_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationSha256' -DefaultValue ''), $currentLogSha256)) -Detail 'run-result.json GodotLogCurrentIterationSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_audit_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultAuditPath, $auditPath)) -Detail 'run-result.json GodotLogAuditPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_sts1_mode_check_path_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultSts1ModeCheckPath, $sts1ModeCheckPath)) -Detail 'run-result.json Sts1ModeLogCheckPath must match autoslay-summary.json'
+            $mainMenuObservation = Get-JsonValue -Object $runResult -Name 'MainMenuObservation' -DefaultValue $null
+            Add-Check -Name "${runName}_run_result_main_menu_observation_exists" -Passed ($null -ne $mainMenuObservation) -Detail 'run-result.json must retain MainMenuObservation telemetry'
+            if ($null -ne $mainMenuObservation) {
+                Add-Check -Name "${runName}_run_result_main_menu_observation_passed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'Passed' -DefaultValue $false)) -Detail 'MainMenuObservation.Passed must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_reached" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuObservation.MainMenuReached must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_process_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
+                Add-Check -Name "${runName}_run_result_main_menu_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung before main menu'
+                Add-Check -Name "${runName}_run_result_main_menu_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${runName}_run_result_main_menu_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $mainMenuObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'MainMenuObservation.MaxStaleProcessCount must be 0'
+                Add-Check -Name "${runName}_run_result_main_menu_log_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
+            }
+
+            $runtimeObservation = Get-JsonValue -Object $runResult -Name 'RuntimeObservation' -DefaultValue $null
+            Add-Check -Name "${runName}_run_result_runtime_observation_exists" -Passed ($null -ne $runtimeObservation) -Detail 'run-result.json must retain RuntimeObservation telemetry'
+            if ($null -ne $runtimeObservation) {
+                Add-Check -Name "${runName}_run_result_runtime_observation_passed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'Passed' -DefaultValue $false)) -Detail 'RuntimeObservation.Passed must be true'
+                Add-Check -Name "${runName}_run_result_runtime_process_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
+                Add-Check -Name "${runName}_run_result_runtime_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
+                Add-Check -Name "${runName}_run_result_runtime_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung during runtime observation'
+                Add-Check -Name "${runName}_run_result_runtime_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${runName}_run_result_runtime_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'RuntimeObservation.MaxStaleProcessCount must be 0'
+                Add-Check -Name "${runName}_run_result_runtime_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
+            }
         }
     }
 }

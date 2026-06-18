@@ -289,6 +289,105 @@ function Test-TextContains {
     return $Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+function Test-AllJsonPropertiesPresent {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name $Name) -or $null -eq $item.$Name) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
+}
+
+function Test-AnyJsonPropertyTrue {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Test-NoJsonPropertyTrue {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-NoJsonPropertyFalse {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    foreach ($item in @($Items)) {
+        if ((Test-JsonProperty -Object $item -Name $Name) -and $null -ne $item.$Name -and -not [bool]$item.$Name) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-UnhealthyObservationFields {
+    param(
+        [AllowNull()]$Observation,
+        [Parameter(Mandatory = $true)][string[]]$RequiredTrueFields,
+        [Parameter(Mandatory = $true)][string[]]$RequiredFalseFields,
+        [string]$ZeroCountField = ''
+    )
+
+    $failures = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Observation) {
+        $failures.Add('missing') | Out-Null
+        return ,$failures
+    }
+
+    foreach ($field in $RequiredTrueFields) {
+        if (-not [bool](Get-JsonValue -Object $Observation -Name $field -DefaultValue $false)) {
+            $failures.Add($field) | Out-Null
+        }
+    }
+
+    foreach ($field in $RequiredFalseFields) {
+        if ([bool](Get-JsonValue -Object $Observation -Name $field -DefaultValue $true)) {
+            $failures.Add($field) | Out-Null
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($ZeroCountField)) {
+        try {
+            if ([int](Get-JsonValue -Object $Observation -Name $ZeroCountField -DefaultValue -1) -ne 0) {
+                $failures.Add($ZeroCountField) | Out-Null
+            }
+        } catch {
+            $failures.Add($ZeroCountField) | Out-Null
+        }
+    }
+
+    return ,$failures
+}
+
 function Add-Finding {
     param(
         [Parameter(Mandatory = $true)]
@@ -581,6 +680,16 @@ function Invoke-RecomputedAudit {
     return $auditJson | ConvertFrom-Json
 }
 
+function Test-HarnessOwnerArea {
+    param([AllowEmptyString()][string]$OwnerArea)
+
+    if ([string]::IsNullOrWhiteSpace($OwnerArea)) {
+        return $false
+    }
+
+    return $OwnerArea -match '^(RuntimeHarness|RuntimeStartup|RuntimeCrash|RuntimeLogAudit|DevConsoleHarness|LiveSessionRestore)$'
+}
+
 function Analyze-Iteration {
     param(
         [Parameter(Mandatory = $true)][string]$Directory,
@@ -629,6 +738,7 @@ function Analyze-Iteration {
         $fullLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchPath' -DefaultValue 'godot.log.after-launch'))
         $currentIterationLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogCurrentIterationPath' -DefaultValue 'godot.log.current-iteration'))
         $auditCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAuditPath' -DefaultValue 'godot-log-audit.json'))
+        $probeSamplesCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'RuntimeProbeSamplesPath' -DefaultValue 'runtime-probe-samples.json'))
         $sts1ModeCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'Sts1ModeLogCheckPath' -DefaultValue 'sts1-mode-log-check.json'))
     }
 
@@ -793,6 +903,117 @@ function Analyze-Iteration {
                 -NextStep 'Retain the exact launcher/mod-hook invocation before treating this packet as game-native AutoSlay evidence.' `
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
+        }
+
+        if (-not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'autoslay_runtime_probe_samples_missing' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'GameNativeAutoSlay evidence did not retain runtime-probe-samples.json for this seed.' `
+                -NextStep 'Fix AutoSlay process/window/log sampling retention before routing this packet to gameplay source.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        } else {
+            try {
+                $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
+                $probeSamples = @($probeSamplesParsed)
+                $requiredProbeFields = @('Phase', 'ProcessId', 'ProcessObserved', 'MainWindowObserved', 'HungWindow', 'Responding', 'StaleProcessCount')
+
+                if ($probeSamples.Count -eq 0) {
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'autoslay_runtime_probe_samples_empty' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale 'GameNativeAutoSlay runtime-probe-samples.json has no process/window/log samples.' `
+                        -NextStep 'Retain the sampled process/window/log timeline before classifying gameplay source.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                } elseif (-not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -or
+                    -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount')) {
+                    $missingProbeFields = @($requiredProbeFields | Where-Object {
+                        -not (Test-AllJsonPropertiesPresent -Items $probeSamples -Name $_)
+                    })
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'autoslay_runtime_probe_samples_incomplete' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale "GameNativeAutoSlay runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
+                        -NextStep 'Record Phase, ProcessId, ProcessObserved, MainWindowObserved, HungWindow, Responding, and StaleProcessCount for every probe sample.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                } else {
+                    if (-not (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved')) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never observed the SlayTheSpire2 process.' -NextStep 'Fix process selection before routing this AutoSlay packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if (-not (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved')) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_main_window_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never observed the main game window.' -NextStep 'Fix process/window binding before treating the packet as runtime gameplay proof.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if (-not (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow')) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_hung_window' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples report a hung game window.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if (-not (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding')) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_not_responding' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples include Responding=false.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $staleProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
+                    if ($staleProcessSamples.Count -gt 0) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_stale_process' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples saw stale SlayTheSpire2 processes, so shared godot.log evidence may be contaminated.' -NextStep 'Close pre-existing clients and recapture the packet after validation lanes are unpaused.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $observedProcessIds = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
+                        Where-Object { $_ -gt 0 } |
+                        Sort-Object -Unique)
+                    if ($observedProcessIds.Count -ne 1) {
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_identity_unstable' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples must bind to exactly one positive process id; observed count=$($observedProcessIds.Count)." -NextStep 'Fix AutoSlay process selection and stale-process rejection before trusting this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+                }
+            } catch {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'autoslay_runtime_probe_samples_invalid' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "GameNativeAutoSlay runtime-probe-samples.json could not be parsed or classified: $($_.Exception.Message)" `
+                    -NextStep 'Regenerate runtime-probe-samples.json from structured probe telemetry before classifying gameplay source.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+        }
+
+        $mainMenuObservation = if ($result) { Get-JsonValue -Object $result -Name 'MainMenuObservation' -DefaultValue $null } else { $null }
+        $mainMenuObservationFailures = @(Get-UnhealthyObservationFields `
+            -Observation $mainMenuObservation `
+            -RequiredTrueFields @('Passed', 'MainMenuReached', 'ProcessObserved', 'LogObserved') `
+            -RequiredFalseFields @('ProcessExitedAfterObservation', 'HungWindowDetected', 'StaleProcessObserved', 'NoLogGrowthTimeoutExceeded') `
+            -ZeroCountField 'MaxStaleProcessCount')
+        if ($mainMenuObservationFailures.Count -gt 0) {
+            $mainMenuSignal = if ($mainMenuObservationFailures -contains 'missing') { 'autoslay_main_menu_observation_missing' } else { 'autoslay_main_menu_observation_unhealthy' }
+            Add-Finding -Findings $findings -Signal $mainMenuSignal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay MainMenuObservation is not clean: $($mainMenuObservationFailures -join ', ')." -NextStep 'Fix main-menu process/window/log observation before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+
+        $runtimeObservation = if ($result) { Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null } else { $null }
+        $runtimeObservationFailures = @(Get-UnhealthyObservationFields `
+            -Observation $runtimeObservation `
+            -RequiredTrueFields @('Passed', 'ProcessObserved', 'LogObserved') `
+            -RequiredFalseFields @('ProcessExitedAfterObservation', 'HungWindowDetected', 'StaleProcessObserved') `
+            -ZeroCountField 'MaxStaleProcessCount')
+        if ($runtimeObservationFailures.Count -gt 0) {
+            $runtimeSignal = if ($runtimeObservationFailures -contains 'missing') { 'autoslay_runtime_observation_missing' } else { 'autoslay_runtime_observation_unhealthy' }
+            Add-Finding -Findings $findings -Signal $runtimeSignal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay RuntimeObservation is not clean: $($runtimeObservationFailures -join ', ')." -NextStep 'Fix runtime process/window/log observation before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if (-not $autoSlayLogExists) {
@@ -1323,6 +1544,25 @@ $iterationReports = foreach ($target in $analysisTargets) {
 
 $allFindings = @($iterationReports | ForEach-Object { @($_.Findings) })
 $blockingFindings = @($allFindings | Where-Object { [string]$_.Severity -eq 'blocking' })
+$harnessBlockingFindings = @($blockingFindings | Where-Object { Test-HarnessOwnerArea -OwnerArea ([string]$_.OwnerArea) })
+$packageBlockingFindings = @($blockingFindings | Where-Object { [string]$_.OwnerArea -eq 'PackageRuntimeDrift' })
+$gameplayBlockingFindings = @($blockingFindings | Where-Object {
+    -not (Test-HarnessOwnerArea -OwnerArea ([string]$_.OwnerArea)) -and [string]$_.OwnerArea -ne 'PackageRuntimeDrift'
+})
+$triageDisposition = if (@($harnessBlockingFindings).Count -gt 0) {
+    'HarnessEvidenceInvalid'
+} elseif (@($packageBlockingFindings).Count -gt 0) {
+    'PackageRuntimeDrift'
+} elseif (@($gameplayBlockingFindings).Count -gt 0) {
+    'GameplayOwnerAction'
+} else {
+    'NoBlockingFindings'
+}
+$recommendedNextActions = @($blockingFindings |
+    ForEach-Object { [string]$_.NextStep } |
+    Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+    Select-Object -Unique |
+    Select-Object -First 10)
 $ownerAreas = @($allFindings | ForEach-Object { $_.OwnerArea } | Where-Object { $_ } | Select-Object -Unique)
 
 $report = [pscustomobject]@{
@@ -1331,7 +1571,15 @@ $report = [pscustomobject]@{
     EvidenceDir = $evidenceFull
     AnalyzedIterationCount = @($iterationReports).Count
     BlockingFindingCount = @($blockingFindings).Count
+    TriageDisposition = $triageDisposition
+    HarnessBlockingFindingCount = @($harnessBlockingFindings).Count
+    PackageBlockingFindingCount = @($packageBlockingFindings).Count
+    GameplayBlockingFindingCount = @($gameplayBlockingFindings).Count
     OwnerAreas = @($ownerAreas)
+    RecommendedNextActions = @($recommendedNextActions)
+    HarnessBlockingFindings = @($harnessBlockingFindings)
+    PackageBlockingFindings = @($packageBlockingFindings)
+    GameplayBlockingFindings = @($gameplayBlockingFindings)
     Iterations = @($iterationReports)
 }
 
@@ -1344,6 +1592,7 @@ foreach ($iterationReport in @($iterationReports)) {
 
 Write-Output "analyzed_iterations=$(@($iterationReports).Count)"
 Write-Output "blocking_findings=$(@($blockingFindings).Count)"
+Write-Output "triage_disposition=$triageDisposition harness_blockers=$(@($harnessBlockingFindings).Count) package_blockers=$(@($packageBlockingFindings).Count) gameplay_blockers=$(@($gameplayBlockingFindings).Count)"
 Write-Output "owner_areas=$($ownerAreas -join ',')"
 
 if ($OutFile) {

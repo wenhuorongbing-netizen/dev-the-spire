@@ -13,12 +13,14 @@ This test project guards source shape, localization, release documentation, pack
 | `AncientPlayerFacingPolishGuardTests.cs` / `AncientPlayerFacingPolishGuardTests.AscensionText.cs` / `AncientPlayerFacingPolishGuardTests.Docs.cs` / `AncientPlayerFacingPolishGuardTests.InteractionText.cs` / `AncientPlayerFacingPolishGuardTests.Localization.cs` / `AncientPlayerFacingPolishGuardTests.RichText.cs` | Player-facing Ancient text, docs, localization, mojibake, rich-text, and readability guards. |
 | `AscensionFeatureGuardTests.cs` / `AscensionFeatureGuardTests.Rootblight.cs` | Ascension selector, gate, Rootblight/RootBud, docs, and source constraints. |
 | `AscensionV2MilestoneGuardTests.cs` | Ascension milestone-level source/localization expectations. |
+| `EngineeringGovernanceGuardTests.cs` / `EngineeringGovernanceGuardTests.ArchitectureCanary.cs` / `EngineeringGovernanceGuardTests.FeatureModuleMetadata.cs` / `EngineeringGovernanceGuardTests.FeatureBootstrap.cs` | Governance ownership for diagnostics, repository hygiene, release dashboard/planning docs, worktree batch script coverage, feature module metadata, feature bootstrap records/default-off gates/environment overrides, and architecture canary policy/diagnostic contracts. |
 | `ReleaseArtifactTests.cs` | Installed/package artifacts and Harmony target resolution. |
 | `ReleaseCoverageGuardTests.cs` | Release docs, source coverage, and active feature completion claims. |
 | `ReleaseHashGuardTests.cs` | Current package hash claims and stale-hash rejection. |
 | `ReleasePackageArtifactGuardTests.cs` | Package staging, installed artifact parity, release hash docs, and release-artifact opt-in coverage. |
 | `ReleaseSafetyExpandedGuardTests.cs` | Expanded docs, release-claim, localization, Ascension safety, and stale-claim guards. |
 | `ReleaseArtifactParityGuardTests.cs` | Opt-in installed/package parity, release hash, and runtime-log evidence guards. |
+| `RuntimeMonkeyStabilityGuardTests.cs` / `RuntimeMonkeyStabilityGuardTests.Sts1RuntimeEvidence.cs` | Runtime monkey and game-native AutoSlay harness guards, runtime failure analyzer owner routing, and StS1 enabled-mode runtime evidence verifier guards. |
 | `UrdaReleaseCoverageGuardTests.cs` | Urda default-on source slice, option relics, Root Eyes, Seed Bank, and live-pending doc guards. |
 | `ReleaseArtifactFactAttribute.cs` | Opt-in gate for tests that require ignored local release artifacts. |
 | `LocalSourceFactAttribute.cs` | Opt-in gate for tests that require the ignored local `source code/src/Core/**` game-source snapshot. |
