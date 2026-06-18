@@ -162,7 +162,7 @@ can close a game-native monkey proof row:
 
 - the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`;
 - the seed, AutoSlay log path, exit code, and per-run start/completion/failure
-  markers;
+  markers, with `AutoSlayLogSha256` bound to the retained log file;
 - a retained `check-local-godot-source-workspace.ps1 -OutFile` report with
   passing AutoSlay source-contract checks;
 - the same package, game version, RitsuLib version, compat branch, patch-count,
@@ -172,6 +172,27 @@ can close a game-native monkey proof row:
   not only main-menu startup;
 - a clear statement that the local recovered source snapshot matched the
   installed game version when the AutoSlay invocation path was derived.
+
+After the packet is captured, verify it with:
+
+```powershell
+.\scripts\check-spire-plus-autoslay-packet.ps1 `
+  -EvidenceDir "<evidence>" `
+  -ExpectedPackageVersion v0.1.0-private-beta.86 `
+  -ExpectedGameVersion 0.107.0 `
+  -ExpectedRitsuLibVersion 0.4.16 `
+  -ExpectedRitsuCompatBranch 0.107.0 `
+  -OutFile "<evidence>\autoslay-packet-check.json" `
+  -FailOnMismatch
+```
+
+This verifier is no-launch only. It rejects packets that do not identify
+`GameNativeAutoSlay`, do not record `AutoSlayer.Start(seed, logFile)`, do not
+bind the retained `check-local-godot-source-workspace.ps1` report and policy
+flags, omit the explicit package/game/Ritsu target switches, place per-run logs
+outside the evidence folder, lack per-seed AutoSlay log hashes or
+per-seed AutoSlay start/completion markers, or lack event-room traversal markers such as
+`Entering Event room` and `Selecting event option:`.
 
 ## Commands
 

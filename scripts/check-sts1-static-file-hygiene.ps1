@@ -108,6 +108,7 @@ $explicitRelativePaths = @(
     'docs\test-ready-completion-audit.md',
     'docs\goals\event.md',
     'scripts\README.md',
+    'scripts\check-spire-plus-autoslay-packet.ps1',
     'scripts\spire-plus-live-session.ps1'
 )
 
@@ -172,6 +173,7 @@ Add-Check -Name 'sts1_hygiene_scans_ritsu_monthly_spec' -Passed ($uniquePaths -c
 Add-Check -Name 'sts1_hygiene_scans_ritsu_batch4c' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\batch-4c-candidates.md')) -Detail 'RitsuLib Batch 4c proposal must be included in static-file hygiene scope'
 Add-Check -Name 'sts1_hygiene_scans_ritsu_runtime_checklist' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\runtime-smoke-checklist.md')) -Detail 'RitsuLib runtime smoke checklist must be included in static-file hygiene scope'
 Add-Check -Name 'sts1_hygiene_scans_ritsu_next_overnight' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\next-overnight-run.md')) -Detail 'RitsuLib next overnight run plan must be included in static-file hygiene scope'
+Add-Check -Name 'sts1_hygiene_scans_autoslay_packet_verifier' -Passed ($uniquePaths -contains (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1')) -Detail 'AutoSlay packet verifier must be included in static-file hygiene scope'
 Add-Check -Name 'sts1_hygiene_no_trailing_whitespace' -Passed ($trailingWhitespaceHits.Count -eq 0) -Detail "trailing whitespace hits: $($trailingWhitespaceHits -join ', ')"
 Add-Check -Name 'sts1_hygiene_final_newline' -Passed ($missingFinalNewlineFiles.Count -eq 0) -Detail "missing final newline files: $($missingFinalNewlineFiles -join ', ')"
 Add-Check -Name 'sts1_hygiene_no_nul_bytes' -Passed ($nulByteFiles.Count -eq 0) -Detail "NUL byte files: $($nulByteFiles -join ', ')"
