@@ -408,6 +408,7 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_failed_iteration_ids_empty' -Passed ($failedIterationIdsCount -eq 0) -Detail 'FailedIterationIds must be empty for a clean packet'
     Add-Check -Name 'summary_process_exit_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'ProcessExitCount' -DefaultValue -1) -eq 0) -Detail 'ProcessExitCount must be 0'
     Add-Check -Name 'summary_main_window_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'MainWindowMissingCount' -DefaultValue -1) -eq 0) -Detail 'MainWindowMissingCount must be 0'
+    Add-Check -Name 'summary_current_iteration_log_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CurrentIterationLogMissingCount' -DefaultValue -1) -eq 0) -Detail 'CurrentIterationLogMissingCount must be 0'
     Add-Check -Name 'summary_unresponsive_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'UnresponsiveIterationCount' -DefaultValue -1) -eq 0) -Detail 'UnresponsiveIterationCount must be 0'
     Add-Check -Name 'summary_log_stall_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'LogStallIterationCount' -DefaultValue -1) -eq 0) -Detail 'LogStallIterationCount must be 0'
     Add-Check -Name 'summary_command_ack_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CommandAckMissingCount' -DefaultValue -1) -eq 0) -Detail 'CommandAckMissingCount must be 0'
@@ -457,15 +458,18 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
 
     $resultPath = Join-Path $iterationDir 'iteration-result.json'
     $logPath = Join-Path $iterationDir 'godot.log.after-launch'
+    $currentIterationLogPath = Join-Path $iterationDir 'godot.log.current-iteration'
     $auditPath = Join-Path $iterationDir 'godot-log-audit.json'
     $sts1ModeCheckPath = Join-Path $iterationDir 'sts1-mode-log-check.json'
     $resultExists = Test-Path -LiteralPath $resultPath -PathType Leaf
     $logExists = Test-Path -LiteralPath $logPath -PathType Leaf
+    $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogPath -PathType Leaf
     $auditExists = Test-Path -LiteralPath $auditPath -PathType Leaf
     $sts1ModeCheckExists = Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf
 
     Add-Check -Name "${iterationName}_iteration_result_exists" -Passed $resultExists -Detail 'requires iteration-result.json'
     Add-Check -Name "${iterationName}_godot_log_exists" -Passed $logExists -Detail 'requires godot.log.after-launch'
+    Add-Check -Name "${iterationName}_current_iteration_log_exists" -Passed $currentIterationLogExists -Detail 'requires godot.log.current-iteration sliced from the accepted scan offset'
     Add-Check -Name "${iterationName}_audit_json_exists" -Passed $auditExists -Detail 'requires godot-log-audit.json'
     Add-Check -Name "${iterationName}_sts1_mode_log_check_exists" -Passed $sts1ModeCheckExists -Detail 'requires retained sts1-mode-log-check.json'
 
@@ -499,6 +503,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_max_consecutive_unresponsive_below_threshold" -Passed ($iterationMaxUnresponsive -lt $planUnresponsiveSampleThreshold) -Detail "MaxConsecutiveUnresponsiveSamples must stay below threshold $planUnresponsiveSampleThreshold; found $iterationMaxUnresponsive"
             }
             Add-Check -Name "${iterationName}_result_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LogCopied' -DefaultValue $false)) -Detail 'LogCopied must be true'
+            Add-Check -Name "${iterationName}_result_current_iteration_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogCopied' -DefaultValue $false)) -Detail 'CurrentIterationLogCopied must be true'
+            $resultCurrentIterationLogPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogPath' -DefaultValue ''))
+            Add-Check -Name "${iterationName}_current_iteration_log_under_iteration_dir" -Passed ($resultCurrentIterationLogPath -and (Test-PathUnderDirectory -Path $resultCurrentIterationLogPath -Directory $iterationDir)) -Detail 'CurrentIterationLogPath must stay inside the current iteration directory'
+            Add-Check -Name "${iterationName}_current_iteration_log_leaf_expected" -Passed ($resultCurrentIterationLogPath -and ([System.IO.Path]::GetFileName($resultCurrentIterationLogPath) -eq 'godot.log.current-iteration')) -Detail 'CurrentIterationLogPath must end with godot.log.current-iteration'
             Add-Check -Name "${iterationName}_result_audit_clean" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'AuditClean' -DefaultValue $false)) -Detail 'AuditClean must be true'
             Add-Check -Name "${iterationName}_result_expectation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'ExpectationPassed' -DefaultValue $false)) -Detail 'ExpectationPassed must be true'
             Add-Check -Name "${iterationName}_result_sts1_mode_verifier_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Sts1ModeVerifierPassed' -DefaultValue $false)) -Detail 'Sts1ModeVerifierPassed must be true'
@@ -554,15 +562,22 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         $logItem = Get-Item -LiteralPath $logPath
         $logText = [System.IO.File]::ReadAllText($logPath)
         Add-Check -Name "${iterationName}_godot_log_non_empty" -Passed ($logItem.Length -gt 0 -and $logText.Length -gt 0) -Detail 'godot.log.after-launch must be non-empty'
-        Add-Check -Name "${iterationName}_main_menu_log_line_present" -Passed ([regex]::IsMatch($logText, '\[Startup\] Time to main menu')) -Detail 'expected [Startup] Time to main menu in copied log'
+    }
+
+    $currentIterationLogText = ''
+    if ($currentIterationLogExists) {
+        $currentIterationLogItem = Get-Item -LiteralPath $currentIterationLogPath
+        $currentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogPath)
+        Add-Check -Name "${iterationName}_current_iteration_log_non_empty" -Passed ($currentIterationLogItem.Length -gt 0 -and $currentIterationLogText.Length -gt 0) -Detail 'godot.log.current-iteration must be non-empty'
+        Add-Check -Name "${iterationName}_main_menu_log_line_present" -Passed ([regex]::IsMatch($currentIterationLogText, '\[Startup\] Time to main menu')) -Detail 'expected [Startup] Time to main menu in current-iteration log slice'
 
         if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) {
-            Add-Check -Name "${iterationName}_expected_package_version_in_log" -Passed (Contains-Text -Text $logText -Needle $ExpectedPackageVersion) -Detail "expected package version '$ExpectedPackageVersion' in copied log"
+            Add-Check -Name "${iterationName}_expected_package_version_in_log" -Passed (Contains-Text -Text $currentIterationLogText -Needle $ExpectedPackageVersion) -Detail "expected package version '$ExpectedPackageVersion' in current-iteration log slice"
         }
 
         if ($ExpectedPatchCount -gt 0) {
-            $patchHits = Get-PatchCountLineHits -Text $logText -ExpectedCount $ExpectedPatchCount
-            Add-Check -Name "${iterationName}_expected_patch_count_in_log" -Passed ($patchHits -gt 0) -Detail "expected Spire Plus patch-count markers for $ExpectedPatchCount applied and $ExpectedPatchCount registered patches in copied log"
+            $patchHits = Get-PatchCountLineHits -Text $currentIterationLogText -ExpectedCount $ExpectedPatchCount
+            Add-Check -Name "${iterationName}_expected_patch_count_in_log" -Passed ($patchHits -gt 0) -Detail "expected Spire Plus patch-count markers for $ExpectedPatchCount applied and $ExpectedPatchCount registered patches in current-iteration log slice"
         }
     }
 

@@ -88,11 +88,15 @@ The first implementation layer is deliberately conservative:
    Process disappearance or a hung/not-responding window fails the iteration;
    post-main-menu log growth is recorded as telemetry but not required because
    an idle main menu can legitimately stop writing.
-8. Copy `godot.log` to the iteration folder.
-9. Run `scripts\audit-godot-log.ps1` and retain `godot-log-audit.json`.
+8. Copy the full `godot.log` to the iteration folder as forensic context, then
+   write `godot.log.current-iteration` from the accepted pre-launch scan offset
+   so stale appended log content cannot satisfy or fail the current iteration.
+9. Run `scripts\audit-godot-log.ps1` on `godot.log.current-iteration` and
+   retain `godot-log-audit.json`.
 10. Run `scripts\check-sts1-enabled-mode-runtime-log.ps1` for the requested
    Off/CanaryOnly/AdditiveBatch1 mode and retain `sts1-mode-log-check.json`.
-   This uses the copied log as truth, not the evidence folder name.
+   This uses `godot.log.current-iteration` as truth, not the evidence folder
+   name or older log content.
 11. Restore the live session with `-StopGameOnRestore` and
    `-PreserveNewCurrentRunsOnRestore`.
 12. Write `iteration-result.json` and a root `monkey-summary.json`.
@@ -210,11 +214,11 @@ The launched packet checker requires `MainMenuObservation` and
 `RuntimeObservation` in each `iteration-result.json`. These records include
 process-observed, process-exited, hung-window, log-observed, log-length, and
 max-no-growth counters. It also requires the retained
-`sts1-mode-log-check.json`, exact Spire Plus patch-count lines from the copied
-log, probe sample paths inside the current iteration folder, and no raw probe
-sample with `Responding=false`. A clean packet means those signals stayed
-healthy for the sampled windows; it still does not prove deeper gameplay
-behavior.
+`sts1-mode-log-check.json`, exact Spire Plus patch-count lines from
+`godot.log.current-iteration`, probe sample paths and sliced-log paths inside
+the current iteration folder, and no raw probe sample with `Responding=false`.
+A clean packet means those signals stayed healthy for the sampled windows; it
+still does not prove deeper gameplay behavior.
 
 Current packet schema is `HangProbeSchemaVersion = 1`.
 
@@ -224,7 +228,8 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
 - Each `iteration-result.json` records `GameProcessId`,
   `GameProcessStartTimeUtc`, `MainWindowObserved`, `MainMenuDetectedAt`,
   `MainMenuElapsedSeconds`, `PreLaunchLogLengthBytes`,
-  `MinimumProcessStartTimeUtc`, `ScenarioTag`, `OwnerArea`,
+  `MinimumProcessStartTimeUtc`, `LogScanOffsetBytes`,
+  `CurrentIterationLogPath`, `CurrentIterationLogCopied`, `ScenarioTag`, `OwnerArea`,
   `CommandSelectionMode`, `LogInitialLengthBytes`,
   `LogFinalLengthBytes`, `LastLogGrowthAt`, `MaxSecondsWithoutLogGrowth`,
   `MaxConsecutiveUnresponsiveSamples`, `StartupLogProbePassed`,

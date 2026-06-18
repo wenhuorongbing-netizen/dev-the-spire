@@ -130,10 +130,12 @@ mismatch, actual StS1 mode verifier mismatch, missing source-backed DevConsole
 command acknowledgement when a command requires one, DevConsole command failure
 when commands are enabled, or restore failure. It writes `monkey-plan.json`,
 per-iteration `iteration-result.json`, retained `runtime-probe-samples.json`,
-retained logs/audits, `sts1-mode-log-check.json`, and a `monkey-summary.json`
-under `.tools/runtime-evidence/`. The runner records a pre-launch log baseline
-and ignores pre-existing game processes so stale sessions cannot prove a new
-iteration.
+retained full logs, `godot.log.current-iteration`, audits,
+`sts1-mode-log-check.json`, and a `monkey-summary.json` under
+`.tools/runtime-evidence/`. The runner records a pre-launch log baseline,
+checks the current-iteration log slice for acknowledgements and runtime
+expectations, and ignores pre-existing game processes so stale sessions or stale
+appended log content cannot prove a new iteration.
 
 After a launched run, check the retained packet without launching the game:
 
