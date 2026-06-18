@@ -360,7 +360,7 @@ function Get-UnhealthyObservationFields {
     $failures = [System.Collections.Generic.List[string]]::new()
     if ($null -eq $Observation) {
         $failures.Add('missing') | Out-Null
-        return ,$failures
+        return @($failures.ToArray())
     }
 
     foreach ($field in $RequiredTrueFields) {
@@ -385,7 +385,7 @@ function Get-UnhealthyObservationFields {
         }
     }
 
-    return ,$failures
+    return @($failures.ToArray())
 }
 
 function Add-Finding {

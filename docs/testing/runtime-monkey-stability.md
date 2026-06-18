@@ -238,7 +238,7 @@ per-seed `run-result.json`, `runtime-probe-samples.json`, and sidecar log. It
 refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes. It also reports missing launcher invocation, missing or unhealthy
-runtime probe samples, unhealthy `MainMenuObservation` /
+runtime probe samples, missing or unhealthy `MainMenuObservation` /
 `RuntimeObservation`, `EventKind: Ancient` / `AncientId`, sidecar log,
 completion/failure marker, or ordered Ancient event traversal as
 `RuntimeHarness` evidence defects first. This makes failed AutoSlay packets

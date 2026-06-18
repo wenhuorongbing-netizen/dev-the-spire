@@ -1316,6 +1316,58 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerReportsMissingGameNativeAutoSlayObservations()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        var runDir = Path.Combine(workdir, "run-0001");
+        Directory.CreateDirectory(runDir);
+
+        try
+        {
+            File.WriteAllText(
+                Path.Combine(runDir, "run-result.json"),
+                """
+                {
+                  "RunnerKind": "GameNativeAutoSlay",
+                  "Iteration": 1,
+                  "Seed": "TEST-SEED-001",
+                  "EventKind": "Ancient",
+                  "AncientId": "Urda",
+                  "Invocation": "AutoSlayer.Start(seed, logFile)",
+                  "Command": "AutoSlayer.Start(seed, logFile)"
+                }
+                """);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-IterationDir", runDir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_missing");
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_observation_missing");
+            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_unhealthy");
+            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_observation_unhealthy");
+            Assert.Contains(
+                findings,
+                finding =>
+                    finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_missing" &&
+                    finding.GetProperty("Rationale").GetString()?.Contains("missing", StringComparison.Ordinal) == true);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerScansIterationDirectoriesWithoutMonkeySummary()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");

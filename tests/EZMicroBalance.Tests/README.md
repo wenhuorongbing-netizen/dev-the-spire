@@ -16,6 +16,7 @@ This test project guards source shape, localization, release documentation, pack
 | `EngineeringGovernanceGuardTests.cs` / `EngineeringGovernanceGuardTests.ArchitectureCanary.cs` / `EngineeringGovernanceGuardTests.FeatureModuleMetadata.cs` / `EngineeringGovernanceGuardTests.FeatureBootstrap.cs` | Governance ownership for diagnostics, repository hygiene, release dashboard/planning docs, worktree batch script coverage, feature module metadata, feature bootstrap records/default-off gates/environment overrides, and architecture canary policy/diagnostic contracts. |
 | `ReleaseArtifactTests.cs` | Installed/package artifacts and Harmony target resolution. |
 | `ReleaseCoverageGuardTests.cs` | Release docs, source coverage, and active feature completion claims. |
+| `ReleaseEvidenceGateTests.cs` / `ReleaseEvidenceGateTests.NoLaunchTemplates.cs` / `ReleaseEvidenceGateTests.ManualEvidenceTemplates.cs` / `ReleaseEvidenceGateTests.ManualHandoff.cs` / `ReleaseEvidenceGateTests.EvidenceHelpers.cs` | Release evidence verifier contracts, package hash checks, no-launch evidence-template scaffolding, manual handoff guards, and shared evidence helpers. |
 | `ReleaseHashGuardTests.cs` | Current package hash claims and stale-hash rejection. |
 | `ReleasePackageArtifactGuardTests.cs` | Package staging, installed artifact parity, release hash docs, and release-artifact opt-in coverage. |
 | `ReleaseSafetyExpandedGuardTests.cs` | Expanded docs, release-claim, localization, Ascension safety, and stale-claim guards. |
