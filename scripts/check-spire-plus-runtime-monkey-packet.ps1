@@ -416,40 +416,6 @@ function Get-ArrayCount {
     return @($Value).Count
 }
 
-function Get-JsonArrayStrings {
-    param(
-        [AllowNull()]$Object,
-        [Parameter(Mandatory = $true)][string]$Name
-    )
-
-    if (-not (Test-JsonProperty -Object $Object -Name $Name) -or $null -eq $Object.$Name) {
-        return @()
-    }
-
-    return @($Object.$Name | ForEach-Object { [string]$_ })
-}
-
-function Test-StringArrayEquals {
-    param(
-        [AllowNull()]$Left,
-        [AllowNull()]$Right
-    )
-
-    $leftItems = @($Left | ForEach-Object { [string]$_ })
-    $rightItems = @($Right | ForEach-Object { [string]$_ })
-    if ($leftItems.Count -ne $rightItems.Count) {
-        return $false
-    }
-
-    for ($i = 0; $i -lt $leftItems.Count; $i++) {
-        if (-not [string]::Equals($leftItems[$i], $rightItems[$i], [System.StringComparison]::Ordinal)) {
-            return $false
-        }
-    }
-
-    return $true
-}
-
 function Get-FileSha256OrEmpty {
     param([AllowEmptyString()][string]$Path)
 
@@ -997,88 +963,6 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_hang_signals_empty" -Passed ($hangSignalsCount -eq 0) -Detail 'HangSignals must be empty for a clean packet'
             Add-Check -Name "${iterationName}_game_process_id_positive" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0) -gt 0) -Detail 'GameProcessId must identify SlayTheSpire2'
             $iterationGameProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0)
-            $resultPrepareOutputPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPrepareOutputPath' -DefaultValue ''))
-            $resultPrepareOutputSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPrepareOutputSha256' -DefaultValue '')
-            Add-Check -Name "${iterationName}_live_session_prepare_output_under_iteration_dir" -Passed ($resultPrepareOutputPath -and (Test-PathUnderDirectory -Path $resultPrepareOutputPath -Directory $iterationDir)) -Detail 'LiveSessionPrepareOutputPath must stay inside the current iteration directory'
-            Add-Check -Name "${iterationName}_live_session_prepare_output_leaf_expected" -Passed ($resultPrepareOutputPath -and ([System.IO.Path]::GetFileName($resultPrepareOutputPath) -eq 'prepare-output.json')) -Detail 'LiveSessionPrepareOutputPath must end with prepare-output.json'
-            Add-Check -Name "${iterationName}_live_session_prepare_output_path_matches_retained_file" -Passed ($resultPrepareOutputPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultPrepareOutputPath, [System.IO.Path]::GetFullPath($prepareOutputPath)))) -Detail 'LiveSessionPrepareOutputPath must point to retained prepare-output.json'
-            Add-Check -Name "${iterationName}_live_session_prepare_output_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultPrepareOutputSha256)) -Detail 'LiveSessionPrepareOutputSha256 must be retained'
-            if ($prepareOutputExists) {
-                Add-Check -Name "${iterationName}_live_session_prepare_output_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultPrepareOutputSha256, (Get-FileSha256OrEmpty -Path $prepareOutputPath))) -Detail 'LiveSessionPrepareOutputSha256 must match retained prepare-output.json'
-            }
-
-            $resultLiveSessionEvidenceDir = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionEvidenceDir' -DefaultValue '')
-            $resultLiveSessionLauncherKind = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLauncherKind' -DefaultValue '')
-            $resultLiveSessionSteamAppId = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSteamAppId' -DefaultValue '')
-            $resultLiveSessionLaunchFilePath = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchFilePath' -DefaultValue '')
-            $resultLiveSessionLaunchArgumentList = Get-JsonArrayStrings -Object $iterationResult -Name 'LiveSessionLaunchArgumentList'
-            $resultLiveSessionLaunchedProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchedProcessId' -DefaultValue 0)
-            $resultLiveSessionLaunchedAt = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchedAt' -DefaultValue '')
-            $resultLiveSessionPidAttributionSchemaVersion = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidAttributionSchemaVersion' -DefaultValue 0)
-            $resultLiveSessionPidAttributionPassed = [bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidAttributionPassed' -DefaultValue $false)
-            $resultLiveSessionPidAttributionMethod = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidAttributionMethod' -DefaultValue '')
-            $resultLiveSessionPidProbeStartedAtUtc = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidProbeStartedAtUtc' -DefaultValue '')
-            $resultLiveSessionPidProbeFinishedAtUtc = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidProbeFinishedAtUtc' -DefaultValue '')
-            $resultLiveSessionPreLaunchSlayProcessCount = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessCount' -DefaultValue -1)
-            $resultLiveSessionSelectedGameProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessId' -DefaultValue 0)
-            $resultLiveSessionSelectedGameProcessStartTimeUtc = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessStartTimeUtc' -DefaultValue '')
-            $resultLiveSessionSelectedGameProcessPath = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessPath' -DefaultValue '')
-            $resultLiveSessionSelectedGameProcessParentProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessParentProcessId' -DefaultValue 0)
-            Add-Check -Name "${iterationName}_live_session_launch_kind_steam_app_launch" -Passed ([string]::Equals($resultLiveSessionLauncherKind, 'SteamAppLaunch', [System.StringComparison]::Ordinal)) -Detail 'LiveSessionLauncherKind must record SteamAppLaunch'
-            Add-Check -Name "${iterationName}_live_session_steam_app_id_2868840" -Passed ([string]::Equals($resultLiveSessionSteamAppId, '2868840', [System.StringComparison]::Ordinal)) -Detail 'LiveSessionSteamAppId must record Slay the Spire 2 app id 2868840'
-            Add-Check -Name "${iterationName}_live_session_launched_process_id_positive" -Passed ($resultLiveSessionLaunchedProcessId -gt 0) -Detail 'LiveSessionLaunchedProcessId must retain the Steam launcher process id returned by Start-Process'
-            $liveSessionLaunchedAtUtc = ConvertTo-DateTimeUtcOrNull -Value $resultLiveSessionLaunchedAt
-            Add-Check -Name "${iterationName}_live_session_launched_at_parseable" -Passed ($null -ne $liveSessionLaunchedAtUtc) -Detail 'LiveSessionLaunchedAt must parse as a UTC timestamp'
-            Add-Check -Name "${iterationName}_live_session_pid_attribution_schema_version" -Passed ($resultLiveSessionPidAttributionSchemaVersion -ge 1) -Detail 'LiveSessionPidAttributionSchemaVersion must be retained'
-            Add-Check -Name "${iterationName}_live_session_pid_attribution_passed" -Passed $resultLiveSessionPidAttributionPassed -Detail 'LiveSessionPidAttributionPassed must be true'
-            Add-Check -Name "${iterationName}_live_session_pid_attribution_method_present" -Passed (-not [string]::IsNullOrWhiteSpace($resultLiveSessionPidAttributionMethod)) -Detail 'LiveSessionPidAttributionMethod must explain the attribution method'
-            Add-Check -Name "${iterationName}_live_session_pid_probe_started_at_parseable" -Passed ($null -ne (ConvertTo-DateTimeUtcOrNull -Value $resultLiveSessionPidProbeStartedAtUtc)) -Detail 'LiveSessionPidProbeStartedAtUtc must parse as UTC'
-            Add-Check -Name "${iterationName}_live_session_pid_probe_finished_at_parseable" -Passed ($null -ne (ConvertTo-DateTimeUtcOrNull -Value $resultLiveSessionPidProbeFinishedAtUtc)) -Detail 'LiveSessionPidProbeFinishedAtUtc must parse as UTC'
-            Add-Check -Name "${iterationName}_live_session_prelaunch_slay_process_count_zero" -Passed ($resultLiveSessionPreLaunchSlayProcessCount -eq 0) -Detail 'live-session prepare must not start with pre-existing SlayTheSpire2 processes'
-            Add-Check -Name "${iterationName}_live_session_selected_game_process_id_positive" -Passed ($resultLiveSessionSelectedGameProcessId -gt 0) -Detail 'LiveSessionSelectedGameProcessId must identify the attributed SlayTheSpire2 process'
-            $liveSessionSelectedStartUtc = ConvertTo-DateTimeUtcOrNull -Value $resultLiveSessionSelectedGameProcessStartTimeUtc
-            Add-Check -Name "${iterationName}_live_session_selected_game_process_start_time_parseable" -Passed ($null -ne $liveSessionSelectedStartUtc) -Detail 'LiveSessionSelectedGameProcessStartTimeUtc must parse as UTC'
-            Add-Check -Name "${iterationName}_live_session_selected_game_process_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($resultLiveSessionSelectedGameProcessPath)) -Detail 'LiveSessionSelectedGameProcessPath must be retained'
-            Add-Check -Name "${iterationName}_live_session_selected_game_process_path_leaf_expected" -Passed (-not [string]::IsNullOrWhiteSpace($resultLiveSessionSelectedGameProcessPath) -and [System.IO.Path]::GetFileName($resultLiveSessionSelectedGameProcessPath) -eq 'SlayTheSpire2.exe') -Detail 'LiveSessionSelectedGameProcessPath must point to SlayTheSpire2.exe'
-            Add-Check -Name "${iterationName}_live_session_selected_game_process_parent_process_id_recorded" -Passed ($resultLiveSessionSelectedGameProcessParentProcessId -gt 0) -Detail 'LiveSessionSelectedGameProcessParentProcessId is retained as attribution evidence'
-
-            if ($null -ne $prepareOutput) {
-                $prepareEvidenceDir = [string](Get-JsonValue -Object $prepareOutput -Name 'EvidenceDir' -DefaultValue '')
-                $prepareLaunchKind = [string](Get-JsonValue -Object $prepareOutput -Name 'LaunchKind' -DefaultValue '')
-                $prepareSteamAppId = [string](Get-JsonValue -Object $prepareOutput -Name 'SteamAppId' -DefaultValue '')
-                $prepareLaunchFilePath = [string](Get-JsonValue -Object $prepareOutput -Name 'LaunchFilePath' -DefaultValue '')
-                $prepareLaunchArgumentList = Get-JsonArrayStrings -Object $prepareOutput -Name 'LaunchArgumentList'
-                $prepareLaunchedProcessId = [int](Get-JsonValue -Object $prepareOutput -Name 'LaunchedProcessId' -DefaultValue 0)
-                $prepareLaunchedAt = [string](Get-JsonValue -Object $prepareOutput -Name 'LaunchedAt' -DefaultValue '')
-                $prepareSelectedGameProcessId = [int](Get-JsonValue -Object $prepareOutput -Name 'SelectedGameProcessId' -DefaultValue 0)
-                $prepareSelectedGameProcessStartTimeUtc = [string](Get-JsonValue -Object $prepareOutput -Name 'SelectedGameProcessStartTimeUtc' -DefaultValue '')
-                $prepareSelectedGameProcessPath = [string](Get-JsonValue -Object $prepareOutput -Name 'SelectedGameProcessPath' -DefaultValue '')
-                $prepareSelectedGameProcessParentProcessId = [int](Get-JsonValue -Object $prepareOutput -Name 'SelectedGameProcessParentProcessId' -DefaultValue 0)
-                Add-Check -Name "${iterationName}_live_session_prepare_output_evidence_dir_matches_iteration_dir" -Passed (-not [string]::IsNullOrWhiteSpace($prepareEvidenceDir) -and [System.StringComparer]::OrdinalIgnoreCase.Equals([System.IO.Path]::GetFullPath($prepareEvidenceDir), [System.IO.Path]::GetFullPath($iterationDir))) -Detail 'prepare-output.json EvidenceDir must match the iteration directory'
-                Add-Check -Name "${iterationName}_live_session_prepare_output_evidence_dir_matches_result" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultLiveSessionEvidenceDir, $prepareEvidenceDir)) -Detail 'iteration-result LiveSessionEvidenceDir must match prepare-output.json EvidenceDir'
-                Add-Check -Name "${iterationName}_live_session_launch_kind_matches_prepare_output" -Passed ([string]::Equals($resultLiveSessionLauncherKind, $prepareLaunchKind, [System.StringComparison]::Ordinal)) -Detail 'LiveSessionLauncherKind must match prepare-output.json LaunchKind'
-                Add-Check -Name "${iterationName}_live_session_steam_app_id_matches_prepare_output" -Passed ([string]::Equals($resultLiveSessionSteamAppId, $prepareSteamAppId, [System.StringComparison]::Ordinal)) -Detail 'LiveSessionSteamAppId must match prepare-output.json SteamAppId'
-                Add-Check -Name "${iterationName}_live_session_launch_file_path_matches_prepare_output" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultLiveSessionLaunchFilePath, $prepareLaunchFilePath)) -Detail 'LiveSessionLaunchFilePath must match prepare-output.json LaunchFilePath'
-                Add-Check -Name "${iterationName}_live_session_launch_argument_list_matches_prepare_output" -Passed (Test-StringArrayEquals -Left $resultLiveSessionLaunchArgumentList -Right $prepareLaunchArgumentList) -Detail 'LiveSessionLaunchArgumentList must match prepare-output.json LaunchArgumentList'
-                Add-Check -Name "${iterationName}_live_session_launch_argument_list_expected" -Passed (Test-StringArrayEquals -Left $resultLiveSessionLaunchArgumentList -Right @('-applaunch', '2868840')) -Detail 'LiveSessionLaunchArgumentList must record Steam -applaunch 2868840'
-                Add-Check -Name "${iterationName}_live_session_launched_process_id_matches_prepare_output" -Passed ($resultLiveSessionLaunchedProcessId -eq $prepareLaunchedProcessId -and $prepareLaunchedProcessId -gt 0) -Detail 'LiveSessionLaunchedProcessId must match prepare-output.json LaunchedProcessId'
-                Add-Check -Name "${iterationName}_live_session_launched_at_matches_prepare_output" -Passed ([string]::Equals($resultLiveSessionLaunchedAt, $prepareLaunchedAt, [System.StringComparison]::Ordinal)) -Detail 'LiveSessionLaunchedAt must match prepare-output.json LaunchedAt'
-                Add-Check -Name "${iterationName}_live_session_selected_game_process_id_matches_prepare_output" -Passed ($resultLiveSessionSelectedGameProcessId -eq $prepareSelectedGameProcessId -and $prepareSelectedGameProcessId -gt 0) -Detail 'LiveSessionSelectedGameProcessId must match prepare-output.json SelectedGameProcessId'
-                Add-Check -Name "${iterationName}_live_session_selected_game_process_start_time_matches_prepare_output" -Passed ([string]::Equals($resultLiveSessionSelectedGameProcessStartTimeUtc, $prepareSelectedGameProcessStartTimeUtc, [System.StringComparison]::Ordinal)) -Detail 'LiveSessionSelectedGameProcessStartTimeUtc must match prepare-output.json'
-                Add-Check -Name "${iterationName}_live_session_selected_game_process_path_matches_prepare_output" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultLiveSessionSelectedGameProcessPath, $prepareSelectedGameProcessPath)) -Detail 'LiveSessionSelectedGameProcessPath must match prepare-output.json'
-                Add-Check -Name "${iterationName}_live_session_selected_game_process_parent_process_id_matches_prepare_output" -Passed ($resultLiveSessionSelectedGameProcessParentProcessId -eq $prepareSelectedGameProcessParentProcessId -and $prepareSelectedGameProcessParentProcessId -gt 0) -Detail 'LiveSessionSelectedGameProcessParentProcessId must match prepare-output.json'
-            }
-
-            $resultGameProcessStartTimeUtc = [string](Get-JsonValue -Object $iterationResult -Name 'GameProcessStartTimeUtc' -DefaultValue '')
-            $resultGameProcessPath = [string](Get-JsonValue -Object $iterationResult -Name 'GameProcessPath' -DefaultValue '')
-            $gameProcessStartUtc = ConvertTo-DateTimeUtcOrNull -Value $resultGameProcessStartTimeUtc
-            Add-Check -Name "${iterationName}_game_process_start_time_recorded" -Passed ($null -ne $gameProcessStartUtc) -Detail 'GameProcessStartTimeUtc must parse as UTC'
-            Add-Check -Name "${iterationName}_game_process_start_time_after_live_session_launch" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessStartTimeAfterLiveSessionLaunch' -DefaultValue $false) -and $null -ne $gameProcessStartUtc -and $null -ne $liveSessionLaunchedAtUtc -and $gameProcessStartUtc -ge $liveSessionLaunchedAtUtc) -Detail 'GameProcessStartTimeUtc must be at or after LiveSessionLaunchedAt'
-            Add-Check -Name "${iterationName}_game_process_path_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultGameProcessPath)) -Detail 'GameProcessPath must be retained'
-            Add-Check -Name "${iterationName}_game_process_path_leaf_expected" -Passed (-not [string]::IsNullOrWhiteSpace($resultGameProcessPath) -and [System.IO.Path]::GetFileName($resultGameProcessPath) -eq 'SlayTheSpire2.exe') -Detail 'GameProcessPath must point to SlayTheSpire2.exe'
-            Add-Check -Name "${iterationName}_game_process_id_matches_live_session" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessIdMatchesLiveSession' -DefaultValue $false) -and $iterationGameProcessId -eq $resultLiveSessionSelectedGameProcessId) -Detail 'GameProcessId must match LiveSessionSelectedGameProcessId'
-            Add-Check -Name "${iterationName}_game_process_start_time_matches_live_session" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessStartTimeMatchesLiveSession' -DefaultValue $false) -and [string]::Equals($resultGameProcessStartTimeUtc, $resultLiveSessionSelectedGameProcessStartTimeUtc, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'GameProcessStartTimeUtc must match LiveSessionSelectedGameProcessStartTimeUtc'
-            Add-Check -Name "${iterationName}_game_process_path_matches_live_session" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessPathMatchesLiveSession' -DefaultValue $false) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($resultGameProcessPath, $resultLiveSessionSelectedGameProcessPath)) -Detail 'GameProcessPath must match LiveSessionSelectedGameProcessPath'
             Add-Check -Name "${iterationName}_main_window_observed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'MainWindowObserved' -DefaultValue $false)) -Detail 'MainWindowObserved must be true'
             Add-Check -Name "${iterationName}_main_menu_elapsed_recorded" -Passed ([double](Get-JsonValue -Object $iterationResult -Name 'MainMenuElapsedSeconds' -DefaultValue 0) -gt 0) -Detail 'MainMenuElapsedSeconds must be positive'
             Add-Check -Name "${iterationName}_max_no_log_growth_recorded" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'MaxSecondsWithoutLogGrowth' -DefaultValue -1) -ge 0) -Detail 'MaxSecondsWithoutLogGrowth must be recorded'

@@ -251,7 +251,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "live_session_prepare_output_path_matches_retained_file",
             "live_session_prepare_output_sha256_matches_retained_file",
             "live_session_pid_attribution_passed",
-            "live_session_selected_game_process_id_matches_prepare_output",
+            "prepare_output_selected_game_process_id_matches_result",
             "game_process_id_matches_live_session",
             "game_process_start_time_matches_live_session",
             "game_process_path_matches_live_session",
