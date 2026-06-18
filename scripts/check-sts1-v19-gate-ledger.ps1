@@ -185,7 +185,7 @@ $unknownStatuses = @($rows | Where-Object { $allowedStatuses -notcontains $_.cur
 Add-Check -Name 'all_statuses_allowed' -Passed ($unknownStatuses.Count -eq 0) -Detail "unknown statuses: $((@($unknownStatuses | Select-Object -ExpandProperty current_status -Unique)) -join ',')"
 
 $rowContentNeedles = @(
-    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline at eaaeb5a1 and newer pushed governance/test follow-up through 254a6f41' },
+    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline at eaaeb5a1 and requires exact HEAD/worktree recapture for later governance/test follow-up commits' },
     [pscustomobject]@{ GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after coordination pause' },
     [pscustomobject]@{ GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records split lanes 489 / 0 / 39 / 528' },
     [pscustomobject]@{ GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output' },

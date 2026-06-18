@@ -190,12 +190,16 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "plan_unresponsive_sample_threshold_positive",
             "RuntimeProbeSamplesPath",
             "CurrentIterationLogPath",
+            "LogScanOffsetBytes",
             "runtime_probe_samples_under_iteration_dir",
             "current_iteration_log_under_iteration_dir",
             "runtime_probe_samples_leaf_expected",
             "current_iteration_log_leaf_expected",
             "runtime_probe_samples_path_matches_retained_file",
             "current_iteration_log_path_matches_retained_file",
+            "log_scan_offset_recorded",
+            "log_scan_offset_within_full_log",
+            "current_iteration_log_matches_scan_offset",
             "iteration_number_matches_directory",
             "scenario_present",
             "plan_entry_exists",
@@ -352,6 +356,73 @@ public sealed class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsCurrentIterationLogsThatDoNotMatchScanOffset()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            File.AppendAllText(Path.Combine(workdir, "iteration-0001", "godot.log.current-iteration"), $"{Environment.NewLine}stale appended slice content");
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_current_iteration_log_matches_scan_offset status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsLogScanOffsetsOutsideTheFullLog()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var resultPath = Path.Combine(workdir, "iteration-0001", "iteration-result.json");
+            var resultJson = File.ReadAllText(resultPath)
+                .Replace("\"LogScanOffsetBytes\": 0", "\"LogScanOffsetBytes\": 999999", StringComparison.Ordinal);
+            File.WriteAllText(resultPath, resultJson);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_log_scan_offset_within_full_log status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerIsNoLaunchAndMapsOwnerAreas()
     {
         var analyzer = ReadRepoText("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -367,6 +438,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "godot.log.after-launch",
             "godot.log.current-iteration",
             "godot-log-audit.json",
+            "LogScanOffsetBytes",
             "FailureReasonCodes",
             "HangSignals",
             "EvidenceFiles",
@@ -403,9 +475,13 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             "main_menu_timeout",
             "startup_log_stalled",
             "current_iteration_log_missing",
+            "current_iteration_log_slice_mismatch",
+            "current_iteration_log_scan_offset_invalid",
             "iteration_result_missing_or_invalid",
             "process_unresponsive",
             "command_ack_missing",
+            "Read-TextAfterByteOffset",
+            "Normalize-LogSliceForComparison",
             "MissingFieldException",
             "MissingMethodException",
             "TypeLoadException",
@@ -538,6 +614,66 @@ public sealed class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("Ancients.Vakuu.FightOptionSetup", iteration6.GetProperty("OwnerAreaFromCommand").GetString());
             Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration6, "command_ack_missing"));
             Assert.Equal("Ancients.Vakuu.FightOptionSetup", FindFindingOwner(iteration6, "vakuu_command_failed_or_hung"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerReportsMismatchedCurrentIterationSlice()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            Directory.CreateDirectory(iterationDir);
+            const string prefix = "[INFO] stale full-log prefix before accepted scan offset\r\n";
+            const string actualSlice = "[ERROR] TypeLoadException actual current slice owner\r\n";
+            const string staleCurrentSlice = "[SPIREPLUS-EVIDENCE] StS1 AdditiveBatch1 Registered act event Golden Idol\r\n";
+            var offset = System.Text.Encoding.UTF8.GetByteCount(prefix);
+
+            File.WriteAllText(
+                Path.Combine(iterationDir, "iteration-result.json"),
+                $$"""
+                {
+                  "Iteration": 1,
+                  "Passed": false,
+                  "Command": "spireplus_test_ancient URDA confirm",
+                  "ScenarioTag": "ancient-ui",
+                  "OwnerArea": "Runtime.Unknown",
+                  "LogScanOffsetBytes": {{offset}},
+                  "FailureReasonCodes": ["process_unresponsive"],
+                  "HangSignals": ["process_unresponsive"]
+                }
+                """);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), prefix + actualSlice);
+            File.WriteAllText(Path.Combine(iterationDir, "godot.log.current-iteration"), staleCurrentSlice);
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var iteration = FindIteration(document.RootElement, 1);
+            var mismatchFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "current_iteration_log_slice_mismatch");
+
+            Assert.Equal("PackageRuntimeDrift", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", mismatchFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", mismatchFinding.GetProperty("Severity").GetString());
+            Assert.Equal("PackageRuntimeDrift", FindFindingOwner(iteration, "process_unresponsive"));
         }
         finally
         {
@@ -788,6 +924,7 @@ public sealed class RuntimeMonkeyStabilityGuardTests
               "RestoreSucceeded": true,
               "RuntimeProbeSamplesPath": {{JsonSerializer.Serialize(resultProbeSamplesPath)}},
               "CurrentIterationLogPath": {{JsonSerializer.Serialize(resultCurrentLogPath)}},
+              "LogScanOffsetBytes": 0,
               "MainMenuObservation": {
                 "MainMenuReached": true,
                 "ProcessObserved": true,

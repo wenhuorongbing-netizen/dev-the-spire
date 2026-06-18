@@ -174,6 +174,41 @@ function Resolve-ChildOrAbsolutePath {
     return [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
 }
 
+function Read-TextAfterByteOffset {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][long]$Offset
+    )
+
+    $stream = [System.IO.File]::Open($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+    try {
+        [void]$stream.Seek($Offset, [System.IO.SeekOrigin]::Begin)
+        $reader = [System.IO.StreamReader]::new($stream, [System.Text.Encoding]::UTF8, $true, 4096, $true)
+        try {
+            return $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+    } finally {
+        $stream.Dispose()
+    }
+}
+
+function Normalize-LogSliceForComparison {
+    param([AllowNull()][string]$Text)
+
+    if ($null -eq $Text) {
+        return ''
+    }
+
+    $normalized = $Text
+    if ($normalized.Length -gt 0 -and $normalized[0] -eq [char]0xFEFF) {
+        $normalized = $normalized.Substring(1)
+    }
+
+    return $normalized -replace "[`r`n]+$", ''
+}
+
 function Test-PathUnderDirectory {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -540,6 +575,24 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_current_iteration_log_under_iteration_dir" -Passed ($resultCurrentIterationLogPath -and (Test-PathUnderDirectory -Path $resultCurrentIterationLogPath -Directory $iterationDir)) -Detail 'CurrentIterationLogPath must stay inside the current iteration directory'
             Add-Check -Name "${iterationName}_current_iteration_log_leaf_expected" -Passed ($resultCurrentIterationLogPath -and ([System.IO.Path]::GetFileName($resultCurrentIterationLogPath) -eq 'godot.log.current-iteration')) -Detail 'CurrentIterationLogPath must end with godot.log.current-iteration'
             Add-Check -Name "${iterationName}_current_iteration_log_path_matches_retained_file" -Passed ($resultCurrentIterationLogPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentIterationLogPath, [System.IO.Path]::GetFullPath($currentIterationLogPath)))) -Detail 'CurrentIterationLogPath must point to the retained godot.log.current-iteration file'
+            $resultLogScanOffsetBytes = [long](Get-JsonValue -Object $iterationResult -Name 'LogScanOffsetBytes' -DefaultValue -1)
+            $logScanOffsetRecorded = $resultLogScanOffsetBytes -ge 0
+            Add-Check -Name "${iterationName}_log_scan_offset_recorded" -Passed $logScanOffsetRecorded -Detail 'LogScanOffsetBytes must be retained and non-negative'
+            $logScanOffsetWithinFullLog = $false
+            if ($logExists -and $logScanOffsetRecorded) {
+                $fullLogLength = [long](Get-Item -LiteralPath $logPath).Length
+                $logScanOffsetWithinFullLog = $resultLogScanOffsetBytes -le $fullLogLength
+                Add-Check -Name "${iterationName}_log_scan_offset_within_full_log" -Passed $logScanOffsetWithinFullLog -Detail "LogScanOffsetBytes must be within godot.log.after-launch; offset=$resultLogScanOffsetBytes, length=$fullLogLength"
+            }
+
+            if ($logExists -and $currentIterationLogExists -and $logScanOffsetRecorded -and $logScanOffsetWithinFullLog) {
+                $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $logPath -Offset $resultLogScanOffsetBytes
+                $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogPath)
+                $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
+                $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
+                Add-Check -Name "${iterationName}_current_iteration_log_matches_scan_offset" -Passed ([string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) -Detail 'godot.log.current-iteration must match godot.log.after-launch from LogScanOffsetBytes, ignoring only trailing newline differences'
+            }
+
             Add-Check -Name "${iterationName}_result_audit_clean" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'AuditClean' -DefaultValue $false)) -Detail 'AuditClean must be true'
             Add-Check -Name "${iterationName}_result_expectation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'ExpectationPassed' -DefaultValue $false)) -Detail 'ExpectationPassed must be true'
             Add-Check -Name "${iterationName}_result_sts1_mode_verifier_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Sts1ModeVerifierPassed' -DefaultValue $false)) -Detail 'Sts1ModeVerifierPassed must be true'

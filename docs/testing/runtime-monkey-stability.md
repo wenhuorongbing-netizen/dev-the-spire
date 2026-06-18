@@ -222,8 +222,10 @@ process-observed, process-exited, hung-window, log-observed, log-length, and
 max-no-growth counters. It also requires the retained
 `sts1-mode-log-check.json`, exact Spire Plus patch-count lines from
 `godot.log.current-iteration`, probe sample paths and sliced-log paths that
-point to the retained standard files inside the current iteration folder, and no
-raw probe sample with `Responding=false`.
+point to the retained standard files inside the current iteration folder,
+`LogScanOffsetBytes` within the copied full log, a `godot.log.current-iteration`
+slice that matches `godot.log.after-launch` from that offset, and no raw probe
+sample with `Responding=false`.
 A clean packet means those signals stayed healthy for the sampled windows; it
 still does not prove deeper gameplay behavior.
 
@@ -241,7 +243,8 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `LogFinalLengthBytes`, `LastLogGrowthAt`, `MaxSecondsWithoutLogGrowth`,
   `MaxConsecutiveUnresponsiveSamples`, `StartupLogProbePassed`,
   `PostCommandLogProbePassed`, `CommandAckObserved`,
-  `ResponsivenessProbePassed`, `HangSignals`, and `FailureReasonCodes`.
+  `ResponsivenessProbePassed`, current-slice offset binding, `HangSignals`, and
+  `FailureReasonCodes`.
 - Each iteration retains `runtime-probe-samples.json` with the sampled
   process/window/log records.
 - `monkey-summary.json` records `FailedIterationIds`, `FailureReasonCounts`,
@@ -258,18 +261,22 @@ unsaved live-test run starting for the requested Ancient.
 The triage analyzer maps retained signals to owner areas. It reads
 `godot.log.current-iteration` first when present, falls back to the full copied
 `godot.log.after-launch`, and records the planned `OwnerAreaHint` separately
-from `OwnerAreaFromLog` and `OwnerAreaFromCommand`. For hung processes,
-unclassified retained failures, audit hits, Spire Plus error/exception hits, and
-co-op override failures, explicit log-derived package/runtime drift, StS1,
-preview-tool, or multiplayer-policy signatures take precedence over the planned
-command owner. Package/runtime drift classification is reserved for actual
-mismatch/error signals such as type-load, missing-method, or expectation-drift
-lines, not normal startup package markers. `PreviewTools` is reserved for
-specific Crystal Sphere, Transform Preview, Future Peek, `PreviewTransform`,
-`PreviewCrystalSphere`, `[Spire Plus] Preview`, or local-UI-only preview-tool
-evidence; generic map preview text such as Root Sight remains under its feature
-owner. Command-ack failures and Vakuu command failures still preserve the
-planned/command owner unless the log is the only useful source.
+from `OwnerAreaFromLog` and `OwnerAreaFromCommand`. When `LogScanOffsetBytes` is
+available, the analyzer validates the retained current-iteration slice against
+the full copied log and reports a `RuntimeHarness` blocker if they disagree; for
+owner routing, a valid offset-derived slice is preferred over a stale retained
+slice. For hung processes, unclassified retained failures, audit hits, Spire
+Plus error/exception hits, and co-op override failures, explicit log-derived
+package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take
+precedence over the planned command owner. Package/runtime drift classification
+is reserved for actual mismatch/error signals such as type-load, missing-method,
+or expectation-drift lines, not normal startup package markers. `PreviewTools`
+is reserved for specific Crystal Sphere, Transform Preview, Future Peek,
+`PreviewTransform`, `PreviewCrystalSphere`, `[Spire Plus] Preview`, or
+local-UI-only preview-tool evidence; generic map preview text such as Root Sight
+remains under its feature owner. Command-ack failures and Vakuu command failures
+still preserve the planned/command owner unless the log is the only useful
+source.
 
 Current owner areas
 include `RuntimeStartup`, `RuntimeCrash`, `RuntimeHarness`,

@@ -66,6 +66,41 @@ function Read-JsonOrNull {
     }
 }
 
+function Read-TextAfterByteOffset {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][long]$Offset
+    )
+
+    $stream = [System.IO.File]::Open($Path, [System.IO.FileMode]::Open, [System.IO.FileAccess]::Read, [System.IO.FileShare]::ReadWrite)
+    try {
+        [void]$stream.Seek($Offset, [System.IO.SeekOrigin]::Begin)
+        $reader = [System.IO.StreamReader]::new($stream, [System.Text.Encoding]::UTF8, $true, 4096, $true)
+        try {
+            return $reader.ReadToEnd()
+        } finally {
+            $reader.Dispose()
+        }
+    } finally {
+        $stream.Dispose()
+    }
+}
+
+function Normalize-LogSliceForComparison {
+    param([AllowNull()][string]$Text)
+
+    if ($null -eq $Text) {
+        return ''
+    }
+
+    $normalized = $Text
+    if ($normalized.Length -gt 0 -and $normalized[0] -eq [char]0xFEFF) {
+        $normalized = $normalized.Substring(1)
+    }
+
+    return $normalized -replace "[`r`n]+$", ''
+}
+
 function Add-Finding {
     param(
         [Parameter(Mandatory = $true)]
@@ -331,16 +366,6 @@ function Analyze-Iteration {
     $command = if ($result) { [string](Get-JsonValue -Object $result -Name 'Command' -DefaultValue '') } else { '' }
     $resultOwnerArea = if ($result) { [string](Get-JsonValue -Object $result -Name 'OwnerArea' -DefaultValue '') } else { '' }
     $scenarioTag = if ($result) { [string](Get-JsonValue -Object $result -Name 'ScenarioTag' -DefaultValue '') } else { '' }
-    $logText = ''
-    if (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
-        $logText = Get-Content -LiteralPath $logCandidate -Raw -Encoding UTF8
-    }
-    $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
-    $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
-
-    $auditHits = if (Test-Path -LiteralPath $auditCandidate -PathType Leaf) { Get-AuditHits -Path $auditCandidate } else { @() }
-    $failureCodes = if ($result) { @((Get-JsonValue -Object $result -Name 'FailureReasonCodes' -DefaultValue @())) } else { @() }
-    $hangSignals = if ($result) { @((Get-JsonValue -Object $result -Name 'HangSignals' -DefaultValue @())) } else { @() }
     $findings = [System.Collections.Generic.List[object]]::new()
     $candidateEvidenceFiles = @(
         $resultPath,
@@ -353,6 +378,53 @@ function Analyze-Iteration {
     $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
         Test-Path -LiteralPath $_ -PathType Leaf
     })
+    $logText = ''
+    $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogCandidate -PathType Leaf
+    $fullLogExists = Test-Path -LiteralPath $fullLogCandidate -PathType Leaf
+    if (Test-Path -LiteralPath $logCandidate -PathType Leaf) {
+        $logText = Get-Content -LiteralPath $logCandidate -Raw -Encoding UTF8
+    }
+
+    if ($result -and $currentIterationLogExists -and $fullLogExists -and (Test-JsonProperty -Object $result -Name 'LogScanOffsetBytes')) {
+        $logScanOffset = [long](Get-JsonValue -Object $result -Name 'LogScanOffsetBytes' -DefaultValue -1)
+        $fullLogLength = [long](Get-Item -LiteralPath $fullLogCandidate).Length
+        if ($logScanOffset -lt 0 -or $logScanOffset -gt $fullLogLength) {
+            $logText = ''
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'current_iteration_log_scan_offset_invalid' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale "LogScanOffsetBytes is outside godot.log.after-launch; offset=$logScanOffset, length=$fullLogLength." `
+                -NextStep 'Fix current-iteration log slicing or evidence retention before routing this runtime failure to gameplay source.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        } else {
+            $expectedCurrentIterationLogText = Read-TextAfterByteOffset -Path $fullLogCandidate -Offset $logScanOffset
+            $actualCurrentIterationLogText = [System.IO.File]::ReadAllText($currentIterationLogCandidate)
+            $normalizedExpectedSlice = Normalize-LogSliceForComparison -Text $expectedCurrentIterationLogText
+            $normalizedActualSlice = Normalize-LogSliceForComparison -Text $actualCurrentIterationLogText
+            $logText = $expectedCurrentIterationLogText
+            if (-not [string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) {
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'current_iteration_log_slice_mismatch' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale 'godot.log.current-iteration does not match godot.log.after-launch from LogScanOffsetBytes, so the retained slice may be stale or hand-assembled.' `
+                    -NextStep 'Use the derived full-log slice from LogScanOffsetBytes for source routing, then fix current-iteration log retention before trusting packet evidence.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+        }
+    }
+
+    $logOwnerArea = Get-OwnerAreaFromText -Text $logText -Command ''
+    $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
+
+    $auditHits = if (Test-Path -LiteralPath $auditCandidate -PathType Leaf) { Get-AuditHits -Path $auditCandidate } else { @() }
+    $failureCodes = if ($result) { @((Get-JsonValue -Object $result -Name 'FailureReasonCodes' -DefaultValue @())) } else { @() }
+    $hangSignals = if ($result) { @((Get-JsonValue -Object $result -Name 'HangSignals' -DefaultValue @())) } else { @() }
 
     if ($iterationResultMissing -and $null -eq $SummaryResult) {
         Add-Finding `
