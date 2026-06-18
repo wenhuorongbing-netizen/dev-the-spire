@@ -586,6 +586,66 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerReportsMalformedResultPathsAsFailedRows()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var resultPath = Path.Combine(workdir, "iteration-0001", "iteration-result.json");
+            var resultJson = File.ReadAllText(resultPath);
+            foreach (var propertyName in new[]
+                     {
+                         "LiveSessionPrepareOutputPath",
+                         "LiveSessionEvidenceDir",
+                         "GodotLogBeforePath",
+                         "GodotLogAfterLaunchPath",
+                         "GodotLogCurrentIterationPath",
+                         "CurrentIterationLogPath",
+                         "RuntimeProbeSamplesPath",
+                     })
+            {
+                resultJson = Regex.Replace(
+                    resultJson,
+                    $"\"{propertyName}\"\\s*:\\s*\"(?:\\\\.|[^\"])*\"",
+                    $"\"{propertyName}\": \"\\u0000bad-{propertyName}\"",
+                    RegexOptions.CultureInvariant);
+            }
+
+            File.WriteAllText(resultPath, resultJson);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_live_session_prepare_output_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_live_session_prepare_output_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_result_live_session_evidence_dir_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_godot_log_before_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_godot_log_after_launch_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_godot_current_iteration_log_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_current_iteration_log_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_path_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeMonkeyPacketCheckerRejectsIterationResultsThatDoNotMatchPlanOrSummary()
     {
         var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");

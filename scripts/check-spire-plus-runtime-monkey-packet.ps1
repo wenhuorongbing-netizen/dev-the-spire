@@ -63,7 +63,17 @@ function Test-JsonProperty {
         [Parameter(Mandatory = $true)][string]$Name
     )
 
-    return $null -ne $Object -and $Object.PSObject.Properties.Name -contains $Name
+    if ($null -eq $Object) {
+        return $false
+    }
+
+    foreach ($property in @($Object.PSObject.Properties)) {
+        if ([string]::Equals($property.Name, $Name, [System.StringComparison]::Ordinal)) {
+            return $true
+        }
+    }
+
+    return $false
 }
 
 function Get-JsonValue {
@@ -281,11 +291,15 @@ function Resolve-ChildOrAbsolutePath {
         return ''
     }
 
-    if ([System.IO.Path]::IsPathRooted($Path)) {
-        return [System.IO.Path]::GetFullPath($Path)
-    }
+    try {
+        if ([System.IO.Path]::IsPathRooted($Path)) {
+            return [System.IO.Path]::GetFullPath($Path)
+        }
 
-    return [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
+        return [System.IO.Path]::GetFullPath((Join-Path $BaseDir $Path))
+    } catch {
+        return ''
+    }
 }
 
 function Read-TextAfterByteOffset {
@@ -401,9 +415,17 @@ function Test-PathUnderDirectory {
         [Parameter(Mandatory = $true)][string]$Directory
     )
 
-    $directoryFull = [System.IO.Path]::GetFullPath($Directory).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
-    $pathFull = [System.IO.Path]::GetFullPath($Path)
-    return $pathFull.StartsWith($directoryFull, [System.StringComparison]::OrdinalIgnoreCase)
+    if ([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($Directory)) {
+        return $false
+    }
+
+    try {
+        $directoryFull = [System.IO.Path]::GetFullPath($Directory).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+        $pathFull = [System.IO.Path]::GetFullPath($Path)
+        return $pathFull.StartsWith($directoryFull, [System.StringComparison]::OrdinalIgnoreCase)
+    } catch {
+        return $false
+    }
 }
 
 function Get-ArrayCount {
@@ -419,11 +441,19 @@ function Get-ArrayCount {
 function Get-FileSha256OrEmpty {
     param([AllowEmptyString()][string]$Path)
 
-    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+    if ([string]::IsNullOrWhiteSpace($Path)) {
         return ''
     }
 
-    return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+    try {
+        if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+            return ''
+        }
+
+        return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+    } catch {
+        return ''
+    }
 }
 
 function ConvertTo-DateTimeUtcOrNull {
@@ -490,7 +520,7 @@ function ConvertTo-NormalizedPathOrEmpty {
     try {
         return [System.IO.Path]::GetFullPath($Path)
     } catch {
-        return $Path
+        return ''
     }
 }
 
