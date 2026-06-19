@@ -118,4 +118,5 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("FailedRuns", rationale, StringComparison.Ordinal);
         Assert.Contains("AncientIdCounts", rationale, StringComparison.Ordinal);
     }
+
 }

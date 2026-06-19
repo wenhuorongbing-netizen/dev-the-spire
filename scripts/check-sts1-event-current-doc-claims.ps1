@@ -115,6 +115,15 @@ function Add-NoRegexCheck {
     Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
 }
 
+function Test-AutoSlayProofCommandText {
+    param([AllowEmptyString()][string]$Text)
+
+    $normalized = $Text -replace '\s+', ' '
+    $scriptPattern = '^\s*(?:&\s*)?(?:(?:\.{1,2}[\\/])?scripts[\\/])check-spire-plus-autoslay-packet\.ps1\b'
+    return [regex]::IsMatch($normalized, $scriptPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase) -and
+        [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+}
+
 function Add-AutoSlayProofCommandTargetCheck {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
@@ -159,9 +168,7 @@ function Add-AutoSlayProofCommandTargetCheck {
             }
 
             $normalized = $logicalLine -replace '\s+', ' '
-            $isAutoSlayProofCommand =
-                [regex]::IsMatch($normalized, '^\s*\.\\scripts\\check-spire-plus-autoslay-packet\.ps1\b') -and
-                [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+            $isAutoSlayProofCommand = Test-AutoSlayProofCommandText -Text $normalized
             $hasExpectedAncientIds = [regex]::IsMatch($normalized, '(?i)(^|\s)-ExpectedAncientIds(\s|$)')
 
             if ($isAutoSlayProofCommand -and -not $hasExpectedAncientIds) {
@@ -227,9 +234,7 @@ function Add-AutoSlayProofCommandNoSwitchCheck {
             }
 
             $normalized = $logicalLine -replace '\s+', ' '
-            $isAutoSlayProofCommand =
-                [regex]::IsMatch($normalized, '^\s*\.\\scripts\\check-spire-plus-autoslay-packet\.ps1\b') -and
-                [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+            $isAutoSlayProofCommand = Test-AutoSlayProofCommandText -Text $normalized
             $hasDisallowedSwitch = [regex]::IsMatch($normalized, $switchPattern)
 
             if ($isAutoSlayProofCommand -and $hasDisallowedSwitch) {
@@ -291,9 +296,7 @@ function Get-AutoSlayProofCommands {
             }
 
             $normalized = $logicalLine -replace '\s+', ' '
-            $isAutoSlayProofCommand =
-                [regex]::IsMatch($normalized, '^\s*\.\\scripts\\check-spire-plus-autoslay-packet\.ps1\b') -and
-                [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+            $isAutoSlayProofCommand = Test-AutoSlayProofCommandText -Text $normalized
 
             if ($isAutoSlayProofCommand) {
                 $commands.Add([pscustomobject]@{
@@ -308,6 +311,22 @@ function Get-AutoSlayProofCommands {
     }
 
     return @($commands)
+}
+
+function Add-AutoSlayProofCommandPresentCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths
+    )
+
+    $commands = @(Get-AutoSlayProofCommands -Paths $Paths)
+    $detail = if ($commands.Count -gt 0) {
+        "recognized AutoSlay proof commands: $(@($commands | ForEach-Object { "$($_.Path):$($_.Line)" }) -join ', ')"
+    } else {
+        'active docs must include at least one recognized check-spire-plus-autoslay-packet.ps1 -FailOnMismatch proof command'
+    }
+
+    Add-Check -Name $Name -Passed ($commands.Count -gt 0) -Detail $detail
 }
 
 function Add-AutoSlayProofCommandRequiredSwitchesCheck {
@@ -699,7 +718,7 @@ Add-ContainsCheck -Name 'goal_event_pause_static_work_boundary' -Text $goalEvent
 Add-RegexCheck -Name 'goal_event_downstream_pause_boundary' -Text $goalEventDoc -Pattern 'Runtime, gameplay, QA, build/test/publish'
 Add-RegexCheck -Name 'goal_event_direct_instruction_after_pause' -Text $goalEventDoc -Pattern 'coordination pause.{0,40}Mandatory Overnight Run v20'
 Add-ContainsCheck -Name 'goal_event_latest_pause_safe_static_checkpoint_20260618_autoslay' -Text $goalEventDoc -Needle 'Latest pause-safe static checkpoint after beta.88 event-goal/current-doc alignment, runtime-monkey packet escape, analyzer noncanonical-path, probe process identity, and AutoSlay malformed-path hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1122 checks / 0 mismatches'
-Add-ContainsCheck -Name 'goal_event_validation_matrix_current_doc_claims_1261' -Text $goalEventDoc -Needle 'current-doc-claims: 1261 checks / 0 mismatches'
+Add-ContainsCheck -Name 'goal_event_validation_matrix_current_doc_claims_1265' -Text $goalEventDoc -Needle 'current-doc-claims: 1265 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_v20_overlay_29' -Text $goalEventDoc -Needle 'v20 final-gate overlay: 29 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_runtime_preflight_27' -Text $goalEventDoc -Needle 'runtime-preflight: 27 checks / 0 mismatches (local v0.107.1 / beta.88 target; read-only source/prereq only)'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_subagent_70' -Text $goalEventDoc -Needle 'v19 subagent coverage: 70 checks / 0 mismatches'
@@ -711,7 +730,7 @@ Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_nonclaim' -Tex
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_plan_match' -Text $goalEventDoc -Needle 'plan_expected_ancient_ids_match_parameter'
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_required_for_proof_mode' -Text $goalEventDoc -Needle 'expected_ancient_ids_required_for_proof_mode'
 Add-ContainsCheck -Name 'goal_event_autoslay_ancient_id_normalization_proof_mode_followup' -Text $goalEventDoc -Needle 'Latest pause-safe AutoSlay AncientId normalization/proof-mode/summary-count follow-up'
-Add-RegexCheck -Name 'goal_event_lower_audit_current_doc_claims_1261' -Text $goalEventDoc -Pattern '\| Current doc claims\s+\|[^\r\n]*1261 checks / 0 mismatches'
+Add-RegexCheck -Name 'goal_event_lower_audit_current_doc_claims_1265' -Text $goalEventDoc -Pattern '\| Current doc claims\s+\|[^\r\n]*1265 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_direct_localization_nonproof' -Text $goalEventDoc -Needle 'Fixing `STS1_GOLDEN_IDOL.pages.LEAVE.description` only removes the direct localization missing-key blocker'
 Add-ContainsCheck -Name 'goal_event_canary_loader_current_pass_section' -Text $goalEventDoc -Needle 'Retained beta.85 CanaryOnly loader registration proof remains previous-package/game-version loader context for `O25` and loader-packet `O39`; recapture current CanaryOnly before broader current-runtime claims.'
 Add-ContainsCheck -Name 'goal_event_beta88_additive_loader_current_pass_section' -Text $goalEventDoc -Needle 'Current beta.88 AdditiveBatch1 loader registration proof can be treated as current-pass for `O33`.'
@@ -878,6 +897,7 @@ Add-ContainsCheck -Name 'runtime_monkey_docs_runtime_packet_command_corpus_array
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_summary_array_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`monkey-summary.json` `Results` / `FailedIterationIds` shapes'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_runs_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`autoslay_summary_shape_invalid` `RuntimeHarness` blocker'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_counter_mismatch' -Text $runtimeMonkeyDocs -Needle 'record `autoslay_summary_counter_mismatch` before any AutoSlay owner routing'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_launcher_provenance_mismatch' -Text $runtimeMonkeyDocs -Needle 'autoslay_launcher_provenance_mismatch'
 Add-ContainsCheck -Name 'runtime_runner_runtime_log_growth_blocks_clean_pass' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\run-spire-plus-monkey-stability.ps1') -Raw -Encoding UTF8) -Needle 'runtime_log_stalled'
 Add-ContainsCheck -Name 'runtime_packet_script_requires_runtime_log_growth' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_observation_log_grew'
 Add-ContainsCheck -Name 'runtime_packet_script_tracks_command_log_growth_requirement' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_observation_log_growth_requirement_matches_command'
@@ -946,6 +966,7 @@ Add-ContainsCheck -Name 'runtime_analyzer_rejects_missing_runtime_monkey_plan' -
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_runtime_summary_array_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Results must be retained as a native JSON array'
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_autoslay_summary_runs_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_summary_shape_invalid'
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_autoslay_summary_counter_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_summary_counter_mismatch'
+Add-ContainsCheck -Name 'runtime_analyzer_rejects_autoslay_launcher_provenance_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_launcher_provenance_mismatch'
 Add-ContainsCheck -Name 'runtime_packet_script_rejects_before_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_before_under_iteration_dir'
 Add-ContainsCheck -Name 'runtime_packet_script_rejects_after_launch_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_after_launch_under_iteration_dir'
 Add-ContainsCheck -Name 'runtime_packet_script_rejects_godot_current_log_escape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'godot_current_iteration_log_under_iteration_dir'
@@ -980,6 +1001,7 @@ Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_missing_runtime_mon
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_runtime_summary_array_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedRuntimeMonkeySummaryArrayShape'
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_autoslay_summary_runs_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlaySummaryRunsShape'
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_autoslay_summary_counter_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlaySummaryCounterDrift'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_autoslay_launcher_provenance_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayLauncherProvenanceDrift'
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_probe_expected_identity_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsProbeExpectedIdentityDrift'
 Add-ContainsCheck -Name 'autoslay_packet_script_rejects_missing_event_traversal' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'batch_event_room_traversal_observed'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_autoslayer_start' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'AutoSlayer.Start(seed, logFile)'
@@ -1809,10 +1831,12 @@ Add-NoRegexCheck -Name 'no_runtime_packet_command_without_expected_game_target' 
 Add-NoRegexCheck -Name 'no_runtime_packet_command_without_outfile' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode)(?!.*-OutFile)'
 Add-NoRegexCheck -Name 'no_runtime_packet_command_without_fail_on_mismatch' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode)(?!.*-FailOnMismatch)'
 Add-NoRegexCheck -Name 'no_enabled_runtime_packet_command_with_missing_state_bypass' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode\s+(CanaryOnly|AdditiveBatch1))(?=.*-(AllowMissingSessionState|AllowMissingRestoreState))'
-Add-AutoSlayProofCommandTargetCheck -Name 'autoslay_packet_proof_commands_include_expected_ancient_ids' -Paths $currentClaimFiles
-Add-AutoSlayProofCommandNoSwitchCheck -Name 'autoslay_packet_proof_commands_do_not_allow_missing_event_traversal' -Paths $currentClaimFiles -SwitchName 'AllowMissingEventTraversal'
-Add-AutoSlayProofCommandRequiredSwitchesCheck -Name 'autoslay_packet_proof_commands_include_current_targets_and_report' -Paths $currentClaimFiles -SwitchNames @('MinRuns', 'ExpectedPackageVersion', 'ExpectedGameVersion', 'ExpectedRitsuLibVersion', 'ExpectedRitsuCompatBranch', 'ExpectedPatchCount', 'OutFile')
-Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_pin_current_target_values' -Paths $currentClaimFiles -SwitchValues @{
+$autoSlayProofCommandFiles = @($currentClaimFiles + @('docs\testing\runtime-monkey-stability.md')) | Sort-Object -Unique
+Add-AutoSlayProofCommandPresentCheck -Name 'autoslay_packet_proof_command_present' -Paths $autoSlayProofCommandFiles
+Add-AutoSlayProofCommandTargetCheck -Name 'autoslay_packet_proof_commands_include_expected_ancient_ids' -Paths $autoSlayProofCommandFiles
+Add-AutoSlayProofCommandNoSwitchCheck -Name 'autoslay_packet_proof_commands_do_not_allow_missing_event_traversal' -Paths $autoSlayProofCommandFiles -SwitchName 'AllowMissingEventTraversal'
+Add-AutoSlayProofCommandRequiredSwitchesCheck -Name 'autoslay_packet_proof_commands_include_current_targets_and_report' -Paths $autoSlayProofCommandFiles -SwitchNames @('MinRuns', 'ExpectedPackageVersion', 'ExpectedGameVersion', 'ExpectedRitsuLibVersion', 'ExpectedRitsuCompatBranch', 'ExpectedPatchCount', 'OutFile')
+Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_pin_current_target_values' -Paths $autoSlayProofCommandFiles -SwitchValues @{
     MinRuns = '1000'
     ExpectedPackageVersion = 'v0.1.0-private-beta.88'
     ExpectedGameVersion = '0.107.1'
@@ -1820,7 +1844,7 @@ Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_
     ExpectedRitsuCompatBranch = '0.107.0'
     ExpectedPatchCount = '25'
 }
-Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_pin_current_ancient_targets' -Paths $currentClaimFiles -SwitchValues @{
+Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_pin_current_ancient_targets' -Paths $autoSlayProofCommandFiles -SwitchValues @{
     ExpectedAncientIds = 'VAKUU,URDA,MORVI,LOTHA'
 }
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_game_root' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-GameRoot)'

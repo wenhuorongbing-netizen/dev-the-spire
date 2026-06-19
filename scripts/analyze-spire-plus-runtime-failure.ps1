@@ -906,6 +906,105 @@ function Test-TextContains {
     return $Text.IndexOf($Needle, [System.StringComparison]::OrdinalIgnoreCase) -ge 0
 }
 
+function Get-AutoSlayLauncherProvenanceMismatchDetails {
+    param(
+        [AllowNull()]$Plan,
+        [AllowNull()]$Result,
+        [Parameter(Mandatory = $true)][string]$EvidenceDir
+    )
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Plan) {
+        $details.Add('autoslay-plan.json missing or invalid for launcher provenance') | Out-Null
+        return @($details.ToArray())
+    }
+
+    if ($null -eq $Result) {
+        $details.Add('run-result.json missing or invalid for launcher provenance') | Out-Null
+        return @($details.ToArray())
+    }
+
+    $provenanceFields = @('LauncherKind', 'LauncherPath', 'LauncherSha256', 'HookId', 'HookAssembly', 'InvocationCommand')
+    foreach ($fieldName in $provenanceFields) {
+        $planValue = [string](Get-JsonValue -Object $Plan -Name $fieldName -DefaultValue '')
+        $resultValue = [string](Get-JsonValue -Object $Result -Name $fieldName -DefaultValue '')
+        if (-not (Test-JsonProperty -Object $Plan -Name $fieldName) -or [string]::IsNullOrWhiteSpace($planValue)) {
+            $details.Add("$fieldName missing in autoslay-plan.json") | Out-Null
+        }
+
+        if (-not (Test-JsonProperty -Object $Result -Name $fieldName) -or [string]::IsNullOrWhiteSpace($resultValue)) {
+            $details.Add("$fieldName missing in run-result.json") | Out-Null
+        }
+    }
+
+    $planLauncherPathRaw = [string](Get-JsonValue -Object $Plan -Name 'LauncherPath' -DefaultValue '')
+    $resultLauncherPathRaw = [string](Get-JsonValue -Object $Result -Name 'LauncherPath' -DefaultValue '')
+    $planLauncherPath = Resolve-AnalysisPath -BaseDir $EvidenceDir -Path $planLauncherPathRaw
+    $resultLauncherPath = Resolve-AnalysisPath -BaseDir $EvidenceDir -Path $resultLauncherPathRaw
+
+    if (-not [string]::IsNullOrWhiteSpace($planLauncherPathRaw)) {
+        if (-not (Test-PathInsideDirectory -Path $planLauncherPath -Directory $EvidenceDir)) {
+            $details.Add('LauncherPath from autoslay-plan.json must stay inside the evidence directory') | Out-Null
+        } elseif (-not (Test-Path -LiteralPath $planLauncherPath -PathType Leaf)) {
+            $details.Add('LauncherPath from autoslay-plan.json must point at a retained launcher proof artifact') | Out-Null
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($resultLauncherPathRaw) -and
+        -not (Test-PathInsideDirectory -Path $resultLauncherPath -Directory $EvidenceDir)) {
+        $details.Add('LauncherPath from run-result.json must stay inside the evidence directory') | Out-Null
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($planLauncherPathRaw) -and
+        -not [string]::IsNullOrWhiteSpace($resultLauncherPathRaw) -and
+        -not [System.StringComparer]::OrdinalIgnoreCase.Equals(
+            (ConvertTo-NormalizedPathOrEmpty -Path $planLauncherPath),
+            (ConvertTo-NormalizedPathOrEmpty -Path $resultLauncherPath))) {
+        $details.Add('LauncherPath in run-result.json must match autoslay-plan.json') | Out-Null
+    }
+
+    $planLauncherSha256 = [string](Get-JsonValue -Object $Plan -Name 'LauncherSha256' -DefaultValue '')
+    if (-not [string]::IsNullOrWhiteSpace($planLauncherSha256)) {
+        if (-not (Test-Sha256Text -Value $planLauncherSha256)) {
+            $details.Add('LauncherSha256 in autoslay-plan.json must be a 64-character SHA256 hex string') | Out-Null
+        } elseif (-not [string]::IsNullOrWhiteSpace($planLauncherPath) -and
+            (Test-Path -LiteralPath $planLauncherPath -PathType Leaf) -and
+            -not [System.StringComparer]::OrdinalIgnoreCase.Equals((Get-FileSha256OrEmpty -Path $planLauncherPath), $planLauncherSha256)) {
+            $details.Add('LauncherSha256 in autoslay-plan.json must match the retained launcher proof artifact') | Out-Null
+        }
+    }
+
+    foreach ($fieldName in @('LauncherKind', 'LauncherSha256', 'HookId', 'HookAssembly', 'InvocationCommand')) {
+        $planValue = [string](Get-JsonValue -Object $Plan -Name $fieldName -DefaultValue '')
+        $resultValue = [string](Get-JsonValue -Object $Result -Name $fieldName -DefaultValue '')
+        if (-not [string]::IsNullOrWhiteSpace($planValue) -and -not [string]::IsNullOrWhiteSpace($resultValue)) {
+            $matches = if ([string]::Equals($fieldName, 'LauncherSha256', [System.StringComparison]::Ordinal)) {
+                [System.StringComparer]::OrdinalIgnoreCase.Equals($resultValue, $planValue)
+            } else {
+                [string]::Equals($resultValue, $planValue, [System.StringComparison]::Ordinal)
+            }
+
+            if (-not $matches) {
+                $details.Add("$fieldName in run-result.json must match autoslay-plan.json") | Out-Null
+            }
+        }
+    }
+
+    $planInvocationCommand = [string](Get-JsonValue -Object $Plan -Name 'InvocationCommand' -DefaultValue '')
+    $resultInvocationCommand = [string](Get-JsonValue -Object $Result -Name 'InvocationCommand' -DefaultValue '')
+    if (-not [string]::IsNullOrWhiteSpace($planInvocationCommand) -and
+        -not (Test-TextContains -Text $planInvocationCommand -Needle 'AutoSlayer.Start(seed, logFile)')) {
+        $details.Add('InvocationCommand in autoslay-plan.json must call AutoSlayer.Start(seed, logFile)') | Out-Null
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($resultInvocationCommand) -and
+        -not (Test-TextContains -Text $resultInvocationCommand -Needle 'AutoSlayer.Start(seed, logFile)')) {
+        $details.Add('InvocationCommand in run-result.json must call AutoSlayer.Start(seed, logFile)') | Out-Null
+    }
+
+    return @($details.ToArray())
+}
+
 function Test-AllJsonPropertiesPresent {
     param(
         [AllowNull()]$Items,
@@ -1802,6 +1901,22 @@ function Analyze-Iteration {
             $autoSlayRunArtifactsTrustedForOwner = $false
             $autoSlayProbeArtifactTrustedForOwner = $false
             Add-Finding -Findings $findings -Signal 'autoslay_summary_counter_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json top-level counters do not match Runs[] aggregation: $($autoSlaySummaryAggregateMismatchDetails -join '; ')." -NextStep 'Regenerate or reject autoslay-summary.json; top-level pass/fail counters and AncientIdCounts must match Runs[] before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+        $autoSlayEvidenceRoot = $Directory
+        $autoSlayParent = [System.IO.Directory]::GetParent($Directory)
+        if ($null -ne $autoSlayParent -and (Test-Path -LiteralPath (Join-Path $autoSlayParent.FullName 'autoslay-plan.json') -PathType Leaf)) {
+            $autoSlayEvidenceRoot = $autoSlayParent.FullName
+        }
+
+        $autoSlayLauncherProvenanceMismatchDetails = @(Get-AutoSlayLauncherProvenanceMismatchDetails -Plan $analysisPlan -Result $result -EvidenceDir $autoSlayEvidenceRoot)
+        if (($autoSlayLauncherProvenanceMismatchDetails | Measure-Object).Count -gt 0) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+            $autoSlayAuditArtifactTrustedForOwner = $false
+            $autoSlaySts1ModeArtifactTrustedForOwner = $false
+            $autoSlaySidecarPathTrustedForOwner = $false
+            $sts1ModeLogCheckTrustedForOwner = $false
+            Add-Finding -Findings $findings -Signal 'autoslay_launcher_provenance_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay launcher/mod-hook provenance is missing, stale, or unbound: $($autoSlayLauncherProvenanceMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; autoslay-plan.json and run-result.json must hash-bind the retained launcher proof artifact and exact AutoSlay hook command before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if (-not $RunResultPathInsideEvidenceDir) {

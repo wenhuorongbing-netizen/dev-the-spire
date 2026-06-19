@@ -844,6 +844,15 @@ It also recomputes summary `Passed`, `TotalRuns`, `FailedRuns`, and
 `AncientIdCounts` from retained `Runs[]`; stale or hand-edited aggregate values
 record `autoslay_summary_counter_mismatch` before any AutoSlay owner routing is
 trusted.
+The analyzer also requires the AutoSlay launcher/mod-hook provenance from
+`autoslay-plan.json` and each `run-result.json` to bind to the same retained
+launcher proof artifact. `LauncherKind`, `LauncherPath`, `LauncherSha256`,
+`HookId`, `HookAssembly`, and `InvocationCommand` must be present, the launcher
+path must stay under the evidence directory, the retained file hash must match,
+and `InvocationCommand` must call `AutoSlayer.Start(seed, logFile)`. Missing or
+stale launcher provenance records `autoslay_launcher_provenance_mismatch` as a
+`RuntimeHarness` blocker and disables AutoSlay run, probe, sidecar, audit, StS1,
+and log owner routing for that seed.
 When a retained `sts1-mode-log-check.json` exists, the analyzer applies the
 same trust rule: the report's `Mode` must bind to the retained run plan
 `Sts1EventMode`, its `LogPath`, `LogLength`, and `LogSha256` must bind to

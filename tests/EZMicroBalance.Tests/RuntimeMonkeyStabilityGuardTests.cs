@@ -3816,6 +3816,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayLauncherProvenanceDriftInBatchFixture()
+    {
+        RuntimeFailureAnalyzerReadsGameNativeAutoSlayRunResultsAndByteBoundSlicesCore(phase: 10);
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayArtifactBindingDrift()
     {
         RuntimeFailureAnalyzerReadsGameNativeAutoSlayRunResultsAndByteBoundSlicesCore(phase: 3);
@@ -3877,6 +3883,18 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var autoSlayLogPath = Path.Combine(runDir, "autoslay.log");
             File.WriteAllText(autoSlayLogPath, autoSlayLog);
             var autoSlayLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(autoSlayLogPath))).ToLowerInvariant();
+            var launcherPath = Path.Combine(workdir, "autoslay-launcher-proof.json");
+            File.WriteAllText(
+                launcherPath,
+                """
+                {
+                  "LauncherKind": "SpirePlusDebugHook",
+                  "HookId": "SpirePlus.AutoSlayHarness.Start",
+                  "HookAssembly": "EZMicroBalanceCode",
+                  "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)"
+                }
+                """);
+            var launcherHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(launcherPath))).ToLowerInvariant();
             var beforeLogLength = new FileInfo(beforeLogPath).Length;
             var beforeLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(beforeLogPath))).ToLowerInvariant();
             var afterLaunchLogLength = new FileInfo(afterLaunchLogPath).Length;
@@ -3962,6 +3980,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Launch": true,
                   "RunnerKind": "GameNativeAutoSlay",
                   "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "LauncherKind": "SpirePlusDebugHook",
+                  "LauncherPath": "autoslay-launcher-proof.json",
+                  "LauncherSha256": {{JsonSerializer.Serialize(launcherHash)}},
+                  "HookId": "SpirePlus.AutoSlayHarness.Start",
+                  "HookAssembly": "EZMicroBalanceCode",
+                  "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)",
                   "Seed": {{JsonSerializer.Serialize(seed)}},
                   "EventKind": "Ancient",
                   "AncientId": "VAKUU",
@@ -4018,10 +4042,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var runResultHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(runResultPath))).ToLowerInvariant();
             File.WriteAllText(
                 Path.Combine(workdir, "autoslay-plan.json"),
-                """
+                $$"""
                 {
                   "SchemaVersion": 1,
                   "RunnerKind": "GameNativeAutoSlay",
+                  "Invocation": "Spire Plus test hook calls AutoSlayer.Start(seed, logFile)",
+                  "LauncherKind": "SpirePlusDebugHook",
+                  "LauncherPath": "autoslay-launcher-proof.json",
+                  "LauncherSha256": {{JsonSerializer.Serialize(launcherHash)}},
+                  "HookId": "SpirePlus.AutoSlayHarness.Start",
+                  "HookAssembly": "EZMicroBalanceCode",
+                  "InvocationCommand": "SpirePlus.AutoSlayHarness.Start -> AutoSlayer.Start(seed, logFile)",
                   "Sts1EventMode": "Off",
                   "PackageVersion": "v0.1.0-private-beta.87",
                   "GameVersion": "0.107.0",
@@ -4045,6 +4076,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "RitsuCompatBranch": "0.107.0",
                   "ExpectedPatchCount": 25,
                   "ExpectedAncientIds": ["VAKUU"],
+                  "Passed": false,
+                  "TotalRuns": 1,
+                  "FailedRuns": 1,
+                  "AncientIdCounts": { "VAKUU": 1 },
                   "Runs": [
                     {
                       "Seed": "AUTOSLAY-ANALYZER",
@@ -4168,6 +4203,37 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Assert.Contains("ExpectedAncientIds missing='VAKUU' unexpected='URDA'", summaryPlanDriftFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
                 Assert.Equal("RuntimeHarness", FindFindingOwner(summaryPlanDriftIteration, "process_unresponsive"));
                 File.WriteAllText(summaryPath, originalSummaryJson);
+                return;
+            }
+
+            if (phase == 10)
+            {
+                File.AppendAllText(launcherPath, Environment.NewLine);
+                var launcherProvenanceOutputPath = Path.Combine(workdir, "runtime-failure-analysis-autoslay-launcher-provenance-mismatch.json");
+                var launcherProvenanceResult = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", launcherProvenanceOutputPath);
+                Assert.True(launcherProvenanceResult.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{launcherProvenanceResult.Output}{launcherProvenanceResult.Error}");
+
+                using var launcherProvenanceDocument = JsonDocument.Parse(File.ReadAllText(launcherProvenanceOutputPath));
+                var launcherProvenanceRoot = launcherProvenanceDocument.RootElement;
+                var launcherProvenanceIteration = FindIteration(launcherProvenanceRoot, 1);
+                var launcherProvenanceFinding = launcherProvenanceIteration
+                    .GetProperty("Findings")
+                    .EnumerateArray()
+                    .Single(item => item.GetProperty("Signal").GetString() == "autoslay_launcher_provenance_mismatch");
+
+                Assert.Equal("HarnessEvidenceInvalid", launcherProvenanceRoot.GetProperty("TriageDisposition").GetString());
+                Assert.Equal(0, launcherProvenanceRoot.GetProperty("GameplayBlockingFindingCount").GetInt32());
+                Assert.False(launcherProvenanceIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+                Assert.False(launcherProvenanceIteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+                Assert.False(launcherProvenanceIteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+                Assert.False(launcherProvenanceIteration.GetProperty("AutoSlaySidecarTrustedForOwner").GetBoolean());
+                Assert.False(launcherProvenanceIteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+                Assert.False(launcherProvenanceIteration.GetProperty("AutoSlaySts1ModeArtifactTrustedForOwner").GetBoolean());
+                Assert.False(launcherProvenanceIteration.GetProperty("Sts1ModeLogCheckTrustedForOwner").GetBoolean());
+                Assert.Equal("Runtime.Unknown", launcherProvenanceIteration.GetProperty("OwnerAreaFromLog").GetString());
+                Assert.Equal("RuntimeHarness", launcherProvenanceFinding.GetProperty("OwnerArea").GetString());
+                Assert.Contains("LauncherSha256 in autoslay-plan.json must match", launcherProvenanceFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+                Assert.Equal("RuntimeHarness", FindFindingOwner(launcherProvenanceIteration, "process_unresponsive"));
                 return;
             }
 
