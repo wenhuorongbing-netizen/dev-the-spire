@@ -2,9 +2,9 @@
 
 Current coordination note, 2026-06-11, v20 trace refreshed 2026-06-17: do not start new `dotnet build`, `dotnet test`, `dotnet publish`, package/release-evidence validation, or game/runtime smoke from a parallel same-repository thread while the migration validation lane is active. Use this plan only after the coordination pause is lifted, or for read-only/static planning. The current v20 hard-stop trace is `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`; the v19 trace remains `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md`.
 
-Current beta.86 proof covers AdditiveBatch1 enabled-mode startup on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.24`. It does not prove event gameplay, save/load, EN/ZHS render, image/license, replacement-pool behavior, multiplayer behavior, or QA. The retained beta.86 packet passed with 10 observed event types / 14 registered-event lines and exact act/shared tuple parity.
+Retained beta.87 proof covers AdditiveBatch1 enabled-mode startup on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.24`. It does not prove current `v0.107.1` loading, event gameplay, save/load, EN/ZHS render, image/license, replacement-pool behavior, multiplayer behavior, or QA. The retained beta.87 packet passed with 10 observed event types / 14 registered-event lines and exact act/shared tuple parity.
 
-Gate mapping after the 2026-06-18 enabled-mode lane: `O33` (current AdditiveBatch1 smoke) is current-pass with retained verifier reports. `O25` (CanaryOnly smoke) remains beta.85 previous-package context, and `O26-O29` plus `O31-O41` (canary gameplay/save-load/render/docs/owner rows), `O42-O52` (simple-batch gameplay/save-load/render/QA rows), `O54-O57` (replacement functional proof), `O58` and `O64` (multiplayer/ZHS runtime rows), and `O65` plus `O72-O75` (independent QA/final handoff rows) remain blocked or current-pending in this thread. `O53` is source-guarded only, `O59-O63` are static classification/safety rows, `O66-O71` are documentation-in-progress rows, and `O76` is a static non-completion invariant; none of those static/documentation rows close runtime or handoff gates.
+Gate mapping after the 2026-06-18 enabled-mode lane: `O33` (retained AdditiveBatch1 smoke) is pass for `v0.107.0` loader/registration with retained verifier reports, but current `v0.107.1` proof must be recaptured. `O25` (CanaryOnly smoke) remains beta.85 previous-package context, and `O26-O29` plus `O31-O41` (canary gameplay/save-load/render/docs/owner rows), `O42-O52` (simple-batch gameplay/save-load/render/QA rows), `O54-O57` (replacement functional proof), `O58` and `O64` (multiplayer/ZHS runtime rows), and `O65` plus `O72-O75` (independent QA/final handoff rows) remain blocked or current-pending in this thread. `O53` is source-guarded only, `O59-O63` are static classification/safety rows, `O66-O71` are documentation-in-progress rows, and `O76` is a static non-completion invariant; none of those static/documentation rows close runtime or handoff gates.
 
 ## Automated Tests
 
@@ -169,8 +169,8 @@ Automated tests and package checks are not gameplay evidence.
 Before event screenshots or gameplay proof can count as current evidence:
 
 1. Preserve beta.85 Off and CanaryOnly proof as previous-package loader context only.
-2. Run `.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch` and stop before launching if the installed game, RitsuLib, repo/installed Spire Plus package manifests, or source-only expected shapes do not match the retained beta.85 evidence target or a newly documented post-pause package target.
-3. Use `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531` as the fresh current `v0.107.0` AdditiveBatch1 smoke: 10 event types / 14 registration calls, retained log verifier 31 / 0, retained packet verifier 52 / 0.
+2. Run `.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch` and stop before launching if the installed game, RitsuLib, repo/installed Spire Plus package manifests, or source-only expected shapes do not match the documented post-pause package target.
+3. Treat `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531` as retained `v0.107.0` AdditiveBatch1 smoke only: 10 event types / 14 registration calls, retained log verifier 31 / 0, retained packet verifier 52 / 0. Recapture current `v0.107.1` loader proof before gameplay proof.
 4. The first beta.86 Steam-client AdditiveBatch1 attempt at `.tools\runtime-evidence\v01070-beta86-additive-batch1-20260618-031043` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not propagate the transient PowerShell environment. Use direct launch with a temporary `steam_appid.txt` when validating enabled modes if Steam is already running.
 5. Only after the relevant enabled-mode smoke is clean, capture event encounters, result logs, pre/post state, save/load, EN/ZHS render, and image/license disposition.
 
@@ -179,14 +179,14 @@ Use a fresh evidence folder for each mode. Replace `REPLACE_WITH_STEAM_USER_ID` 
 ```powershell
 $steamUserId = 'REPLACE_WITH_STEAM_USER_ID'
 $env:SPIREPLUS_STS1_EVENT_MODE='CanaryOnly'
-$evidence = '.tools\runtime-evidence\sts1-canary-v01070-YYYYMMDD-HHMMSS'
+$evidence = '.tools\runtime-evidence\sts1-canary-v01071-YYYYMMDD-HHMMSS'
 .\scripts\spire-plus-live-session.ps1 -Mode Prepare -EvidenceDir $evidence -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -SteamExe 'E:\Steam\steam.exe' -SteamUserId $steamUserId -MoveOtherMods -MoveCurrentRuns -Launch
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.87 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.87 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.87 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.0 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.87 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 

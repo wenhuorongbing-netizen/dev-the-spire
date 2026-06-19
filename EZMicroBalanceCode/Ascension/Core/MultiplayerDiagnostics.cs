@@ -69,14 +69,19 @@ internal static class MultiplayerDiagnostics
         var localVersion = ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? "UNKNOWN";
         var localModelHash = ModelIdSerializationCache.Hash;
         var localMods = ModManager.GetGameplayRelevantModNameList() ?? [];
-        var hostMods = message.mods ?? [];
+        var localOtherMods = ModManager.GetNonGameplayRelevantModNameList() ?? [];
+        var hostMods = message.gameplayAffectingMods ?? [];
+        var hostOtherMods = message.otherMods ?? [];
         var versionMatch = string.Equals(message.version, localVersion, StringComparison.Ordinal);
         var modelHashMatch = message.idDatabaseHash == localModelHash;
         var missingOnHost = localMods.Except(hostMods).ToList();
         var missingOnLocal = hostMods.Except(localMods).ToList();
+        var missingOtherOnHost = localOtherMods.Except(hostOtherMods).ToList();
+        var missingOtherOnLocal = hostOtherMods.Except(localOtherMods).ToList();
         var modListMatch = missingOnHost.Count == 0 && missingOnLocal.Count == 0;
+        var otherModListMatch = missingOtherOnHost.Count == 0 && missingOtherOnLocal.Count == 0;
 
-        if (!IsEnabled && versionMatch && modelHashMatch && modListMatch) return;
+        if (!IsEnabled && versionMatch && modelHashMatch && modListMatch && otherModListMatch) return;
 
         var summary =
             $"[Spire Plus][MPDiag] JoinFlow initial game info: " +
@@ -84,8 +89,10 @@ internal static class MultiplayerDiagnostics
             $"hostModelHash={message.idDatabaseHash}; localModelHash={localModelHash}; modelHashMatch={modelHashMatch}; " +
             $"gameMode={message.gameMode}; sessionState={message.sessionState}; " +
             $"hostFailure={message.connectionFailureReason?.ToString() ?? "<none>"}; " +
-            $"hostMods=[{FormatList(hostMods)}]; localMods=[{FormatList(localMods)}]; " +
-            $"missingOnHost=[{FormatList(missingOnHost)}]; missingOnLocal=[{FormatList(missingOnLocal)}]";
+            $"hostGameplayMods=[{FormatList(hostMods)}]; localGameplayMods=[{FormatList(localMods)}]; " +
+            $"missingOnHost=[{FormatList(missingOnHost)}]; missingOnLocal=[{FormatList(missingOnLocal)}]; " +
+            $"hostOtherMods=[{FormatList(hostOtherMods)}]; localOtherMods=[{FormatList(localOtherMods)}]; " +
+            $"missingOtherOnHost=[{FormatList(missingOtherOnHost)}]; missingOtherOnLocal=[{FormatList(missingOtherOnLocal)}]";
 
         if (versionMatch && !modelHashMatch)
         {
@@ -96,6 +103,12 @@ internal static class MultiplayerDiagnostics
         if (!versionMatch || !modListMatch)
         {
             MainFile.Logger.Warn(summary);
+            return;
+        }
+
+        if (!otherModListMatch)
+        {
+            MainFile.Logger.Warn(summary + "; non-gameplay relevant mod mismatch is allowed by vanilla, but mod authors still need to verify safety.");
             return;
         }
 

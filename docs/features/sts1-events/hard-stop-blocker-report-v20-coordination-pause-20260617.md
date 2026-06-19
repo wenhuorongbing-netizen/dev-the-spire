@@ -10,8 +10,8 @@ This report records the current same-repository coordination pause for this thre
 Blocked or current-pending in this thread:
 
 - `O0-O15`: build, test, package/release-evidence, format, patch inventory, batch classifier, and dirty-worktree owner-decision recapture cannot be completed here while validation lanes are paused or overlapping.
-- `O25`: current `v0.107.0` CanaryOnly enabled-mode smoke has since been captured by the shared validation lane and is loader proof only; this thread did not create it.
-- `O33`: current `v0.107.0` AdditiveBatch1 enabled-mode smoke has since been captured by the shared validation lane and is loader/registration proof only; this thread did not create it.
+- `O25`: retained `v0.107.0` CanaryOnly enabled-mode smoke has since been captured by the shared validation lane and is loader proof only; this thread did not create it. Current `v0.107.1` loader proof still needs recapture.
+- `O33`: retained `v0.107.0` AdditiveBatch1 enabled-mode smoke has since been captured by the shared validation lane and is loader/registration proof only; this thread did not create it. Current `v0.107.1` loader proof still needs recapture.
 - `O26-O29`, `O31-O41`, and `O42-O52`: canary and simple-batch screenshots, result logs, pre/post state, save-load, EN/ZHS render, image/license, parity disposition, and QA rows remain blocked until gameplay evidence exists.
 - `O54-O58`, `O64`, and `O65`: replacement functional proof, multiplayer runtime proof, ZHS screenshots, and independent QA remain blocked until current runtime/gameplay evidence exists.
 - `O72-O81`: owner decisions, no unsupported commit/push, final handoff, and exact scope decisions remain current-pending while validation evidence is incomplete; the package/runtime beta.86 baseline remains `eaaeb5a1`, newer pushed governance/test follow-up exists through `254a6f41`, and any later dirty files still need exact-scope recapture before commit or handoff.
@@ -31,11 +31,11 @@ The reason is shared-runner contamination: multiple same-repo threads were overl
 | Current HEAD observed in this thread | `2c2801dd (HEAD -> main, origin/main, origin/HEAD) Split Distinguished Cape guards` |
 | Current worktree observed in this thread | `git status --short` after the `2c2801dd` recapture reported only this hard-stop recapture alignment slice: modified `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` and modified `scripts/check-sts1-event-current-doc-claims.ps1`; treat later dirty files as separate scope requiring exact recapture before commit or handoff. |
 | Active goal | `docs/goals/event.md` says the target is incomplete and requires O0-O84 all green or a hard-stop blocker report. |
-| Current project state | `PROJECT_STATE.md` records beta.85 default-Off and CanaryOnly loader proof plus beta.86 AdditiveBatch1 loader/registration proof only and keeps gameplay, save-load, replacement, multiplayer, QA, and handoff gates open. |
+| Current project state | `PROJECT_STATE.md` records beta.85 default-Off and CanaryOnly loader proof plus beta.87 AdditiveBatch1 loader/registration proof only as retained `v0.107.0` context, records current installed game `v0.107.1`, and keeps gameplay, save-load, replacement, multiplayer, QA, and handoff gates open. |
 | Current gate split | `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv` keep runtime/gameplay gates blocked or current-pending. |
 | Final-gate overlay | `docs/features/sts1-events/v20-final-gate-overlay.csv` tracks O76-O84 as final documentation/handoff overlay rows without closing runtime gates. |
-| Status board | `docs/features/sts1-events/status-board.md` records beta.85 Off/CanaryOnly previous-package loader context, beta.86 AdditiveBatch1 loader/registration proof, and blocked gameplay/replacement/multiplayer/QA rows. |
-| Current validation summary | `docs/reviews/current-validation.md` records v20 static alignment and beta.86 AdditiveBatch1 direct proof while keeping gameplay, save-load, replacement, multiplayer, QA, release, and handoff gates open. |
+| Status board | `docs/features/sts1-events/status-board.md` records beta.85 Off/CanaryOnly previous-package loader context, beta.87 AdditiveBatch1 retained loader/registration proof, and blocked gameplay/replacement/multiplayer/QA rows. |
+| Current validation summary | `docs/reviews/current-validation.md` records v20 static alignment, retained beta.87 AdditiveBatch1 direct proof, and the `v0.107.1` preflight drift note while keeping gameplay, save-load, replacement, multiplayer, QA, release, and handoff gates open. |
 | Coordination blocker source | The migration-thread coordination note was delivered in-thread; this report is the durable repository-side trace for the v20 pause condition. |
 
 ## Attempted Actions
@@ -51,8 +51,8 @@ The reason is shared-runner contamination: multiple same-repo threads were overl
 1. Let the migration validation lane finish and report the shared state before this thread starts any validation or runtime process.
 2. After the coordination pause is explicitly lifted, recapture the current build/test/format/diff/package and release-evidence lanes in one controlled lane.
 3. Preserve beta.85 Off loader proof as default-Off proof only.
-4. Preserve fresh current `v0.107.0` CanaryOnly enabled-mode smoke proof as loader proof only.
-5. Preserve fresh current `v0.107.0` AdditiveBatch1 enabled-mode smoke proof as loader/registration proof only.
+4. Preserve retained `v0.107.0` CanaryOnly enabled-mode smoke proof as loader proof only, and recapture current `v0.107.1` proof before new runtime claims.
+5. Preserve retained `v0.107.0` AdditiveBatch1 enabled-mode smoke proof as loader/registration proof only, and recapture current `v0.107.1` proof before new runtime claims.
 6. Capture canary and simple-batch screenshots, result logs, pre/post state, save-load, EN/ZHS render, image/license disposition, replacement functional proof, multiplayer fail-closed proof, and independent QA.
 7. Make an explicit owner decision for any localization gap deferral, non-parity substitute, commit/push scope, and handoff scope.
 

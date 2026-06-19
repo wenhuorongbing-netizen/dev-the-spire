@@ -4409,7 +4409,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "MovedCurrentRuns": [],
               "GameRoot": {{JsonSerializer.Serialize(evidenceRoot)}},
               "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(evidenceRoot, "mods"))}},
-              "LogPath": {{JsonSerializer.Serialize(Path.Combine(evidenceRoot, "godot.log.after-launch"))}},
+              "LogPath": {{JsonSerializer.Serialize(Path.Combine(evidenceRoot, "logs", "godot.log"))}},
               "Sts1EventModeEnvironment": {{JsonSerializer.Serialize(mode)}},
               "Sts1UnsafeModeEnvironment": ""
             }
@@ -4421,8 +4421,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "RestoredAt": "2026-06-18T00:00:00.0000000Z",
               "RestoredModCount": 0,
               "RestoredCurrentRunCount": 0,
-              "SettingsHashAfterRestore": "same",
-              "SettingsBackupHashAfterRestore": "same"
+              "SettingsHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "SettingsBackupHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             }
             """);
     }

@@ -29,7 +29,7 @@ Use only the owner-authorized local install as the recovery source; third-party
 dumps or redistributed source/resource bundles are not valid evidence.
 
 Current caution: `source code\release_info.json` currently reports `v0.106.0`
-on this machine, while the installed game is `v0.107.0`. Check that file before
+on this machine, while the installed game is `v0.107.1`. Check that file before
 using the recovered project as current-source evidence. If it does not match the
 installed game version, refresh the local source snapshot first or treat it as
 historical.
@@ -59,7 +59,7 @@ current-source parity. The current local state is expected to report
 `source_branch_matches_installed_game`,
 `source_main_assembly_hash_matches_installed_game`, and
 `source_release_identity_matches_installed_game` as warnings until `source code/`
-is refreshed from the installed `v0.107.0` package. The checker also compares the
+is refreshed from the installed `v0.107.1` package. The checker also compares the
 GDRE `Opening file` line to the installed `SlayTheSpire2.pck` path and reports
 `GdreExport.OpeningFileMatchesInstalledGame` plus
 `RecoveredSource.OriginMatchesInstalledGamePck`. The report also retains
@@ -245,7 +245,7 @@ After the packet is captured, verify it with:
   -MinRuns 1000 `
   -ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA `
   -ExpectedPackageVersion v0.1.0-private-beta.87 `
-  -ExpectedGameVersion 0.107.0 `
+  -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.24 `
   -ExpectedRitsuCompatBranch 0.107.0 `
   -ExpectedPatchCount 25 `
@@ -384,7 +384,7 @@ After a launched run, verify the retained packet without launching anything:
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
   -ExpectedPackageVersion v0.1.0-private-beta.87 `
-  -ExpectedGameVersion 0.107.0 `
+  -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.24 `
   -ExpectedRitsuCompatBranch 0.107.0 `
   -ExpectedPatchCount 25 `

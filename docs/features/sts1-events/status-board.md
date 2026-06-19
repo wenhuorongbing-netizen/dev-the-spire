@@ -1,6 +1,6 @@
 # StS1 Events Status Board
 
-> Last updated: 2026-06-18 (current beta.87 AdditiveBatch1 verifier packet captured and passed; latest CanaryOnly-mode packet remains beta.85 previous-package context; no gameplay or release-status change)
+> Last updated: 2026-06-19 (retained beta.87 `v0.107.0` AdditiveBatch1 verifier packet captured and passed; latest CanaryOnly-mode packet remains beta.85 previous-package context; current `v0.107.1` loader recapture, gameplay, and release proof remain pending)
 > Audit standard: strict v19 - no generic "Done", only evidence-backed statuses
 
 ## Allowed Statuses
@@ -10,7 +10,7 @@ planned -> spec-drafted -> wiki-verified -> api-verified -> implemented -> compi
 blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wiki-entry
 ```
 
-`historical-loader-verified` means the row has old enabled-mode loader-gate evidence only. Current beta.87 has clean `v0.107.0` AdditiveBatch1 direct loader proof with 10 event types / 14 registration calls and exact tuple parity. Beta.85 Off and CanaryOnly packets remain previous-package loader context. Gameplay, event rendering, save-load, image/license status, replacement-pool behavior, multiplayer disposition, and StS1 parity proof remain pending.
+`historical-loader-verified` means the row has old enabled-mode loader-gate evidence only. Retained beta.87 has clean `v0.107.0` AdditiveBatch1 direct loader proof with 10 event types / 14 registration calls and exact tuple parity. The local game is now `v0.107.1`, so current-runtime loader proof must be recaptured. Beta.85 Off and CanaryOnly packets remain previous-package loader context. Gameplay, event rendering, save-load, image/license status, replacement-pool behavior, multiplayer disposition, and StS1 parity proof remain pending.
 
 ## Overall Summary
 
@@ -40,7 +40,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Phase | Events | Compiled | Blocked | Status |
 |-------|--------|----------|---------|--------|
 | Canary (4) | Big Fish, Golden Idol, The Lab, Divine Fountain | 4 | 0 | compiled, test-guarded, source/API verified, retained beta.85 CanaryOnly enabled-mode proof clean as previous-package context; gameplay proof and Act/parity audit closure are blocked/pending |
-| AdditiveBatch1 verified scope (10 event types) | Big Fish, Golden Idol, The Lab, Divine Fountain, Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, Shining Light | 10 | 0 | compiled, source-guarded, current beta.87 direct AdditiveBatch1 enabled-mode packet passed 10 event types / 14 registration calls; per-event gameplay/render/save-load proof remains blocked/pending |
+| AdditiveBatch1 verified scope (10 event types) | Big Fish, Golden Idol, The Lab, Divine Fountain, Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, Shining Light | 10 | 0 | compiled, source-guarded, retained beta.87 direct AdditiveBatch1 enabled-mode packet passed 10 event types / 14 registration calls on `v0.107.0`; current `v0.107.1` loader plus per-event gameplay/render/save-load proof remains blocked/pending |
 | Simple (22 registry entries; 21 compiling) | Shining Light, Mushrooms, Joust, The Ssssserpent, Altar, Drug Dealer, The Library, Ancient Writing, Augmenter, Sensory Stone, Moai Head, Transmogrifier, Upgrade Shrine, The Cleric, Golden Wing, Living Wall, Old Beggar, Bonfire Spirits, Fountain of Cleansing, Purifier, Golden Shrine, Duplicator | 21 | 0 | compiled/source-guarded except Duplicator compile-excluded; Lab and Divine Fountain are canary metadata |
 | CardService (9) | Face Trader, The Mausoleum, Council of Ghosts, Cursed Tome, Knowing Skull, Nest, Vampires, Falling, Mind Bloom | 9 | 0 | compiled (4 temporary-substitute plus Mind Bloom War partial) |
 | Combat (5) | Dead Adventurer, Scorpion Nest, Treasure Ooze, Masked Bandits, Mysterious Sphere | 5 | 5 | blocked pending encounter-model/runtime parity proof |
@@ -101,17 +101,17 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Neow | Start-of-run only; handled by base game Neow class |
 | Combat Start | Tutorial flow; no unknown-room model needed |
 
-## Runtime Gates (historical v16 / `v0.106.1`; current beta.87 AdditiveBatch1 proof clean)
+## Runtime Gates (historical v16 / `v0.106.1`; retained `v0.107.0` beta.87 AdditiveBatch1 proof clean)
 
 | Gate | Status | Blocker |
 |------|--------|---------|
 | Runtime path report (O21) | **current prerequisite pass** | E-drive game root, BaseLib v3.2.1, STS2-RitsuLib v0.4.24 with `lib\0.107.0`, and Spire Plus beta.87 package-parity install are present. |
 | STS2-RitsuLib installed (O22) | **current prerequisite pass** | `STS2-RitsuLib` `v0.4.24` with `lib\0.107.0\STS2-RitsuLib.dll` is installed on E-drive. |
-| Active `godot.log` generated (O23) | **current pass** | Current beta.87 AdditiveBatch1 direct smoke generated `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/godot.log.after-launch`. |
-| Loader proof (O24) | **current AdditiveBatch1 pass** | Current beta.87 AdditiveBatch1 direct smoke on `v0.107.0` / RitsuLib `v0.4.24` reached main menu, reported `v0.1.0-private-beta.87`, applied 25/25 Spire Plus ModPatcher patches, and has a clean `godot-log-audit.json` with 0 blocking signature hits. |
+| Active `godot.log` generated (O23) | **retained previous-version pass** | Retained beta.87 AdditiveBatch1 direct smoke generated `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/godot.log.after-launch` on `v0.107.0`; recapture for current `v0.107.1`. |
+| Loader proof (O24) | **retained AdditiveBatch1 pass** | Retained beta.87 AdditiveBatch1 direct smoke on `v0.107.0` / RitsuLib `v0.4.24` reached main menu, reported `v0.1.0-private-beta.87`, applied 25/25 Spire Plus ModPatcher patches, and has a clean `godot-log-audit.json` with 0 blocking signature hits. Recapture before citing current `v0.107.1` runtime proof. |
 | Default Off runtime state (O13) | **previous-package pass** | Beta.85 Off smoke logs `Feature Sts1Events ... bootstrap=disabled, live=Disabled`; no enabled StS1 event registrations are claimed from this Off run. |
-| CanaryOnly source identity (O14) | **static-pass / previous-package runtime pass** | Static registry-shape/current-doc guards expect 4 canary event types through 6 registration calls: Sts1BigFish and Sts1GoldenIdol in both Act 1 buckets, plus shared Sts1TheLab and Sts1DivineFountain. Fresh beta.85 `v0.107.0` CanaryOnly enabled-mode smoke is O25 and passes as previous-package loader proof. |
-| AdditiveBatch1 source identity (O15) | **static-pass / current runtime pass** | Static registry-shape/current-doc guards expect 10 event types through 14 registration calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to both Act 1 buckets. Fresh beta.87 `v0.107.0` direct AdditiveBatch1 enabled-mode smoke is O33 and passes. |
+| CanaryOnly source identity (O14) | **static-pass / previous-package runtime pass** | Static registry-shape/current-doc guards expect 4 canary event types through 6 registration calls: Sts1BigFish and Sts1GoldenIdol in both Act 1 buckets, plus shared Sts1TheLab and Sts1DivineFountain. Retained beta.85 `v0.107.0` CanaryOnly enabled-mode smoke is O25 and passes as previous-package loader proof. |
+| AdditiveBatch1 source identity (O15) | **static-pass / retained runtime pass** | Static registry-shape/current-doc guards expect 10 event types through 14 registration calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to both Act 1 buckets. Retained beta.87 `v0.107.0` direct AdditiveBatch1 enabled-mode smoke is O33 and passes as previous-game-version loader proof. |
 | AdditiveAllDraft unsafe (O16) | **pass (source-guarded)** | Requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`; test-gated. |
 | ReplacementPrototype fail-closed (O17/O18) | **pass (source-guarded)** | Requires `#if REPLACEMENT_PROTOTYPE_ENABLED` + unsafe override; test-gated. |
 | Canary runtime launch (O25) | **previous-package pass** | Fresh beta.85 CanaryOnly enabled-mode smoke at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` reached main menu, audited clean, and retained `enabled-mode-log-check.json` plus `runtime-evidence-packet-check.json` with 0 mismatches. |
@@ -119,7 +119,7 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 | Canary save/load proof (O34) | **blocked** | Requires save during/after event, reload, state stable. |
 | Canary EN/ZHS render (O35-O36) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
 | Canary image/license render (O37) | **blocked** | No redistributable art; requires extraction/placeholder decision. |
-| AdditiveBatch1 runtime launch (O33) | **current pass** | Fresh beta.87 AdditiveBatch1 direct smoke at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu, audited clean, and retained verifiers passed with 10 event types / 14 registration calls and exact act/shared tuple parity. |
+| AdditiveBatch1 runtime launch (O33) | **retained previous-version pass** | Beta.87 AdditiveBatch1 direct smoke at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu on `v0.107.0`, audited clean, and retained verifiers passed with 10 event types / 14 registration calls and exact act/shared tuple parity. Recapture before citing current `v0.107.1` runtime proof. |
 | Simple batch event proofs (O42-O47) | **blocked** | Requires per-event in-game encounter screenshots and result logs. |
 | Simple batch save/load (O48) | **blocked** | Requires save/load proof for simple batch events. |
 | Simple batch EN/ZHS render (O49) | **blocked** | Requires in-game EN/ZHS text render screenshots. |
@@ -139,11 +139,11 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 - Golden Shrine source/localization now use StS1-aligned Pray/Desecrate/Leave options: Pray grants 100 gold, 50 at A15+; Desecrate grants 275 gold and adds Regret. Runtime UI/result proof remains pending with the rest of AdditiveBatch1.
 - The Cleric source/localization now guard the 35+ gold event eligibility, A15+ Purify cost increase from 50 to 75 gold, and Act 1 bucket registration. Runtime UI/result/bucket proof remains pending with the rest of AdditiveBatch1.
 - Static localization source-reference scan found 33 result-page keys referenced by source but missing from both EN and ZHS. One key (`STS1_GOLDEN_IDOL.pages.LEAVE.description`) affects current CanaryOnly/AdditiveBatch1 directly; the other 32 are later RegisterAll/draft or blocked-combat surfaces. See `localization-source-gap-scan-20260611.md` and `localization-gap-closure-plan.md`; this blocks any source-complete localization claim. Closing only `STS1_GOLDEN_IDOL.pages.LEAVE.description` remains a localization unblocker; it does not prove gameplay, and it does not replace `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json` verifier reports.
-- Beta.85 Off and CanaryOnly loader proof remains previous-package context at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` and `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`. Current beta.87 AdditiveBatch1 enabled-mode proof is clean at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`; the earlier beta.86 Steam-client attempt is diagnostic only because StS1 stayed disabled. These loader rows do not prove event encounter gameplay, save-load, rendering, replacement, multiplayer, or QA gates.
+- Beta.85 Off and CanaryOnly loader proof remains previous-package context at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` and `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`. Retained beta.87 AdditiveBatch1 enabled-mode proof is clean for `v0.107.0` at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`; the earlier beta.86 Steam-client attempt is diagnostic only because StS1 stayed disabled. These loader rows do not prove current `v0.107.1` loading, event encounter gameplay, save-load, rendering, replacement, multiplayer, or QA gates.
 - `AdditiveAllDraft` remains unsafe/dev-only and now requires `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` in addition to `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft`.
 - `ReplaceUnknownEventsPrototype` remains debug-only and does not register events unless compiled with `REPLACEMENT_PROTOTYPE_ENABLED` and explicitly allowed with `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1`.
 - Joust and The Ssssserpent are source-classified as non-combat Act 1 events; encounter-model blockers apply only to actual combat-entry events.
-- **Revision M correction**: Clean historical `v0.106.1` loader evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes. The beta.84 `v0.107.0` package smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` remains root-cause evidence for stale Spire Plus API targets; beta.85 Off smoke is clean previous-package context and beta.87 AdditiveBatch1 is the current enabled-mode loader proof.
+- **Revision M correction**: Clean historical `v0.106.1` loader evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes. The beta.84 `v0.107.0` package smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` remains root-cause evidence for stale Spire Plus API targets; beta.85 Off smoke is clean previous-package context and beta.87 AdditiveBatch1 is retained `v0.107.0` enabled-mode loader proof.
 - Remaining blocked/current-pending gates: canary encounter screenshots (O26-O29), canary result/pre-post/save-load/render/image/parity/audit/docs/owner rows (O31-O32 and O34-O41), simple-batch event proofs and save/render/image/audit/QA rows (O42-O52), replacement functional proof (O54-O57), multiplayer runtime/ZHS rows (O58 and O64), independent QA (O65), and final owner/handoff rows (O72-O75). Static classification/safety rows (O59-O63), documentation-in-progress rows (O66-O71), and O76 do not close runtime or completion gates.
 
 ## Evidence Files

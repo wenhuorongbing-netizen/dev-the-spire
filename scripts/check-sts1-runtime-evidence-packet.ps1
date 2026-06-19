@@ -206,6 +206,23 @@ function ConvertTo-NormalizedPathOrEmpty {
     }
 }
 
+function Resolve-ChildPathOrEmpty {
+    param(
+        [AllowEmptyString()][string]$BasePath,
+        [Parameter(Mandatory = $true)][string]$ChildName
+    )
+
+    if ([string]::IsNullOrWhiteSpace($BasePath)) {
+        return ''
+    }
+
+    try {
+        return [System.IO.Path]::GetFullPath((Join-Path $BasePath $ChildName))
+    } catch {
+        return ''
+    }
+}
+
 function Get-PathLeafOrEmpty {
     param([AllowEmptyString()][string]$Path)
 
@@ -219,6 +236,32 @@ function Get-PathLeafOrEmpty {
     } catch {
         return ''
     }
+}
+
+function Get-PathParentLeafOrEmpty {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return ''
+    }
+
+    try {
+        $pathFull = [System.IO.Path]::GetFullPath($Path)
+        $parent = [System.IO.Path]::GetDirectoryName($pathFull)
+        if ([string]::IsNullOrWhiteSpace($parent)) {
+            return ''
+        }
+
+        return [System.IO.Path]::GetFileName($parent.TrimEnd('\', '/'))
+    } catch {
+        return ''
+    }
+}
+
+function Test-Sha256Hex {
+    param([AllowEmptyString()][string]$Value)
+
+    return -not [string]::IsNullOrWhiteSpace($Value) -and $Value -match '^[0-9a-fA-F]{64}$'
 }
 
 function Test-BytePrefix {
@@ -585,10 +628,13 @@ if ($sessionExists) {
     $modsRoot = Get-JsonStringOrEmpty -Object $sessionState -Name 'ModsRoot'
     $gameRoot = Get-JsonStringOrEmpty -Object $sessionState -Name 'GameRoot'
     $logPath = Get-JsonStringOrEmpty -Object $sessionState -Name 'LogPath'
+    $normalizedLogPath = ConvertTo-NormalizedPathOrEmpty -Path $logPath
+    $sessionLogPathMatchesRetainedLog = -not [string]::IsNullOrWhiteSpace($normalizedLogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedLogPath, $canonicalLogPath)
+    $sessionLogPathMatchesLiveLogShape = [System.StringComparer]::OrdinalIgnoreCase.Equals((Get-PathLeafOrEmpty -Path $normalizedLogPath), 'godot.log') -and [System.StringComparer]::OrdinalIgnoreCase.Equals((Get-PathParentLeafOrEmpty -Path $normalizedLogPath), 'logs')
     $steamSaves = @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'SteamSaves' | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     $defaultSaves = @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'DefaultSaves' | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     $currentRunSourceRoots = @($steamSaves + $defaultSaves)
-    $expectedModsRoot = if ([string]::IsNullOrWhiteSpace($gameRoot)) { '' } else { ConvertTo-NormalizedPathOrEmpty -Path (Join-Path $gameRoot 'mods') }
+    $expectedModsRoot = Resolve-ChildPathOrEmpty -BasePath $gameRoot -ChildName 'mods'
     $normalizedModsRoot = ConvertTo-NormalizedPathOrEmpty -Path $modsRoot
 
     Add-Check -Name 'session_allows_baselib' -Passed ($allowedModIds -contains 'BaseLib') -Detail 'session-state AllowedModIds must include BaseLib'
@@ -604,6 +650,7 @@ if ($sessionExists) {
     Add-Check -Name 'session_has_mods_root' -Passed (-not [string]::IsNullOrWhiteSpace($modsRoot)) -Detail 'session-state ModsRoot must be recorded'
     Add-Check -Name 'session_mods_root_matches_game_root' -Passed (-not [string]::IsNullOrWhiteSpace($normalizedModsRoot) -and -not [string]::IsNullOrWhiteSpace($expectedModsRoot) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedModsRoot, $expectedModsRoot)) -Detail "session-state ModsRoot must equal GameRoot\\mods; expected '$expectedModsRoot', found '$normalizedModsRoot'"
     Add-Check -Name 'session_has_log_path' -Passed (-not [string]::IsNullOrWhiteSpace($logPath)) -Detail 'session-state LogPath must be recorded'
+    Add-Check -Name 'session_log_path_well_formed' -Passed ($sessionLogPathMatchesRetainedLog -or $sessionLogPathMatchesLiveLogShape) -Detail "session-state LogPath must be the retained canonical log or live logs\\godot.log path; found '$normalizedLogPath'"
 
     $isolatedModsRoot = [System.IO.Path]::GetFullPath((Join-Path $resolvedEvidenceDir 'isolated-mods'))
     $allowedMovedModsBuilder = [System.Collections.Generic.List[string]]::new()
@@ -616,6 +663,7 @@ if ($sessionExists) {
     $unexpectedMovedCurrentRunNamesBuilder = [System.Collections.Generic.List[string]]::new()
     $movedCurrentRunSourcesOutsideRootsBuilder = [System.Collections.Generic.List[string]]::new()
     $movedCurrentRunDestinationsOutsideRootBuilder = [System.Collections.Generic.List[string]]::new()
+    $movedCurrentRunPathNameMismatchesBuilder = [System.Collections.Generic.List[string]]::new()
 
     foreach ($movedMod in $movedMods) {
         $movedModName = Get-JsonStringOrEmpty -Object $movedMod -Name 'Name'
@@ -648,11 +696,23 @@ if ($sessionExists) {
         $movedCurrentRunName = Get-JsonStringOrEmpty -Object $movedCurrentRun -Name 'Name'
         $movedCurrentRunFrom = Get-JsonStringOrEmpty -Object $movedCurrentRun -Name 'From'
         $movedCurrentRunTo = Get-JsonStringOrEmpty -Object $movedCurrentRun -Name 'To'
+        $movedCurrentRunFromLeaf = Get-PathLeafOrEmpty -Path $movedCurrentRunFrom
+        $movedCurrentRunToLeaf = Get-PathLeafOrEmpty -Path $movedCurrentRunTo
 
         if ([string]::IsNullOrWhiteSpace($movedCurrentRunName)) {
             $missingMovedCurrentRunNamesBuilder.Add($movedCurrentRunFrom) | Out-Null
         } elseif ($currentRunNames -notcontains $movedCurrentRunName) {
             $unexpectedMovedCurrentRunNamesBuilder.Add($movedCurrentRunName) | Out-Null
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($movedCurrentRunName)) {
+            if (-not [string]::IsNullOrWhiteSpace($movedCurrentRunFromLeaf) -and $movedCurrentRunFromLeaf -ne $movedCurrentRunName) {
+                $movedCurrentRunPathNameMismatchesBuilder.Add("from:$movedCurrentRunFromLeaf/name:$movedCurrentRunName") | Out-Null
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($movedCurrentRunToLeaf) -and $movedCurrentRunToLeaf -ne $movedCurrentRunName) {
+                $movedCurrentRunPathNameMismatchesBuilder.Add("to:$movedCurrentRunToLeaf/name:$movedCurrentRunName") | Out-Null
+            }
         }
 
         if (-not (Test-PathInsideAnyString -Child $movedCurrentRunFrom -Parents $currentRunSourceRoots)) {
@@ -672,6 +732,7 @@ if ($sessionExists) {
     $unexpectedMovedCurrentRunNames = @($unexpectedMovedCurrentRunNamesBuilder | Sort-Object -Unique)
     $movedCurrentRunSourcesOutsideRoots = @($movedCurrentRunSourcesOutsideRootsBuilder)
     $movedCurrentRunDestinationsOutsideRoot = @($movedCurrentRunDestinationsOutsideRootBuilder)
+    $movedCurrentRunPathNameMismatches = @($movedCurrentRunPathNameMismatchesBuilder | Sort-Object -Unique)
 
     Add-Check -Name 'session_moved_mod_names_present' -Passed (@($missingMovedModNames).Count -eq 0) -Detail 'every moved-mod entry must record Name'
     Add-Check -Name 'session_moved_mods_do_not_include_allowed_mods' -Passed (@($allowedMovedMods).Count -eq 0) -Detail "allowed mods must not be moved out; moved allowed mods: $($allowedMovedMods -join ',')"
@@ -681,6 +742,7 @@ if ($sessionExists) {
     Add-Check -Name 'session_moved_current_run_names_allowed' -Passed (@($unexpectedMovedCurrentRunNames).Count -eq 0) -Detail "moved-current-run Name values must be known current-run files; unexpected: $($unexpectedMovedCurrentRunNames -join ',')"
     Add-Check -Name 'session_moved_current_run_sources_under_save_roots' -Passed (@($movedCurrentRunSourcesOutsideRoots).Count -eq 0) -Detail "moved-current-run From paths must be under recorded SteamSaves/DefaultSaves; outside: $($movedCurrentRunSourcesOutsideRoots -join ',')"
     Add-Check -Name 'session_moved_current_run_destinations_under_removed_runs' -Passed (@($movedCurrentRunDestinationsOutsideRoot).Count -eq 0) -Detail "moved-current-run To paths must be under evidence temporarily-removed-current-runs; outside: $($movedCurrentRunDestinationsOutsideRoot -join ',')"
+    Add-Check -Name 'session_moved_current_run_paths_match_names' -Passed (@($movedCurrentRunPathNameMismatches).Count -eq 0) -Detail "moved-current-run From/To leaf names must match Name; mismatches: $($movedCurrentRunPathNameMismatches -join ',')"
 
     if ($Mode -eq 'Off') {
         $offModeClean = [string]::IsNullOrWhiteSpace($recordedSts1EventMode) -or $recordedSts1EventMode -eq 'Off'
@@ -716,9 +778,11 @@ if ($restoreExists) {
     $settingsHash = Get-JsonStringOrEmpty -Object $restoreState -Name 'SettingsHashAfterRestore'
     $settingsBackupHash = Get-JsonStringOrEmpty -Object $restoreState -Name 'SettingsBackupHashAfterRestore'
     $hasRestoreHashes = -not [string]::IsNullOrWhiteSpace($settingsHash) -and -not [string]::IsNullOrWhiteSpace($settingsBackupHash)
+    $restoreHashesAreSha256 = (Test-Sha256Hex -Value $settingsHash) -and (Test-Sha256Hex -Value $settingsBackupHash)
     Add-Check -Name 'restore_hashes_recorded' -Passed $hasRestoreHashes -Detail 'restore-state settings hashes must be recorded'
+    Add-Check -Name 'restore_hashes_sha256_format' -Passed $restoreHashesAreSha256 -Detail 'restore-state settings hashes must be 64-character SHA256 hex strings'
 
-    if ($hasRestoreHashes) {
+    if ($hasRestoreHashes -and $restoreHashesAreSha256) {
         Add-Check -Name 'restore_settings_hashes_match' -Passed ($settingsHash -eq $settingsBackupHash) -Detail 'settings hash after restore must equal backup hash after restore'
     }
 }

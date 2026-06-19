@@ -1,11 +1,11 @@
 # Development Environment
 
-## 2026-06-18 Current Override
+## 2026-06-19 Current Override
 
 - Local `Directory.Build.props` points `Sts2Path` at `E:\Steam\steamapps\common\Slay the Spire 2`.
-- The installed game `release_info.json` currently reports Slay the Spire 2 `v0.107.0`, commit `23d60b98`, date `2026-06-04T18:40:52-04:00`.
+- The installed game `release_info.json` currently reports Slay the Spire 2 `v0.107.1`, commit `59260271`, date `2026-06-18T15:43:56-07:00`.
 - Installed `STS2-RitsuLib` `v0.4.24` has runtime variants including `0.107.0`; the previous dependency install was backed up to `%TEMP%\codex-sts2-dep-backup-20260618-152028`.
-- The recovered local source snapshot and prior clean `v0.106.1` loader evidence remain historical. Current `v0.107.0` beta.85/beta.86 direct smokes remain previous-package loader context, while the beta.87 AdditiveBatch1 direct smoke at `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531` reached main menu, loaded BaseLib/RitsuLib/Spire Plus, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, audited clean, and passed retained mode/packet verifiers with 0 mismatches.
+- The recovered local source snapshot and prior clean `v0.106.1` loader evidence remain historical. Current local install is `v0.107.1`; retained `v0.107.0` beta.85/beta.86 direct smokes remain previous-package/game-version loader context, while the beta.87 AdditiveBatch1 direct smoke at `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531` reached main menu on `v0.107.0`, loaded BaseLib/RitsuLib/Spire Plus, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, audited clean, and passed retained mode/packet verifiers with 0 mismatches. Recapture loader proof before using it as current `v0.107.1` runtime evidence.
 - Current dependency-floor pass evidence: solution build and publish passed with 0 errors and 0 warnings during the beta.87 package pass, installed package checker passed for beta.87 after hash-doc refresh, runtime preflight targets BaseLib `v3.2.1` and STS2-RitsuLib `v0.4.24`, and the fresh beta.87 AdditiveBatch1 loader smoke closed the dependency-floor loader-registration blocker. The direct-smoke verifier false failure was an evidence checker bug: direct clean-log evidence can have a legitimate zero-byte `godot.log.before`, and the packet verifier now allows empty byte-array prefixes. Earlier cross-thread aborts are runner-contamination evidence only.
 
 Historical environment rows below are retained for setup history. Prefer this override and `PROJECT_STATE.md` for current status.
@@ -35,7 +35,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Source recovery evidence: the retained `source code/` recovery is historical
   `v0.106.x` reference material. The current no-launch workspace checker reports
   `source code\release_info.json` as `v0.106.0` while the installed game reports
-  `v0.107.0`; run
+  `v0.107.1`; run
   `scripts\check-local-godot-source-workspace.ps1` with
   `-RequireCurrentSourceSnapshot -FailOnMismatch` before relying on the
   recovered tree for current-source claims. Historical notes from the May 2026
@@ -89,7 +89,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Plug-off loader evidence: `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` loaded `Loaded 1 mods (1 total)` with BaseLib only after temporarily isolating `EZMicroBalance`; the earlier settings-only disabled attempt remains invalid. This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.
 - `scripts/spire-plus-live-session.ps1` preserves test-created `current_run*` files before restoring the user's original current-run files; `live-helper-preserve-current-run-smoke-20260513-133431` and `window-preflight-smoke-20260513-135402` cover helper restore and foreground preflight behavior.
 - Detailed 2026-05-05 through 2026-05-14 runtime attempt history was archived to `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`; historical RC1 live notes remain in `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`.
-- Historical RitsuLib diagnostic Off, CanaryOnly, and AdditiveBatch1 loader gates have clean `v0.106.1` evidence with BaseLib, RitsuLib, and Spire Plus loaded and 25/25 Spire Plus ModPatcher patches applied. Current beta.85/beta.86 `v0.107.0` proof covers Off/CanaryOnly loader context only, and beta.87 AdditiveBatch1 proof covers 10 event types / 14 registration calls with exact tuple parity. Live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
+- Historical RitsuLib diagnostic Off, CanaryOnly, and AdditiveBatch1 loader gates have clean `v0.106.1` evidence with BaseLib, RitsuLib, and Spire Plus loaded and 25/25 Spire Plus ModPatcher patches applied. Retained beta.85/beta.86 `v0.107.0` proof covers Off/CanaryOnly loader context only, and beta.87 `v0.107.0` AdditiveBatch1 proof covers 10 event types / 14 registration calls with exact tuple parity. These retained rows are previous-game-version context after the local `v0.107.1` update. Live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
 
 ## Last known commands
 - Last attempted build: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` on 2026-06-18 during the beta.87 dependency-floor pass. Result: succeeded with 0 warnings and 0 errors.
@@ -107,7 +107,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
 - Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.87.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.87.zip` were refreshed and hash-checked on 2026-06-18 for local manual testing.
   The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`.
-  The current `v0.107.0` beta.87 direct AdditiveBatch1 loader row is clean under `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531`, with 10 event types / 14 registration calls and exact tuple parity. Beta.85/beta.86 Off and CanaryOnly rows remain previous-package loader context.
+  The retained `v0.107.0` beta.87 direct AdditiveBatch1 loader row is clean under `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531`, with 10 event types / 14 registration calls and exact tuple parity. Beta.85/beta.86 Off and CanaryOnly rows remain previous-package loader context. Recapture all rows before citing current `v0.107.1` runtime proof.
   The beta.85 Off and CanaryOnly loader rows remain previous-package context under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510` and `.tools\runtime-evidence\v01070-beta85-canary-20260617-233621`.
   Live gameplay, save-load, failure/death-path, clicked Ancient UI, and co-op verification remain pending.
 - Last PCK hash check: the 2026-06-18 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `C4EFDCA19F5F98F6A945599110AAF13A89452E3E1B8069326385BD45575218F2`.

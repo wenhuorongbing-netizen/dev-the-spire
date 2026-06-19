@@ -11,7 +11,7 @@ This document tracks the PR sequencing for the `dev-the-spire` integration and r
 | PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
 | PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
 | PR 5 | RitsuLib hard dependency | Medium | Compile/manifest dependency added; historical `v0.106.1` loader-gate validated; current `v0.107.0` dependency installed, beta.87 AdditiveBatch1 smoke clean |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 4a+4b source migrated; historical `v0.106.1` loader-gate validated; current `v0.107.0` beta.87 package proof clean for loader/patch application and AdditiveBatch1 registration shape |
+| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 4a+4b source migrated; historical `v0.106.1` loader-gate validated; retained `v0.107.0` beta.87 package proof clean for loader/patch application and AdditiveBatch1 registration shape; current `v0.107.1` proof still needs recapture |
 | PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked on live/manual proof |
 
 ## PR 5: RitsuLib Hard Dependency

@@ -38,7 +38,7 @@ StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire P
 
 ### AdditiveBatch1 Risk Table
 
-AdditiveBatch1 is source-guarded for exact registration scope. Historical loader proof covered the older 11-call source shape; current beta.85 proof covers default-Off and CanaryOnly loader registration only, so current `v0.107.0` AdditiveBatch1 enabled-mode and gameplay/co-op evidence remain pending or blocked. It may be used only for prototype runtime smoke after RitsuLib is installed; it is not a tester-facing gameplay claim.
+AdditiveBatch1 is source-guarded for exact registration scope. Historical loader proof covered the older 11-call source shape; beta.85 proof covers default-Off and CanaryOnly loader registration only, retained beta.87 `v0.107.0` proof covers AdditiveBatch1 loader/registration only, and current `v0.107.1` AdditiveBatch1 enabled-mode plus gameplay/co-op evidence remain pending or blocked. It may be used only for prototype runtime smoke after RitsuLib is installed; it is not a tester-facing gameplay claim.
 
 | Scope | Event IDs | Risk |
 |----------|-------------|------|

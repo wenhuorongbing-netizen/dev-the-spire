@@ -11,7 +11,7 @@ Blocked in this thread:
 
 - `O0-O10`: build/test/format/release-evidence validation cannot be fully recaptured here because starting new `dotnet build`, `dotnet test`, `dotnet publish`, or release-evidence validation processes is paused.
 - `O25`: current `v0.107.0` CanaryOnly enabled-mode smoke cannot be captured here while the shared validation lane is paused.
-- `O33`: current `v0.107.0` AdditiveBatch1 enabled-mode smoke cannot be captured here while the shared validation lane is paused.
+- `O33`: current AdditiveBatch1 enabled-mode smoke cannot be captured here while the shared validation lane is paused; retained `v0.107.0` proof is loader/registration context only and current `v0.107.1` proof still needs recapture.
 - `O26-O29`, `O31-O41`, `O42-O52`, `O54-O58`, `O64`, `O65`, and `O72-O75`: downstream gameplay, save/load, render, replacement functional proof, multiplayer runtime proof, QA, owner-decision, and handoff gates remain blocked or current-pending because the current enabled-mode proof gates above are still missing.
 - `O53`, `O59-O63`, `O66-O71`, and `O76`: static/source/documentation rows have current static evidence or documentation-in-progress status, but they do not close their parent runtime ranges or permit completion, handoff, commit, push, or release claims while enabled-mode/gameplay proof is absent.
 
@@ -185,8 +185,8 @@ The current authoritative project state is beta.85 on Slay the Spire 2 `v0.107.0
 1. Let the migration validation lane finish and report the shared state.
 2. After the coordination pause is lifted, recapture current validation in one controlled lane.
 3. Preserve beta.85 Off loader proof as default-Off proof only.
-4. After the coordination pause is lifted, capture fresh current `v0.107.0` CanaryOnly enabled-mode smoke proving the exact canary set.
-5. After the coordination pause is lifted, capture fresh current `v0.107.0` AdditiveBatch1 enabled-mode smoke proving 10 event types / 14 calls.
+4. After the coordination pause is lifted, capture fresh current `v0.107.1` CanaryOnly enabled-mode smoke proving the exact canary set.
+5. After the coordination pause is lifted, capture fresh current `v0.107.1` AdditiveBatch1 enabled-mode smoke proving 10 event types / 14 calls.
 6. Run `scripts/check-sts1-enabled-mode-runtime-log.ps1` against each copied future enabled-mode `godot.log` and `godot-log-audit.json` with explicit `-ExpectedPackageVersion`, `-ExpectedRitsuCompatBranch`, `-ExpectedRitsuLibVersion`, `-ExpectedGameVersion`, `-OutFile`, and `-FailOnMismatch` arguments.
 7. Run `scripts/check-sts1-runtime-evidence-packet.ps1` against each helper-created future evidence folder with the same explicit package/Ritsu/game targets, retained `-OutFile`, and no enabled-mode `-AllowMissingSessionState` / `-AllowMissingRestoreState` bypass.
 8. Only after enabled-mode proof is clean, proceed to canary and simple-batch gameplay screenshots, result logs, save/load, EN/ZHS render, image/license decisions, replacement functional proof, multiplayer fail-closed proof, and independent QA.

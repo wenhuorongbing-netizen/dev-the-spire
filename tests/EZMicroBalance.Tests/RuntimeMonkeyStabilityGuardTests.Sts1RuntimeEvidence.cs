@@ -209,7 +209,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "MovedCurrentRuns": [],
                   "GameRoot": {{JsonSerializer.Serialize(workdir)}},
                   "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
-                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "logs", "godot.log"))}},
                   "Sts1EventModeEnvironment": "AdditiveBatch1",
                   "Sts1UnsafeModeEnvironment": ""
                 }
@@ -221,8 +221,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "RestoredAt": "2026-06-18T00:00:00.0000000Z",
                   "RestoredModCount": 2,
                   "RestoredCurrentRunCount": 0,
-                  "SettingsHashAfterRestore": "same",
-                  "SettingsBackupHashAfterRestore": "same"
+                  "SettingsHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "SettingsBackupHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 }
                 """);
 
@@ -297,7 +297,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "MovedCurrentRuns": [],
                   "GameRoot": {{JsonSerializer.Serialize(workdir)}},
                   "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
-                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "logs", "godot.log"))}},
                   "Sts1EventModeEnvironment": "AdditiveBatch1",
                   "Sts1UnsafeModeEnvironment": ""
                 }
@@ -309,8 +309,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "RestoredAt": "2026-06-18T00:00:00.0000000Z",
                   "RestoredModCount": 1,
                   "RestoredCurrentRunCount": 0,
-                  "SettingsHashAfterRestore": "same",
-                  "SettingsBackupHashAfterRestore": "same"
+                  "SettingsHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "SettingsBackupHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 }
                 """);
 
@@ -373,7 +373,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "MovedCurrentRuns": [],
                   "GameRoot": {{JsonSerializer.Serialize(workdir)}},
                   "ModsRoot": {{JsonSerializer.Serialize(spoofedModsRoot)}},
-                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "logs", "godot.log"))}},
                   "Sts1EventModeEnvironment": "Off",
                   "Sts1UnsafeModeEnvironment": ""
                 }
@@ -393,6 +393,125 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
             Assert.Contains("session_has_mods_root status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("session_mods_root_matches_game_root status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierReportsMalformedGameRootAsFailedRows()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "Off");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), "v0.1.0-private-beta.87\r\n");
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "MovedMods": [],
+                  "MovedCurrentRuns": [],
+                  "GameRoot": "\u0000bad-game-root",
+                  "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "logs", "godot.log"))}},
+                  "Sts1EventModeEnvironment": "Off",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "Off",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("session_has_game_root status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_mods_root_matches_game_root status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierReportsMalformedSessionLogPathAndRestoreHashes()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "Off");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), "v0.1.0-private-beta.87\r\n");
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "MovedMods": [],
+                  "MovedCurrentRuns": [],
+                  "GameRoot": {{JsonSerializer.Serialize(workdir)}},
+                  "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
+                  "LogPath": "\u0000bad-log-path",
+                  "Sts1EventModeEnvironment": "Off",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "restore-state.json"),
+                """
+                {
+                  "RestoredAt": "2026-06-18T00:00:00.0000000Z",
+                  "RestoredModCount": 0,
+                  "RestoredCurrentRunCount": 0,
+                  "SettingsHashAfterRestore": "same",
+                  "SettingsBackupHashAfterRestore": "same"
+                }
+                """);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "Off",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("session_has_log_path status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_log_path_well_formed status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("restore_hashes_recorded status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("restore_hashes_sha256_format status=fail", result.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -440,7 +559,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "DefaultSaves": [{{JsonSerializer.Serialize(defaultSaves)}}],
                   "GameRoot": {{JsonSerializer.Serialize(workdir)}},
                   "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
-                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "logs", "godot.log"))}},
                   "Sts1EventModeEnvironment": "AdditiveBatch1",
                   "Sts1UnsafeModeEnvironment": ""
                 }
@@ -452,8 +571,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "RestoredAt": "2026-06-18T00:00:00.0000000Z",
                   "RestoredModCount": 0,
                   "RestoredCurrentRunCount": 1,
-                  "SettingsHashAfterRestore": "same",
-                  "SettingsBackupHashAfterRestore": "same"
+                  "SettingsHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "SettingsBackupHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
                 }
                 """);
 
@@ -478,6 +597,85 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("session_moved_current_run_names_allowed status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("session_moved_current_run_sources_under_save_roots status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("session_moved_current_run_destinations_under_removed_runs status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierRejectsMovedCurrentRunNamePathMismatch()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "Off");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), "v0.1.0-private-beta.87\r\n");
+
+            var steamSaves = Path.Combine(workdir, "steam-saves");
+            var defaultSaves = Path.Combine(workdir, "default-saves");
+            var movedRunFrom = Path.Combine(steamSaves, "not_current_run.save");
+            var movedRunTo = Path.Combine(workdir, "temporarily-removed-current-runs", "steam", "also_not_current_run.save");
+            File.WriteAllText(
+                Path.Combine(workdir, "session-state.json"),
+                $$"""
+                {
+                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "DisableSpirePlus": false,
+                  "MoveOtherMods": true,
+                  "MoveCurrentRuns": true,
+                  "MovedMods": [],
+                  "MovedCurrentRuns": [
+                    {
+                      "Name": "current_run.save",
+                      "From": {{JsonSerializer.Serialize(movedRunFrom)}},
+                      "To": {{JsonSerializer.Serialize(movedRunTo)}}
+                    }
+                  ],
+                  "SteamSaves": [{{JsonSerializer.Serialize(steamSaves)}}],
+                  "DefaultSaves": [{{JsonSerializer.Serialize(defaultSaves)}}],
+                  "GameRoot": {{JsonSerializer.Serialize(workdir)}},
+                  "ModsRoot": {{JsonSerializer.Serialize(Path.Combine(workdir, "mods"))}},
+                  "LogPath": {{JsonSerializer.Serialize(Path.Combine(workdir, "godot.log.after-launch"))}},
+                  "Sts1EventModeEnvironment": "Off",
+                  "Sts1UnsafeModeEnvironment": ""
+                }
+                """);
+            File.WriteAllText(
+                Path.Combine(workdir, "restore-state.json"),
+                """
+                {
+                  "RestoredAt": "2026-06-18T00:00:00.0000000Z",
+                  "RestoredModCount": 0,
+                  "RestoredCurrentRunCount": 1,
+                  "SettingsHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                  "SettingsBackupHashAfterRestore": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                }
+                """);
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "Off",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"));
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("session_moved_current_run_names_allowed status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_current_run_sources_under_save_roots status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_current_run_destinations_under_removed_runs status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("session_moved_current_run_paths_match_names status=fail", result.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -543,6 +741,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("session_has_mods_root status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("session_mods_root_matches_game_root status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("restore_hashes_recorded status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("restore_hashes_sha256_format status=fail", result.Output, StringComparison.Ordinal);
             Assert.True(File.Exists(outFile), $"Packet verifier did not retain report:{Environment.NewLine}{result.Output}{result.Error}");
         }
         finally

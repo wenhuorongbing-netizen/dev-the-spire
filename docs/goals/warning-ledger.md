@@ -77,7 +77,7 @@ The CanaryOnly files and the current AdditiveBatch1 files are warning-clean afte
 ## Governance Decision
 
 - Sts1Events recommendation: staging-only until current-runtime and gameplay evidence exists.
-- Runtime loader proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration calls exist in historical diagnostic evidence only. Current source now expects AdditiveBatch1=10 event types / 14 registration calls and needs fresh current `v0.107.0` enabled-mode proof.
+- Runtime loader proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration calls exist in historical diagnostic evidence only. Current source now expects AdditiveBatch1=10 event types / 14 registration calls; retained `v0.107.0` beta.87 proof covers loader/registration only, and fresh current `v0.107.1` enabled-mode proof is still needed.
 - Nullable warning blocker: closed for the beta.85 runtime-fix validation lane recorded in `PROJECT_STATE.md`.
 - Remaining formalization blockers: prove current `v0.107.0` CanaryOnly and AdditiveBatch1 enabled-mode loader smoke, gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, and multiplayer fail-closed behavior.
 - Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.

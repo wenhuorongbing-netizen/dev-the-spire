@@ -156,8 +156,12 @@ public sealed partial class AscensionFeatureGuardTests
             "ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? \"UNKNOWN\"",
             "ModelIdSerializationCache.Hash",
             "ModManager.GetGameplayRelevantModNameList()",
+            "ModManager.GetNonGameplayRelevantModNameList()",
+            "message.gameplayAffectingMods",
+            "message.otherMods",
             "message.idDatabaseHash == localModelHash",
             "visible game versions match, but the ModelDb hash does not; vanilla will report this as VersionMismatch",
+            "non-gameplay relevant mod mismatch is allowed by vanilla",
             "missingOnHost",
             "missingOnLocal");
 
@@ -166,6 +170,7 @@ public sealed partial class AscensionFeatureGuardTests
 
         Assert.DoesNotContain("ConnectionFailureReason.VersionMismatch = null", diagnostics, StringComparison.Ordinal);
         Assert.DoesNotContain("message.idDatabaseHash = ModelIdSerializationCache.Hash", diagnostics, StringComparison.Ordinal);
+        Assert.DoesNotContain("message.mods", diagnostics, StringComparison.Ordinal);
         Assert.DoesNotContain("return false", diagnostics, StringComparison.Ordinal);
     }
 

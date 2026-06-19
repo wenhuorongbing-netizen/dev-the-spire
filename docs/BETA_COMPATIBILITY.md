@@ -1,8 +1,8 @@
 # Beta Compatibility
 
-## 2026-06-18 Revision M Current Compatibility Boundary
+## 2026-06-19 Current Compatibility Boundary
 
-The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.0` with BaseLib `v3.2.1` and RitsuLib `v0.4.24`; beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` and beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` remain previous-package loader context. Current beta.87 AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` with 25/25 Spire Plus patches, a clean audit, 10 event types, and 14 registration calls. Treat these as loader proof only: gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, and release-ready compatibility proof remain pending or blocked.
+The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.1` with BaseLib `v3.2.1` and RitsuLib `v0.4.24` / `lib\0.107.0`; beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` and beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` remain previous-package/game-version loader context. Retained beta.87 AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` for `v0.107.0` with 25/25 Spire Plus patches, a clean audit, 10 event types, and 14 registration calls. Treat these as loader proof only: gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, `v0.107.1` runtime loading, and release-ready compatibility proof remain pending or blocked.
 
 ## Tested Baseline
 
@@ -17,12 +17,12 @@ The `v0.106.1` baseline below is historical tested-baseline context. Current loc
 - Build: `dotnet build` succeeds.
 - Publish: `dotnet publish` succeeds.
 - Legacy manual verification: BaseLib and `EzDailyContent` appeared and were enabled in Mod Settings on `v0.104.0`.
-- Historical static/package verification: `source code/` was refreshed from the v0.106.1 installed PCK/DLL, project build/test/publish/package passed with BaseLib v3.1.4, and package hashes were synced for that historical release-doc lane. Current `v0.107.0` / BaseLib `v3.2.1` status is summarized in the override above.
+- Historical static/package verification: `source code/` was refreshed from the v0.106.1 installed PCK/DLL, project build/test/publish/package passed with BaseLib v3.1.4, and package hashes were synced for that historical release-doc lane. Current `v0.107.1` / BaseLib `v3.2.1` status is summarized in the override above.
 - Historical normal Steam-client startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with exactly BaseLib and Spire Plus loaded, `Registered config for mod EZMicroBalance`, `Found 22 SavedSpireFields`, `Time to main menu: 13,539ms`, and 0 `ERROR` / release-blocking signature hits. That 22-field smoke is historical. The 2026-05-25 Steam-client loader evidence under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covers the beta.19 package hash with exactly BaseLib plus Spire Plus loaded and a clean log audit. Current Mod Settings UI list screenshot shows `Spire Plus`; gameplay matrix remains pending.
 
 ## Compatibility Policy
 
-- Full compatibility is only confirmed for the tested public beta version above. Current `v0.107.0` compatibility evidence is limited to the beta.85 default-Off/CanaryOnly loader context and beta.87 AdditiveBatch1 loader/registration proof noted here.
+- Full compatibility is only confirmed for the tested public beta version above. Current `v0.107.1` compatibility evidence is limited to no-launch preflight/dependency inspection until loader proof is recaptured; retained `v0.107.0` compatibility evidence is limited to the beta.85 default-Off/CanaryOnly loader context and beta.87 AdditiveBatch1 loader/registration proof noted here.
 - Do not claim compatibility with future public beta versions until retested.
 - Re-run build, publish, and manual game verification after game, BaseLib, template, or SDK changes.
 - Keep runtime BaseLib and NuGet BaseLib package versions aligned.
