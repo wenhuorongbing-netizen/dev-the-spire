@@ -450,6 +450,11 @@ before run-result fields can drive owner routing. It also requires retained summ
 `HangSignals` to match the retained `run-result.json` before owner routing, and
 requires retained signal fields to be native JSON arrays rather than scalar
 strings.
+It also rejects top-level AutoSlay analyzer summary-plan batch metadata drift:
+`autoslay-summary.json` `RunnerKind`, `Sts1EventMode`, package/game/Ritsu
+targets, `ExpectedPatchCount`, and normalized `ExpectedAncientIds` must match
+`autoslay-plan.json` before per-seed run/log artifacts can route source
+ownership.
 It refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes and the run-result before/after/current Godot log byte-length/SHA256
@@ -706,7 +711,9 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   state. `iteration-result.json` must retain `RuntimeProbeSamplesPath` and
   `RuntimeProbeSamplesSha256`, and that hash must match the retained
   per-iteration `runtime-probe-samples.json` before the samples can support
-  owner routing. `LogLastWriteTimeUtc` must not be later than `SampledAt`, `SampledAt`
+  owner routing. The retained probe file must be a native JSON array; scalar,
+  object, string, missing, or null probe evidence is malformed rather than a
+  single-sample shortcut. `LogLastWriteTimeUtc` must not be later than `SampledAt`, `SampledAt`
   values must be nondecreasing in retained order, and `LogLengthBytes` must be
   non-negative and nondecreasing whenever `LogExists=true`. Runtime monkey phases are
   `StartupMainMenu` and `PostCommandRuntime`; the packet checker rejects
@@ -725,6 +732,11 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   Top-level `monkey-summary.json` batch metadata for `Scenario`,
   `CommandSelectionMode`, `Sts1EventMode`, expected package/game/Ritsu targets,
   and `ExpectedPatchCount` must match the retained `monkey-plan.json`.
+  `PlannedCommands`, `Results[]`, `FailedIterationIds`,
+  `FailureReasonCodes`, `HangSignals`, `LiveSessionPreLaunchSlayProcessIds`,
+  `PreLaunchSlayProcessIds`, and retained `runtime-probe-samples.json` must be
+  native JSON arrays; scalar, object, string, missing, or null retained values
+  are malformed evidence.
   `FailedIterationIds` entries must be positive integers; malformed, null,
   non-positive, or overflow entries fail closed as `RuntimeHarness` evidence
   defects before summary-directed owner routing is trusted.

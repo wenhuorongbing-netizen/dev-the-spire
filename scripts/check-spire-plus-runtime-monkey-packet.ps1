@@ -1052,11 +1052,8 @@ $planExpectedPatchCount = if ($null -ne $plan) { Get-JsonIntValue -Object $plan 
 $effectiveExpectedPatchCount = if ($ExpectedPatchCount -gt 0) { $ExpectedPatchCount } else { $planExpectedPatchCount }
 $planScenario = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue '') } else { '' }
 $planCommandSelectionMode = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue '') } else { '' }
-$planPlannedCommands = @(
-    if ($null -ne $plan -and (Test-JsonProperty -Object $plan -Name 'PlannedCommands')) {
-        $plan.PlannedCommands
-    }
-)
+$planPlannedCommandsProperty = Get-JsonArrayProperty -Object $plan -Name 'PlannedCommands'
+$planPlannedCommands = @($planPlannedCommandsProperty.Value)
 $summaryResults = @()
 $expectedRunnerScriptPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'run-spire-plus-monkey-stability.ps1'))
 $expectedRunnerScriptSha256 = Get-FileSha256OrEmpty -Path $expectedRunnerScriptPath
@@ -1079,6 +1076,7 @@ if ($null -ne $plan) {
     $planCommandCorpusSha256 = [string](Get-JsonValue -Object $plan -Name 'CommandCorpusSha256' -DefaultValue '')
     $planCommandCorpus = Get-JsonArrayProperty -Object $plan -Name 'CommandCorpus'
     $planCommandCorpusExists = $planCommandCorpusPath -and (Test-Path -LiteralPath $planCommandCorpusPath -PathType Leaf)
+    Add-Check -Name 'plan_planned_commands_array' -Passed ([bool]$planPlannedCommandsProperty.IsArray) -Detail 'PlannedCommands must be retained as a native JSON array'
     Add-Check -Name 'plan_command_corpus_array' -Passed ([bool]$planCommandCorpus.IsArray) -Detail 'CommandCorpus must be retained as an array, even when empty'
     Add-Check -Name 'plan_command_corpus_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($planCommandCorpusPath)) -Detail 'CommandCorpusPath must bind the retained command-corpus.txt file'
     Add-Check -Name 'plan_command_corpus_path_under_evidence_dir' -Passed ($planCommandCorpusPath -and (Test-PathUnderDirectory -Path $planCommandCorpusPath -Directory $resolvedEvidenceDir)) -Detail 'CommandCorpusPath must stay inside the evidence directory'
@@ -1241,13 +1239,13 @@ if ($null -ne $plan) {
 }
 
 if ($null -ne $summary) {
-    if (Test-JsonProperty -Object $summary -Name 'Results') {
-        $summaryResults = @($summary.Results)
-    }
+    $summaryResultsProperty = Get-JsonArrayProperty -Object $summary -Name 'Results'
+    $summaryResults = @($summaryResultsProperty.Value)
+    $summaryFailedIterationIdsProperty = Get-JsonArrayProperty -Object $summary -Name 'FailedIterationIds'
 
     $failedSummaryResults = @($summaryResults | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     $expectedFailedIterationIds = @($failedSummaryResults | ForEach-Object { [string](Get-JsonIntValue -Object $_ -Name 'Iteration' -DefaultValue 0) })
-    $summaryFailedIterationIds = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $summary -Name 'FailedIterationIds' -DefaultValue @()))
+    $summaryFailedIterationIds = @(ConvertTo-StringArray -Value $summaryFailedIterationIdsProperty.Value)
     $summaryPassed = (Get-JsonBoolValue -Object $summary -Name 'Passed' -DefaultValue $false)
     $summaryFailedIterations = Get-JsonIntValue -Object $summary -Name 'FailedIterations' -DefaultValue -1
     $summaryProcessExitCount = Get-JsonIntValue -Object $summary -Name 'ProcessExitCount' -DefaultValue -1
@@ -1273,10 +1271,12 @@ if ($null -ne $summary) {
         Add-Check -Name 'summary_expected_patch_count_matches_plan' -Passed ((Get-JsonIntValue -Object $summary -Name 'ExpectedPatchCount' -DefaultValue 0) -eq $planExpectedPatchCount) -Detail 'monkey-summary.json ExpectedPatchCount must match monkey-plan.json ExpectedPatchCount'
     }
     Add-Check -Name 'summary_passed' -Passed $summaryPassed -Detail 'monkey-summary.json Passed must be true'
+    Add-Check -Name 'summary_results_array' -Passed ([bool]$summaryResultsProperty.IsArray) -Detail 'monkey-summary.json Results must be retained as a native JSON array'
+    Add-Check -Name 'summary_failed_iteration_ids_array' -Passed ([bool]$summaryFailedIterationIdsProperty.IsArray) -Detail 'monkey-summary.json FailedIterationIds must be retained as a native JSON array'
     Add-Check -Name 'summary_passed_matches_results' -Passed ($summaryPassed -eq $expectedSummaryPassed) -Detail 'monkey-summary.json Passed must match Results failed rows and requested/completed counts'
     Add-Check -Name 'summary_failed_iterations_zero' -Passed ($summaryFailedIterations -eq 0) -Detail "FailedIterations must be 0; found $(Get-JsonValue -Object $summary -Name 'FailedIterations' -DefaultValue 'missing')"
     Add-Check -Name 'summary_failed_iterations_matches_results' -Passed ($summaryFailedIterations -eq $failedSummaryResults.Count) -Detail 'FailedIterations must match failed Results rows'
-    $failedIterationIdsCount = Get-ArrayCount -Value (Get-JsonValue -Object $summary -Name 'FailedIterationIds' -DefaultValue @())
+    $failedIterationIdsCount = Get-ArrayCount -Value $summaryFailedIterationIdsProperty.Value
     Add-Check -Name 'summary_failed_iteration_ids_empty' -Passed ($failedIterationIdsCount -eq 0) -Detail 'FailedIterationIds must be empty for a clean packet'
     Add-Check -Name 'summary_failed_iteration_ids_match_results' -Passed (Test-StringArrayEquals -Actual $summaryFailedIterationIds -Expected $expectedFailedIterationIds) -Detail 'FailedIterationIds must match failed Results Iteration values'
     Add-Check -Name 'summary_process_exit_count_zero' -Passed ($summaryProcessExitCount -eq 0) -Detail 'ProcessExitCount must be 0'
@@ -1500,8 +1500,12 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $resultCommandAckRequiredForRuntimeObservation = (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
             $runtimeLogGrowthRequiredForIteration = -not [string]::IsNullOrWhiteSpace($resultCommandForRuntimeObservation) -or $resultCommandAckRequiredForRuntimeObservation
             Add-Check -Name "${iterationName}_command_ack_observed" -Passed ((-not $resultCommandAckRequiredForRuntimeObservation) -or (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)) -Detail 'required command acknowledgement must be observed when applicable'
-            $failureReasonCodesCount = Get-ArrayCount -Value (Get-JsonValue -Object $iterationResult -Name 'FailureReasonCodes' -DefaultValue @())
-            $hangSignalsCount = Get-ArrayCount -Value (Get-JsonValue -Object $iterationResult -Name 'HangSignals' -DefaultValue @())
+            $failureReasonCodesProperty = Get-JsonArrayProperty -Object $iterationResult -Name 'FailureReasonCodes'
+            $hangSignalsProperty = Get-JsonArrayProperty -Object $iterationResult -Name 'HangSignals'
+            $failureReasonCodesCount = Get-ArrayCount -Value $failureReasonCodesProperty.Value
+            $hangSignalsCount = Get-ArrayCount -Value $hangSignalsProperty.Value
+            Add-Check -Name "${iterationName}_failure_reason_codes_array" -Passed ([bool]$failureReasonCodesProperty.IsArray) -Detail 'FailureReasonCodes must be retained as a native JSON array'
+            Add-Check -Name "${iterationName}_hang_signals_array" -Passed ([bool]$hangSignalsProperty.IsArray) -Detail 'HangSignals must be retained as a native JSON array'
             Add-Check -Name "${iterationName}_failure_reason_codes_empty" -Passed ($failureReasonCodesCount -eq 0) -Detail 'FailureReasonCodes must be empty for a clean packet'
             Add-Check -Name "${iterationName}_hang_signals_empty" -Passed ($hangSignalsCount -eq 0) -Detail 'HangSignals must be empty for a clean packet'
             Add-Check -Name "${iterationName}_game_process_id_positive" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0) -gt 0) -Detail 'GameProcessId must identify SlayTheSpire2'
@@ -1602,8 +1606,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             if ($null -ne $resultLiveSessionPidProbeStartedAtUtc -and $null -ne $resultLiveSessionPidProbeFinishedAtUtc) {
                 Add-Check -Name "${iterationName}_result_live_session_pid_probe_finished_after_started" -Passed ($resultLiveSessionPidProbeFinishedAtUtc -ge $resultLiveSessionPidProbeStartedAtUtc) -Detail 'LiveSession PID probe finish time must be at or after start time'
             }
+            $resultLiveSessionPreLaunchSlayProcessIdsProperty = Get-JsonArrayProperty -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessIds'
             Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_count_zero" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessCount' -DefaultValue -1) -eq 0) -Detail 'LiveSessionPreLaunchSlayProcessCount must be 0 so prior game processes cannot contaminate shared godot.log evidence'
-            Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_ids_empty" -Passed ((Get-ArrayCount -Value (Get-JsonValue -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessIds' -DefaultValue @())) -eq 0) -Detail 'LiveSessionPreLaunchSlayProcessIds must be empty'
+            Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_ids_array" -Passed ([bool]$resultLiveSessionPreLaunchSlayProcessIdsProperty.IsArray) -Detail 'LiveSessionPreLaunchSlayProcessIds must be retained as a native JSON array'
+            Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_ids_empty" -Passed ((Get-ArrayCount -Value $resultLiveSessionPreLaunchSlayProcessIdsProperty.Value) -eq 0) -Detail 'LiveSessionPreLaunchSlayProcessIds must be empty'
             Add-Check -Name "${iterationName}_result_live_session_selected_game_process_id_matches_result" -Passed ($resultLiveSessionSelectedGameProcessId -gt 0 -and $resultLiveSessionSelectedGameProcessId -eq $iterationGameProcessId) -Detail 'LiveSessionSelectedGameProcessId must match iteration-result GameProcessId'
             Add-Check -Name "${iterationName}_result_live_session_selected_game_process_start_time_parseable" -Passed ($null -ne $resultLiveSessionSelectedGameProcessStartTimeUtc) -Detail 'LiveSessionSelectedGameProcessStartTimeUtc must be parseable'
             Add-Check -Name "${iterationName}_result_live_session_selected_game_process_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($resultLiveSessionSelectedGameProcessPathFull)) -Detail 'LiveSessionSelectedGameProcessPath must be retained'
@@ -1645,8 +1651,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_prepare_output_pid_probe_started_at_parseable" -Passed ($null -ne $preparePidProbeStartedAtUtc) -Detail 'prepare-output.json PidProbeStartedAtUtc must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_pid_probe_finished_at_parseable" -Passed ($null -ne $preparePidProbeFinishedAtUtc) -Detail 'prepare-output.json PidProbeFinishedAtUtc must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_pid_probe_times_match_result" -Passed ($null -ne $preparePidProbeStartedAtUtc -and $null -ne $preparePidProbeFinishedAtUtc -and $preparePidProbeStartedAtUtc -eq $resultLiveSessionPidProbeStartedAtUtc -and $preparePidProbeFinishedAtUtc -eq $resultLiveSessionPidProbeFinishedAtUtc) -Detail 'prepare-output.json PID probe timestamps must match iteration-result'
+                $preparePreLaunchSlayProcessIdsProperty = Get-JsonArrayProperty -Object $prepareOutput -Name 'PreLaunchSlayProcessIds'
                 Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_count_zero" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'PreLaunchSlayProcessCount' -DefaultValue -1) -eq 0) -Detail 'prepare-output.json PreLaunchSlayProcessCount must be 0'
-                Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_ids_empty" -Passed ((Get-ArrayCount -Value (Get-JsonValue -Object $prepareOutput -Name 'PreLaunchSlayProcessIds' -DefaultValue @())) -eq 0) -Detail 'prepare-output.json PreLaunchSlayProcessIds must be empty'
+                Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_ids_array" -Passed ([bool]$preparePreLaunchSlayProcessIdsProperty.IsArray) -Detail 'prepare-output.json PreLaunchSlayProcessIds must be retained as a native JSON array'
+                Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_ids_empty" -Passed ((Get-ArrayCount -Value $preparePreLaunchSlayProcessIdsProperty.Value) -eq 0) -Detail 'prepare-output.json PreLaunchSlayProcessIds must be empty'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_id_matches_result" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'SelectedGameProcessId' -DefaultValue 0) -eq $iterationGameProcessId) -Detail 'prepare-output.json SelectedGameProcessId must match iteration-result GameProcessId'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_start_time_parseable" -Passed ($null -ne $prepareSelectedGameProcessStartTimeUtc) -Detail 'prepare-output.json SelectedGameProcessStartTimeUtc must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_start_time_matches_result" -Passed ($null -ne $prepareSelectedGameProcessStartTimeUtc -and $null -ne $resultGameProcessStartTimeUtc -and $prepareSelectedGameProcessStartTimeUtc -eq $resultGameProcessStartTimeUtc) -Detail 'prepare-output.json SelectedGameProcessStartTimeUtc must match GameProcessStartTimeUtc'
@@ -1942,10 +1950,14 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 $summaryPassed = (Get-JsonBoolValue -Object $summaryForIteration -Name 'Passed' -DefaultValue $false)
                 $resultCommandAckObserved = (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)
                 $summaryCommandAckObserved = (Get-JsonBoolValue -Object $summaryForIteration -Name 'CommandAckObserved' -DefaultValue $false)
-                $resultFailureReasonCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $iterationResult -Name 'FailureReasonCodes' -DefaultValue @()))
-                $summaryFailureReasonCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $summaryForIteration -Name 'FailureReasonCodes' -DefaultValue @()))
-                $resultHangSignals = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $iterationResult -Name 'HangSignals' -DefaultValue @()))
-                $summaryHangSignals = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $summaryForIteration -Name 'HangSignals' -DefaultValue @()))
+                $resultFailureReasonCodesForSummaryProperty = Get-JsonArrayProperty -Object $iterationResult -Name 'FailureReasonCodes'
+                $summaryFailureReasonCodesProperty = Get-JsonArrayProperty -Object $summaryForIteration -Name 'FailureReasonCodes'
+                $resultHangSignalsForSummaryProperty = Get-JsonArrayProperty -Object $iterationResult -Name 'HangSignals'
+                $summaryHangSignalsProperty = Get-JsonArrayProperty -Object $summaryForIteration -Name 'HangSignals'
+                $resultFailureReasonCodes = @(ConvertTo-StringArray -Value $resultFailureReasonCodesForSummaryProperty.Value)
+                $summaryFailureReasonCodes = @(ConvertTo-StringArray -Value $summaryFailureReasonCodesProperty.Value)
+                $resultHangSignals = @(ConvertTo-StringArray -Value $resultHangSignalsForSummaryProperty.Value)
+                $summaryHangSignals = @(ConvertTo-StringArray -Value $summaryHangSignalsProperty.Value)
                 Add-Check -Name "${iterationName}_summary_result_scenario_matches_iteration" -Passed ([string]::Equals($summaryScenario, $resultScenario, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results Scenario must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_command_matches_iteration" -Passed ([string]::Equals($summaryCommand, $resultCommand, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results Command must match iteration-result.json'
                 if ($commandFileExists) {
@@ -1966,6 +1978,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_summary_result_command_ack_required_matches_iteration" -Passed ($summaryCommandAckRequired -eq $resultCommandAckRequired) -Detail 'monkey-summary.json Results CommandAckRequired must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_passed_matches_iteration" -Passed ($summaryPassed -eq $resultPassed) -Detail 'monkey-summary.json Results Passed must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_command_ack_observed_matches_iteration" -Passed ($summaryCommandAckObserved -eq $resultCommandAckObserved) -Detail 'monkey-summary.json Results CommandAckObserved must match iteration-result.json'
+                Add-Check -Name "${iterationName}_summary_result_failure_reason_codes_array" -Passed ([bool]$summaryFailureReasonCodesProperty.IsArray) -Detail 'monkey-summary.json Results FailureReasonCodes must be retained as a native JSON array'
+                Add-Check -Name "${iterationName}_summary_result_hang_signals_array" -Passed ([bool]$summaryHangSignalsProperty.IsArray) -Detail 'monkey-summary.json Results HangSignals must be retained as a native JSON array'
                 Add-Check -Name "${iterationName}_summary_result_failure_reason_codes_empty" -Passed ($summaryFailureReasonCodes.Count -eq 0) -Detail 'monkey-summary.json Results FailureReasonCodes must be empty for a clean packet'
                 Add-Check -Name "${iterationName}_summary_result_hang_signals_empty" -Passed ($summaryHangSignals.Count -eq 0) -Detail 'monkey-summary.json Results HangSignals must be empty for a clean packet'
                 Add-Check -Name "${iterationName}_summary_result_failure_reason_codes_match_iteration" -Passed (Test-StringArrayEquals -Actual $summaryFailureReasonCodes -Expected $resultFailureReasonCodes) -Detail 'monkey-summary.json Results FailureReasonCodes must match iteration-result.json'
@@ -1989,7 +2003,9 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 try {
                     $probeSamplesJson = [System.IO.File]::ReadAllText($probeSamplesPath)
                     $probeSamplesParsed = $probeSamplesJson | ConvertFrom-Json
-                    $probeSamples = @($probeSamplesParsed)
+                    $probeSamplesIsArray = $probeSamplesParsed -is [System.Array]
+                    $probeSamples = @(if ($probeSamplesIsArray) { @($probeSamplesParsed) } else { @() })
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_array" -Passed $probeSamplesIsArray -Detail 'runtime-probe-samples.json must be retained as a native JSON array'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain samples'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_phase_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Phase') -Detail 'every probe sample must retain Phase'
                     $startupMainMenuProbeSamples = @($probeSamples | Where-Object {

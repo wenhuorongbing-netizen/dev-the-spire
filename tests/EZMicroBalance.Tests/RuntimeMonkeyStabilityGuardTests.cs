@@ -710,6 +710,51 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsMalformedNativeArrayFieldsWithoutCrashing()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+
+            var planPath = Path.Combine(workdir, "monkey-plan.json");
+            var planJson = JsonNode.Parse(File.ReadAllText(planPath))!.AsObject();
+            planJson["PlannedCommands"] = "not-an-array";
+            File.WriteAllText(planPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var summaryPath = Path.Combine(workdir, "monkey-summary.json");
+            var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
+            summaryJson["Results"] = "not-an-array";
+            summaryJson["FailedIterationIds"] = "not-an-array";
+            File.WriteAllText(summaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_planned_commands_array status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_results_array status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_iteration_ids_array status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeMonkeyPacketCheckerUsesPlanPatchCountWhenParameterIsOmitted()
     {
         var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
@@ -3763,6 +3808,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerRejectsAutoSlaySummaryPlanDrift()
+    {
+        RuntimeFailureAnalyzerReadsGameNativeAutoSlayRunResultsAndByteBoundSlicesCore(phase: 9);
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayArtifactBindingDrift()
     {
         RuntimeFailureAnalyzerReadsGameNativeAutoSlayRunResultsAndByteBoundSlicesCore(phase: 3);
@@ -3968,11 +4019,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 """
                 {
                   "SchemaVersion": 1,
+                  "RunnerKind": "GameNativeAutoSlay",
                   "Sts1EventMode": "Off",
                   "PackageVersion": "v0.1.0-private-beta.87",
                   "GameVersion": "0.107.0",
                   "RitsuLibVersion": "0.4.24",
-                  "RitsuCompatBranch": "0.107.0"
+                  "RitsuCompatBranch": "0.107.0",
+                  "ExpectedPatchCount": 25,
+                  "ExpectedAncientIds": ["VAKUU"]
                 }
                 """);
             var summaryPath = Path.Combine(workdir, "autoslay-summary.json");
@@ -3980,7 +4034,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 summaryPath,
                 $$"""
                 {
+                  "SchemaVersion": 1,
                   "RunnerKind": "GameNativeAutoSlay",
+                  "Sts1EventMode": "Off",
+                  "PackageVersion": "v0.1.0-private-beta.87",
+                  "GameVersion": "0.107.0",
+                  "RitsuLibVersion": "0.4.24",
+                  "RitsuCompatBranch": "0.107.0",
+                  "ExpectedPatchCount": 25,
+                  "ExpectedAncientIds": ["VAKUU"],
                   "Runs": [
                     {
                       "Seed": "AUTOSLAY-ANALYZER",
@@ -4073,6 +4135,37 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             if (phase == 0)
             {
+                return;
+            }
+
+            if (phase == 9)
+            {
+                var summaryPlanDrift = JsonNode.Parse(originalSummaryJson)!.AsObject();
+                summaryPlanDrift["PackageVersion"] = "v0.1.0-private-beta.86";
+                summaryPlanDrift["ExpectedPatchCount"] = 24;
+                summaryPlanDrift["ExpectedAncientIds"] = new JsonArray("URDA");
+                File.WriteAllText(summaryPath, summaryPlanDrift.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+                var summaryPlanDriftOutputPath = Path.Combine(workdir, "runtime-failure-analysis-autoslay-summary-plan-mismatch.json");
+                var summaryPlanDriftResult = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", summaryPlanDriftOutputPath);
+                Assert.True(summaryPlanDriftResult.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{summaryPlanDriftResult.Output}{summaryPlanDriftResult.Error}");
+
+                using var summaryPlanDriftDocument = JsonDocument.Parse(File.ReadAllText(summaryPlanDriftOutputPath));
+                var summaryPlanDriftRoot = summaryPlanDriftDocument.RootElement;
+                var summaryPlanDriftIteration = FindIteration(summaryPlanDriftRoot, 1);
+                var summaryPlanDriftFinding = summaryPlanDriftIteration
+                    .GetProperty("Findings")
+                    .EnumerateArray()
+                    .Single(item => item.GetProperty("Signal").GetString() == "autoslay_summary_plan_mismatch");
+
+                Assert.Equal("HarnessEvidenceInvalid", summaryPlanDriftRoot.GetProperty("TriageDisposition").GetString());
+                Assert.Equal(0, summaryPlanDriftRoot.GetProperty("GameplayBlockingFindingCount").GetInt32());
+                Assert.False(summaryPlanDriftIteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+                Assert.False(summaryPlanDriftIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+                Assert.Equal("RuntimeHarness", summaryPlanDriftFinding.GetProperty("OwnerArea").GetString());
+                Assert.Contains("ExpectedAncientIds missing='VAKUU' unexpected='URDA'", summaryPlanDriftFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+                Assert.Equal("RuntimeHarness", FindFindingOwner(summaryPlanDriftIteration, "process_unresponsive"));
+                File.WriteAllText(summaryPath, originalSummaryJson);
                 return;
             }
 

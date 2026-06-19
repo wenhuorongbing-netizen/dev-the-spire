@@ -196,6 +196,15 @@ function ConvertTo-StringArray {
     return @($Value | ForEach-Object { [string]$_ })
 }
 
+function Get-NormalizedAncientIdTokens {
+    param([AllowNull()]$Value)
+
+    return @(ConvertTo-StringArray -Value $Value |
+        ForEach-Object { $_ -split ',' } |
+        Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+        ForEach-Object { $_.Trim().ToUpperInvariant() })
+}
+
 function Test-StringArrayEquals {
     param(
         [Alias('Left')][AllowNull()]$Actual,
@@ -449,6 +458,49 @@ function Get-RuntimeMonkeySummaryPlanMismatchDetails {
     $summaryPatchCount = Get-JsonIntValue -Object $Summary -Name 'ExpectedPatchCount' -DefaultValue 0
     if ($summaryPatchCount -ne $planPatchCount) {
         $details.Add("ExpectedPatchCount expected='$planPatchCount' actual='$summaryPatchCount'") | Out-Null
+    }
+
+    return @($details.ToArray())
+}
+
+function Get-AutoSlaySummaryPlanMismatchDetails {
+    param(
+        [AllowNull()]$Summary,
+        [AllowNull()]$Plan
+    )
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Summary -or $null -eq $Plan) {
+        return @()
+    }
+
+    foreach ($fieldName in @('RunnerKind', 'Sts1EventMode', 'PackageVersion', 'GameVersion', 'RitsuLibVersion', 'RitsuCompatBranch')) {
+        $planHasField = Test-JsonProperty -Object $Plan -Name $fieldName
+        $summaryHasField = Test-JsonProperty -Object $Summary -Name $fieldName
+        $planValue = [string](Get-JsonValue -Object $Plan -Name $fieldName -DefaultValue '')
+        $summaryValue = [string](Get-JsonValue -Object $Summary -Name $fieldName -DefaultValue '')
+        if (-not $planHasField -or -not $summaryHasField -or -not [string]::Equals($summaryValue, $planValue, [System.StringComparison]::Ordinal)) {
+            $details.Add("$fieldName expected='$planValue' actual='$summaryValue'") | Out-Null
+        }
+    }
+
+    $planHasPatchCount = Test-JsonProperty -Object $Plan -Name 'ExpectedPatchCount'
+    $summaryHasPatchCount = Test-JsonProperty -Object $Summary -Name 'ExpectedPatchCount'
+    $planPatchCount = Get-JsonIntValue -Object $Plan -Name 'ExpectedPatchCount' -DefaultValue 0
+    $summaryPatchCount = Get-JsonIntValue -Object $Summary -Name 'ExpectedPatchCount' -DefaultValue 0
+    if (-not $planHasPatchCount -or -not $summaryHasPatchCount -or $summaryPatchCount -ne $planPatchCount) {
+        $details.Add("ExpectedPatchCount expected='$planPatchCount' actual='$summaryPatchCount'") | Out-Null
+    }
+
+    $planExpectedAncientIds = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $Plan -Name 'ExpectedAncientIds' -DefaultValue @()) | Sort-Object -Unique)
+    $summaryExpectedAncientIds = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $Summary -Name 'ExpectedAncientIds' -DefaultValue @()) | Sort-Object -Unique)
+    $missingExpectedAncientIds = @($planExpectedAncientIds | Where-Object { $summaryExpectedAncientIds -notcontains $_ })
+    $unexpectedExpectedAncientIds = @($summaryExpectedAncientIds | Where-Object { $planExpectedAncientIds -notcontains $_ })
+    if (-not (Test-JsonProperty -Object $Plan -Name 'ExpectedAncientIds') -or
+        -not (Test-JsonProperty -Object $Summary -Name 'ExpectedAncientIds') -or
+        $missingExpectedAncientIds.Count -gt 0 -or
+        $unexpectedExpectedAncientIds.Count -gt 0) {
+        $details.Add("ExpectedAncientIds missing='$($missingExpectedAncientIds -join ',')' unexpected='$($unexpectedExpectedAncientIds -join ',')'") | Out-Null
     }
 
     return @($details.ToArray())
@@ -1662,6 +1714,12 @@ function Analyze-Iteration {
         $autoSlayAuditArtifactTrustedForOwner = $true
         $autoSlaySts1ModeArtifactTrustedForOwner = $true
         $autoSlaySidecarPathTrustedForOwner = $true
+        $autoSlaySummaryPlanMismatchDetails = @(Get-AutoSlaySummaryPlanMismatchDetails -Summary $analysisSummary -Plan $analysisPlan)
+        if (($autoSlaySummaryPlanMismatchDetails | Measure-Object).Count -gt 0) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            Add-Finding -Findings $findings -Signal 'autoslay_summary_plan_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json batch metadata does not match autoslay-plan.json: $($autoSlaySummaryPlanMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; AutoSlay summary batch metadata must match retained autoslay-plan.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+
         if (-not $RunResultPathInsideEvidenceDir) {
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_path_outside_evidence_dir' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json RunResultPath resolved outside the retained evidence directory.' -NextStep 'Retain each run-result.json under the AutoSlay evidence root before analyzing per-seed artifacts or routing source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
@@ -3578,6 +3636,7 @@ if ($IterationDir) {
                 DefaultIteration = $runIndex
                 RunResultPathInsideEvidenceDir = $runResultPathInsideEvidenceDir
                 ExpectedRunnerKind = 'GameNativeAutoSlay'
+                Summary = $autoSlaySummary
             }
         }
     } else {

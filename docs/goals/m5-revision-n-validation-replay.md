@@ -19,7 +19,7 @@ This document is the replay plan for the next single coordinated lane.
 - Installed beta.88 package parity passed.
 - Runtime preflight passed 27 / 0.
 - Retained beta.88 AdditiveBatch1 packet verification passed 62 / 0.
-- Current-doc claims passed 1241 / 0.
+- Current-doc claims passed 1249 / 0.
 - Static suite passed 15 / 0 and static-file hygiene passed 12 / 0.
 - Split no-build runtime-harness coverage passed 81 / 0 / 0 / 81.
 
