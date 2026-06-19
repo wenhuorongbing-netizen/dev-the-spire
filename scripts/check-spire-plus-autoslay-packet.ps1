@@ -28,6 +28,7 @@ $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 
 $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
+$sts1EnabledModeLogVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
 $checks = [System.Collections.Generic.List[object]]::new()
 $mismatches = [System.Collections.Generic.List[string]]::new()
 
@@ -215,6 +216,37 @@ function Test-NonEmptyOrdinalIgnoreCaseEquals {
     return -not [string]::IsNullOrWhiteSpace($Left) -and
         -not [string]::IsNullOrWhiteSpace($Right) -and
         [System.StringComparer]::OrdinalIgnoreCase.Equals($Left, $Right)
+}
+
+function ConvertTo-StringArray {
+    param([AllowNull()]$Value)
+
+    if ($null -eq $Value) {
+        return @()
+    }
+
+    return @($Value | ForEach-Object { [string]$_ })
+}
+
+function Test-StringArrayEquals {
+    param(
+        [Alias('Left')][AllowNull()]$Actual,
+        [Alias('Right')][AllowNull()]$Expected
+    )
+
+    $actualArray = @(ConvertTo-StringArray -Value $Actual)
+    $expectedArray = @(ConvertTo-StringArray -Value $Expected)
+    if ($actualArray.Count -ne $expectedArray.Count) {
+        return $false
+    }
+
+    for ($index = 0; $index -lt $actualArray.Count; $index++) {
+        if (-not [string]::Equals($actualArray[$index], $expectedArray[$index], [System.StringComparison]::Ordinal)) {
+            return $false
+        }
+    }
+
+    return $true
 }
 
 function Get-FileSha256OrEmpty {
@@ -547,6 +579,70 @@ function Invoke-RecomputedAuditSummary {
     return ConvertTo-AuditSummary -Json $auditJson -Path '<recomputed>'
 }
 
+function Get-CheckSignatureArray {
+    param([AllowNull()]$Items)
+
+    if ($null -eq $Items) {
+        return @()
+    }
+
+    return @($Items | ForEach-Object {
+        $name = [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
+        $passed = [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+        $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
+        "$name|$passed|$detail"
+    })
+}
+
+function Invoke-RecomputedSts1ModeLogCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Mode,
+        [Parameter(Mandatory = $true)][string]$LogPath,
+        [Parameter(Mandatory = $true)][string]$AuditPath,
+        [AllowEmptyString()][string]$EffectiveExpectedPackageVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedGameVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedRitsuLibVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedRitsuCompatBranch
+    )
+
+    $outFile = Join-Path ([System.IO.Path]::GetTempPath()) "spireplus-autoslay-sts1-mode-log-check-$([System.Guid]::NewGuid().ToString('N')).json"
+    try {
+        $verifierParams = @{
+            Mode = $Mode
+            LogPath = $LogPath
+            AuditPath = $AuditPath
+            OutFile = $outFile
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedPackageVersion)) {
+            $verifierParams['ExpectedPackageVersion'] = $EffectiveExpectedPackageVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedGameVersion)) {
+            $verifierParams['ExpectedGameVersion'] = $EffectiveExpectedGameVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedRitsuLibVersion)) {
+            $verifierParams['ExpectedRitsuLibVersion'] = $EffectiveExpectedRitsuLibVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedRitsuCompatBranch)) {
+            $verifierParams['ExpectedRitsuCompatBranch'] = $EffectiveExpectedRitsuCompatBranch
+        }
+
+        $verifierOutput = @(& $sts1EnabledModeLogVerifierScript @verifierParams 2>&1)
+        if (-not (Test-Path -LiteralPath $outFile -PathType Leaf)) {
+            throw "check-sts1-enabled-mode-runtime-log.ps1 did not write a recomputed report. Output: $($verifierOutput -join [Environment]::NewLine)"
+        }
+
+        return [System.IO.File]::ReadAllText($outFile) | ConvertFrom-Json
+    } finally {
+        if (Test-Path -LiteralPath $outFile -PathType Leaf) {
+            Remove-Item -LiteralPath $outFile -Force
+        }
+    }
+}
+
 if (-not (Test-Path -LiteralPath $EvidenceDir -PathType Container)) {
     throw "EvidenceDir does not exist: $EvidenceDir"
 }
@@ -562,6 +658,7 @@ $planExists = Test-Path -LiteralPath $planPath -PathType Leaf
 $summaryExists = Test-Path -LiteralPath $summaryPath -PathType Leaf
 Add-Check -Name 'autoslay_plan_exists' -Passed $planExists -Detail 'requires autoslay-plan.json'
 Add-Check -Name 'autoslay_summary_exists' -Passed $summaryExists -Detail 'requires autoslay-summary.json from a launched game-native AutoSlay batch'
+Add-Check -Name 'min_runs_positive' -Passed ($MinRuns -gt 0) -Detail "MinRuns must be positive for game-native AutoSlay proof; found $MinRuns"
 
 $plan = $null
 $summary = $null
@@ -796,16 +893,104 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_run_seeds_match_plan_seeds' -Passed ([string]::Equals([string]::Join("`n", $sortedPlanSeeds), [string]::Join("`n", $sortedRunSeeds), [System.StringComparison]::Ordinal)) -Detail 'summary run Seeds must exactly match autoslay-plan.json Seeds'
 
     $observedAncientIdSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    $observedAncientIdCounts = @{}
     foreach ($run in $summaryRuns) {
         $runAncientId = ([string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')).Trim()
         if (-not [string]::IsNullOrWhiteSpace($runAncientId)) {
-            $observedAncientIdSet.Add($runAncientId.ToUpperInvariant()) | Out-Null
+            $normalizedAncientId = $runAncientId.ToUpperInvariant()
+            $observedAncientIdSet.Add($normalizedAncientId) | Out-Null
+            if (-not $observedAncientIdCounts.ContainsKey($normalizedAncientId)) {
+                $observedAncientIdCounts[$normalizedAncientId] = 0
+            }
+
+            $observedAncientIdCounts[$normalizedAncientId] = [int]$observedAncientIdCounts[$normalizedAncientId] + 1
         }
     }
     $observedAncientIds = @($observedAncientIdSet | Sort-Object)
     if ($expectedAncientIdsForCoverage.Count -gt 0) {
         $missingExpectedAncientIds = @($expectedAncientIdsForCoverage | Where-Object { -not $observedAncientIdSet.Contains($_) })
         Add-Check -Name 'summary_expected_ancient_ids_observed' -Passed ($missingExpectedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds missing=$($missingExpectedAncientIds -join ',') observed=$($observedAncientIds -join ',')"
+
+        $summaryAncientIdCounts = Get-JsonValue -Object $summary -Name 'AncientIdCounts' -DefaultValue $null
+        $ancientIdCountsPresent = $null -ne $summaryAncientIdCounts
+        Add-Check -Name 'summary_ancient_id_counts_present' -Passed $ancientIdCountsPresent -Detail 'autoslay-summary.json must retain AncientIdCounts when target coverage is requested'
+
+        $summaryAncientIdCountMap = @{}
+        $ancientIdCountProblems = [System.Collections.Generic.List[string]]::new()
+        if ($ancientIdCountsPresent) {
+            if ($summaryAncientIdCounts -isnot [pscustomobject]) {
+                $ancientIdCountProblems.Add('AncientIdCounts must be a JSON object') | Out-Null
+            } else {
+                foreach ($property in @($summaryAncientIdCounts.PSObject.Properties)) {
+                    $normalizedKeys = @(Get-NormalizedAncientIdTokens -Value $property.Name)
+                    if ($normalizedKeys.Count -ne 1) {
+                        $ancientIdCountProblems.Add("invalid key '$($property.Name)'") | Out-Null
+                        continue
+                    }
+
+                    $normalizedKey = $normalizedKeys[0]
+                    if ($summaryAncientIdCountMap.ContainsKey($normalizedKey)) {
+                        $ancientIdCountProblems.Add("duplicate key '$normalizedKey' after normalization") | Out-Null
+                        continue
+                    }
+
+                    $parsedCount = 0
+                    $rawCount = [string]$property.Value
+                    if (-not [int]::TryParse($rawCount, [ref]$parsedCount)) {
+                        $ancientIdCountProblems.Add("count for '$normalizedKey' is not an integer") | Out-Null
+                        continue
+                    }
+
+                    if ($parsedCount -lt 0) {
+                        $ancientIdCountProblems.Add("count for '$normalizedKey' is negative") | Out-Null
+                        continue
+                    }
+
+                    $summaryAncientIdCountMap[$normalizedKey] = $parsedCount
+                }
+            }
+        }
+
+        Add-Check -Name 'summary_ancient_id_counts_valid' -Passed ($ancientIdCountsPresent -and $ancientIdCountProblems.Count -eq 0) -Detail "AncientIdCounts must be a non-negative integer map keyed by Ancient id; problems=$($ancientIdCountProblems -join '; ')"
+
+        if ($ancientIdCountsPresent -and $ancientIdCountProblems.Count -eq 0) {
+            $countMismatchDetails = [System.Collections.Generic.List[string]]::new()
+            foreach ($key in @($observedAncientIdCounts.Keys | Sort-Object)) {
+                if (-not $summaryAncientIdCountMap.ContainsKey($key)) {
+                    $countMismatchDetails.Add("${key}:missing_summary runs=$($observedAncientIdCounts[$key])") | Out-Null
+                    continue
+                }
+
+                $observedCount = [int]$observedAncientIdCounts[$key]
+                $summaryCount = [int]$summaryAncientIdCountMap[$key]
+                if ($observedCount -ne $summaryCount) {
+                    $countMismatchDetails.Add("${key}:summary=$summaryCount runs=$observedCount") | Out-Null
+                }
+            }
+
+            foreach ($key in @($summaryAncientIdCountMap.Keys | Sort-Object)) {
+                if (-not $observedAncientIdCounts.ContainsKey($key)) {
+                    $countMismatchDetails.Add("${key}:extra_summary=$($summaryAncientIdCountMap[$key])") | Out-Null
+                }
+            }
+
+            $summaryAncientIdCountTotal = 0
+            foreach ($countValue in @($summaryAncientIdCountMap.Values)) {
+                $summaryAncientIdCountTotal += [int]$countValue
+            }
+
+            $missingPositiveExpectedAncientIds = @($expectedAncientIdsForCoverage | Where-Object {
+                -not $summaryAncientIdCountMap.ContainsKey($_) -or [int]$summaryAncientIdCountMap[$_] -le 0
+            })
+
+            Add-Check -Name 'summary_ancient_id_counts_match_runs' -Passed ($countMismatchDetails.Count -eq 0) -Detail "AncientIdCounts must match Runs[].AncientId; mismatches=$($countMismatchDetails -join ', ')"
+            Add-Check -Name 'summary_ancient_id_counts_total_matches_runs' -Passed ($summaryAncientIdCountTotal -eq $summaryRuns.Count) -Detail "AncientIdCounts total must match Runs array count; total=$summaryAncientIdCountTotal runs=$($summaryRuns.Count)"
+            Add-Check -Name 'summary_expected_ancient_id_counts_positive' -Passed ($missingPositiveExpectedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds with missing/zero AncientIdCounts=$($missingPositiveExpectedAncientIds -join ',')"
+        } else {
+            Add-Check -Name 'summary_ancient_id_counts_match_runs' -Passed $false -Detail 'AncientIdCounts cannot be compared with Runs[].AncientId until present and valid'
+            Add-Check -Name 'summary_ancient_id_counts_total_matches_runs' -Passed $false -Detail 'AncientIdCounts total cannot be compared until present and valid'
+            Add-Check -Name 'summary_expected_ancient_id_counts_positive' -Passed $false -Detail 'ExpectedAncientIds AncientIdCounts cannot be checked until AncientIdCounts is present and valid'
+        }
     }
 }
 
@@ -919,6 +1104,14 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     }
     if ($currentLogExists) {
         $currentLog = [System.IO.File]::ReadAllText($currentLogPath)
+        if (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode)) {
+            if ($expectedSts1Mode -eq 'Off') {
+                Add-Check -Name "${runName}_current_log_contains_sts1_mode_reason" -Passed (Contains-Text -Text $currentLog -Needle 'StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.') -Detail 'current-iteration log must retain the Off-mode StS1 reason line'
+                Add-Check -Name "${runName}_current_log_contains_sts1_feature_state" -Passed ([regex]::IsMatch($currentLog, 'Feature Sts1Events .*bootstrap=disabled, live=Disabled')) -Detail 'current-iteration log must retain the Off-mode StS1 feature-state line'
+            } else {
+                Add-Check -Name "${runName}_current_log_contains_sts1_feature_state" -Passed ([regex]::IsMatch($currentLog, 'Feature Sts1Events .*bootstrap=enabled, live=Enabled')) -Detail 'current-iteration log must retain the enabled StS1 feature-state line'
+            }
+        }
     }
 
     if (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256) -and $autoSlayLogExists) {
@@ -1152,11 +1345,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
         Add-Check -Name "${runName}_current_log_selects_ancient_id" -Passed ($AllowMissingEventTraversal -or $currentLogSelectsAncientId) -Detail "current-iteration godot log must bind the event option selection to AncientId '$ancientId'"
     }
 
+    $eventSelectionNeedleForOrder = if (-not [string]::IsNullOrWhiteSpace($ancientSelectionNeedle)) { $ancientSelectionNeedle } else { 'Selecting event option:' }
     $eventSequence = @(
         "Starting run with seed=$seed",
         'Entering Event room',
         'Detected Ancient event, clicking through dialogue',
-        'Selecting event option:',
+        $eventSelectionNeedleForOrder,
         "Run completed successfully with seed=$seed"
     )
     $autoSlayEventSequenceObserved = (-not [string]::IsNullOrWhiteSpace($seed)) -and (Test-OrderedTextSequence -Text $autoSlayLog -Needles $eventSequence)
@@ -1168,8 +1362,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     if ($runEventTraversal -and -not [string]::IsNullOrWhiteSpace($ancientId)) {
         $traversedAncientIdSet.Add($ancientId.Trim().ToUpperInvariant()) | Out-Null
     }
-    Add-Check -Name "${runName}_autoslay_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $autoSlayEventSequenceObserved) -Detail 'AutoSlay sidecar log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option, and completion markers'
-    Add-Check -Name "${runName}_current_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $currentLogEventSequenceObserved) -Detail 'current-iteration godot log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option, and completion markers'
+    Add-Check -Name "${runName}_autoslay_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $autoSlayEventSequenceObserved) -Detail 'AutoSlay sidecar log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option for the retained AncientId, and completion markers'
+    Add-Check -Name "${runName}_current_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $currentLogEventSequenceObserved) -Detail 'current-iteration godot log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option for the retained AncientId, and completion markers'
     Add-Check -Name "${runName}_event_room_traversal_observed" -Passed ($AllowMissingEventTraversal -or $runEventTraversal) -Detail 'AutoSlay event proof requires ordered event traversal in both sidecar and current-iteration godot logs'
 
     if ($auditExists) {
@@ -1216,9 +1410,15 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $sts1LogLength = Get-JsonValue -Object $sts1ModeCheck -Name 'LogLength' -DefaultValue $null
             $sts1LogSha256 = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'LogSha256' -DefaultValue '')
             $sts1Mismatches = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
-            $sts1FailedChecks = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()) | Where-Object {
+            $sts1Checks = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()))
+            $sts1FailedChecks = @($sts1Checks | Where-Object {
                 -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
             })
+            $sts1CheckSignatures = @(Get-CheckSignatureArray -Items $sts1Checks)
+            $effectiveExpectedPackageVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) { $ExpectedPackageVersion } else { [string](Get-JsonValue -Object $plan -Name 'PackageVersion' -DefaultValue '') }
+            $effectiveExpectedGameVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedGameVersion)) { $ExpectedGameVersion } else { [string](Get-JsonValue -Object $plan -Name 'GameVersion' -DefaultValue '') }
+            $effectiveExpectedRitsuLibVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuLibVersion)) { $ExpectedRitsuLibVersion } else { [string](Get-JsonValue -Object $plan -Name 'RitsuLibVersion' -DefaultValue '') }
+            $effectiveExpectedRitsuCompatBranch = if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) { $ExpectedRitsuCompatBranch } else { [string](Get-JsonValue -Object $plan -Name 'RitsuCompatBranch' -DefaultValue '') }
             $expectedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path $currentLogPath
             $expectedSts1LogLength = if ($currentLogExists) { [long](Get-Item -LiteralPath $currentLogPath).Length } else { -1L }
             $expectedSts1LogSha256 = Get-FileSha256OrEmpty -Path $currentLogPath
@@ -1229,6 +1429,46 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($normalizedSts1LogPath) -and -not [string]::IsNullOrWhiteSpace($expectedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedSts1LogPath, $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
             Add-Check -Name "${runName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and [long]$sts1LogLength -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
             Add-Check -Name "${runName}_sts1_mode_log_check_log_sha256_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogSha256) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) -Detail 'sts1-mode-log-check.json LogSha256 must match the retained godot.log.current-iteration bytes'
+            if (-not $currentLogExists) {
+                Add-Check -Name "${runName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed $false -Detail 'cannot recompute StS1 mode log check because godot.log.current-iteration is missing'
+            } elseif (-not $auditExists) {
+                Add-Check -Name "${runName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed $false -Detail 'cannot recompute StS1 mode log check because godot-log-audit.json is missing'
+            } elseif (-not (Test-Path -LiteralPath $sts1EnabledModeLogVerifierScript -PathType Leaf)) {
+                Add-Check -Name "${runName}_sts1_mode_log_check_recompute_script_exists" -Passed $false -Detail "missing StS1 mode log verifier: $sts1EnabledModeLogVerifierScript"
+            } else {
+                Add-Check -Name "${runName}_sts1_mode_log_check_recompute_script_exists" -Passed $true -Detail 'check-sts1-enabled-mode-runtime-log.ps1 is available'
+                try {
+                    $recomputedSts1ModeCheck = Invoke-RecomputedSts1ModeLogCheck `
+                        -Mode $expectedSts1Mode `
+                        -LogPath $currentLogPath `
+                        -AuditPath $auditPath `
+                        -EffectiveExpectedPackageVersion $effectiveExpectedPackageVersion `
+                        -EffectiveExpectedGameVersion $effectiveExpectedGameVersion `
+                        -EffectiveExpectedRitsuLibVersion $effectiveExpectedRitsuLibVersion `
+                        -EffectiveExpectedRitsuCompatBranch $effectiveExpectedRitsuCompatBranch
+                    $recomputedSts1Mode = [string](Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Mode' -DefaultValue '')
+                    $recomputedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'LogPath' -DefaultValue ''))
+                    $recomputedSts1LogLength = Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'LogLength' -DefaultValue $null
+                    $recomputedSts1LogSha256 = [string](Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'LogSha256' -DefaultValue '')
+                    $recomputedSts1Mismatches = @(Get-ArrayValues -Value (Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
+                    $recomputedSts1Checks = @(Get-ArrayValues -Value (Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Checks' -DefaultValue @()))
+                    $recomputedSts1FailedChecks = @($recomputedSts1Checks | Where-Object {
+                        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                    })
+                    $recomputedSts1CheckSignatures = @(Get-CheckSignatureArray -Items $recomputedSts1Checks)
+                    $recomputedSts1FailedCheckNames = @($recomputedSts1FailedChecks | ForEach-Object {
+                        [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
+                    } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+
+                    Add-Check -Name "${runName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed ($recomputedSts1Mode -eq $expectedSts1Mode -and -not [string]::IsNullOrWhiteSpace($recomputedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogPath, $expectedSts1LogPath) -and $null -ne $recomputedSts1LogLength -and [long]$recomputedSts1LogLength -eq $expectedSts1LogLength -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogSha256, $expectedSts1LogSha256)) -Detail 'packet checker must recompute sts1-mode-log-check.json from the retained current-iteration log'
+                    Add-Check -Name "${runName}_sts1_mode_log_check_recomputed_mismatches_empty" -Passed ($recomputedSts1Mismatches.Count -eq 0) -Detail "recomputed StS1 mode log check mismatches must be empty; found $($recomputedSts1Mismatches.Count): $($recomputedSts1Mismatches -join '; ')"
+                    Add-Check -Name "${runName}_sts1_mode_log_check_recomputed_all_checks_passed" -Passed ($recomputedSts1FailedChecks.Count -eq 0) -Detail "recomputed StS1 mode log check contains $($recomputedSts1FailedChecks.Count) failed checks: $($recomputedSts1FailedCheckNames -join ',')"
+                    Add-Check -Name "${runName}_sts1_mode_log_check_mismatches_match_recomputed" -Passed (Test-StringArrayEquals -Actual $sts1Mismatches -Expected $recomputedSts1Mismatches) -Detail 'retained sts1-mode-log-check.json Mismatches must match the recomputed verifier report'
+                    Add-Check -Name "${runName}_sts1_mode_log_check_checks_match_recomputed" -Passed (Test-StringArrayEquals -Actual $sts1CheckSignatures -Expected $recomputedSts1CheckSignatures) -Detail 'retained sts1-mode-log-check.json Checks must match the recomputed verifier report'
+                } catch {
+                    Add-Check -Name "${runName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed $false -Detail "failed to recompute StS1 mode log check: $($_.Exception.Message)"
+                }
+            }
         }
     }
 

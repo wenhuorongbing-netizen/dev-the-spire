@@ -147,7 +147,11 @@ The first implementation layer is deliberately conservative:
    that absence must be recorded in `session-state.json`, restored by deleting
    any test-created backup, and closed in `restore-state.json` with
    `SettingsBackupExistsAfterRestore = false`.
-13. Write `iteration-result.json` and a root `monkey-summary.json`.
+13. Write `iteration-result.json` and a root `monkey-summary.json`. A clean
+   batch must use the exact `1..N` iteration set once in both
+   `monkey-plan.json` `PlannedCommands[].Iteration` and `monkey-summary.json`
+   `Results[].Iteration`; duplicate, missing, non-positive, or out-of-range
+   iteration ids fail the packet check.
 
 The lane fails an iteration on:
 
@@ -208,6 +212,11 @@ can close a game-native monkey proof row:
 - top-level `autoslay-plan.json` and `autoslay-summary.json` with
   `SchemaVersion: 1`, `RunnerKind: GameNativeAutoSlay`, and retained batch
   metadata before any per-run artifacts can be trusted;
+- top-level `autoslay-summary.json` `AncientIdCounts` keyed by normalized
+  Ancient id, with non-negative integer counts that exactly match the
+  aggregation of per-run `Runs[].AncientId` values and give every requested
+  target Ancient id a positive count; extra zero-count Ancient ids are not
+  allowed because the retained count map must be the exact run aggregation;
 - the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`,
   retained as a hashed launcher/provenance artifact plus `LauncherKind`,
   `LauncherPath`, `LauncherSha256`, `HookId`, `HookAssembly`, and
@@ -258,7 +267,8 @@ can close a game-native monkey proof row:
 - the same package, game version, RitsuLib version, compat branch, patch-count,
   `godot.log.before`, `godot.log.after-launch`, `godot.log.current-iteration`,
   `godot-log-audit.json`, and `sts1-mode-log-check.json` bindings required by
-  the current runtime packet checker, with every per-seed artifact retained in
+  the current runtime packet checker, including StS1 mode report recomputation
+  from the retained current slice plus audit, with every per-seed artifact retained in
   that seed's `run-####` directory;
 - observed ordered event-room lines in both the AutoSlay sidecar log and the
   current Godot log slice proving Ancient dialogue/options were traversed, not
@@ -291,9 +301,16 @@ case-insensitively after normalizing them to uppercase, while per-run
 match each other exactly.
 In `-FailOnMismatch` proof mode, `-ExpectedAncientIds` is required. A proof packet
 must also retain the same target set in `autoslay-plan.json`
-`ExpectedAncientIds`; summary-only target coverage is not sufficient. Each
-requested Ancient id must have sidecar and current-log traversal proof whose
-`Selecting event option:` line is bound to that same id.
+`ExpectedAncientIds`; summary-only target coverage is not sufficient.
+`autoslay-summary.json` must retain `AncientIdCounts` whose normalized keys and
+non-negative integer values match `Runs[].AncientId` aggregation exactly, whose
+total equals the retained run count, and whose value for each requested target
+Ancient id is greater than zero. Extra zero-count keys still fail because the
+map must not claim an Ancient id that never appeared in `Runs[]`. Each requested
+Ancient id must have sidecar and current-log traversal proof whose ordered
+`Selecting event option: <AncientId>` line is bound to that same id after the
+event-room and Ancient-dialogue markers, not merely present somewhere else in
+the retained log slice.
 Omitting the target set fails `expected_ancient_ids_required_for_proof_mode`.
 Do not combine `-AllowMissingEventTraversal` with `-FailOnMismatch`; proof-mode
 verification fails `allow_missing_event_traversal_not_proof_mode` so a parser
@@ -323,11 +340,17 @@ clean audit recomputation, StS1 mode binding, `EventKind: Ancient` /
 traversed-id coverage, or ordered event-room traversal markers such as
 `Entering Event room`, `Detected Ancient event, clicking through dialogue`,
 and `Selecting event option: <AncientId>`. Use a smaller
-`-MinRuns` only for temporary parser or fixture tests; a real game-native
-monkey proof should use the intended proof count plus the intended target
-Ancient id coverage. A single-seed fixture packet is not batch proof; the verifier must fail when `-MinRuns` is higher than the retained plan and summary
+`-MinRuns` only for temporary parser or fixture tests, and never set it to 0 or
+a negative value; a real game-native monkey proof should use the intended proof
+count plus the intended target Ancient id coverage. A single-seed fixture packet is not batch proof; the verifier must fail when `-MinRuns` is higher than the retained plan and summary
 run count, and it must fail when any requested `-ExpectedAncientIds` value is
 missing from the retained traversed Ancient ids.
+The verifier reruns `check-sts1-enabled-mode-runtime-log.ps1` against each
+retained current Godot log and audit, then requires retained StS1 verifier
+`Mismatches` and `Checks` to match the recomputed report. If explicit
+package/game/Ritsu target switches are omitted, this recompute uses
+`autoslay-plan.json` `PackageVersion`, `GameVersion`, `RitsuLibVersion`, and
+`RitsuCompatBranch`; proof-mode still requires the explicit switches.
 
 If a launched AutoSlay batch fails, triage the retained packet without launching
 anything:
@@ -514,8 +537,15 @@ main-menu log growth. The checker also requires the retained
 `GameProcessPath` to match the single positive process identity observed by
 `runtime-probe-samples.json` and the live-session-selected game process.
 `sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
-`LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`, exact Spire Plus patch-count lines from
-`godot.log.current-iteration`, probe sample paths and sliced-log paths that
+`LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`.
+The packet checker reruns `check-sts1-enabled-mode-runtime-log.ps1` against
+that same retained current slice and audit, then requires the retained
+StS1 verifier mismatches and checks to match the recomputed report. When the
+packet-check command omits explicit package/game/Ritsu target switches, the
+checker uses the retained `monkey-plan.json` target values for this recompute
+so real runner packets remain self-contained. It also
+requires exact Spire Plus patch-count lines from `godot.log.current-iteration`,
+probe sample paths and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
 and no `../` or absolute-path escape from `iteration-result.json` log/probe
 path fields. The packet checker rejects `iteration-result.json` log/probe paths that resolve outside the current `iteration-####` directory.
@@ -623,7 +653,10 @@ The triage analyzer maps retained signals to owner areas. It records the planned
 For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
 missing/invalid `runtime-probe-samples.json`, invalid probe timestamps, missing
 phase coverage, and phase-count or runtime log-growth timeline drift as `RuntimeHarness` blockers
-before source ownership routing. It also rejects
+before source ownership routing. Those probe defects
+clear runtime-monkey run/probe/log trust, so retained `command_ack_missing` or
+unclassified `iteration-result.json` failure codes stay under `RuntimeHarness`
+until the packet evidence is valid. It also rejects
 `iteration-result.json` log or probe paths that resolve outside the current
 `iteration-####` directory or to shadow/nonstandard files under that directory,
 and it does not use those escaped or noncanonical files for log-derived,
@@ -658,6 +691,17 @@ evidence until its scanned `Path`, `Length`, and `Sha256` bind to
 `audit-godot-log.ps1` recomputation agrees with the retained signature counts.
 Stale or hand-assembled audit JSON is reported as a `RuntimeHarness` blocker,
 and its signature hits are ignored for feature ownership.
+When a retained `sts1-mode-log-check.json` exists, the analyzer applies the
+same trust rule: the report's `Mode` must bind to the retained run plan
+`Sts1EventMode`, its `LogPath`, `LogLength`, and `LogSha256` must bind to
+`godot.log.current-iteration`, and a fresh analyzer-side
+`check-sts1-enabled-mode-runtime-log.ps1` recomputation from the retained
+current log plus `godot-log-audit.json` must match the retained `Mismatches`
+and `Checks`. Stale, hand-edited, or unrecomputable StS1 reports are
+`RuntimeHarness` blockers and set `Sts1ModeLogCheckTrustedForOwner=false`;
+only trusted analyzer-side recomputed mismatches or failed checks, with trusted
+audit evidence, are routed to `Sts1Events`. A retained `sts1_mode_mismatch`
+failure code by itself remains `RuntimeHarness` evidence.
 Current no-launch restore hardening binds `iteration-result.json` to retained
 `session-state.json` and `restore-state.json` paths/hashes, requires restored
 mod/current-run counts to close over the prepared moved lists, requires any

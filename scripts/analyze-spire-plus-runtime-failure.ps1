@@ -19,6 +19,7 @@ Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
+$sts1EnabledModeLogVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
 
 function Resolve-RepoPath {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -78,6 +79,37 @@ function Get-JsonArrayValues {
     }
 
     return ,$items
+}
+
+function ConvertTo-StringArray {
+    param([AllowNull()]$Value)
+
+    if ($null -eq $Value) {
+        return @()
+    }
+
+    return @($Value | ForEach-Object { [string]$_ })
+}
+
+function Test-StringArrayEquals {
+    param(
+        [Alias('Left')][AllowNull()]$Actual,
+        [Alias('Right')][AllowNull()]$Expected
+    )
+
+    $actualArray = @(ConvertTo-StringArray -Value $Actual)
+    $expectedArray = @(ConvertTo-StringArray -Value $Expected)
+    if ($actualArray.Count -ne $expectedArray.Count) {
+        return $false
+    }
+
+    for ($index = 0; $index -lt $actualArray.Count; $index++) {
+        if (-not [string]::Equals($actualArray[$index], $expectedArray[$index], [System.StringComparison]::Ordinal)) {
+            return $false
+        }
+    }
+
+    return $true
 }
 
 function Read-JsonOrNull {
@@ -163,6 +195,22 @@ function Test-Sha256Text {
     param([AllowEmptyString()][string]$Value)
 
     return -not [string]::IsNullOrWhiteSpace($Value) -and $Value -match '^[A-Fa-f0-9]{64}$'
+}
+
+function Get-FirstJsonString {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string[]]$Names
+    )
+
+    foreach ($name in $Names) {
+        $value = [string](Get-JsonValue -Object $Object -Name $name -DefaultValue '')
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            return $value
+        }
+    }
+
+    return ''
 }
 
 function Resolve-AnalysisPath {
@@ -519,7 +567,7 @@ function Get-OwnerAreaFromText {
         return 'PackageRuntimeDrift'
     }
 
-    if ($Text -match '(?i)\b(StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|sts1-mode-log-check)\b') {
+    if ($Text -match '(?i)\b(Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|sts1-mode-log-check)\b') {
         return 'Sts1Events'
     }
 
@@ -846,6 +894,70 @@ function Invoke-RecomputedAudit {
     return $auditJson | ConvertFrom-Json
 }
 
+function Get-CheckSignatureArray {
+    param([AllowNull()]$Items)
+
+    if ($null -eq $Items) {
+        return @()
+    }
+
+    return @($Items | ForEach-Object {
+        $name = [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
+        $passed = [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+        $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
+        "${name}|${passed}|${detail}"
+    })
+}
+
+function Invoke-RecomputedSts1ModeLogCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Mode,
+        [Parameter(Mandatory = $true)][string]$LogPath,
+        [Parameter(Mandatory = $true)][string]$AuditPath,
+        [AllowEmptyString()][string]$EffectiveExpectedPackageVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedGameVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedRitsuLibVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedRitsuCompatBranch
+    )
+
+    $outFile = Join-Path ([System.IO.Path]::GetTempPath()) "spireplus-analyzer-sts1-mode-log-check-$([System.Guid]::NewGuid().ToString('N')).json"
+    try {
+        $verifierParams = @{
+            Mode = $Mode
+            LogPath = $LogPath
+            AuditPath = $AuditPath
+            OutFile = $outFile
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedPackageVersion)) {
+            $verifierParams['ExpectedPackageVersion'] = $EffectiveExpectedPackageVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedGameVersion)) {
+            $verifierParams['ExpectedGameVersion'] = $EffectiveExpectedGameVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedRitsuLibVersion)) {
+            $verifierParams['ExpectedRitsuLibVersion'] = $EffectiveExpectedRitsuLibVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedRitsuCompatBranch)) {
+            $verifierParams['ExpectedRitsuCompatBranch'] = $EffectiveExpectedRitsuCompatBranch
+        }
+
+        $verifierOutput = @(& $sts1EnabledModeLogVerifierScript @verifierParams 2>&1)
+        if (-not (Test-Path -LiteralPath $outFile -PathType Leaf)) {
+            throw "check-sts1-enabled-mode-runtime-log.ps1 did not write a recomputed report. Output: $($verifierOutput -join [Environment]::NewLine)"
+        }
+
+        return Get-Content -LiteralPath $outFile -Raw -Encoding UTF8 | ConvertFrom-Json
+    } finally {
+        if (Test-Path -LiteralPath $outFile -PathType Leaf) {
+            Remove-Item -LiteralPath $outFile -Force
+        }
+    }
+}
+
 function Test-HarnessOwnerArea {
     param([AllowEmptyString()][string]$OwnerArea)
 
@@ -862,7 +974,8 @@ function Analyze-Iteration {
         [AllowNull()]$SummaryResult,
         [string]$ResultFileName = 'iteration-result.json',
         [int]$DefaultIteration = 0,
-        [bool]$RunResultPathInsideEvidenceDir = $true
+        [bool]$RunResultPathInsideEvidenceDir = $true,
+        [AllowNull()]$Plan = $null
     )
 
     $resultPath = Join-Path $Directory $ResultFileName
@@ -899,6 +1012,21 @@ function Analyze-Iteration {
     } elseif ([string]::IsNullOrWhiteSpace($scenarioTag) -and $isDirectSmoke) {
         $scenarioTag = 'direct-smoke'
     }
+
+    $analysisPlan = $Plan
+    if ($null -eq $analysisPlan) {
+        $planParent = [System.IO.Directory]::GetParent($Directory)
+        if ($null -ne $planParent) {
+            $planName = if ($isGameNativeAutoSlay) { 'autoslay-plan.json' } else { 'monkey-plan.json' }
+            $analysisPlan = Read-JsonOrNull -Path (Join-Path $planParent.FullName $planName)
+        }
+    }
+
+    $expectedSts1Mode = Get-FirstJsonString -Object $analysisPlan -Names @('Sts1EventMode')
+    $effectiveExpectedPackageVersion = Get-FirstJsonString -Object $analysisPlan -Names @('ExpectedPackageVersion', 'PackageVersion')
+    $effectiveExpectedGameVersion = Get-FirstJsonString -Object $analysisPlan -Names @('ExpectedGameVersion', 'GameVersion')
+    $effectiveExpectedRitsuLibVersion = Get-FirstJsonString -Object $analysisPlan -Names @('ExpectedRitsuLibVersion', 'RitsuLibVersion')
+    $effectiveExpectedRitsuCompatBranch = Get-FirstJsonString -Object $analysisPlan -Names @('ExpectedRitsuCompatBranch', 'RitsuCompatBranch')
 
     $canonicalBeforeLogCandidate = Join-Path $Directory 'godot.log.before'
     $canonicalFullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
@@ -969,6 +1097,7 @@ function Analyze-Iteration {
     $autoSlayAuditArtifactTrustedForOwner = -not $isGameNativeAutoSlay
     $autoSlaySts1ModeArtifactTrustedForOwner = -not $isGameNativeAutoSlay
     $autoSlaySidecarPathTrustedForOwner = -not $isGameNativeAutoSlay
+    $sts1ModeLogCheckTrustedForOwner = $true
     if ($result -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
         $runtimeMonkeyRequiredArtifacts = @(
             [pscustomobject]@{ Label = 'godot.log.before'; OutsideSignal = 'runtime_monkey_before_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_before_log_not_retained_file'; Path = $beforeLogCandidate; CanonicalPath = $canonicalBeforeLogCandidate; NextStep = 'Retain godot.log.before as the standard file in the iteration directory before using runtime-monkey log slices for owner routing.' },
@@ -1072,6 +1201,7 @@ function Analyze-Iteration {
                 }
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                    $sts1ModeLogCheckTrustedForOwner = $false
                 }
                 if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
                     $autoSlaySidecarPathTrustedForOwner = $false
@@ -1091,6 +1221,7 @@ function Analyze-Iteration {
                 }
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                    $sts1ModeLogCheckTrustedForOwner = $false
                 }
                 if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
                     $autoSlaySidecarPathTrustedForOwner = $false
@@ -1117,6 +1248,7 @@ function Analyze-Iteration {
                 }
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                    $sts1ModeLogCheckTrustedForOwner = $false
                 }
                 if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
                     $autoSlaySidecarPathTrustedForOwner = $false
@@ -1136,6 +1268,7 @@ function Analyze-Iteration {
                 }
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                    $sts1ModeLogCheckTrustedForOwner = $false
                 }
                 if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
                     $autoSlaySidecarPathTrustedForOwner = $false
@@ -1160,6 +1293,7 @@ function Analyze-Iteration {
                 }
                 if ([string]::Equals([string]$artifact.Label, 'sts1-mode-log-check.json', [System.StringComparison]::Ordinal)) {
                     $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                    $sts1ModeLogCheckTrustedForOwner = $false
                 }
                 if ([string]::Equals([string]$artifact.Label, 'autoslay.log', [System.StringComparison]::Ordinal)) {
                     $autoSlaySidecarPathTrustedForOwner = $false
@@ -2033,6 +2167,12 @@ function Analyze-Iteration {
         }
     }
 
+    if ($isRuntimeMonkeyResult -and $runtimeMonkeyProbeEvidenceInvalid) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+        $logTextTrustedForOwner = $false
+    }
+
     $ownerLogText = if ($logTextTrustedForOwner -and $isGameNativeAutoSlay -and $autoSlaySidecarTrustedForOwner) {
         "$logText`n$autoSlayLogText"
     } elseif ($logTextTrustedForOwner -and $isGameNativeAutoSlay) {
@@ -2308,8 +2448,12 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The observed runtime executable path does not match the live-session selected game process path.' -NextStep 'Verify the launched executable and process probe selection before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'command_ack_missing' {
-                $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
-                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The command was sent but the expected source-backed acknowledgement line was absent.' -NextStep 'Verify foreground/DevConsole input delivery first; if input landed, inspect the target command handler and its preconditions.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
+                if ($isRuntimeMonkeyResult -and ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner -or -not $runtimeMonkeyProbeArtifactTrustedForOwner)) {
+                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The command acknowledgement was absent, but runtime monkey run/probe evidence is missing, invalid, or not byte-bound to retained files.' -NextStep 'Fix runtime monkey artifact retention and probe/sample binding before assigning command-handler ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } else {
+                    $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
+                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The command was sent but the expected source-backed acknowledgement line was absent.' -NextStep 'Verify foreground/DevConsole input delivery first; if input landed, inspect the target command handler and its preconditions.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
+                }
             }
             'command_send_failed' {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'DevConsoleHarness' -Rationale 'The SendKeys DevConsole helper failed before runtime behavior could be trusted.' -NextStep 'Use window preflight and command-output JSON; do not classify this as gameplay failure until command delivery is proven.' -Confidence 'high' -EvidenceFiles $evidenceFiles
@@ -2330,7 +2474,7 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'PackageRuntimeDrift' -Rationale 'Expected package/game/RitsuLib/patch markers did not match the copied log.' -NextStep 'Run installed package/tooling preflight and compare root manifest, installed manifest, RitsuLib variant, and copied log version markers.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'sts1_mode_mismatch' {
-                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'Sts1Events' -Rationale 'The retained StS1 mode verifier did not match requested mode/source shape.' -NextStep 'Open sts1-mode-log-check.json and compare actual mode, registration count, event class set, and environment propagation.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'iteration-result.json retained an StS1 mismatch signal, but source ownership requires an analyzer-side StS1 verifier recomputation against the retained current log and audit.' -NextStep 'Use the recomputed sts1_mode_log_check_mismatch finding, if present, for StS1 source ownership; otherwise regenerate the packet before assigning feature ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'restore_failed' {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'LiveSessionRestore' -Rationale 'The live-session helper failed to restore settings/mods/current runs.' -NextStep 'Inspect restore-state/session-state and fix restore safety before another live run.' -Confidence 'high' -EvidenceFiles $evidenceFiles
@@ -2357,8 +2501,12 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'LiveSessionRestore' -Rationale 'The restore transaction settings hashes do not match the retained pre-prepare backups.' -NextStep 'Compare session-state.json hashes with restore-state.json hashes and fix settings backup restoration before another live run.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             default {
-                $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
-                Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea $owner -Rationale 'Unclassified retained failure code from iteration-result.json.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal ([string]$signal)) -Confidence 'low' -EvidenceFiles $evidenceFiles
+                if ($isRuntimeMonkeyResult -and ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner -or -not $runtimeMonkeyProbeArtifactTrustedForOwner)) {
+                    Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'iteration-result.json retained an unclassified failure code, but runtime monkey run/probe evidence is missing, invalid, or not byte-bound to retained files.' -NextStep 'Fix runtime monkey artifact retention and probe/sample binding before assigning feature ownership from retained failure codes.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } else {
+                    $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
+                    Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea $owner -Rationale 'Unclassified retained failure code from iteration-result.json.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal ([string]$signal)) -Confidence 'low' -EvidenceFiles $evidenceFiles
+                }
             }
         }
     }
@@ -2409,21 +2557,140 @@ function Analyze-Iteration {
             -EvidenceFiles $evidenceFiles
     }
 
-            if ((-not $isGameNativeAutoSlay -or $autoSlaySts1ModeArtifactTrustedForOwner) -and
-                -not [string]::IsNullOrWhiteSpace($sts1ModeCandidate) -and
-                (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf)) {
+    if ((-not $isGameNativeAutoSlay -or $autoSlaySts1ModeArtifactTrustedForOwner) -and
+        -not [string]::IsNullOrWhiteSpace($sts1ModeCandidate) -and
+        (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf)) {
         $sts1Report = Read-JsonOrNull -Path $sts1ModeCandidate
-        $sts1Mismatches = if ($sts1Report) { Get-JsonArrayValues -Object $sts1Report -Name 'Mismatches' } else { [System.Collections.Generic.List[object]]::new() }
-        if ($sts1Mismatches.Count -gt 0) {
+        $sts1ModeReportTrustedForOwner = $true
+        if ($null -eq $sts1Report) {
+            $sts1ModeReportTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
-                -Signal 'sts1_mode_log_check_mismatch' `
+                -Signal 'sts1_mode_log_check_json_invalid' `
                 -Severity 'blocking' `
-                -OwnerArea 'Sts1Events' `
-                -Rationale "sts1-mode-log-check.json contains $($sts1Mismatches.Count) mismatches." `
-                -NextStep 'Classify this as environment propagation if the log shows Off/default mode; otherwise inspect registration count, class set, and tuple expectations.' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale 'The retained StS1 mode verifier report is missing, empty, or invalid JSON.' `
+                -NextStep 'Regenerate sts1-mode-log-check.json from the retained godot.log.current-iteration and godot-log-audit.json before assigning StS1 ownership.' `
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
+        } else {
+            $expectedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path $currentIterationLogCandidate
+            $expectedSts1LogLength = if ($currentIterationLogExists) { [long](Get-Item -LiteralPath $currentIterationLogCandidate).Length } else { -1L }
+            $expectedSts1LogSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogCandidate
+            $sts1Mode = [string](Get-JsonValue -Object $sts1Report -Name 'Mode' -DefaultValue '')
+            $sts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $sts1Report -Name 'LogPath' -DefaultValue ''))
+            $sts1LogLengthValue = Get-JsonValue -Object $sts1Report -Name 'LogLength' -DefaultValue $null
+            $sts1LogSha256 = [string](Get-JsonValue -Object $sts1Report -Name 'LogSha256' -DefaultValue '')
+            $sts1LogLengthMatches = $false
+            if ($null -ne $sts1LogLengthValue) {
+                try {
+                    $sts1LogLengthMatches = [long]$sts1LogLengthValue -eq $expectedSts1LogLength
+                } catch {
+                    $sts1LogLengthMatches = $false
+                }
+            }
+
+            $sts1Mismatches = @(ConvertTo-StringArray -Value (Get-JsonArrayValues -Object $sts1Report -Name 'Mismatches').ToArray())
+            $sts1Checks = @((Get-JsonArrayValues -Object $sts1Report -Name 'Checks').ToArray())
+            $sts1CheckSignatures = @(Get-CheckSignatureArray -Items $sts1Checks)
+
+            if ([string]::IsNullOrWhiteSpace($expectedSts1Mode)) {
+                $sts1ModeReportTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_plan_binding_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained StS1 mode report exists, but the analyzer could not bind it to a retained Sts1EventMode in monkey-plan.json or autoslay-plan.json.' -NextStep 'Retain the run plan with Sts1EventMode and expected package/game/Ritsu targets before routing StS1 mode failures.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            } elseif (-not [string]::Equals($sts1Mode, $expectedSts1Mode, [System.StringComparison]::Ordinal)) {
+                $sts1ModeReportTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_plan_binding_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "The retained StS1 mode report Mode '$sts1Mode' does not match the plan Sts1EventMode '$expectedSts1Mode'." -NextStep 'Regenerate the StS1 mode report from the retained current-iteration log using the mode recorded in the run plan.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+
+            if (-not $currentIterationLogExists) {
+                $sts1ModeReportTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_current_iteration_log_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained StS1 mode report exists, but godot.log.current-iteration is missing so it cannot be recomputed or byte-bound.' -NextStep 'Retain godot.log.current-iteration beside the StS1 mode report before assigning StS1 ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            } elseif ([string]::IsNullOrWhiteSpace($sts1LogPath) -or
+                [string]::IsNullOrWhiteSpace($expectedSts1LogPath) -or
+                -not [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogPath, $expectedSts1LogPath) -or
+                -not $sts1LogLengthMatches -or
+                [string]::IsNullOrWhiteSpace($sts1LogSha256) -or
+                -not [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) {
+                $sts1ModeReportTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_current_iteration_binding_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained StS1 mode report LogPath, LogLength, or LogSha256 does not bind to godot.log.current-iteration.' -NextStep 'Regenerate sts1-mode-log-check.json from the retained current-iteration log before using it for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+
+            if (-not $auditExists) {
+                $sts1ModeReportTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_audit_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained StS1 mode report exists, but godot-log-audit.json is missing so the verifier cannot be recomputed.' -NextStep 'Retain godot-log-audit.json beside the current-iteration log and regenerate the StS1 mode report.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            } elseif (-not (Test-Path -LiteralPath $sts1EnabledModeLogVerifierScript -PathType Leaf)) {
+                $sts1ModeReportTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_recompute_script_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "The StS1 mode verifier script is missing: $sts1EnabledModeLogVerifierScript" -NextStep 'Restore check-sts1-enabled-mode-runtime-log.ps1 before analyzing retained StS1 mode reports.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            } elseif (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode) -and $currentIterationLogExists) {
+                try {
+                    $recomputedSts1Report = Invoke-RecomputedSts1ModeLogCheck `
+                        -Mode $expectedSts1Mode `
+                        -LogPath $currentIterationLogCandidate `
+                        -AuditPath $auditCandidate `
+                        -EffectiveExpectedPackageVersion $effectiveExpectedPackageVersion `
+                        -EffectiveExpectedGameVersion $effectiveExpectedGameVersion `
+                        -EffectiveExpectedRitsuLibVersion $effectiveExpectedRitsuLibVersion `
+                        -EffectiveExpectedRitsuCompatBranch $effectiveExpectedRitsuCompatBranch
+                    $recomputedSts1Mode = [string](Get-JsonValue -Object $recomputedSts1Report -Name 'Mode' -DefaultValue '')
+                    $recomputedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $recomputedSts1Report -Name 'LogPath' -DefaultValue ''))
+                    $recomputedSts1LogLengthValue = Get-JsonValue -Object $recomputedSts1Report -Name 'LogLength' -DefaultValue $null
+                    $recomputedSts1LogSha256 = [string](Get-JsonValue -Object $recomputedSts1Report -Name 'LogSha256' -DefaultValue '')
+                    $recomputedSts1LogLengthMatches = $false
+                    if ($null -ne $recomputedSts1LogLengthValue) {
+                        try {
+                            $recomputedSts1LogLengthMatches = [long]$recomputedSts1LogLengthValue -eq $expectedSts1LogLength
+                        } catch {
+                            $recomputedSts1LogLengthMatches = $false
+                        }
+                    }
+
+                    $recomputedSts1Mismatches = @(ConvertTo-StringArray -Value (Get-JsonArrayValues -Object $recomputedSts1Report -Name 'Mismatches').ToArray())
+                    $recomputedSts1Checks = @((Get-JsonArrayValues -Object $recomputedSts1Report -Name 'Checks').ToArray())
+                    $recomputedSts1FailedChecks = @($recomputedSts1Checks | Where-Object {
+                        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                    })
+                    $recomputedSts1CheckSignatures = @(Get-CheckSignatureArray -Items $recomputedSts1Checks)
+
+                    if ($recomputedSts1Mode -ne $expectedSts1Mode -or
+                        [string]::IsNullOrWhiteSpace($recomputedSts1LogPath) -or
+                        -not [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogPath, $expectedSts1LogPath) -or
+                        -not $recomputedSts1LogLengthMatches -or
+                        -not [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogSha256, $expectedSts1LogSha256)) {
+                        $sts1ModeReportTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_recomputed_binding_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The freshly recomputed StS1 mode report did not bind back to the retained current-iteration log.' -NextStep 'Inspect check-sts1-enabled-mode-runtime-log.ps1 and retained log/audit paths before routing StS1 ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if (-not (Test-StringArrayEquals -Actual $sts1Mismatches -Expected $recomputedSts1Mismatches) -or
+                        -not (Test-StringArrayEquals -Actual $sts1CheckSignatures -Expected $recomputedSts1CheckSignatures)) {
+                        $sts1ModeReportTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_recomputed_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The retained StS1 mode report Mismatches or Checks do not match a fresh recomputation from godot.log.current-iteration.' -NextStep 'Treat the retained StS1 report as stale or hand-edited; regenerate the packet before assigning source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($sts1ModeReportTrustedForOwner -and
+                        $auditTrustedForOwner -and
+                        ($recomputedSts1Mismatches.Count -gt 0 -or $recomputedSts1FailedChecks.Count -gt 0)) {
+                        Add-Finding `
+                            -Findings $findings `
+                            -Signal 'sts1_mode_log_check_mismatch' `
+                            -Severity 'blocking' `
+                            -OwnerArea 'Sts1Events' `
+                            -Rationale "A fresh StS1 mode verifier recomputation contains $($recomputedSts1Mismatches.Count) mismatches and $($recomputedSts1FailedChecks.Count) failed checks." `
+                            -NextStep 'Classify this as environment propagation if the log shows Off/default mode; otherwise inspect registration count, class set, and tuple expectations.' `
+                            -Confidence 'high' `
+                            -EvidenceFiles $evidenceFiles
+                    }
+                } catch {
+                    $sts1ModeReportTrustedForOwner = $false
+                    Add-Finding -Findings $findings -Signal 'sts1_mode_log_check_recompute_failed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Failed to recompute the StS1 mode verifier report: $($_.Exception.Message)" -NextStep 'Fix the retained current log, audit, or StS1 verifier inputs before assigning StS1 ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
+            }
+        }
+
+        if (-not $sts1ModeReportTrustedForOwner) {
+            $sts1ModeLogCheckTrustedForOwner = $false
+            if ($isGameNativeAutoSlay) {
+                $autoSlaySts1ModeArtifactTrustedForOwner = $false
+            }
         }
     }
 
@@ -2475,6 +2742,7 @@ function Analyze-Iteration {
         AutoSlayProbeArtifactTrustedForOwner = $autoSlayProbeArtifactTrustedForOwner
         AutoSlayAuditArtifactTrustedForOwner = $autoSlayAuditArtifactTrustedForOwner
         AutoSlaySts1ModeArtifactTrustedForOwner = $autoSlaySts1ModeArtifactTrustedForOwner
+        Sts1ModeLogCheckTrustedForOwner = $sts1ModeLogCheckTrustedForOwner
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)

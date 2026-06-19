@@ -26,6 +26,7 @@ Set-StrictMode -Version 3.0
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
+$sts1EnabledModeLogVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
 $checks = [System.Collections.Generic.List[object]]::new()
 $mismatches = [System.Collections.Generic.List[string]]::new()
 
@@ -273,6 +274,70 @@ function Invoke-RecomputedAuditSummary {
     }
 
     return ConvertTo-AuditSummary -Json $auditJson -Path '<recomputed>'
+}
+
+function Get-CheckSignatureArray {
+    param([AllowNull()]$Items)
+
+    if ($null -eq $Items) {
+        return @()
+    }
+
+    return @($Items | ForEach-Object {
+        $name = [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
+        $passed = [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+        $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
+        "$name|$passed|$detail"
+    })
+}
+
+function Invoke-RecomputedSts1ModeLogCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Mode,
+        [Parameter(Mandatory = $true)][string]$LogPath,
+        [Parameter(Mandatory = $true)][string]$AuditPath,
+        [AllowEmptyString()][string]$EffectiveExpectedPackageVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedGameVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedRitsuLibVersion,
+        [AllowEmptyString()][string]$EffectiveExpectedRitsuCompatBranch
+    )
+
+    $outFile = Join-Path ([System.IO.Path]::GetTempPath()) "spireplus-sts1-mode-log-check-$([System.Guid]::NewGuid().ToString('N')).json"
+    try {
+        $verifierParams = @{
+            Mode = $Mode
+            LogPath = $LogPath
+            AuditPath = $AuditPath
+            OutFile = $outFile
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedPackageVersion)) {
+            $verifierParams['ExpectedPackageVersion'] = $EffectiveExpectedPackageVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedGameVersion)) {
+            $verifierParams['ExpectedGameVersion'] = $EffectiveExpectedGameVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedRitsuLibVersion)) {
+            $verifierParams['ExpectedRitsuLibVersion'] = $EffectiveExpectedRitsuLibVersion
+        }
+
+        if (-not [string]::IsNullOrWhiteSpace($EffectiveExpectedRitsuCompatBranch)) {
+            $verifierParams['ExpectedRitsuCompatBranch'] = $EffectiveExpectedRitsuCompatBranch
+        }
+
+        $verifierOutput = @(& $sts1EnabledModeLogVerifierScript @verifierParams 2>&1)
+        if (-not (Test-Path -LiteralPath $outFile -PathType Leaf)) {
+            throw "check-sts1-enabled-mode-runtime-log.ps1 did not write a recomputed report. Output: $($verifierOutput -join [Environment]::NewLine)"
+        }
+
+        return [System.IO.File]::ReadAllText($outFile) | ConvertFrom-Json
+    } finally {
+        if (Test-Path -LiteralPath $outFile -PathType Leaf) {
+            Remove-Item -LiteralPath $outFile -Force
+        }
+    }
 }
 
 function Resolve-EvidenceFile {
@@ -703,6 +768,48 @@ function Test-CountMapMatches {
     return $true
 }
 
+function Get-IterationNumberAudit {
+    param(
+        [AllowNull()]$Items,
+        [int]$ExpectedCount
+    )
+
+    $iterationNumbers = @($Items | ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'Iteration' -DefaultValue 0) })
+    $nonPositiveNumbers = @($iterationNumbers | Where-Object { $_ -le 0 })
+    $duplicateNumbers = @($iterationNumbers |
+        Where-Object { $_ -gt 0 } |
+        Group-Object |
+        Where-Object { $_.Count -gt 1 } |
+        ForEach-Object { [int]$_.Name })
+    $outOfRangeNumbers = @()
+    $missingNumbers = @()
+
+    if ($ExpectedCount -gt 0) {
+        $seen = [System.Collections.Generic.HashSet[int]]::new()
+        foreach ($iterationNumber in $iterationNumbers) {
+            if ($iterationNumber -gt 0 -and $iterationNumber -le $ExpectedCount) {
+                $seen.Add($iterationNumber) | Out-Null
+            } elseif ($iterationNumber -gt $ExpectedCount) {
+                $outOfRangeNumbers += $iterationNumber
+            }
+        }
+
+        for ($iterationNumber = 1; $iterationNumber -le $ExpectedCount; $iterationNumber++) {
+            if (-not $seen.Contains($iterationNumber)) {
+                $missingNumbers += $iterationNumber
+            }
+        }
+    }
+
+    return [pscustomobject]@{
+        Numbers = @($iterationNumbers)
+        DuplicateNumbers = @($duplicateNumbers)
+        MissingNumbers = @($missingNumbers)
+        NonPositiveNumbers = @($nonPositiveNumbers)
+        OutOfRangeNumbers = @($outOfRangeNumbers)
+    }
+}
+
 $resolvedEvidenceDir = Resolve-RepoPath $EvidenceDir
 if (-not (Test-Path -LiteralPath $resolvedEvidenceDir -PathType Container)) {
     Write-Error "Evidence directory not found: $resolvedEvidenceDir"
@@ -942,6 +1049,18 @@ if ($null -ne $summary) {
 
     $failedSummaryResults = @($summaryResults | Where-Object { -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     Add-Check -Name 'summary_results_all_passed' -Passed ($failedSummaryResults.Count -eq 0) -Detail "summary Results contains $($failedSummaryResults.Count) failed entries"
+}
+
+$plannedIterationAudit = Get-IterationNumberAudit -Items $planPlannedCommands -ExpectedCount $expectedIterationCount
+Add-Check -Name 'plan_planned_iteration_numbers_unique' -Passed ($plannedIterationAudit.DuplicateNumbers.Count -eq 0 -and $plannedIterationAudit.NonPositiveNumbers.Count -eq 0) -Detail "PlannedCommands Iteration values must be positive and unique; duplicates=$($plannedIterationAudit.DuplicateNumbers -join ',') nonPositive=$($plannedIterationAudit.NonPositiveNumbers -join ',')"
+if ($expectedIterationCount -gt 0) {
+    Add-Check -Name 'plan_planned_iteration_numbers_cover_expected' -Passed ($plannedIterationAudit.MissingNumbers.Count -eq 0 -and $plannedIterationAudit.OutOfRangeNumbers.Count -eq 0) -Detail "PlannedCommands Iteration values must cover 1..$expectedIterationCount exactly once; missing=$($plannedIterationAudit.MissingNumbers -join ',') outOfRange=$($plannedIterationAudit.OutOfRangeNumbers -join ',')"
+}
+
+$summaryIterationAudit = Get-IterationNumberAudit -Items $summaryResults -ExpectedCount $expectedIterationCount
+Add-Check -Name 'summary_result_iteration_numbers_unique' -Passed ($summaryIterationAudit.DuplicateNumbers.Count -eq 0 -and $summaryIterationAudit.NonPositiveNumbers.Count -eq 0) -Detail "monkey-summary.json Results Iteration values must be positive and unique; duplicates=$($summaryIterationAudit.DuplicateNumbers -join ',') nonPositive=$($summaryIterationAudit.NonPositiveNumbers -join ',')"
+if ($expectedIterationCount -gt 0) {
+    Add-Check -Name 'summary_result_iteration_numbers_cover_expected' -Passed ($summaryIterationAudit.MissingNumbers.Count -eq 0 -and $summaryIterationAudit.OutOfRangeNumbers.Count -eq 0) -Detail "monkey-summary.json Results Iteration values must cover 1..$expectedIterationCount exactly once; missing=$($summaryIterationAudit.MissingNumbers -join ',') outOfRange=$($summaryIterationAudit.OutOfRangeNumbers -join ',')"
 }
 
 $plannedByIteration = @{}
@@ -1212,6 +1331,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $sessionSettingsBackupHashBefore = ''
             $sessionSettingsBackupExistedBefore = $false
             $sessionSettingsBackupExistedBeforeRecorded = $false
+            $resultLiveSessionSettingsBackupExistedBeforeRecorded = Test-JsonProperty -Object $iterationResult -Name 'LiveSessionSettingsBackupExistedBefore'
+            $resultLiveSessionSettingsBackupExistedBefore = [bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupExistedBefore' -DefaultValue $false)
             if ($null -ne $sessionState) {
                 $sessionStateEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $sessionState -Name 'EvidenceDir' -DefaultValue ''))
                 $sessionMovedMods = Get-JsonArrayProperty -Object $sessionState -Name 'MovedMods'
@@ -1235,6 +1356,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_session_state_settings_backup_absent_hash_blank" -Passed ([string]::IsNullOrWhiteSpace($sessionSettingsBackupHashBefore)) -Detail 'session-state.json SettingsBackupHashBefore must be blank when settings.save.backup did not exist before prepare'
                 }
             }
+            Add-Check -Name "${iterationName}_result_live_session_settings_backup_existed_before_recorded" -Passed $resultLiveSessionSettingsBackupExistedBeforeRecorded -Detail 'iteration-result.json LiveSessionSettingsBackupExistedBefore must record whether settings.save.backup existed before prepare'
+            Add-Check -Name "${iterationName}_result_live_session_settings_backup_existed_before_matches_session" -Passed ($resultLiveSessionSettingsBackupExistedBeforeRecorded -and $sessionSettingsBackupExistedBeforeRecorded -and $resultLiveSessionSettingsBackupExistedBefore -eq $sessionSettingsBackupExistedBefore) -Detail 'iteration-result.json LiveSessionSettingsBackupExistedBefore must match session-state.json SettingsBackupExistedBefore'
 
             Add-Check -Name "${iterationName}_result_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LogCopied' -DefaultValue $false)) -Detail 'LogCopied must be true'
             Add-Check -Name "${iterationName}_result_current_iteration_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogCopied' -DefaultValue $false)) -Detail 'CurrentIterationLogCopied must be true'
@@ -1798,10 +1921,16 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         if ($null -ne $sts1ModeCheck) {
             Add-Check -Name "${iterationName}_sts1_mode_log_check_json_valid" -Passed $true -Detail 'sts1-mode-log-check.json parsed'
             $sts1Mismatches = @((Get-JsonValue -Object $sts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
-            $sts1FailedChecks = @((Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()) | Where-Object {
+            $sts1Checks = @((Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()))
+            $sts1FailedChecks = @($sts1Checks | Where-Object {
                 -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
             })
+            $sts1CheckSignatures = @(Get-CheckSignatureArray -Items $sts1Checks)
             $expectedSts1Mode = [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue '')
+            $effectiveExpectedPackageVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) { $ExpectedPackageVersion } else { [string](Get-JsonValue -Object $plan -Name 'ExpectedPackageVersion' -DefaultValue '') }
+            $effectiveExpectedGameVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedGameVersion)) { $ExpectedGameVersion } else { [string](Get-JsonValue -Object $plan -Name 'ExpectedGameVersion' -DefaultValue '') }
+            $effectiveExpectedRitsuLibVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuLibVersion)) { $ExpectedRitsuLibVersion } else { [string](Get-JsonValue -Object $plan -Name 'ExpectedRitsuLibVersion' -DefaultValue '') }
+            $effectiveExpectedRitsuCompatBranch = if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) { $ExpectedRitsuCompatBranch } else { [string](Get-JsonValue -Object $plan -Name 'ExpectedRitsuCompatBranch' -DefaultValue '') }
             $sts1Mode = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'Mode' -DefaultValue '')
             $sts1LogPath = [string](Get-JsonValue -Object $sts1ModeCheck -Name 'LogPath' -DefaultValue '')
             $sts1LogLength = Get-JsonValue -Object $sts1ModeCheck -Name 'LogLength' -DefaultValue $null
@@ -1816,6 +1945,44 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($normalizedSts1LogPath) -and -not [string]::IsNullOrWhiteSpace($expectedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedSts1LogPath, $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
             Add-Check -Name "${iterationName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and [long]$sts1LogLength -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
             Add-Check -Name "${iterationName}_sts1_mode_log_check_log_sha256_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogSha256) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) -Detail 'sts1-mode-log-check.json LogSha256 must match the retained godot.log.current-iteration bytes'
+
+            if (-not $currentIterationLogExists) {
+                Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed $false -Detail 'cannot recompute StS1 mode log check because godot.log.current-iteration is missing'
+            } elseif (-not $auditExists) {
+                Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed $false -Detail 'cannot recompute StS1 mode log check because godot-log-audit.json is missing'
+            } elseif (-not (Test-Path -LiteralPath $sts1EnabledModeLogVerifierScript -PathType Leaf)) {
+                Add-Check -Name "${iterationName}_sts1_mode_log_check_recompute_script_exists" -Passed $false -Detail "missing StS1 mode log verifier: $sts1EnabledModeLogVerifierScript"
+            } else {
+                Add-Check -Name "${iterationName}_sts1_mode_log_check_recompute_script_exists" -Passed $true -Detail 'check-sts1-enabled-mode-runtime-log.ps1 is available'
+                try {
+                    $recomputedSts1ModeCheck = Invoke-RecomputedSts1ModeLogCheck `
+                        -Mode $expectedSts1Mode `
+                        -LogPath $currentIterationLogPath `
+                        -AuditPath $auditPath `
+                        -EffectiveExpectedPackageVersion $effectiveExpectedPackageVersion `
+                        -EffectiveExpectedGameVersion $effectiveExpectedGameVersion `
+                        -EffectiveExpectedRitsuLibVersion $effectiveExpectedRitsuLibVersion `
+                        -EffectiveExpectedRitsuCompatBranch $effectiveExpectedRitsuCompatBranch
+                    $recomputedSts1Mode = [string](Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Mode' -DefaultValue '')
+                    $recomputedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'LogPath' -DefaultValue ''))
+                    $recomputedSts1LogLength = Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'LogLength' -DefaultValue $null
+                    $recomputedSts1LogSha256 = [string](Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'LogSha256' -DefaultValue '')
+                    $recomputedSts1Mismatches = @((Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
+                    $recomputedSts1Checks = @((Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Checks' -DefaultValue @()))
+                    $recomputedSts1FailedChecks = @($recomputedSts1Checks | Where-Object {
+                        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                    })
+                    $recomputedSts1CheckSignatures = @(Get-CheckSignatureArray -Items $recomputedSts1Checks)
+
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed ($recomputedSts1Mode -eq $expectedSts1Mode -and -not [string]::IsNullOrWhiteSpace($recomputedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogPath, $expectedSts1LogPath) -and $null -ne $recomputedSts1LogLength -and [long]$recomputedSts1LogLength -eq $expectedSts1LogLength -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogSha256, $expectedSts1LogSha256)) -Detail 'packet checker must recompute sts1-mode-log-check.json from the retained current-iteration log'
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_mismatches_empty" -Passed ($recomputedSts1Mismatches.Count -eq 0) -Detail "recomputed StS1 mode log check mismatches must be empty; found $($recomputedSts1Mismatches.Count)"
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_all_checks_passed" -Passed ($recomputedSts1FailedChecks.Count -eq 0) -Detail "recomputed StS1 mode log check contains $($recomputedSts1FailedChecks.Count) failed checks"
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_mismatches_match_recomputed" -Passed (Test-StringArrayEquals -Actual $sts1Mismatches -Expected $recomputedSts1Mismatches) -Detail 'retained sts1-mode-log-check.json Mismatches must match the recomputed verifier report'
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_checks_match_recomputed" -Passed (Test-StringArrayEquals -Actual $sts1CheckSignatures -Expected $recomputedSts1CheckSignatures) -Detail 'retained sts1-mode-log-check.json Checks must match the recomputed verifier report'
+                } catch {
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed $false -Detail "failed to recompute StS1 mode log check: $($_.Exception.Message)"
+                }
+            }
         }
     }
 }
