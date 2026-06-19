@@ -1,4 +1,4 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-19:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18: superseded; current 2026-06-19 hashes:
 | Artifact | SHA256 |
 | --- | --- |
 | ZIP | `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D` |
@@ -34,9 +34,10 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean, beta.85/beta.86/beta.87 proof remains previous-package/game-version context, and beta.88 AdditiveBatch1 proof is clean on `v0.107.1` with BaseLib `v3.3.0`, RitsuLib `0.4.24`, and 10 StS1 event types / 14 registration calls.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: beta.88 AdditiveBatch1 proof is clean on `v0.107.1` with BaseLib `v3.3.0` / RitsuLib `v0.4.24`; earlier smokes are previous-version context.
   Fresh beta.88 direct proof: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu, audited clean, passed retained enabled-mode verifier 31 / 0, and passed packet verification with 0 mismatches.
-  Runtime blocker root cause was game `v0.107.1` compatibility drift: Spire Plus had one API drift fix in multiplayer diagnostics, and BaseLib `v3.2.1` logged two Harmony patch failures. BaseLib `v3.3.0` resolves the clean-loader blocker. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
+  Runtime blocker root cause was game `v0.107.1` compatibility drift: Spire Plus needed one multiplayer diagnostics API fix, and BaseLib `v3.2.1` logged two Harmony patch failures.
+  BaseLib `v3.3.0` resolves the clean-loader blocker. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

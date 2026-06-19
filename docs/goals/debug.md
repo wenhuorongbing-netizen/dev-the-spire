@@ -18,32 +18,34 @@ worktree batch classifier、`git diff --check` 通过。
 
 ```text
 M5 Revision M Off-loader runtime drift closure：完成
-beta.85 v0.107.0 Off loader packet：干净
-Static validation：当前记录为绿
+beta.88 v0.107.1 AdditiveBatch1 loader/registration packet：干净
+Static/no-game validation：当前记录为绿
 Release-ready：否
 Live/gameplay-ready：否
 Commit/owner decision：仍未完成
 Longhaul audit：仍不能恢复
-下一步：继续优化 + 有限推进，但现在可以从“修 Off blocker”进入“补 evidence + owner commit authorization”
+下一步：继续优化 + 有限推进，但现在可以从“修 loader blocker”进入“补 gameplay/manual evidence + owner commit authorization”
 ```
 
 新的下月开发规范和 overnight run 以本文件当前内容为准；不要依赖 sandbox-only 下载链接作为当前证据。
 
 ## 2026-06-19 Current Override
 
-Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and current beta.88 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`. Any older lines above or below that describe fresh beta.85 CanaryOnly/AdditiveBatch1 smokes as pending, or as the next active runtime target, are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending.
+Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and current beta.88 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`. Any older retained-loader notes that treat beta.85 or beta.87 as the next active runtime target are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending.
+
+2026-06-19 pause-safe implementation note: Revision N now routes through `docs/goals/m5-revision-n-final-report.md`, `docs/goals/m5-revision-n-owner-commit-packet.md`, `docs/goals/m5-revision-n-validation-replay.md`, and `docs/goals/m5-revision-n-runtime-evidence-plan.md`. This prepares owner-ready planning under the active coordination pause only; it does not run or replace validation, runtime smoke, gameplay, staging, commit, push, release, or handoff gates.
 
 ---
 
 ## 1. 当前真实状态
 
-最新 `PROJECT_STATE.md` 已经明确：M5 Revision M 的 root cause 是 Spire Plus runtime API drift，不是 BaseLib/RitsuLib 缺失；beta.84 的 v0.107.0 Off smoke 曾经进主菜单但只有 17/25 ModPatcher patch 成功，并触发 stale `EctoplasmGoldGatePatch` initializer exception；现在这轮已经修掉 getter-target drift 并打包 beta.85，新的 isolated v0.107.0 Off smoke 已经进主菜单、选择 RitsuLib compat branch `0.107.0`、应用 25/25 Spire Plus patches，并且 audit clean。这个证据只是 loader proof，不是 live gameplay 或 release readiness。
+最新 `PROJECT_STATE.md` 已经明确：M5 Revision M 的 root cause 是 Spire Plus runtime API drift，不是 BaseLib/RitsuLib 缺失；随后 beta.87 在 `v0.107.1` 暴露 BaseLib `v3.2.1` patch drift；当前 beta.88 已安装 BaseLib `v3.3.0`，保持 STS2-RitsuLib `v0.4.24`，并在 `v0.107.1` AdditiveBatch1 direct smoke 中达到 clean loader/registration proof。这个证据只是 loader/registration proof，不是 live gameplay 或 release readiness。
 
-当前 build/test/package 记录也比之前强：beta.85 runtime-fix validation 是 0 build errors / 0 warnings；`ReleaseEvidenceGateTests` 单独 9/0/0 通过，互补 no-build test lane 是 466/0/21，通过后合计 split coverage 475 passed / 0 failed / 21 skipped；opt-in package/artifact subset 67/0/0 也通过；但文档明确说 June 11 dirty changes 仍没有 gameplay、clicked UI、save-load、route traversal、preview-tools、Vakuu、co-op、independent QA、clean-worktree proof。
+当前 build/test/package 记录也比之前强：beta.88 记录有 build 0 warnings / 0 errors、publish/package refresh、installed package parity、runtime preflight、retained beta.88 AdditiveBatch1 packet verification、current-doc claims、static suite、static-file hygiene 和 split no-build runtime-harness coverage。它们仍然不是 gameplay、clicked UI、save-load、route traversal、preview-tools、Vakuu、co-op、independent QA、clean-worktree proof。
 
-Runtime 部分也已经更新：`STS2-RitsuLib v0.4.24` 已安装，beta.85 v0.107.0 package Off smoke 在 `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`，已加载 BaseLib/RitsuLib，选择 compat branch 0.107.0，25/25 ModPatcher patches 应用，并 audit clean；先前 beta.84 失败证据现在只作为 root-cause 证据。
+Runtime 部分也已经更新：`STS2-RitsuLib v0.4.24` 和 BaseLib `v3.3.0` 已安装；当前 beta.88 AdditiveBatch1 proof 在 `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`，已加载 BaseLib/RitsuLib/Spire Plus，选择 RitsuLib compat branch `0.107.0`，25/25 ModPatcher patches 应用，10 event types / 14 registration calls，audit clean。先前 beta.84/beta.87 失败证据现在只作为 root-cause 证据。
 
-`docs/goals/m5-revision-m-final-report.md` 也写明：Revision M 对 beta.85 v0.107.0 Off loader runtime drift closure 完成，但不是 live-ready 或 release-ready；fresh beta.85 CanaryOnly 和 AdditiveBatch1 smokes 还没记录，gameplay、clicked UI、save-load、replacement、multiplayer、independent QA、release handoff proof 仍 pending。
+`docs/goals/m5-revision-n-final-report.md` 也写明：Revision N 对 beta.88 current-loader governance 已经形成 owner-ready planning，但不是 live-ready 或 release-ready；gameplay、clicked UI、save-load、replacement、multiplayer、independent QA、release handoff proof 仍 pending。
 
 ---
 
@@ -54,7 +56,7 @@ Runtime 部分也已经更新：`STS2-RitsuLib v0.4.24` 已安装，beta.85 v0.1
 可以验收的是：
 
 ```text
-M5 Revision M 的 Off-loader runtime-drift closure
+M5 Revision M 的 Off-loader runtime-drift closure，以及 beta.88 current-loader/registration blocker closure
 ```
 
 理由：
@@ -63,10 +65,11 @@ M5 Revision M 的 Off-loader runtime-drift closure
 1. beta.84 的 red smoke root cause 已定位到 stale API / Ectoplasm target。
 2. beta.85 package 已刷新。
 3. beta.85 v0.107.0 Off smoke clean。
-4. RitsuLib v0.4.24 / compat 0.107.0 加载成功。
+4. beta.88 / v0.107.1 / BaseLib v3.3.0 AdditiveBatch1 loader/registration smoke clean。
 5. Spire Plus 25/25 migrated patches 应用。
-6. EctoplasmGoldGatePatch exception 消失。
-7. package checker / opt-in artifact subset / static validations 有记录。
+6. RitsuLib v0.4.24 / compat 0.107.0 加载成功。
+7. EctoplasmGoldGatePatch exception 和 BaseLib v3.2.1 blocker 都已有 root-cause / closure 记录。
+8. package checker / opt-in artifact subset / static validations 有记录。
 ```
 
 ### 不能验收的部分
@@ -74,7 +77,7 @@ M5 Revision M 的 Off-loader runtime-drift closure
 不能验收为整体完成：
 
 ```text
-1. CanaryOnly / AdditiveBatch1 fresh beta.85 runtime proof 仍 pending。
+1. current CanaryOnly recapture before canary gameplay claims 仍 pending。
 2. gameplay / clicked UI / save-load / replacement / multiplayer 仍 pending。
 3. independent QA 仍 pending。
 4. clean worktree / owner commit decision 仍 pending。
@@ -83,7 +86,7 @@ M5 Revision M 的 Off-loader runtime-drift closure
 7. Batch 4c 仍 proposal-only。
 ```
 
-`m5-revision-m-owner-review-packet.md` 的 owner 决策也支持这个分层：runtime drift source fix 建议 accept，beta.85 package 只建议 “accept as loader-smoke package, not gameplay/release proof”；RitsuLib compile/manifest min version 是否 bump 到 0.4.16 要 defer 到 owner package-version decision；StS1 events 仍保持 staging-only；commit/push 在 active validation processes 存在时不要做。
+`m5-revision-n-owner-commit-packet.md` 的 owner 决策也支持这个分层：beta.88 package 只建议 accept as loader/registration context, not gameplay/release proof；RitsuLib compile/manifest min version 已对齐 `0.4.24`，BaseLib 已对齐 `v3.3.0`；StS1 events 仍保持 staging-only；commit/push 在 active validation processes 存在时不要做。
 
 ---
 
@@ -101,26 +104,27 @@ opt-in package/artifact subset：通过
 
 但必须注意：这些仍不是 gameplay/live proof。项目自己的 goal 也明确说 build/test/publish 不能作为 live-game、save-load、death/failure、co-op evidence。
 
-### 3.2 Runtime Off loader
+### 3.2 Runtime loader / registration
 
 当前已经通过：
 
 ```text
-beta.85 v0.107.0 Off loader packet：clean
+beta.88 v0.107.1 AdditiveBatch1 loader/registration packet：clean
 ```
 
 这是本轮最大的有效完成项。
 
 ### 3.3 CanaryOnly / AdditiveBatch1
 
-仍未完成：
+当前状态：
 
 ```text
-fresh beta.85 CanaryOnly：pending
-fresh beta.85 AdditiveBatch1：pending
+current beta.88 AdditiveBatch1 loader/registration：clean
+current beta.88 CanaryOnly recapture before canary gameplay claim：pending
+gameplay/render/save-load proof：pending
 ```
 
-历史 v0.106.1 / June 2 evidence 不能替代 beta.85 v0.107.0 evidence。当前 validation 文档明确把 June 2 Off/Canary/Additive evidence 标成 historical，并说不是当前 beta.85 enabled-mode proof。
+历史 v0.106.1 / beta.85 / beta.87 evidence 不能替代 beta.88 gameplay evidence。当前 validation 文档明确把这些较旧证据标成 historical 或 previous-package/game-version context。
 
 ### 3.4 RitsuLib version/package decision
 
@@ -128,11 +132,12 @@ fresh beta.85 AdditiveBatch1：pending
 
 ```text
 Runtime installed: STS2-RitsuLib v0.4.24
-Compile package: STS2.RitsuLib 0.3.2
-Manifest min_version: 0.3.2
+Compile package: STS2.RitsuLib 0.4.24
+Manifest min_version: 0.4.24
+BaseLib floor: v3.3.0
 ```
 
-Owner packet 建议：不要自动 bump；除非 owner 决定做 future versioned tester package，否则 compile/manifest min 先保留 0.3.2。
+Owner packet 建议：不要再自动 bump；除非 owner 决定做 future versioned tester package，否则保持 beta.88 dependency floor。
 
 ### 3.5 Sts1Events
 
@@ -156,7 +161,7 @@ Debug: accept-scaffold
 
 ### 3.7 Commit / owner review
 
-当前不能直接 commit。`m5-revision-m-commit-slices.md` 只是 planning，明确说 no commit or push authorized；并给出 source fix、beta.85 package/hash docs、StS1 event staging updates、Revision M governance docs 四个 slice。commit rule 明确要求：在无 overlapping same-repo processes 的情况下 replay validation；如果 validation fail，则 split failing source slice 并报告 exact blocker。
+当前不能直接 commit。`m5-revision-n-owner-commit-packet.md` 只是 planning，明确说 no commit or push authorized；并给出 beta.88 dependency/package docs、runtime-harness hardening、StS1 governance、Revision N governance docs 等候选 slice。commit rule 明确要求：在无 overlapping same-repo processes 的情况下 replay validation；如果 validation fail，则 split failing source slice 并报告 exact blocker。
 
 ---
 
@@ -177,7 +182,7 @@ Debug: accept-scaffold
 
 ```text
 1. 静态验证记录为绿
-2. beta.85 v0.107.0 Off loader blocker 已关闭
+2. beta.88 v0.107.1 loader/registration blocker 已关闭
 3. docs 已经明确不是 live/release proof
 4. RitsuLib/Debug/Sts1Events 状态比之前真实
 5. commit slices 已规划但未自动 commit
@@ -186,7 +191,7 @@ Debug: accept-scaffold
 未达成：
 
 ```text
-1. beta.85 CanaryOnly / AdditiveBatch1 runtime proof
+1. current CanaryOnly recapture before canary gameplay claims
 2. gameplay / clicked UI / save-load / co-op proof
 3. independent QA
 4. owner commit authorization
@@ -210,9 +215,9 @@ Debug: accept-scaffold
 - commit authorization
 
 45% 有限推进：
-- CanaryOnly smoke
-- AdditiveBatch1 smoke
-- package/RitsuLib version decision
+- current CanaryOnly recapture if process coordination allows
+- gameplay/UI/save-load/co-op evidence
+- owner package/dependency decision only if a new tester package is proposed
 ```
 
 不允许：
@@ -235,17 +240,17 @@ longhaul audit
 我建议把下一阶段定义为：
 
 ```text
-M5 Revision N: beta.85 Evidence Expansion + Owner Commit Authorization
+M5 Revision N: beta.88 Evidence Governance + Owner Commit Authorization
 ```
 
-本节内容就是当前 M5 Revision N spec；不要依赖 sandbox-only 下载链接作为当前证据。
+本节内容就是当前 M5 Revision N spec；不要依赖 sandbox-only 下载链接作为当前证据。beta.85/beta.87 证据现在只是 previous-package/game-version context；当前 clean-loader truth 是 beta.88 / `v0.107.1` / BaseLib `v3.3.0` / RitsuLib `v0.4.24` 的 AdditiveBatch1 loader/registration proof。
 
 ### Week 1：Owner Commit Authorization + Validation Replay
 
 目标：
 
 ```text
-确认 beta.85 Off-loader closure packet 当前有效，并准备 owner-authorized commit slices。
+确认 beta.88 loader/registration packet 当前有效，并准备 owner-authorized commit slices。
 ```
 
 必跑：
@@ -269,15 +274,16 @@ docs/goals/m5-revision-n-validation-replay.md
 docs/goals/m5-revision-n-runtime-evidence-plan.md
 ```
 
-### Week 2：beta.85 CanaryOnly / AdditiveBatch1 Evidence
+### Week 2：beta.88 Runtime Evidence Expansion
 
-只在没有 overlapping validation/runtime processes 时运行：
+只在没有 overlapping validation/runtime processes 时运行。当前 coordination pause 期间不运行：
 
 ```text
-1. beta.85 CanaryOnly runtime smoke
-2. beta.85 AdditiveBatch1 runtime smoke
-3. godot.log audit
-4. evidence folder recorded
+1. current beta.88 CanaryOnly recapture before any canary gameplay claim
+2. beta.88 gameplay/render/save-load evidence rows
+3. Mod Settings current display screenshots and same-session log/audit
+4. game-native AutoSlay/runtime-monkey packets only with current schema-bound proof
+5. evidence folders recorded without turning loader proof into gameplay proof
 ```
 
 必须保持：
@@ -288,13 +294,13 @@ no gameplay proof claim
 no release-ready claim
 ```
 
-### Week 3：Package / RitsuLib Version Decision
+### Week 3：Package / Dependency Decision
 
-Owner 二选一：
+当前默认决策：
 
 ```text
-A. 保持 beta.85 compile/manifest 0.3.2，外部 runtime 使用 STS2-RitsuLib v0.4.24。
-B. 准备 future package-version increment，把 compile package 和 manifest min_version 都升到 0.4.16。
+A. 保持 beta.88 package line：BaseLib v3.3.0，STS2-RitsuLib v0.4.24。
+B. 只有 owner 明确批准新的 versioned tester package 时，才再次调整 dependency floor 或 package version。
 ```
 
 如果选择 B，必须做 version bump、publish/package、artifact tests、handoff/hash/website docs。
@@ -306,8 +312,8 @@ B. 准备 future package-version increment，把 compile package 和 manifest mi
 ```text
 owner commit/rollback decision complete
 static validation green
-Off loader proof clean
-CanaryOnly/AdditiveBatch1 clean or owner-deferred
+beta.88 loader/registration proof clean
+current runtime/gameplay evidence plan complete or owner-deferred
 Sts1Events/Debug/RitsuLib governance recorded
 no stale truth blockers
 ```
@@ -355,7 +361,7 @@ LonghaulRecoveryAgent
 ProcessCoordinationAgent 必须先确认没有 active dotnet/testhost/runtime processes。
 CanaryOnlySmokeAgent 和 AdditiveBatch1SmokeAgent 不能和 validation lanes 重叠。
 OwnerCommitAgent 只能准备 commit packet，不能自行 commit。
-RitsuLibRuntimeAgent 不能擅自 bump 0.4.16。
+RitsuLibRuntimeAgent 不能擅自 bump dependency/package versions。
 ```
 
 ---
@@ -365,9 +371,9 @@ RitsuLibRuntimeAgent 不能擅自 bump 0.4.16。
 你可以直接发给他：
 
 ```text
-进入 M5 Revision N overnight beta.85 evidence expansion and owner-commit authorization run。
+进入 M5 Revision N overnight beta.88 evidence governance and owner-commit authorization run。
 
-当前状态 NOT COMPLETE，但 beta.85 v0.107.0 Off loader packet 已 clean。不要继续 PR6 Batch4c、Batch5、PR7、debug expansion、Sts1Events formalization 或 longhaul audit。
+当前状态 NOT COMPLETE，但 beta.88 / v0.107.1 / BaseLib v3.3.0 AdditiveBatch1 loader/registration packet 已 clean。不要继续 PR6 Batch4c、Batch5、PR7、debug expansion、Sts1Events formalization 或 longhaul audit。
 
 禁止：
 - commit or push unless owner explicitly authorizes after commit packet review
@@ -388,8 +394,8 @@ A. Owner-ready packet complete:
 - static validation replay exits 0
 - current dirty state reconciled
 - commit slices are ready for owner decision
-- beta.85 Off loader proof remains documented as clean
-- CanaryOnly/AdditiveBatch1 plan is complete, or smokes are run cleanly if process coordination allows
+- beta.88 loader/registration proof remains documented as clean
+- runtime/gameplay evidence plan is complete, or current smokes/manual rows are run cleanly if process coordination allows
 - Sts1Events staging-only recommendation recorded
 - Debug accept-scaffold recommendation recorded
 - RitsuLib runtime/package decision recorded
@@ -409,9 +415,10 @@ docs/README.md
 docs/test-ready-development-goal.md
 docs/reviews/current-validation.md
 docs/integrations/ritsulib.md
-docs/goals/m5-revision-m-final-report.md
-docs/goals/m5-revision-m-owner-review-packet.md
-docs/goals/m5-revision-m-commit-slices.md
+docs/goals/m5-revision-n-final-report.md
+docs/goals/m5-revision-n-owner-commit-packet.md
+docs/goals/m5-revision-n-validation-replay.md
+docs/goals/m5-revision-n-runtime-evidence-plan.md
 docs/patch-inventory.md
 harness/TASK_STATUS.md
 harness/TASK_FOCUS_PACK.md
@@ -465,4 +472,4 @@ Not complete: exact hard blocker encountered.
 
 ## 一句话总评
 
-这次状态已经从“v0.107.0 runtime drift 红灯”推进到“beta.85 Off loader 绿灯”。这是实质完成项；但仍不是 release/live 完成。下一步不是继续迁移，而是 **M5 Revision N：补 beta.85 CanaryOnly/AdditiveBatch1 evidence、做 owner commit authorization、确认 RitsuLib/package version decision，然后再考虑恢复 one-file longhaul audit。**
+这次状态已经从“v0.107.0 runtime drift 红灯”推进到“beta.88 / v0.107.1 clean loader-registration 绿灯”。这是实质完成项；但仍不是 release/live 完成。下一步不是继续迁移，而是 **M5 Revision N：在 coordination pause 解除后复跑 validation、补 gameplay/UI/save-load/co-op/QA/handoff evidence、做 owner commit authorization，然后再考虑恢复 one-file longhaul audit。**

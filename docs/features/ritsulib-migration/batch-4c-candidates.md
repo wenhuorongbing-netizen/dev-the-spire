@@ -69,7 +69,7 @@ Before any Batch 4c source migration:
 5. `git diff --check` passes.
 6. `scripts/generate-patch-inventory.ps1 -Check` passes after any migration.
 7. A loader smoke is rerun if the migrated patch registration path changes.
-8. Retained `v0.107.0` beta.87 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute for any new `v0.107.1` loader smoke required by changed patch registration paths or for gameplay proof.
+8. Current `v0.107.0` beta.87 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute for any new `v0.107.1` loader smoke required by changed patch registration paths or for gameplay proof.
 9. Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite the retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
 
 Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

@@ -2,38 +2,34 @@
 
 ## Current Goal
 
-- M5 Revision M: Slay the Spire 2 `v0.107.0` runtime/package API drift closure + owner-review + runtime truth.
+- M5 Revision N: beta.88 `v0.107.1` clean-loader truth, owner-ready planning, and validation/runtime handoff without overlapping same-repo processes.
 
 ## Current Facts
 
-- Current baseline HEAD must be refreshed before final handoff; existing docs still cite `f32c6767` / later dirty worktree states as validation context.
-- Worktree: dirty source/resource/docs/test state; no commit, push, reset, checkout, stash, or broad clean is authorized for this pass.
-- Runtime dependency: E-drive BaseLib, STS2-RitsuLib `v0.4.16`, and EZMicroBalance are installed; the current local game is `v0.107.0` and the RitsuLib install includes `lib\0.107.0`.
-- Runtime proof: historical clean Off, CanaryOnly, and AdditiveBatch1 diagnostic logs exist for older package/game states; current beta.85 Off loader proof under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/` is clean.
-- Red root-cause packet: `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` reached main menu but logged 17/25 ModPatcher patches, 8 optional failures, and an `EctoplasmGoldGatePatch` initializer exception.
-- Source-fix context: `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/` applied 25/25 patches and audited clean while still logging beta.84.
-- RitsuLib status: installed and beta.85 Off-loader validated on `v0.107.0`; not gameplay/live/release validated.
-- Sts1Events recommendation: staging-only; formalization is blocked by gameplay/render/save-load/image/replacement/multiplayer proof, not current build warnings.
-- Sts1Events June 11 source changes: Big Fish option identity is now Box/`BOX`; Divine Fountain natural eligibility now requires every run participant to have at least one curse. These remain default-Off/staged and have not been build/test/runtime validated in this paused lane.
-- Debug recommendation: accept-scaffold; unused `SpirePlusDebug.LogPreview` removed, broad info diagnostics are internal-only behind `SPIREPLUS_ENABLE_DEBUG_LOGS=1` / `EZMB_ENABLE_DEBUG_LOGS=1`, and preview diagnostics stay behind the localized preview diagnostics setting.
-- Patch migration: Batch 4c remains proposal-only pending gameplay proof and owner decision.
-- Coordination note: do not start overlapping `dotnet test`, `dotnet build`, publish, package, game-launch, or release-evidence validation processes while another same-repo validation lane is active.
+- Current package line: Spire Plus `v0.1.0-private-beta.88`.
+- Current local game: Slay the Spire 2 `v0.107.1`.
+- Current dependencies: BaseLib `v3.3.0`, STS2-RitsuLib `v0.4.24`, RitsuLib selected compat branch `lib/0.107.0`.
+- Current clean loader/registration proof: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`.
+- Scope of that proof: main menu reached, 25/25 Spire Plus ModPatcher patches applied, AdditiveBatch1 10 event types / 14 registration calls, clean audit, retained enabled-mode verifier 31 / 0, packet verifier 0 mismatches.
+- Not proven: gameplay, clicked UI, save-load, replacement functional behavior, multiplayer/fail-closed behavior, game-native AutoSlay batch stability, independent QA, release readiness, or tester handoff.
+- Retained beta.85, beta.86, and beta.87 loader logs are previous-package or previous-game-version context unless a current doc explicitly names the beta.88 evidence path.
+- Debug recommendation: accept scaffold only. General info diagnostics stay internal-only behind `SPIREPLUS_ENABLE_DEBUG_LOGS=1` or legacy `EZMB_ENABLE_DEBUG_LOGS=1`; preview diagnostics stay behind the localized preview setting; no debug expansion is authorized.
+- StS1Events recommendation: staging-only. Loader/registration proof must not be treated as event gameplay proof.
+- Batch 4c recommendation: proposal-only pending owner decision and fresh validation.
+- Worktree is dirty and shared across same-repo threads. Do not reset, restore, stash, stage, commit, push, or broad-clean from this paused lane.
+- Coordination note: do not start new `dotnet build`, `dotnet test`, `dotnet format`, `dotnet publish`, package/release-evidence validation, runtime/game launch, or process-cleanup commands from this thread until the migration validation lane reports.
 
 ## Verification Result
 
-- Latest completed no-game validation recorded in `PROJECT_STATE.md`: split no-build lanes passed with 475 passed / 0 failed / 21 skipped / 496 total after clearing stale current-repo `testhost` locks.
-- `PROJECT_STATE.md` records installed beta.85 package parity as passed via `scripts\check-installed-spire-plus-package.ps1`.
-- Beta.85 Off smoke is clean: Spire Plus `v0.1.0-private-beta.85`, RitsuLib compat branch `0.107.0`, 25/25 patches, StS1Events default Off, main menu reached, clean audit.
+- No validation was run while updating this harness status.
+- Latest recorded beta.88 validation is in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build 0 warnings / 0 errors, publish/package refresh, installed beta.88 package parity, runtime preflight 27 / 0, retained beta.88 AdditiveBatch1 packet verification 62 / 0, current-doc claims 1136 / 0, static suite 15 / 0, static-file hygiene 12 / 0, and split no-build runtime-harness coverage 81 / 0 / 0 / 81.
+- Those recorded results are loader/registration and no-game guard validation only.
 
 ## Remaining Work
 
-- Reconcile the active `dotnet` / `testhost` validation lane when it reports.
-- Run fresh beta.85 CanaryOnly/AdditiveBatch1 smokes only after process coordination is clear and only if StS1 staging proof is needed.
-- Owner decisions on source API fix, RitsuLib dependency metadata, Sts1Events governance, Debug governance, and Batch 4c progression.
-- Owner approval of commit slices.
-- Fresh non-Off runtime smoke before any StS1 staging handoff.
-- Gameplay verification (live run, Ancient UI, save-load, route traversal).
-- Co-op verification.
-- Clicked UI verification.
-- Versioned tester-package handoff.
-- Independent QA rerun.
+- Wait for the migration validation lane to report or assign one coordinated validation lane.
+- Recapture exact HEAD and worktree state before any validation, handoff, commit, or push decision.
+- Run the Revision N validation replay in `docs/goals/m5-revision-n-validation-replay.md`.
+- Fill or explicitly defer the runtime evidence rows in `docs/goals/m5-revision-n-runtime-evidence-plan.md`.
+- Prepare owner decision on commit slices after validation replay.
+- Keep release-ready and live-ready claims blocked until gameplay/UI/save-load/co-op/QA/handoff evidence exists.

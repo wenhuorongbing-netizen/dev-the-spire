@@ -249,6 +249,141 @@ function Add-AutoSlayProofCommandNoSwitchCheck {
     Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
 }
 
+function Get-AutoSlayProofCommands {
+    param(
+        [Parameter(Mandatory = $true)][string[]]$Paths
+    )
+
+    $commands = [System.Collections.Generic.List[object]]::new()
+
+    foreach ($path in $Paths) {
+        $resolved = Resolve-RepoPath $path
+        if (-not (Test-Path -LiteralPath $resolved)) {
+            continue
+        }
+
+        $lines = [System.IO.File]::ReadAllLines($resolved)
+        $logicalLine = ''
+        $logicalStart = 1
+
+        for ($i = 0; $i -lt $lines.Length; $i++) {
+            $line = $lines[$i]
+            if ($logicalLine.Length -eq 0) {
+                $logicalStart = $i + 1
+            }
+
+            $trimmedRight = $line.TrimEnd()
+            $continues = $trimmedRight.EndsWith('`')
+            $segment = if ($continues) {
+                $trimmedRight.Substring(0, $trimmedRight.Length - 1)
+            } else {
+                $line
+            }
+
+            $logicalLine = if ($logicalLine.Length -eq 0) {
+                $segment
+            } else {
+                "$logicalLine $segment"
+            }
+
+            if ($continues) {
+                continue
+            }
+
+            $normalized = $logicalLine -replace '\s+', ' '
+            $isAutoSlayProofCommand =
+                [regex]::IsMatch($normalized, '^\s*\.\\scripts\\check-spire-plus-autoslay-packet\.ps1\b') -and
+                [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+
+            if ($isAutoSlayProofCommand) {
+                $commands.Add([pscustomobject]@{
+                    Path = $path
+                    Line = $logicalStart
+                    Text = $normalized
+                }) | Out-Null
+            }
+
+            $logicalLine = ''
+        }
+    }
+
+    return @($commands)
+}
+
+function Add-AutoSlayProofCommandRequiredSwitchesCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths,
+        [Parameter(Mandatory = $true)][string[]]$SwitchNames
+    )
+
+    $hits = [System.Collections.Generic.List[string]]::new()
+    $requiredSwitchPatterns = @{}
+    foreach ($switchName in $SwitchNames) {
+        $requiredSwitchPatterns[$switchName] = '(?i)(^|\s)-{0}(\s|$)' -f [regex]::Escape($switchName)
+    }
+
+    foreach ($path in $Paths) {
+        if (-not (Test-Path -LiteralPath (Resolve-RepoPath $path))) {
+            $hits.Add("${path}: missing file") | Out-Null
+        }
+    }
+
+    foreach ($command in (Get-AutoSlayProofCommands -Paths $Paths)) {
+        $missingSwitches = @($SwitchNames | Where-Object { -not [regex]::IsMatch($command.Text, $requiredSwitchPatterns[$_]) })
+        if ($missingSwitches.Count -gt 0) {
+            $hits.Add("$($command.Path):$($command.Line): missing $($missingSwitches -join ', '): $($command.Text)") | Out-Null
+        }
+    }
+
+    $detail = if ($hits.Count -eq 0) {
+        "AutoSlay proof commands in active docs include required switches: $($SwitchNames -join ', ')"
+    } else {
+        "AutoSlay proof commands missing required switches: $($hits -join ' | ')"
+    }
+
+    Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
+}
+
+function Add-AutoSlayProofCommandSwitchValuesCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths,
+        [Parameter(Mandatory = $true)][hashtable]$SwitchValues
+    )
+
+    $hits = [System.Collections.Generic.List[string]]::new()
+    $switchValuePatterns = @{}
+    foreach ($switchName in $SwitchValues.Keys) {
+        $escapedSwitch = [regex]::Escape($switchName)
+        $escapedValue = [regex]::Escape([string]$SwitchValues[$switchName])
+        $switchValuePatterns[$switchName] = '(?i)(^|\s)-{0}\s+["'']?{1}["'']?(\s|$)' -f $escapedSwitch, $escapedValue
+    }
+
+    foreach ($path in $Paths) {
+        if (-not (Test-Path -LiteralPath (Resolve-RepoPath $path))) {
+            $hits.Add("${path}: missing file") | Out-Null
+        }
+    }
+
+    foreach ($command in (Get-AutoSlayProofCommands -Paths $Paths)) {
+        $wrongValues = @($SwitchValues.Keys | Sort-Object | Where-Object { -not [regex]::IsMatch($command.Text, $switchValuePatterns[$_]) })
+        if ($wrongValues.Count -gt 0) {
+            $expected = @($wrongValues | ForEach-Object { "-$_ $($SwitchValues[$_])" }) -join ', '
+            $hits.Add("$($command.Path):$($command.Line): expected $expected`: $($command.Text)") | Out-Null
+        }
+    }
+
+    $expectedValues = @($SwitchValues.Keys | Sort-Object | ForEach-Object { "-$_ $($SwitchValues[$_])" }) -join ', '
+    $detail = if ($hits.Count -eq 0) {
+        "AutoSlay proof commands in active docs pin current target values: $expectedValues"
+    } else {
+        "AutoSlay proof commands missing current target values: $($hits -join ' | ')"
+    }
+
+    Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
+}
+
 $agents = Read-RepoText 'AGENTS.md'
 $projectState = Read-RepoText 'PROJECT_STATE.md'
 $rootReadme = Read-RepoText 'README.md'
@@ -564,7 +699,7 @@ Add-ContainsCheck -Name 'goal_event_pause_static_work_boundary' -Text $goalEvent
 Add-RegexCheck -Name 'goal_event_downstream_pause_boundary' -Text $goalEventDoc -Pattern 'Runtime, gameplay, QA, build/test/publish'
 Add-RegexCheck -Name 'goal_event_direct_instruction_after_pause' -Text $goalEventDoc -Pattern 'coordination pause.{0,40}Mandatory Overnight Run v20'
 Add-ContainsCheck -Name 'goal_event_latest_pause_safe_static_checkpoint_20260618_autoslay' -Text $goalEventDoc -Needle 'Latest pause-safe static checkpoint after beta.88 event-goal/current-doc alignment, runtime-monkey packet escape, analyzer noncanonical-path, probe process identity, and AutoSlay malformed-path hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1122 checks / 0 mismatches'
-Add-ContainsCheck -Name 'goal_event_validation_matrix_current_doc_claims_1134' -Text $goalEventDoc -Needle 'current-doc-claims: 1134 checks / 0 mismatches'
+Add-ContainsCheck -Name 'goal_event_validation_matrix_current_doc_claims_1136' -Text $goalEventDoc -Needle 'current-doc-claims: 1136 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_v20_overlay_29' -Text $goalEventDoc -Needle 'v20 final-gate overlay: 29 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_runtime_preflight_27' -Text $goalEventDoc -Needle 'runtime-preflight: 27 checks / 0 mismatches (local v0.107.1 / beta.88 target; read-only source/prereq only)'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_subagent_70' -Text $goalEventDoc -Needle 'v19 subagent coverage: 70 checks / 0 mismatches'
@@ -576,7 +711,7 @@ Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_nonclaim' -Tex
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_plan_match' -Text $goalEventDoc -Needle 'plan_expected_ancient_ids_match_parameter'
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_required_for_proof_mode' -Text $goalEventDoc -Needle 'expected_ancient_ids_required_for_proof_mode'
 Add-ContainsCheck -Name 'goal_event_autoslay_ancient_id_normalization_proof_mode_followup' -Text $goalEventDoc -Needle 'Latest pause-safe AutoSlay AncientId normalization/proof-mode follow-up'
-Add-RegexCheck -Name 'goal_event_lower_audit_current_doc_claims_1134' -Text $goalEventDoc -Pattern '\| Current doc claims\s+\|[^\r\n]*1134 checks / 0 mismatches'
+Add-RegexCheck -Name 'goal_event_lower_audit_current_doc_claims_1136' -Text $goalEventDoc -Pattern '\| Current doc claims\s+\|[^\r\n]*1136 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_direct_localization_nonproof' -Text $goalEventDoc -Needle 'Fixing `STS1_GOLDEN_IDOL.pages.LEAVE.description` only removes the direct localization missing-key blocker'
 Add-ContainsCheck -Name 'goal_event_canary_loader_current_pass_section' -Text $goalEventDoc -Needle 'Retained beta.85 CanaryOnly loader registration proof remains previous-package/game-version loader context for `O25` and loader-packet `O39`; recapture current CanaryOnly before broader current-runtime claims.'
 Add-ContainsCheck -Name 'goal_event_beta88_additive_loader_current_pass_section' -Text $goalEventDoc -Needle 'Current beta.88 AdditiveBatch1 loader registration proof can be treated as current-pass for `O33`.'
@@ -1552,6 +1687,15 @@ Add-NoRegexCheck -Name 'no_runtime_packet_command_without_fail_on_mismatch' -Pat
 Add-NoRegexCheck -Name 'no_enabled_runtime_packet_command_with_missing_state_bypass' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-runtime-evidence-packet\.ps1(?=.*-Mode\s+(CanaryOnly|AdditiveBatch1))(?=.*-(AllowMissingSessionState|AllowMissingRestoreState))'
 Add-AutoSlayProofCommandTargetCheck -Name 'autoslay_packet_proof_commands_include_expected_ancient_ids' -Paths $currentClaimFiles
 Add-AutoSlayProofCommandNoSwitchCheck -Name 'autoslay_packet_proof_commands_do_not_allow_missing_event_traversal' -Paths $currentClaimFiles -SwitchName 'AllowMissingEventTraversal'
+Add-AutoSlayProofCommandRequiredSwitchesCheck -Name 'autoslay_packet_proof_commands_include_current_targets_and_report' -Paths $currentClaimFiles -SwitchNames @('MinRuns', 'ExpectedPackageVersion', 'ExpectedGameVersion', 'ExpectedRitsuLibVersion', 'ExpectedRitsuCompatBranch', 'ExpectedPatchCount', 'OutFile')
+Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_pin_current_target_values' -Paths $currentClaimFiles -SwitchValues @{
+    MinRuns = '1000'
+    ExpectedPackageVersion = 'v0.1.0-private-beta.88'
+    ExpectedGameVersion = '0.107.1'
+    ExpectedRitsuLibVersion = '0.4.24'
+    ExpectedRitsuCompatBranch = '0.107.0'
+    ExpectedPatchCount = '25'
+}
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_game_root' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-GameRoot)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_steam_exe' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-SteamExe)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_steam_user_id' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-SteamUserId)'

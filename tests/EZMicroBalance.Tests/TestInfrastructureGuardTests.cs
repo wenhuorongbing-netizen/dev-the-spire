@@ -3,7 +3,7 @@ using Xunit;
 
 namespace EZMicroBalance.Tests;
 
-public sealed class TestInfrastructureGuardTests
+public sealed partial class TestInfrastructureGuardTests
 {
     [Fact]
     public void GuardTestsUseSharedRepositoryPathHelpers()
@@ -401,42 +401,6 @@ public sealed class TestInfrastructureGuardTests
             "| `source code/` | Default keep because current tests/docs require it. |",
             "| `publish/` | Retained current beta.87 package/staging/cover-source output; stale beta.0-beta.80 ZIPs and expanded folders are removed by the guarded prune after confirming current-package hash/path parity. Future prune should happen only after a new package rebuild/hash refresh. |",
             "| `.tools/` | Unreferenced Edge browser profile/cache folders, stale redirected publish outputs, an old install backup, and generated Playwright/Godot cache folders were deleted; remaining `.tools/` subfolders are retained as current evidence, art provenance, local archives, or local tool installations. Wholesale deletion is not recommended. |");
-    }
-
-    [Fact]
-    public void CleanupAuditKeepsPromptCoverageAndOwnerDeletionDecisions()
-    {
-        var cleanupAudit = ReadRepoText("docs", "worktree-cleanup-audit.md");
-        var docsIndex = ReadRepoText("docs", "README.md");
-        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
-        var docInventory = ReadRepoText("docs", "doc-inventory.md");
-
-        Assert.Contains("worktree-cleanup-audit.md", docsIndex, StringComparison.Ordinal);
-        Assert.Contains("worktree-cleanup-audit.md", projectMap, StringComparison.Ordinal);
-        Assert.Contains("docs/worktree-cleanup-audit.md", docInventory, StringComparison.Ordinal);
-
-        AssertSourceContains(
-            cleanupAudit,
-            "# Worktree Cleanup Audit",
-            "## Objective",
-            "## Refactor Cleanup Completed",
-            "## Completion Audit Against Cleanup Goal",
-            "## Prompt-To-Artifact Checklist",
-            "## Owner Deletion Decision Checklist",
-            "Use this checklist before any permanent deletion.",
-            "Confirm whether every uncertain area is useless before permanent deletion",
-            "Complete: remaining retained areas have current evidence or hard-rule justification",
-            "Remaining large ignored/local areas are retained intentionally",
-            "Removed duplicate root mod surfaces",
-            "Former root `legacy/`",
-            "`source code/`",
-            "`publish/`",
-            "`.tools/`",
-            "`website/` and `.github/workflows/spire-plus-site.yml`");
-
-        Assert.DoesNotContain("Status: Complete", cleanupAudit, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("| `source code/` | Default keep because current tests/docs require it. |", cleanupAudit, StringComparison.Ordinal);
-        Assert.Contains("Promoted and tracked as current public site source and Pages workflow. Generated `website/forum/` output and `website/**/*.import` metadata remain ignored", cleanupAudit, StringComparison.Ordinal);
     }
 
     private static int FindNextPublicVoidMethod(string[] lines, int start)
