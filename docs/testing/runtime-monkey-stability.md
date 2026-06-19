@@ -732,7 +732,7 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   Top-level `monkey-summary.json` batch metadata for `Scenario`,
   `CommandSelectionMode`, `Sts1EventMode`, expected package/game/Ritsu targets,
   and `ExpectedPatchCount` must match the retained `monkey-plan.json`.
-  `PlannedCommands`, `Results[]`, `FailedIterationIds`,
+  `CommandCorpus`, `PlannedCommands`, `Results[]`, `FailedIterationIds`,
   `FailureReasonCodes`, `HangSignals`, `LiveSessionPreLaunchSlayProcessIds`,
   `PreLaunchSlayProcessIds`, and retained `runtime-probe-samples.json` must be
   native JSON arrays; scalar, object, string, missing, or null retained values
@@ -776,6 +776,11 @@ retained reports show which evidence layer was allowed to support owner routing.
 It treats `monkey-summary.json` summary counter mismatch versus `Results[]`
 aggregation as a `RuntimeHarness` blocker and clears runtime-monkey run/log
 trust before owner routing.
+It also treats scalar, object, string, missing, or null
+`monkey-summary.json` `Results` / `FailedIterationIds` shapes as summary
+defects before owner routing; the analyzer may normalize PowerShell values for
+iteration discovery, but malformed retained JSON shape remains a
+`RuntimeHarness` finding.
 It also treats `monkey-summary.json` `Results[]` row mismatch versus canonical
 `iteration-result.json` fields as a `RuntimeHarness` blocker before owner
 routing.
@@ -830,6 +835,15 @@ evidence until its scanned `Path`, `Length`, and `Sha256` bind to
 `audit-godot-log.ps1` recomputation agrees with the retained signature counts.
 Stale or hand-assembled audit JSON is reported as a `RuntimeHarness` blocker,
 and its signature hits are ignored for feature ownership.
+For GameNativeAutoSlay summaries, retained `Runs` must be a non-empty native
+JSON array. If the array shape is malformed, the analyzer still inspects
+retained `run-*` directories when present, but records an
+`autoslay_summary_shape_invalid` `RuntimeHarness` blocker and does not trust
+AutoSlay run or probe artifacts for owner routing.
+It also recomputes summary `Passed`, `TotalRuns`, `FailedRuns`, and
+`AncientIdCounts` from retained `Runs[]`; stale or hand-edited aggregate values
+record `autoslay_summary_counter_mismatch` before any AutoSlay owner routing is
+trusted.
 When a retained `sts1-mode-log-check.json` exists, the analyzer applies the
 same trust rule: the report's `Mode` must bind to the retained run plan
 `Sts1EventMode`, its `LogPath`, `LogLength`, and `LogSha256` must bind to

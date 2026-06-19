@@ -300,11 +300,25 @@ function Get-RuntimeMonkeySummaryMismatchDetails {
     param([AllowNull()]$Summary)
 
     $details = [System.Collections.Generic.List[string]]::new()
-    if ($null -eq $Summary -or -not (Test-JsonProperty -Object $Summary -Name 'Results')) {
-        return @()
+    if ($null -eq $Summary) {
+        return @($details.ToArray())
     }
 
-    $summaryResults = @($Summary.Results)
+    $summaryResultsIsArray = Test-JsonArrayProperty -Object $Summary -Name 'Results'
+    $summaryFailedIterationIdsIsArray = Test-JsonArrayProperty -Object $Summary -Name 'FailedIterationIds'
+    if (-not $summaryResultsIsArray) {
+        $details.Add('Results must be retained as a native JSON array') | Out-Null
+    }
+
+    if (-not (Test-JsonProperty -Object $Summary -Name 'Results')) {
+        return @($details.ToArray())
+    }
+
+    if (-not $summaryFailedIterationIdsIsArray) {
+        $details.Add('FailedIterationIds must be retained as a native JSON array') | Out-Null
+    }
+
+    $summaryResults = @(Get-JsonArrayValues -Object $Summary -Name 'Results')
     $failedSummaryResults = @($summaryResults | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     $summaryRequestedIterations = Get-JsonIntValue -Object $Summary -Name 'RequestedIterations' -DefaultValue 0
     $summaryCompletedIterations = Get-JsonIntValue -Object $Summary -Name 'CompletedIterations' -DefaultValue 0
@@ -319,7 +333,7 @@ function Get-RuntimeMonkeySummaryMismatchDetails {
         $details.Add("FailedIterations expected=$($failedSummaryResults.Count) actual=$summaryFailedIterations") | Out-Null
     }
 
-    $summaryFailedIterationIds = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $Summary -Name 'FailedIterationIds' -DefaultValue @()))
+    $summaryFailedIterationIds = @(ConvertTo-StringArray -Value (Get-JsonArrayValues -Object $Summary -Name 'FailedIterationIds'))
     $expectedFailedIterationIds = @($failedSummaryResults | ForEach-Object { [string](Get-JsonIntValue -Object $_ -Name 'Iteration' -DefaultValue 0) })
     if (-not (Test-StringArrayEquals -Actual $summaryFailedIterationIds -Expected $expectedFailedIterationIds)) {
         $details.Add("FailedIterationIds expected=$($expectedFailedIterationIds -join ',') actual=$($summaryFailedIterationIds -join ',')") | Out-Null
@@ -501,6 +515,59 @@ function Get-AutoSlaySummaryPlanMismatchDetails {
         $missingExpectedAncientIds.Count -gt 0 -or
         $unexpectedExpectedAncientIds.Count -gt 0) {
         $details.Add("ExpectedAncientIds missing='$($missingExpectedAncientIds -join ',')' unexpected='$($unexpectedExpectedAncientIds -join ',')'") | Out-Null
+    }
+
+    return @($details.ToArray())
+}
+
+function Get-AutoSlaySummaryAggregateMismatchDetails {
+    param([AllowNull()]$Summary)
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Summary -or -not (Test-JsonArrayProperty -Object $Summary -Name 'Runs')) {
+        return @($details.ToArray())
+    }
+
+    $summaryRuns = @(Get-JsonArrayValues -Object $Summary -Name 'Runs')
+    $failedSummaryRunRows = @($summaryRuns | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
+    $summaryRunsWithFailureReasonCodes = @($summaryRuns | Where-Object { @(Get-JsonArrayValues -Object $_ -Name 'FailureReasonCodes').Count -gt 0 })
+    $summaryRunsWithHangSignals = @($summaryRuns | Where-Object { @(Get-JsonArrayValues -Object $_ -Name 'HangSignals').Count -gt 0 })
+    $summaryProblemRunRows = @($summaryRuns | Where-Object {
+        -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) -or
+        @(Get-JsonArrayValues -Object $_ -Name 'FailureReasonCodes').Count -gt 0 -or
+        @(Get-JsonArrayValues -Object $_ -Name 'HangSignals').Count -gt 0
+    })
+
+    $summaryPassed = Get-JsonBoolValue -Object $Summary -Name 'Passed' -DefaultValue $false
+    $computedSummaryPassed = $summaryRuns.Count -gt 0 -and $summaryProblemRunRows.Count -eq 0
+    if ($summaryPassed -ne $computedSummaryPassed) {
+        $details.Add("Passed expected=$computedSummaryPassed actual=$summaryPassed failedRows=$($failedSummaryRunRows.Count) failureRows=$($summaryRunsWithFailureReasonCodes.Count) hangRows=$($summaryRunsWithHangSignals.Count)") | Out-Null
+    }
+
+    $totalRuns = Get-JsonIntValue -Object $Summary -Name 'TotalRuns' -DefaultValue -1
+    if ($totalRuns -ne $summaryRuns.Count) {
+        $details.Add("TotalRuns expected=$($summaryRuns.Count) actual=$totalRuns") | Out-Null
+    }
+
+    $failedRuns = Get-JsonIntValue -Object $Summary -Name 'FailedRuns' -DefaultValue -1
+    if ($failedRuns -ne $summaryProblemRunRows.Count) {
+        $details.Add("FailedRuns expected=$($summaryProblemRunRows.Count) actual=$failedRuns") | Out-Null
+    }
+
+    $observedAncientIdCounts = [ordered]@{}
+    foreach ($run in $summaryRuns) {
+        foreach ($ancientId in @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue ''))) {
+            if (-not $observedAncientIdCounts.Contains($ancientId)) {
+                $observedAncientIdCounts[$ancientId] = 0
+            }
+
+            $observedAncientIdCounts[$ancientId] = [int]$observedAncientIdCounts[$ancientId] + 1
+        }
+    }
+
+    $summaryAncientIdCounts = Get-JsonValue -Object $Summary -Name 'AncientIdCounts' -DefaultValue $null
+    if (-not (Test-CountMapMatches -ActualCountMap $summaryAncientIdCounts -ExpectedCounts $observedAncientIdCounts)) {
+        $details.Add('AncientIdCounts mismatch') | Out-Null
     }
 
     return @($details.ToArray())
@@ -1428,6 +1495,7 @@ function Analyze-Iteration {
         [string]$ExpectedRunnerKind = '',
         [string[]]$SummaryFailedIterationIdsInvalidDetails = @(),
         [string[]]$SummaryMismatchDetails = @(),
+        [string[]]$AutoSlaySummaryInvalidDetails = @(),
         [bool]$RequireRuntimeMonkeyPlanBinding = $false,
         [AllowNull()]$Summary = $null,
         [AllowNull()]$Plan = $null
@@ -1576,6 +1644,12 @@ function Analyze-Iteration {
         }
         Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Evidence target was selected as '$ExpectedRunnerKind' but the retained run result reported RunnerKind='$observedRunnerKind'." -NextStep 'Regenerate or reject the packet; summary target type and retained per-run result type must agree before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
+    $autoSlaySummaryInvalidDetailArray = @($AutoSlaySummaryInvalidDetails)
+    if (($autoSlaySummaryInvalidDetailArray | Measure-Object).Count -gt 0 -and $isGameNativeAutoSlay) {
+        $autoSlayRunArtifactsTrustedForOwner = $false
+        $autoSlayProbeArtifactTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'autoslay_summary_shape_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "autoslay-summary.json batch shape is invalid: $($autoSlaySummaryInvalidDetailArray -join '; ')." -NextStep 'Regenerate or reject autoslay-summary.json; Runs must be a non-empty native JSON array before AutoSlay owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
     $summaryFailedIterationIdsInvalidDetailArray = @($SummaryFailedIterationIdsInvalidDetails)
     $summaryFailedIterationIdsInvalidDetailCount = ($SummaryFailedIterationIdsInvalidDetails | Measure-Object).Count
     if ($summaryFailedIterationIdsInvalidDetailCount -gt 0 -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
@@ -1714,10 +1788,20 @@ function Analyze-Iteration {
         $autoSlayAuditArtifactTrustedForOwner = $true
         $autoSlaySts1ModeArtifactTrustedForOwner = $true
         $autoSlaySidecarPathTrustedForOwner = $true
+        if (($autoSlaySummaryInvalidDetailArray | Measure-Object).Count -gt 0) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+        }
         $autoSlaySummaryPlanMismatchDetails = @(Get-AutoSlaySummaryPlanMismatchDetails -Summary $analysisSummary -Plan $analysisPlan)
         if (($autoSlaySummaryPlanMismatchDetails | Measure-Object).Count -gt 0) {
             $autoSlayRunArtifactsTrustedForOwner = $false
             Add-Finding -Findings $findings -Signal 'autoslay_summary_plan_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json batch metadata does not match autoslay-plan.json: $($autoSlaySummaryPlanMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; AutoSlay summary batch metadata must match retained autoslay-plan.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+        $autoSlaySummaryAggregateMismatchDetails = @(Get-AutoSlaySummaryAggregateMismatchDetails -Summary $analysisSummary)
+        if (($autoSlaySummaryAggregateMismatchDetails | Measure-Object).Count -gt 0) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+            Add-Finding -Findings $findings -Signal 'autoslay_summary_counter_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json top-level counters do not match Runs[] aggregation: $($autoSlaySummaryAggregateMismatchDetails -join '; ')." -NextStep 'Regenerate or reject autoslay-summary.json; top-level pass/fail counters and AncientIdCounts must match Runs[] before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if (-not $RunResultPathInsideEvidenceDir) {
@@ -3606,9 +3690,11 @@ if ($IterationDir) {
     $autoSlaySummary = Read-JsonOrNull -Path $autoSlaySummaryPath
     $summary = Read-JsonOrNull -Path $summaryPath
     $directSmokeSummary = Read-JsonOrNull -Path $directSmokeSummaryPath
-    if ($autoSlaySummary -and
-        [string]::Equals([string](Get-JsonValue -Object $autoSlaySummary -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal) -and
-        (Test-JsonProperty -Object $autoSlaySummary -Name 'Runs') -and
+    $autoSlaySummaryIsGameNative = $autoSlaySummary -and
+        [string]::Equals([string](Get-JsonValue -Object $autoSlaySummary -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)
+    $autoSlaySummaryRunsIsArray = $autoSlaySummaryIsGameNative -and (Test-JsonArrayProperty -Object $autoSlaySummary -Name 'Runs')
+    if ($autoSlaySummaryIsGameNative -and
+        $autoSlaySummaryRunsIsArray -and
         @($autoSlaySummary.Runs).Count -gt 0) {
         $runIndex = 0
         foreach ($run in @($autoSlaySummary.Runs)) {
@@ -3637,6 +3723,31 @@ if ($IterationDir) {
                 RunResultPathInsideEvidenceDir = $runResultPathInsideEvidenceDir
                 ExpectedRunnerKind = 'GameNativeAutoSlay'
                 Summary = $autoSlaySummary
+            }
+        }
+    } elseif ($autoSlaySummaryIsGameNative) {
+        $autoSlaySummaryInvalidDetails = [System.Collections.Generic.List[string]]::new()
+        if (-not $autoSlaySummaryRunsIsArray) {
+            $autoSlaySummaryInvalidDetails.Add('Runs must be retained as a native JSON array') | Out-Null
+        } else {
+            $autoSlaySummaryInvalidDetails.Add('Runs must contain at least one run') | Out-Null
+        }
+
+        $runDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'run-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
+        if (($runDirs | Measure-Object).Count -eq 0) {
+            $runDirs = @($evidenceFull)
+        }
+
+        foreach ($dir in $runDirs) {
+            $runNumber = if ($dir -match 'run-(\d+)$') { [int]$Matches[1] } else { 0 }
+            $analysisTargets += [pscustomobject]@{
+                Directory = $dir
+                SummaryResult = $null
+                ResultFileName = 'run-result.json'
+                DefaultIteration = $runNumber
+                ExpectedRunnerKind = 'GameNativeAutoSlay'
+                Summary = $autoSlaySummary
+                AutoSlaySummaryInvalidDetails = @($autoSlaySummaryInvalidDetails.ToArray())
             }
         }
     } else {
@@ -3730,10 +3841,11 @@ $iterationReports = foreach ($target in $analysisTargets) {
     $expectedRunnerKind = if ($null -ne $target.PSObject.Properties['ExpectedRunnerKind']) { [string]$target.ExpectedRunnerKind } else { '' }
     $summaryFailedIterationIdsInvalidDetails = if ($null -ne $target.PSObject.Properties['SummaryFailedIterationIdsInvalidDetails']) { @($target.SummaryFailedIterationIdsInvalidDetails) } else { @() }
     $summaryMismatchDetails = if ($null -ne $target.PSObject.Properties['SummaryMismatchDetails']) { @($target.SummaryMismatchDetails) } else { @() }
+    $autoSlaySummaryInvalidDetails = if ($null -ne $target.PSObject.Properties['AutoSlaySummaryInvalidDetails']) { @($target.AutoSlaySummaryInvalidDetails) } else { @() }
     $requireRuntimeMonkeyPlanBinding = if ($null -ne $target.PSObject.Properties['RequireRuntimeMonkeyPlanBinding']) { [bool]$target.RequireRuntimeMonkeyPlanBinding } else { $false }
     $analysisSummary = if ($null -ne $target.PSObject.Properties['Summary']) { $target.Summary } else { $null }
     try {
-        Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir -ExpectedRunnerKind $expectedRunnerKind -SummaryFailedIterationIdsInvalidDetails $summaryFailedIterationIdsInvalidDetails -SummaryMismatchDetails $summaryMismatchDetails -RequireRuntimeMonkeyPlanBinding $requireRuntimeMonkeyPlanBinding -Summary $analysisSummary
+        Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir -ExpectedRunnerKind $expectedRunnerKind -SummaryFailedIterationIdsInvalidDetails $summaryFailedIterationIdsInvalidDetails -SummaryMismatchDetails $summaryMismatchDetails -AutoSlaySummaryInvalidDetails $autoSlaySummaryInvalidDetails -RequireRuntimeMonkeyPlanBinding $requireRuntimeMonkeyPlanBinding -Summary $analysisSummary
     } catch {
         $scriptStack = if ([string]::IsNullOrWhiteSpace([string]$_.ScriptStackTrace)) { '<no script stack>' } else { [string]$_.ScriptStackTrace }
         throw "Analyze-Iteration failed for '$($target.Directory)' result '$($target.ResultFileName)': $($_.Exception.Message)`n$scriptStack"

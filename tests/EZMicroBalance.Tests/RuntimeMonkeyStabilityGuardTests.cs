@@ -722,6 +722,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             var planPath = Path.Combine(workdir, "monkey-plan.json");
             var planJson = JsonNode.Parse(File.ReadAllText(planPath))!.AsObject();
+            planJson["CommandCorpus"] = "not-an-array";
             planJson["PlannedCommands"] = "not-an-array";
             File.WriteAllText(planPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
@@ -741,6 +742,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "25");
 
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_command_corpus_array status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("plan_planned_commands_array status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("summary_results_array status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("summary_failed_iteration_ids_array status=fail", result.Output, StringComparison.Ordinal);
