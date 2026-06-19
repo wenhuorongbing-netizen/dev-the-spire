@@ -1726,6 +1726,7 @@ try {
         New-DirectoryIfMissing -Path $iterationDir
         $commandPath = Join-Path $iterationDir 'command.txt'
         [string]$planned.Command | Set-Content -LiteralPath $commandPath -Encoding UTF8
+        $commandFileSha256 = Get-FileSha256OrEmpty -Path $commandPath
         $probeSamples = [System.Collections.Generic.List[object]]::new()
 
         $result = [ordered]@{
@@ -1736,6 +1737,8 @@ try {
             Command = [string]$planned.Command
             CommandIndex = [int]$planned.CommandIndex
             CommandSelectionMode = [string]$planned.CommandSelectionMode
+            CommandFilePath = $commandPath
+            CommandFileSha256 = $commandFileSha256
             Scenario = $Scenario
             ScenarioTag = [string]$planned.ScenarioTag
             OwnerArea = [string]$planned.OwnerArea

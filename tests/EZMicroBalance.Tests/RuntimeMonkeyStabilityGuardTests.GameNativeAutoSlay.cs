@@ -26,6 +26,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "$planExpectedAncientIdsForCoverage = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))",
             "$observedAncientIdSet.Add($normalizedAncientId)",
             "$traversedAncientIdSet.Add($ancientId.Trim().ToUpperInvariant())",
+            "runtime_probe_samples_sha256_matches_retained_file",
+            "run_result_runtime_probe_samples_sha256_matches_summary",
+            "plan_expected_patch_count_positive",
+            "plan_expected_patch_count_matches_expected",
             "${runName}_run_result_ancient_id_matches_summary");
     }
 
@@ -55,8 +59,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("expected_ancient_ids_required_for_proof_mode status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("expected_ancient_ids_unique status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_expected_patch_count_positive status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_expected_patch_count_matches_expected status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_expected_ancient_ids_observed status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_ancient_id_counts_match_runs status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_probe_samples_sha256_matches_summary status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_runtime_probe_samples_all_match_expected_identity status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_current_iteration_log_matches_after_launch_slice status=pass", result.Output, StringComparison.Ordinal);
@@ -278,6 +286,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
+            File.AppendAllText(fixture.RuntimeProbeSamplesPath, " ");
+            var result = fixture.RunVerifier();
+
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("run_0001_runtime_probe_samples_sha256_recorded status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_sha256_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_probe_samples_sha256_matches_summary status=pass", result.Output, StringComparison.Ordinal);
+        }
+
+        using (var fixture = CreateGameNativeAutoSlayFixture())
+        {
             File.WriteAllText(fixture.SummaryPath, fixture.OriginalSummaryJson.Replace("\"RuntimeProbeSamplesPath\": \"run-0001/runtime-probe-samples.json\"", "\"RuntimeProbeSamplesPath\": \"\\u0000bad-runtime-probe-samples\"", StringComparison.Ordinal));
             var result = fixture.RunVerifier();
 
@@ -459,6 +478,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
+            File.WriteAllText(fixture.PlanPath, fixture.OriginalPlanJson.Replace("\"ExpectedPatchCount\": 25", "\"ExpectedPatchCount\": 24", StringComparison.Ordinal));
+            var result = fixture.RunVerifier();
+
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_expected_patch_count_positive status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_expected_patch_count_matches_expected status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_expected_patch_count_in_current_log status=fail", result.Output, StringComparison.Ordinal);
+        }
+
+        using (var fixture = CreateGameNativeAutoSlayFixture())
+        {
             File.WriteAllText(fixture.PlanPath, fixture.OriginalPlanJson.Replace("\"HookId\": \"SpirePlus.AutoSlayHarness.Start\"", "\"HookId\": \"\"", StringComparison.Ordinal));
             var result = fixture.RunVerifier();
 
@@ -588,6 +618,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             OriginalRuntimeProbeSamplesJson = BuildRuntimeProbeSamples();
             File.WriteAllText(RuntimeProbeSamplesPath, OriginalRuntimeProbeSamplesJson);
+            RuntimeProbeSamplesHash = Sha256File(RuntimeProbeSamplesPath);
             File.WriteAllText(AuditPath, ToBoundAuditJson(CurrentLogPath, """{"SignatureHits":[]}"""));
             WriteSts1ModeLogCheckJson(
                 "Off",
@@ -625,6 +656,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         public string AuditPath { get; }
         public string Sts1ModeCheckPath { get; }
         public string RuntimeProbeSamplesPath { get; }
+        public string RuntimeProbeSamplesHash { get; }
         public string GameProcessPath { get; }
         public string OriginalSourceWorkspaceReportJson { get; }
         public string OriginalPlanJson { get; }
@@ -838,6 +870,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "ExitCode": 0,
               "StaleProcessCount": 0,
               "RuntimeProbeSamplesPath": "run-0001/runtime-probe-samples.json",
+              "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(RuntimeProbeSamplesHash)}},
               "MainMenuObservation": {
                 "Passed": true,
                 "MainMenuReached": true,
@@ -895,6 +928,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "GameVersion": {{JsonSerializer.Serialize(GameVersion)}},
               "RitsuLibVersion": {{JsonSerializer.Serialize(RitsuLibVersion)}},
               "RitsuCompatBranch": {{JsonSerializer.Serialize(RitsuCompatBranch)}},
+              "ExpectedPatchCount": {{ExpectedPatchCount}},
               "ExpectedAncientIds": ["VAKUU"],
               "Seeds": [{{JsonSerializer.Serialize(Seed)}}],
               "SourceWorkspaceCheckPath": "local-godot-source-workspace-check.json",
@@ -954,6 +988,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HangSignals": [],
                   "RunResultPath": "run-0001/run-result.json",
                   "RuntimeProbeSamplesPath": "run-0001/runtime-probe-samples.json",
+                  "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(RuntimeProbeSamplesHash)}},
                   "AutoSlayLogPath": "run-0001/autoslay.log",
                   "AutoSlayLogSha256": {{JsonSerializer.Serialize(AutoSlayLogHash)}},
                   "GodotLogBeforePath": "run-0001/godot.log.before",

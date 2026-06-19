@@ -1,11 +1,68 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Xml.Linq;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
 
 public sealed partial class ReleaseEvidenceGateTests
 {
+    private static string ExpectedManualHandoffModDirectory()
+    {
+        var configuredPath = Environment.GetEnvironmentVariable("STS2_PATH");
+        if (!string.IsNullOrWhiteSpace(configuredPath))
+        {
+            return ConvertSts2PathToModDirectory(configuredPath);
+        }
+
+        var propsPath = Path.Combine(Root, "Directory.Build.props");
+        if (File.Exists(propsPath))
+        {
+            try
+            {
+                var props = XDocument.Load(propsPath);
+                var sts2Path = props
+                    .Descendants("Sts2Path")
+                    .Select(element => element.Value)
+                    .FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
+                if (!string.IsNullOrWhiteSpace(sts2Path))
+                {
+                    return ConvertSts2PathToModDirectory(sts2Path);
+                }
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Xml.XmlException)
+            {
+            }
+        }
+
+        foreach (var knownRoot in new[]
+        {
+            @"E:\Steam\steamapps\common\Slay the Spire 2",
+            @"D:\Steam\steamapps\common\Slay the Spire 2"
+        })
+        {
+            if (Directory.Exists(knownRoot))
+            {
+                return ConvertSts2PathToModDirectory(knownRoot);
+            }
+        }
+
+        return @"<GameRoot>\mods\EZMicroBalance";
+    }
+
+    private static string ConvertSts2PathToModDirectory(string path)
+    {
+        var fullPath = Path.GetFullPath(path);
+        var directoryInfo = new DirectoryInfo(fullPath);
+        if (string.Equals(directoryInfo.Name, "EZMicroBalance", StringComparison.Ordinal) &&
+            string.Equals(directoryInfo.Parent?.Name, "mods", StringComparison.Ordinal))
+        {
+            return directoryInfo.FullName;
+        }
+
+        return Path.Combine(directoryInfo.FullName, "mods", "EZMicroBalance");
+    }
+
     [Fact]
     public void CurrentManualTestHandoffScriptCreatesAllPendingEvidenceSections()
     {
@@ -104,7 +161,14 @@ public sealed partial class ReleaseEvidenceGateTests
             Assert.Contains("`PendingVerifierWarningCount=0`.", startHere, StringComparison.Ordinal);
             Assert.Contains("These numbers mean the scaffold is expected to fail until live evidence is filled.", startHere, StringComparison.Ordinal);
             Assert.Contains("Recommended order", startHere, StringComparison.Ordinal);
-            Assert.Contains(".\\scripts\\check-installed-spire-plus-package.ps1 -ModDirectory \"D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance\"", startHere, StringComparison.Ordinal);
+            Assert.Contains(
+                $".\\scripts\\check-installed-spire-plus-package.ps1 -ModDirectory \"{ExpectedManualHandoffModDirectory()}\"",
+                startHere,
+                StringComparison.Ordinal);
+            Assert.DoesNotContain(
+                ".\\scripts\\check-installed-spire-plus-package.ps1 -ModDirectory \"D:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance\"",
+                source,
+                StringComparison.Ordinal);
             Assert.Contains("It should fail closed with 21 pending live rows", startHere, StringComparison.Ordinal);
             Assert.Contains("release/fresh-current-package-loader-smoke/", startHere, StringComparison.Ordinal);
             Assert.Contains("release/mod-settings-current-display/", startHere, StringComparison.Ordinal);

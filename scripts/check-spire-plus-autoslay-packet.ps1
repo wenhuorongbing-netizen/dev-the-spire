@@ -277,6 +277,12 @@ function Get-FileSha256OrEmpty {
     }
 }
 
+function Test-Sha256Text {
+    param([AllowEmptyString()][string]$Value)
+
+    return -not [string]::IsNullOrWhiteSpace($Value) -and $Value -match '^[a-fA-F0-9]{64}$'
+}
+
 function Contains-Text {
     param(
         [AllowEmptyString()][string]$Text,
@@ -684,6 +690,8 @@ $launcherSha256 = ''
 $hookId = ''
 $hookAssembly = ''
 $invocationCommand = ''
+$planExpectedPatchCount = 0
+$effectiveExpectedPatchCount = $ExpectedPatchCount
 if ($null -ne $plan) {
     $runnerKind = [string](Get-JsonValue -Object $plan -Name 'RunnerKind' -DefaultValue '')
     $invocation = [string](Get-JsonValue -Object $plan -Name 'Invocation' -DefaultValue '')
@@ -695,6 +703,10 @@ if ($null -ne $plan) {
     $invocationCommand = [string](Get-JsonValue -Object $plan -Name 'InvocationCommand' -DefaultValue '')
     $launcherExists = Test-PathLeafSafe -Path $launcherPath
     $expectedSts1Mode = [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue '')
+    $planExpectedPatchCount = [int](Get-JsonValue -Object $plan -Name 'ExpectedPatchCount' -DefaultValue 0)
+    if ($planExpectedPatchCount -gt 0) {
+        $effectiveExpectedPatchCount = $planExpectedPatchCount
+    }
     $sourceWorkspace = Get-JsonValue -Object $plan -Name 'SourceWorkspace' -DefaultValue $null
     $planSeeds = @(Get-ArrayValues -Value (Get-JsonValue -Object $plan -Name 'Seeds' -DefaultValue @()) | ForEach-Object { [string]$_ })
     $nonEmptyPlanSeeds = @($planSeeds | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
@@ -723,6 +735,10 @@ if ($null -ne $plan) {
     Add-Check -Name 'expected_ritsu_lib_version_parameter_provided' -Passed (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuLibVersion)) -Detail 'AutoSlay proof packets must be checked with -ExpectedRitsuLibVersion'
     Add-Check -Name 'expected_ritsu_compat_branch_parameter_provided' -Passed (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) -Detail 'AutoSlay proof packets must be checked with -ExpectedRitsuCompatBranch'
     Add-Check -Name 'expected_patch_count_parameter_provided' -Passed ($ExpectedPatchCount -gt 0) -Detail 'AutoSlay proof packets must be checked with -ExpectedPatchCount'
+    Add-Check -Name 'plan_expected_patch_count_positive' -Passed ($planExpectedPatchCount -gt 0) -Detail "autoslay-plan.json ExpectedPatchCount must be positive; found $planExpectedPatchCount"
+    if ($ExpectedPatchCount -gt 0) {
+        Add-Check -Name 'plan_expected_patch_count_matches_expected' -Passed ($planExpectedPatchCount -eq $ExpectedPatchCount) -Detail "autoslay-plan.json ExpectedPatchCount must match -ExpectedPatchCount; plan=$planExpectedPatchCount expected=$ExpectedPatchCount"
+    }
 
     if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) {
         $actual = [string](Get-JsonValue -Object $plan -Name 'PackageVersion' -DefaultValue '')
@@ -1017,6 +1033,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $currentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
     $auditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogAuditPath' -DefaultValue ''))
     $sts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
+    $runtimeProbeSamplesSha256 = [string](Get-JsonValue -Object $run -Name 'RuntimeProbeSamplesSha256' -DefaultValue '')
     $autoSlayLogSha256 = [string](Get-JsonValue -Object $run -Name 'AutoSlayLogSha256' -DefaultValue '')
     $beforeLogLengthBytes = [long](Get-JsonValue -Object $run -Name 'GodotLogBeforeLengthBytes' -DefaultValue -1)
     $beforeLogSha256 = [string](Get-JsonValue -Object $run -Name 'GodotLogBeforeSha256' -DefaultValue '')
@@ -1059,6 +1076,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_runtime_probe_samples_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $runtimeProbeSamplesPath -Directory $runEvidenceDir)) -Detail 'RuntimeProbeSamplesPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_runtime_probe_samples_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath)) -and [System.IO.Path]::GetFileName($runtimeProbeSamplesPath) -eq 'runtime-probe-samples.json') -Detail 'RuntimeProbeSamplesPath must end with runtime-probe-samples.json'
     Add-Check -Name "${runName}_runtime_probe_samples_exists" -Passed $runtimeProbeSamplesExists -Detail 'RuntimeProbeSamplesPath must point at retained runtime-probe-samples.json'
+    Add-Check -Name "${runName}_runtime_probe_samples_sha256_recorded" -Passed (Test-Sha256Text -Value $runtimeProbeSamplesSha256) -Detail 'RuntimeProbeSamplesSha256 must be retained as a valid SHA256'
     Add-Check -Name "${runName}_autoslay_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -Detail 'AutoSlayLogPath must be retained'
     Add-Check -Name "${runName}_autoslay_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $resolvedEvidenceDir) -Detail 'AutoSlayLogPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_autoslay_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $runEvidenceDir)) -Detail 'AutoSlayLogPath must stay inside the per-seed run evidence directory'
@@ -1133,6 +1151,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     }
 
     if ($runtimeProbeSamplesExists) {
+        Add-Check -Name "${runName}_runtime_probe_samples_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($runtimeProbeSamplesSha256, (Get-FileSha256OrEmpty -Path $runtimeProbeSamplesPath))) -Detail 'RuntimeProbeSamplesSha256 must match retained runtime-probe-samples.json'
         try {
             $probeSamplesJson = [System.IO.File]::ReadAllText($runtimeProbeSamplesPath)
             $probeSamplesParsed = $probeSamplesJson | ConvertFrom-Json
@@ -1324,8 +1343,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
         $expectedRitsuMarker = "RitsuLib Version: $ExpectedRitsuLibVersion [compat branch: $ExpectedRitsuCompatBranch]"
         Add-Check -Name "${runName}_expected_ritsulib_marker_in_current_log" -Passed (Contains-Text -Text $currentLog -Needle $expectedRitsuMarker) -Detail "current-iteration log must contain RitsuLib marker '$expectedRitsuMarker'"
     }
-    if ($ExpectedPatchCount -gt 0) {
-        Add-Check -Name "${runName}_expected_patch_count_in_current_log" -Passed ((Get-PatchCountLineHits -Text $currentLog -ExpectedCount $ExpectedPatchCount) -gt 0) -Detail "current-iteration log must contain exact Spire Plus patch-count markers for $ExpectedPatchCount patches"
+    if ($effectiveExpectedPatchCount -gt 0) {
+        Add-Check -Name "${runName}_expected_patch_count_in_current_log" -Passed ((Get-PatchCountLineHits -Text $currentLog -ExpectedCount $effectiveExpectedPatchCount) -gt 0) -Detail "current-iteration log must contain exact Spire Plus patch-count markers for $effectiveExpectedPatchCount patches"
     }
 
     Add-Check -Name "${runName}_autoslay_log_started_seed" -Passed ((-not [string]::IsNullOrWhiteSpace($seed)) -and (Contains-Text -Text $autoSlayLog -Needle "Starting run with seed=$seed")) -Detail 'AutoSlay log must contain the start marker for this seed'
@@ -1478,6 +1497,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_json_valid" -Passed $true -Detail 'run-result.json parsed'
             $resultAutoSlayLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogPath' -DefaultValue ''))
             $resultRuntimeProbeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
+            $resultRuntimeProbeSamplesSha256 = [string](Get-JsonValue -Object $runResult -Name 'RuntimeProbeSamplesSha256' -DefaultValue '')
             $resultBeforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogBeforePath' -DefaultValue ''))
             $resultAfterLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
             $resultCurrentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $runResult -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
@@ -1545,6 +1565,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_autoslay_log_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultAutoSlayLogPath -Right $autoSlayLogPath) -Detail 'run-result.json AutoSlayLogPath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_autoslay_log_hash_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $runResult -Name 'AutoSlayLogSha256' -DefaultValue ''), $autoSlayLogSha256)) -Detail 'run-result.json AutoSlayLogSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_runtime_probe_samples_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultRuntimeProbeSamplesPath -Right $runtimeProbeSamplesPath) -Detail 'run-result.json RuntimeProbeSamplesPath must match autoslay-summary.json'
+            Add-Check -Name "${runName}_run_result_runtime_probe_samples_sha256_recorded" -Passed (Test-Sha256Text -Value $resultRuntimeProbeSamplesSha256) -Detail 'run-result.json RuntimeProbeSamplesSha256 must be retained as a valid SHA256'
+            Add-Check -Name "${runName}_run_result_runtime_probe_samples_sha256_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultRuntimeProbeSamplesSha256, $runtimeProbeSamplesSha256)) -Detail 'run-result.json RuntimeProbeSamplesSha256 must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_path_matches_summary" -Passed (Test-NonEmptyOrdinalIgnoreCaseEquals -Left $resultBeforeLogPath -Right $beforeLogPath) -Detail 'run-result.json GodotLogBeforePath must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_length_matches_summary" -Passed ($resultBeforeLogLengthBytes -eq $beforeLogLengthBytes) -Detail 'run-result.json GodotLogBeforeLengthBytes must match autoslay-summary.json'
             Add-Check -Name "${runName}_run_result_before_log_sha256_matches_summary" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultBeforeLogSha256, $beforeLogSha256)) -Detail 'run-result.json GodotLogBeforeSha256 must match autoslay-summary.json'
@@ -1618,6 +1640,9 @@ if (-not [string]::IsNullOrWhiteSpace($OutFile)) {
         Passed = $passed
         EvidenceDir = $resolvedEvidenceDir
         MinRuns = $MinRuns
+        ExpectedPatchCount = $ExpectedPatchCount
+        PlanExpectedPatchCount = $planExpectedPatchCount
+        EffectiveExpectedPatchCount = $effectiveExpectedPatchCount
         ExpectedAncientIds = $expectedAncientIdsForCoverage
         PlanExpectedAncientIds = $planExpectedAncientIdsForCoverage
         MissingPlanExpectedAncientIds = $missingPlanExpectedAncientIds

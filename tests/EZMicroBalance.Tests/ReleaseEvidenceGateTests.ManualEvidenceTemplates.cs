@@ -253,9 +253,9 @@ public sealed partial class ReleaseEvidenceGateTests
         var projectState = ReadRepoText("PROJECT_STATE.md");
         Assert.Contains("current source defines 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(ManifestVersion(), projectState, StringComparison.Ordinal);
-        Assert.Contains("Current `v0.107.0` beta.87 AdditiveBatch1 loader proof", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.85/beta.86 loader proof remains previous-package context", projectState, StringComparison.Ordinal);
-        Assert.Contains("current beta.87 AdditiveBatch1 loader proof is clean", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current installed game is `v0.107.1`.", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current `v0.107.0` beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context", projectState, StringComparison.Ordinal);
+        Assert.Contains("current beta.88 AdditiveBatch1 loader proof is clean for `v0.107.1` loader/registration only", projectState, StringComparison.Ordinal);
         Assert.Contains("applied 25/25 Spire Plus ModPatcher patches", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("Found 22 SavedSpireFields", projectState, StringComparison.OrdinalIgnoreCase);

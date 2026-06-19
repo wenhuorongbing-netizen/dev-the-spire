@@ -1199,7 +1199,7 @@ function Analyze-Iteration {
             [pscustomobject]@{ Label = 'godot.log.before'; FieldName = 'GodotLogBeforePath'; Signal = 'autoslay_before_log_outside_run_dir'; MissingSignal = 'autoslay_before_log_path_missing'; NonCanonicalSignal = 'autoslay_before_log_not_retained_file'; Path = $beforeLogCandidate; CanonicalPath = $canonicalBeforeLogCandidate; NextStep = 'Retain godot.log.before beside run-result.json before using AutoSlay log slices for owner routing.' },
             [pscustomobject]@{ Label = 'godot.log.after-launch'; FieldName = 'GodotLogAfterLaunchPath'; Signal = 'autoslay_after_launch_log_outside_run_dir'; MissingSignal = 'autoslay_after_launch_log_path_missing'; NonCanonicalSignal = 'autoslay_after_launch_log_not_retained_file'; Path = $fullLogCandidate; CanonicalPath = $canonicalFullLogCandidate; NextStep = 'Retain godot.log.after-launch beside run-result.json before using AutoSlay log slices for owner routing.' },
             [pscustomobject]@{ Label = 'godot.log.current-iteration'; FieldName = 'GodotLogCurrentIterationPath'; Signal = 'autoslay_current_iteration_log_outside_run_dir'; MissingSignal = 'autoslay_current_iteration_log_path_missing'; NonCanonicalSignal = 'autoslay_current_iteration_log_not_retained_file'; Path = $currentIterationLogCandidate; CanonicalPath = $canonicalCurrentIterationLogCandidate; NextStep = 'Retain godot.log.current-iteration beside run-result.json before using AutoSlay log lines for owner routing.' },
-            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; FieldName = 'RuntimeProbeSamplesPath'; Signal = 'autoslay_runtime_probe_samples_outside_run_dir'; MissingSignal = 'autoslay_runtime_probe_samples_path_missing'; NonCanonicalSignal = 'autoslay_runtime_probe_samples_not_retained_file'; Path = $probeSamplesCandidate; CanonicalPath = $canonicalProbeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json beside run-result.json before using AutoSlay probe telemetry for triage.' },
+            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; FieldName = 'RuntimeProbeSamplesPath'; HashField = 'RuntimeProbeSamplesSha256'; Signal = 'autoslay_runtime_probe_samples_outside_run_dir'; MissingSignal = 'autoslay_runtime_probe_samples_path_missing'; MissingHashSignal = 'autoslay_runtime_probe_samples_hash_missing'; HashMismatchSignal = 'autoslay_runtime_probe_samples_hash_mismatch'; NonCanonicalSignal = 'autoslay_runtime_probe_samples_not_retained_file'; Path = $probeSamplesCandidate; CanonicalPath = $canonicalProbeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json beside run-result.json before using AutoSlay probe telemetry for triage.' },
             [pscustomobject]@{ Label = 'godot-log-audit.json'; FieldName = 'GodotLogAuditPath'; Signal = 'autoslay_godot_log_audit_outside_run_dir'; MissingSignal = 'autoslay_godot_log_audit_path_missing'; NonCanonicalSignal = 'autoslay_godot_log_audit_not_retained_file'; Path = $auditCandidate; CanonicalPath = Join-Path $Directory 'godot-log-audit.json'; NextStep = 'Retain godot-log-audit.json beside run-result.json before using audit signatures for owner routing.' },
             [pscustomobject]@{ Label = 'sts1-mode-log-check.json'; FieldName = 'Sts1ModeLogCheckPath'; Signal = 'autoslay_sts1_mode_log_check_outside_run_dir'; MissingSignal = 'autoslay_sts1_mode_log_check_path_missing'; NonCanonicalSignal = 'autoslay_sts1_mode_log_check_not_retained_file'; Path = $sts1ModeCandidate; CanonicalPath = Join-Path $Directory 'sts1-mode-log-check.json'; NextStep = 'Retain sts1-mode-log-check.json beside run-result.json before using StS1 mode evidence for owner routing.' },
             [pscustomobject]@{ Label = 'autoslay.log'; FieldName = 'AutoSlayLogPath'; Signal = 'autoslay_sidecar_log_outside_run_dir'; MissingSignal = 'autoslay_sidecar_log_path_missing'; NonCanonicalSignal = 'autoslay_sidecar_log_not_retained_file'; Path = $autoSlayLogCandidate; CanonicalPath = Join-Path $Directory 'autoslay.log'; NextStep = 'Retain autoslay.log beside run-result.json before using sidecar log lines for owner routing.' }
@@ -1208,6 +1208,8 @@ function Analyze-Iteration {
         foreach ($artifact in $autoSlayRequiredArtifacts) {
             $artifactPath = [string]$artifact.Path
             $artifactFieldRetained = Test-JsonProperty -Object $result -Name ([string]$artifact.FieldName)
+            $artifactHashField = if (Test-JsonProperty -Object $artifact -Name 'HashField') { [string]$artifact.HashField } else { '' }
+            $artifactIsRuntimeProbeSamples = [string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)
             if (-not $artifactFieldRetained) {
                 $autoSlayRunArtifactsTrustedForOwner = $false
                 if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
@@ -1317,6 +1319,48 @@ function Analyze-Iteration {
                 }
 
                 Add-Finding -Findings $findings -Signal ([string]$artifact.NonCanonicalSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $($artifact.Label) did not resolve to the retained standard per-seed file." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+
+            if (-not [string]::IsNullOrWhiteSpace($artifactHashField)) {
+                $recordedArtifactSha256 = [string](Get-JsonValue -Object $result -Name $artifactHashField -DefaultValue '')
+                if (-not (Test-JsonProperty -Object $result -Name $artifactHashField) -or -not (Test-Sha256Text -Value $recordedArtifactSha256)) {
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    if ($artifactIsRuntimeProbeSamples) {
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                    }
+
+                    Add-Finding -Findings $findings -Signal ([string]$artifact.MissingHashSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json did not retain a valid $artifactHashField for $($artifact.Label)." -NextStep 'Record SHA256 bindings for retained AutoSlay artifacts before trusting probe telemetry or gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    continue
+                }
+
+                if ($artifactIsRuntimeProbeSamples -and $null -ne $SummaryResult) {
+                    $summaryArtifactSha256 = [string](Get-JsonValue -Object $SummaryResult -Name $artifactHashField -DefaultValue '')
+                    if (-not (Test-JsonProperty -Object $SummaryResult -Name $artifactHashField) -or -not (Test-Sha256Text -Value $summaryArtifactSha256)) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_samples_summary_hash_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json did not retain a valid $artifactHashField for $($artifact.Label)." -NextStep 'Record RuntimeProbeSamplesSha256 in both run-result.json and autoslay-summary.json before trusting AutoSlay probe telemetry.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        continue
+                    }
+
+                    if (-not [System.StringComparer]::OrdinalIgnoreCase.Equals($summaryArtifactSha256, $recordedArtifactSha256)) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_samples_summary_hash_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json $artifactHashField does not match run-result.json; summary=$summaryArtifactSha256 result=$recordedArtifactSha256." -NextStep 'Regenerate or reject the packet; summary and run-result probe hashes must bind to the same retained runtime-probe-samples.json.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        continue
+                    }
+                }
+
+                $actualArtifactSha256 = Get-FileSha256OrEmpty -Path $artifactPath
+                if (-not [System.StringComparer]::OrdinalIgnoreCase.Equals($recordedArtifactSha256, $actualArtifactSha256)) {
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    if ($artifactIsRuntimeProbeSamples) {
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                    }
+
+                    Add-Finding -Findings $findings -Signal ([string]$artifact.HashMismatchSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $artifactHashField does not match retained $($artifact.Label); recorded=$recordedArtifactSha256 actual=$actualArtifactSha256." -NextStep 'Regenerate or reject the packet; do not route ownership from AutoSlay probe telemetry whose retained hash has drifted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
             }
         }
     }
@@ -1487,6 +1531,8 @@ function Analyze-Iteration {
 
     if ($isGameNativeAutoSlay) {
         if ([string]::IsNullOrWhiteSpace($seed)) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_seed_missing' `
@@ -1499,6 +1545,8 @@ function Analyze-Iteration {
         }
 
         if (-not [string]::Equals($eventKind, 'Ancient', [System.StringComparison]::Ordinal)) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_event_kind_not_ancient' `
@@ -1511,6 +1559,8 @@ function Analyze-Iteration {
         }
 
         if ([string]::IsNullOrWhiteSpace($ancientId)) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_ancient_id_missing' `
@@ -1523,6 +1573,8 @@ function Analyze-Iteration {
         }
 
         if (-not (Test-OrderedTextSequence -Text $invocation -Needles @('AutoSlayer.Start(seed, logFile)'))) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_invocation_missing' `
@@ -1539,18 +1591,27 @@ function Analyze-Iteration {
         $startTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $startTimestampText
         $endTimestampParse = ConvertTo-DateTimeOffsetParseResult -Text $endTimestampText
         if (-not [bool]$startTimestampParse.Parsed) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_start_timestamp_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json must retain a parseable StartTimestamp; found '$startTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp retention before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if (-not [bool]$endTimestampParse.Parsed) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_end_timestamp_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json must retain a parseable EndTimestamp; found '$endTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp retention before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if ([bool]$startTimestampParse.Parsed -and [bool]$endTimestampParse.Parsed -and $startTimestampParse.Value -gt $endTimestampParse.Value) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_timestamp_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay run-result.json has StartTimestamp later than EndTimestamp; start='$startTimestampText' end='$endTimestampText'." -NextStep 'Fix AutoSlay run-result timestamp capture before using duration or ownership routing from this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if ([string]::IsNullOrWhiteSpace($probeSamplesCandidate) -or -not (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf)) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_runtime_probe_samples_missing' `
@@ -1593,6 +1654,9 @@ function Analyze-Iteration {
                     'LogLastWriteTimeUtc')
 
                 if ($probeSamples.Count -eq 0) {
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                    $logTextTrustedForOwner = $false
                     Add-Finding `
                         -Findings $findings `
                         -Signal 'autoslay_runtime_probe_samples_empty' `
@@ -1612,6 +1676,9 @@ function Analyze-Iteration {
                             -not (Test-AllJsonPropertiesRetained -Items $probeSamples -Name $_)
                         })
                     )
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                    $logTextTrustedForOwner = $false
                     Add-Finding `
                         -Findings $findings `
                         -Signal 'autoslay_runtime_probe_samples_incomplete' `
@@ -1638,26 +1705,44 @@ function Analyze-Iteration {
                     }
 
                     if (-not (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu')) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_main_menu_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never retained a main-menu phase sample.' -NextStep 'Fix AutoSlay probe sampling so startup and runtime phases are both represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if (-not (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'runtime')) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_runtime_phase_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never retained a runtime phase sample.' -NextStep 'Fix AutoSlay probe sampling so startup and runtime phases are both represented before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if (-not (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved')) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never observed the SlayTheSpire2 process.' -NextStep 'Fix process selection before routing this AutoSlay packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if (-not (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved')) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_main_window_missing' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples never observed the main game window.' -NextStep 'Fix process/window binding before treating the packet as runtime gameplay proof.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if (-not (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow')) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_hung_window' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples report a hung game window.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if (-not (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding')) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_not_responding' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples include Responding=false.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
@@ -1737,6 +1822,9 @@ function Analyze-Iteration {
                             -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
                     })
                     if ($observedProcessIds.Count -ne 1) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_process_identity_unstable' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime probe samples must bind to exactly one positive process id; observed count=$($observedProcessIds.Count)." -NextStep 'Fix AutoSlay process selection and stale-process rejection before trusting this packet.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     } elseif ($result) {
                         $resultProcessId = [int](Get-JsonValue -Object $result -Name 'ProcessId' -DefaultValue 0)
@@ -1782,10 +1870,16 @@ function Analyze-Iteration {
                         ($runtimeObservationInitialLogLength -lt 0 -or
                             $runtimeObservationFinalLogLength -le $runtimeObservationInitialLogLength -or
                             $runtimeProbeMaxLogLength -le $runtimeObservationInitialLogLength)) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_log_growth_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "RuntimeObservation.LogGrew=true is not backed by retained runtime sample LogLengthBytes; initial=$runtimeObservationInitialLogLength final=$runtimeObservationFinalLogLength maxRuntimeSample=$runtimeProbeMaxLogLength." -NextStep 'Regenerate the AutoSlay packet with runtime probe samples whose log-length timeline proves the runtime log growth claim.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
                 }
             } catch {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $autoSlayProbeArtifactTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'autoslay_runtime_probe_samples_invalid' `
@@ -1805,6 +1899,9 @@ function Analyze-Iteration {
             -RequiredFalseFields @('ProcessExitedAfterObservation', 'HungWindowDetected', 'StaleProcessObserved', 'NoLogGrowthTimeoutExceeded') `
             -ZeroCountField 'MaxStaleProcessCount')
         if ($mainMenuObservationFailures.Count -gt 0) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             $mainMenuSignal = if ($mainMenuObservationFailures -contains 'missing') { 'autoslay_main_menu_observation_missing' } else { 'autoslay_main_menu_observation_unhealthy' }
             Add-Finding -Findings $findings -Signal $mainMenuSignal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay MainMenuObservation is not clean: $($mainMenuObservationFailures -join ', ')." -NextStep 'Fix main-menu process/window/log observation before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
@@ -1816,11 +1913,17 @@ function Analyze-Iteration {
             -RequiredFalseFields @('ProcessExitedAfterObservation', 'HungWindowDetected', 'StaleProcessObserved', 'NoLogGrowthTimeoutExceeded') `
             -ZeroCountField 'MaxStaleProcessCount')
         if ($runtimeObservationFailures.Count -gt 0) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             $runtimeSignal = if ($runtimeObservationFailures -contains 'missing') { 'autoslay_runtime_observation_missing' } else { 'autoslay_runtime_observation_unhealthy' }
             Add-Finding -Findings $findings -Signal $runtimeSignal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay RuntimeObservation is not clean: $($runtimeObservationFailures -join ', ')." -NextStep 'Fix runtime process/window/log observation before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
         if (-not $autoSlayLogExists) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlaySidecarTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_sidecar_log_missing' `
@@ -1841,6 +1944,9 @@ function Analyze-Iteration {
             $failureMarker = "Run failed with seed=$seed"
 
             if (-not [string]::IsNullOrWhiteSpace($seed) -and -not (Test-OrderedTextSequence -Text $autoSlayLogText -Needles $eventSequence)) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $autoSlaySidecarTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'autoslay_sidecar_event_sequence_missing' `
@@ -1853,6 +1959,9 @@ function Analyze-Iteration {
             }
 
             if (-not [string]::IsNullOrWhiteSpace($ancientId) -and -not (Test-TextContains -Text $autoSlayLogText -Needle $ancientId)) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $autoSlaySidecarTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'autoslay_sidecar_ancient_id_missing' `
@@ -1865,6 +1974,9 @@ function Analyze-Iteration {
             }
 
             if (-not [string]::IsNullOrWhiteSpace($seed) -and -not (Test-TextContains -Text $autoSlayLogText -Needle $completionMarker) -and -not (Test-TextContains -Text $autoSlayLogText -Needle $failureMarker)) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $autoSlaySidecarTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'autoslay_completion_or_failure_marker_missing' `
@@ -1877,6 +1989,9 @@ function Analyze-Iteration {
             }
 
             if (-not [string]::IsNullOrWhiteSpace($seed) -and (Test-TextContains -Text $autoSlayLogText -Needle $failureMarker)) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $autoSlaySidecarTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'autoslay_run_failed_marker' `
@@ -1890,6 +2005,8 @@ function Analyze-Iteration {
         }
 
         if ($logTextTrustedForOwner -and -not [string]::IsNullOrWhiteSpace($seed) -and -not (Test-OrderedTextSequence -Text $logText -Needles @("Starting run with seed=$seed", 'Entering Event room', 'Detected Ancient event, clicking through dialogue', 'Selecting event option:'))) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_current_log_event_sequence_missing' `
@@ -1902,6 +2019,8 @@ function Analyze-Iteration {
         }
 
         if ($logTextTrustedForOwner -and -not [string]::IsNullOrWhiteSpace($ancientId) -and -not (Test-TextContains -Text $logText -Needle $ancientId)) {
+            $autoSlayRunArtifactsTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
             Add-Finding `
                 -Findings $findings `
                 -Signal 'autoslay_current_log_ancient_id_missing' `
@@ -2157,8 +2276,17 @@ function Analyze-Iteration {
                         Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
                         ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
                         Where-Object { $_ -ge 0 })
+                    $probeSampleLogLengths = @($probeSamples |
+                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                        Where-Object { $_ -ge 0 })
                     $postCommandRuntimeProbeMaxLogLength = if ($postCommandRuntimeProbeLogLengths.Count -gt 0) {
                         [long](@($postCommandRuntimeProbeLogLengths | Sort-Object -Descending)[0])
+                    } else {
+                        -1L
+                    }
+                    $probeSampleMaxLogLength = if ($probeSampleLogLengths.Count -gt 0) {
+                        [long](@($probeSampleLogLengths | Sort-Object -Descending)[0])
                     } else {
                         -1L
                     }
@@ -2169,15 +2297,15 @@ function Analyze-Iteration {
                     }
                     $recordedAfterLaunchLogLength = if ($result) { [long](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchLengthBytes' -DefaultValue -1) } else { -1L }
                     $retainedAfterLaunchLogLength = if ($fullLogExists) { [long](Get-Item -LiteralPath $fullLogCandidate).Length } else { -1L }
-                    $probeLengthExceedsRecordedAfterLaunch = $postCommandRuntimeProbeMaxLogLength -ge 0 -and
+                    $probeLengthExceedsRecordedAfterLaunch = $probeSampleMaxLogLength -ge 0 -and
                         $recordedAfterLaunchLogLength -ge 0 -and
-                        $postCommandRuntimeProbeMaxLogLength -gt $recordedAfterLaunchLogLength
-                    $probeLengthExceedsRetainedAfterLaunch = $postCommandRuntimeProbeMaxLogLength -ge 0 -and
+                        $probeSampleMaxLogLength -gt $recordedAfterLaunchLogLength
+                    $probeLengthExceedsRetainedAfterLaunch = $probeSampleMaxLogLength -ge 0 -and
                         $retainedAfterLaunchLogLength -ge 0 -and
-                        $postCommandRuntimeProbeMaxLogLength -gt $retainedAfterLaunchLogLength
+                        $probeSampleMaxLogLength -gt $retainedAfterLaunchLogLength
                     if ($probeLengthExceedsRecordedAfterLaunch -or $probeLengthExceedsRetainedAfterLaunch) {
                         $runtimeMonkeyProbeEvidenceInvalid = $true
-                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_log_length_exceeds_retained_after_launch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey PostCommandRuntime sample LogLengthBytes exceeds retained after-launch log bytes; recordedAfterLaunch=$recordedAfterLaunchLogLength retainedAfterLaunch=$retainedAfterLaunchLogLength maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength." -NextStep 'Regenerate or reject the packet; probe log-length telemetry must stay within the retained godot.log.after-launch byte ceiling before source ownership routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_log_length_exceeds_retained_after_launch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey probe sample LogLengthBytes exceeds retained after-launch log bytes; recordedAfterLaunch=$recordedAfterLaunchLogLength retainedAfterLaunch=$retainedAfterLaunchLogLength maxProbeSample=$probeSampleMaxLogLength." -NextStep 'Regenerate or reject the packet; probe log-length telemetry must stay within the retained godot.log.after-launch byte ceiling before source ownership routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
                     }
                 }
@@ -2417,6 +2545,13 @@ function Analyze-Iteration {
     }
 
     $retainedSignals = @(($hangSignals.ToArray() + $failureCodes.ToArray()) | Select-Object -Unique)
+    $autoSlayEvidenceInvalidForOwner = $isGameNativeAutoSlay -and (
+        -not $autoSlayRunArtifactsTrustedForOwner -or
+        -not $autoSlayProbeArtifactTrustedForOwner -or
+        -not $autoSlaySidecarTrustedForOwner -or
+        -not $autoSlayAuditArtifactTrustedForOwner -or
+        -not $autoSlaySts1ModeArtifactTrustedForOwner -or
+        -not $logTextTrustedForOwner)
     foreach ($signal in $retainedSignals) {
         if ([string]::IsNullOrWhiteSpace([string]$signal)) {
             continue
@@ -2439,8 +2574,8 @@ function Analyze-Iteration {
                 Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'godot.log stopped growing during runtime observation.' -NextStep 'Inspect RuntimeObservation, runtime-probe-samples.json, and the current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
             }
             'process_unresponsive' {
-                if ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner) {
-                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The window was reported hung or not responding, but runtime monkey run/probe evidence is missing, invalid, or not byte-bound to retained files.' -NextStep 'Fix runtime monkey artifact retention and probe/sample binding before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                if ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner -or $autoSlayEvidenceInvalidForOwner) {
+                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The window was reported hung or not responding, but retained run/probe evidence is missing, invalid, or not byte-bound to trusted files.' -NextStep 'Fix runtime artifact retention and probe/sample binding before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                 } else {
                     $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
                     Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The window was reported hung or not responding during observation.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal $signal) -Confidence 'medium' -EvidenceFiles $evidenceFiles
@@ -2479,6 +2614,8 @@ function Analyze-Iteration {
             'command_ack_missing' {
                 if ($isRuntimeMonkeyResult -and ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner -or -not $runtimeMonkeyProbeArtifactTrustedForOwner)) {
                     Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The command acknowledgement was absent, but runtime monkey run/probe evidence is missing, invalid, or not byte-bound to retained files.' -NextStep 'Fix runtime monkey artifact retention and probe/sample binding before assigning command-handler ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } elseif ($autoSlayEvidenceInvalidForOwner) {
+                    Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The command acknowledgement was absent, but AutoSlay run/probe/traversal evidence is missing, invalid, or not byte-bound to trusted files.' -NextStep 'Fix AutoSlay artifact retention, probe/sample binding, and event traversal proof before assigning command-handler ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                 } else {
                     $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea
                     Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea $owner -Rationale 'The command was sent but the expected source-backed acknowledgement line was absent.' -NextStep 'Verify foreground/DevConsole input delivery first; if input landed, inspect the target command handler and its preconditions.' -Confidence 'medium' -EvidenceFiles $evidenceFiles
@@ -2532,6 +2669,8 @@ function Analyze-Iteration {
             default {
                 if ($isRuntimeMonkeyResult -and ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner -or -not $runtimeMonkeyProbeArtifactTrustedForOwner)) {
                     Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'iteration-result.json retained an unclassified failure code, but runtime monkey run/probe evidence is missing, invalid, or not byte-bound to retained files.' -NextStep 'Fix runtime monkey artifact retention and probe/sample binding before assigning feature ownership from retained failure codes.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } elseif ($autoSlayEvidenceInvalidForOwner) {
+                    Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'run-result.json retained an unclassified failure code, but AutoSlay run/probe/traversal evidence is missing, invalid, or not byte-bound to trusted files.' -NextStep 'Fix AutoSlay artifact retention, probe/sample binding, and event traversal proof before assigning feature ownership from retained failure codes.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                 } else {
                     $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $logOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
                     Add-Finding -Findings $findings -Signal ([string]$signal) -Severity 'blocking' -OwnerArea $owner -Rationale 'Unclassified retained failure code from iteration-result.json.' -NextStep (Get-NextStepForOwner -OwnerArea $owner -Signal ([string]$signal)) -Confidence 'low' -EvidenceFiles $evidenceFiles

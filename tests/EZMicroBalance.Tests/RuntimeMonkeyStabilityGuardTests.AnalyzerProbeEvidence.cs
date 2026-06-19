@@ -207,7 +207,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
             var probeSamplesJson = Regex.Replace(
                 File.ReadAllText(probeSamplesPath),
-                "(\"Phase\":\"PostCommandRuntime\"[^}]*\"LogLengthBytes\":)\\d+",
+                "(\"Phase\":\"StartupMainMenu\"[^}]*\"LogLengthBytes\":)\\d+",
                 "${1}999999999",
                 RegexOptions.CultureInvariant);
             File.WriteAllText(probeSamplesPath, probeSamplesJson);

@@ -81,6 +81,68 @@ function Format-PowerShellSingleQuotedArgument {
     return "'" + ($Value -replace "'", "''") + "'"
 }
 
+function Get-Sts2PathFromDirectoryBuildProps {
+    $propsPath = Join-Path $repoRoot 'Directory.Build.props'
+    if (-not (Test-Path -LiteralPath $propsPath -PathType Leaf)) {
+        return $null
+    }
+
+    try {
+        [xml]$props = Get-Content -Raw -LiteralPath $propsPath -Encoding UTF8
+        $node = @($props.Project.PropertyGroup | ForEach-Object { $_.Sts2Path } | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -First 1)
+        if ($node.Count -eq 0) {
+            return $null
+        }
+
+        return [string]$node[0]
+    } catch {
+        return $null
+    }
+}
+
+function Convert-Sts2PathToModDirectory {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $null
+    }
+
+    $fullPath = [System.IO.Path]::GetFullPath($Path)
+    $directoryInfo = [System.IO.DirectoryInfo]$fullPath
+    if ($directoryInfo.Name -eq 'EZMicroBalance' -and
+        $directoryInfo.Parent -and
+        $directoryInfo.Parent.Name -eq 'mods') {
+        return $directoryInfo.FullName
+    }
+
+    return (Join-Path $directoryInfo.FullName 'mods\EZMicroBalance')
+}
+
+function Get-InstallCheckModDirectory {
+    $configuredPaths = @(
+        [Environment]::GetEnvironmentVariable('STS2_PATH', 'Process'),
+        (Get-Sts2PathFromDirectoryBuildProps)
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) }
+
+    foreach ($configuredPath in $configuredPaths) {
+        $modDirectory = Convert-Sts2PathToModDirectory -Path ([string]$configuredPath)
+        if (-not [string]::IsNullOrWhiteSpace($modDirectory)) {
+            return $modDirectory
+        }
+    }
+
+    foreach ($knownRoot in @(
+            'E:\Steam\steamapps\common\Slay the Spire 2',
+            'D:\Steam\steamapps\common\Slay the Spire 2'
+        )) {
+        if (Test-Path -LiteralPath $knownRoot -PathType Container) {
+            return (Convert-Sts2PathToModDirectory -Path $knownRoot)
+        }
+    }
+
+    return '<GameRoot>\mods\EZMicroBalance'
+}
+
 function Get-PowerShellExecutable {
     $processPath = (Get-Process -Id $PID).Path
     if ($processPath -and (Test-Path -LiteralPath $processPath)) {
@@ -435,6 +497,7 @@ $recommendedOrderLoaderLine = if ($loaderRowFilled) {
 } else {
     '3. Run the installed package and fill `release/fresh-current-package-loader-smoke/` first, then fill `release/mod-settings-current-display/` with current Mods-list and Spire Plus config-page screenshots.'
 }
+$installCheckModDirectory = Get-InstallCheckModDirectory
 
 $startHereLines = @(
     '# Spire Plus Tester Start Here',
@@ -456,7 +519,7 @@ $startHereLines = @(
     '',
     '1. Verify the installed package hashes and packaged Sere Talon / Tanx Claws split:',
     '   ```powershell',
-    '   .\scripts\check-installed-spire-plus-package.ps1 -ModDirectory "D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"',
+    ('   .\scripts\check-installed-spire-plus-package.ps1 -ModDirectory "' + $installCheckModDirectory + '"'),
     '   ```',
     ("2. Run the release verifier before live testing once. It should fail closed with $expectedFailureCount pending live rows; a pass at this point means the evidence scaffold is wrong."),
     $recommendedOrderLoaderLine,

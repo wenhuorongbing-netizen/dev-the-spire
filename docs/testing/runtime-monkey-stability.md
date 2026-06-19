@@ -91,12 +91,19 @@ The first implementation layer is deliberately conservative:
    `-ExpectedPatchCount` when supplied, otherwise it uses the retained
    `monkey-plan.json` value; either way the current-iteration log must contain
    matching Spire Plus patch-count lines. The plan must also retain
-   `RunnerScriptPath` and `RunnerScriptSha256` for
-   `scripts\run-spire-plus-monkey-stability.ps1`; the packet checker rejects a
-   packet whose retained runner path or hash does not match the current repo
-   runner. The plan also retains `CommandCorpusPath` and `CommandCorpusSha256`;
-   `command-corpus.txt` must stay under the evidence root and its lines must
-   exactly match `monkey-plan.json` `CommandCorpus`.
+    `RunnerScriptPath` and `RunnerScriptSha256` for
+    `scripts\run-spire-plus-monkey-stability.ps1`; the packet checker rejects a
+    packet whose retained runner path or hash does not match the current repo
+    runner. The plan also retains `CommandCorpusPath` and `CommandCorpusSha256`;
+    `command-corpus.txt` must stay under the evidence root and its lines must
+    exactly match `monkey-plan.json` `CommandCorpus`. Each iteration must also
+    retain `iteration-000N\command.txt` as the single command line used for that
+    run. `iteration-result.json` records `CommandFilePath` and
+    `CommandFileSha256`; the packet checker binds that path/hash to the
+    retained `command.txt` and requires the command text to match
+    `monkey-plan.json`, `iteration-result.json`, and `monkey-summary.json`.
+    The summary `Results[]` row must retain the same command-file path and
+    hash as `iteration-result.json`.
 3. For each launched iteration, call `scripts\spire-plus-live-session.ps1` in
    prepare mode with explicit mod isolation and current-run isolation, retaining
    its stdout as `prepare-output.json`.
@@ -161,10 +168,16 @@ The first implementation layer is deliberately conservative:
    any test-created backup, and closed in `restore-state.json` with
    `SettingsBackupExistsAfterRestore = false`.
 13. Write `iteration-result.json` and a root `monkey-summary.json`. A clean
-   batch must use the exact `1..N` iteration set once in both
-   `monkey-plan.json` `PlannedCommands[].Iteration` and `monkey-summary.json`
-   `Results[].Iteration`; duplicate, missing, non-positive, or out-of-range
-   iteration ids fail the packet check.
+    batch must use the exact `1..N` iteration set once in both
+    `monkey-plan.json` `PlannedCommands[].Iteration` and `monkey-summary.json`
+    `Results[].Iteration`; duplicate, missing, non-positive, or out-of-range
+    iteration ids fail the packet check. The summary restore counters
+    `LiveSessionRestoreItemCountMismatchCount`,
+    `LiveSessionPreservedCurrentRunManifestMissingCount`,
+    `LiveSessionRestoreLeakCount`, `LiveSessionRestoreHashMismatchCount`, and
+    `LiveSessionSelectedProcessNotStoppedCount` must be zero for a clean packet
+    and must match the corresponding `Results[].FailureReasonCodes`
+    aggregation.
 
 The lane fails an iteration on:
 
@@ -266,7 +279,8 @@ can close a game-native monkey proof row:
   values, main-menu samples before runtime samples, and non-negative,
   nondecreasing `LogLengthBytes` values while the log exists; the file must be
   retained inside the same per-seed `run-####` directory as that seed's
-  `run-result.json`;
+  `run-result.json`, and `RuntimeProbeSamplesSha256` must be retained in both
+  `run-result.json` and `autoslay-summary.json` and match the retained file;
 - the seed, AutoSlay log path, exit code, Ancient id, ordered
   start/event/Ancient-dialogue/event-option/completion markers, with
   `AutoSlayLogSha256` bound to the retained log file; the sidecar log path must
@@ -278,12 +292,14 @@ can close a game-native monkey proof row:
   `RecoveredSource.MatchesInstalledGame` and
   `RecoveredSource.OriginMatchesInstalledGamePck` true for the installed game
   under test, plus RitsuLib manifest/variants/selected-DLL hashes;
-- the same package, game version, RitsuLib version, compat branch, patch-count,
-  `godot.log.before`, `godot.log.after-launch`, `godot.log.current-iteration`,
-  `godot-log-audit.json`, and `sts1-mode-log-check.json` bindings required by
-  the current runtime packet checker, including StS1 mode report recomputation
-  from the retained current slice plus audit, with every per-seed artifact retained in
-  that seed's `run-####` directory;
+- the same package, game version, RitsuLib version, compat branch, and positive
+  `ExpectedPatchCount` in `autoslay-plan.json` as the explicit verifier targets,
+  plus `godot.log.before`, `godot.log.after-launch`,
+  `godot.log.current-iteration`, `godot-log-audit.json`, and
+  `sts1-mode-log-check.json` bindings required by the current runtime packet
+  checker, including StS1 mode report recomputation from the retained current
+  slice plus audit, with every per-seed artifact retained in that seed's
+  `run-####` directory;
 - observed ordered event-room lines in both the AutoSlay sidecar log and the
   current Godot log slice proving Ancient dialogue/options were traversed, not
   only main-menu startup;
@@ -316,6 +332,9 @@ match each other exactly.
 In `-FailOnMismatch` proof mode, `-ExpectedAncientIds` is required. A proof packet
 must also retain the same target set in `autoslay-plan.json`
 `ExpectedAncientIds`; summary-only target coverage is not sufficient.
+It must also retain a positive `autoslay-plan.json` `ExpectedPatchCount` that
+matches `-ExpectedPatchCount`; the current-log patch marker check uses the
+retained plan count, so a stale plan cannot be hidden by the verifier command.
 `autoslay-summary.json` must retain `AncientIdCounts` whose normalized keys and
 non-negative integer values match `Runs[].AncientId` aggregation exactly, whose
 total equals the retained run count, and whose value for each requested target
@@ -409,13 +428,16 @@ disk, or not retained under the per-seed run directory as untrusted before owner
 routing. It appends AutoSlay sidecar text to log-derived owner routing only when
 `autoslay.log` is retained in the per-seed run directory and
 `AutoSlayLogSha256` matches. It also reports missing launcher invocation,
-missing or unhealthy runtime probe samples, missing `main-menu` / `runtime`
+missing, hash-mismatched, or unhealthy runtime probe samples, missing `main-menu` / `runtime`
 probe phases, invalid probe sample timestamps, invalid or reversed run-result timestamps,
 missing or unhealthy `MainMenuObservation` / `RuntimeObservation`,
 runtime probe `LogLengthBytes` drift from `RuntimeObservation.LogGrew`,
 `EventKind: Ancient` / `AncientId`,
 sidecar log, completion/failure marker, or ordered Ancient event traversal as
-`RuntimeHarness` evidence defects first. This makes failed AutoSlay packets
+`RuntimeHarness` evidence defects first. Those defects clear AutoSlay run,
+probe, sidecar, or current-log trust before owner routing, so retained
+`process_unresponsive`, `command_ack_missing`, and unclassified failure codes
+stay with `RuntimeHarness` until the traversal packet is trustworthy. This makes failed AutoSlay packets
 useful for diagnosis, but it still does not turn a failed or source-only packet
 into gameplay proof.
 
@@ -555,7 +577,8 @@ main-menu log growth. The checker also requires the retained
 `runtime-probe-samples.json` file before probe telemetry is trusted. Runtime
 probe `LogLengthBytes` must prove required post-command growth and must not
 exceed either recorded `GodotLogAfterLaunchLengthBytes` or retained
-`godot.log.after-launch` bytes.
+`godot.log.after-launch` bytes for any retained sample whose `LogExists` is
+true.
 `sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
 `LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`.
 The packet checker reruns `check-sts1-enabled-mode-runtime-log.ps1` against
@@ -661,7 +684,12 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `CommandAckMissingCount`, `CommandCounts`,
   `ScenarioTagCounts`,
   `OwnerAreaCounts`, `VakuuFightIterationCount`, `MaxMainMenuElapsedSeconds`,
-  and `MaxSecondsWithoutLogGrowth`.
+  `MaxSecondsWithoutLogGrowth`, and `MaxConsecutiveUnresponsiveSamples`.
+  Summary max telemetry must match the maximum values recomputed from
+  `Results[]`; stale or hand-edited max values fail packet verification.
+  Each `Results[]` row must also retain empty `FailureReasonCodes` and
+  `HangSignals` for a clean packet, and those arrays must match the canonical
+  `iteration-result.json` row for the same iteration.
 
 The built-in `spireplus_test_ancient ... confirm` commands require the
 source-backed acknowledgement line from
