@@ -318,6 +318,15 @@ function Test-NonEmptyOrdinalIgnoreCaseEquals {
         [System.StringComparer]::OrdinalIgnoreCase.Equals($Left, $Right)
 }
 
+function Test-NormalizedPathEquals {
+    param(
+        [AllowEmptyString()][string]$Left,
+        [AllowEmptyString()][string]$Right
+    )
+
+    return Test-NonEmptyOrdinalIgnoreCaseEquals -Left (ConvertTo-NormalizedPathOrEmpty -Path $Left) -Right (ConvertTo-NormalizedPathOrEmpty -Path $Right)
+}
+
 function ConvertTo-StringArray {
     param([AllowNull()]$Value)
 
@@ -1168,6 +1177,16 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $ancientId = [string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')
     $runResultPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RunResultPath' -DefaultValue ''))
     $runResultSha256 = [string](Get-JsonValue -Object $run -Name 'RunResultSha256' -DefaultValue '')
+    $expectedRunEvidenceDir = Join-Path $resolvedEvidenceDir $expectedRunEvidenceDirName
+    $expectedRunResultPath = Join-Path $expectedRunEvidenceDir 'run-result.json'
+    $expectedRuntimeProbeSamplesPath = Join-Path $expectedRunEvidenceDir 'runtime-probe-samples.json'
+    $expectedAutoSlayLogPath = Join-Path $expectedRunEvidenceDir 'autoslay.log'
+    $expectedBeforeLogPath = Join-Path $expectedRunEvidenceDir 'godot.log.before'
+    $expectedAfterLogPath = Join-Path $expectedRunEvidenceDir 'godot.log.after-launch'
+    $expectedCurrentLogPath = Join-Path $expectedRunEvidenceDir 'godot.log.current-iteration'
+    $expectedAuditPath = Join-Path $expectedRunEvidenceDir 'godot-log-audit.json'
+    $expectedSts1ModeCheckPath = Join-Path $expectedRunEvidenceDir 'sts1-mode-log-check.json'
+    $runResultPathMatchesExpected = Test-NormalizedPathEquals -Left $runResultPath -Right $expectedRunResultPath
     $runEvidenceDir = if (-not [string]::IsNullOrWhiteSpace($runResultPath)) { [System.IO.Path]::GetDirectoryName($runResultPath) } else { '' }
     $runEvidenceDirValid = -not [string]::IsNullOrWhiteSpace($runEvidenceDir) -and (Test-PathInsideDirectory -Path $runEvidenceDir -Directory $resolvedEvidenceDir)
     $runtimeProbeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
@@ -1177,6 +1196,13 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $currentLogPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
     $auditPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'GodotLogAuditPath' -DefaultValue ''))
     $sts1ModeCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $run -Name 'Sts1ModeLogCheckPath' -DefaultValue ''))
+    $runtimeProbeSamplesPathMatchesExpected = Test-NormalizedPathEquals -Left $runtimeProbeSamplesPath -Right $expectedRuntimeProbeSamplesPath
+    $autoSlayLogPathMatchesExpected = Test-NormalizedPathEquals -Left $autoSlayLogPath -Right $expectedAutoSlayLogPath
+    $beforeLogPathMatchesExpected = Test-NormalizedPathEquals -Left $beforeLogPath -Right $expectedBeforeLogPath
+    $afterLogPathMatchesExpected = Test-NormalizedPathEquals -Left $afterLogPath -Right $expectedAfterLogPath
+    $currentLogPathMatchesExpected = Test-NormalizedPathEquals -Left $currentLogPath -Right $expectedCurrentLogPath
+    $auditPathMatchesExpected = Test-NormalizedPathEquals -Left $auditPath -Right $expectedAuditPath
+    $sts1ModeCheckPathMatchesExpected = Test-NormalizedPathEquals -Left $sts1ModeCheckPath -Right $expectedSts1ModeCheckPath
     $runtimeProbeSamplesSha256 = [string](Get-JsonValue -Object $run -Name 'RuntimeProbeSamplesSha256' -DefaultValue '')
     $autoSlayLogSha256 = [string](Get-JsonValue -Object $run -Name 'AutoSlayLogSha256' -DefaultValue '')
     $beforeLogLengthBytes = Get-JsonLongValue -Object $run -Name 'GodotLogBeforeLengthBytes' -DefaultValue -1
@@ -1216,6 +1242,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_run_result_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runResultPath -Directory $resolvedEvidenceDir) -Detail 'RunResultPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_run_result_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($runResultPath)) -and [System.IO.Path]::GetFileName($runResultPath) -eq 'run-result.json') -Detail 'RunResultPath must end with run-result.json'
     Add-Check -Name "${runName}_run_result_parent_expected" -Passed ($runEvidenceDirValid -and [System.IO.Path]::GetFileName($runEvidenceDir) -eq $expectedRunEvidenceDirName) -Detail "RunResultPath must live under the expected per-seed directory '$expectedRunEvidenceDirName'"
+    Add-Check -Name "${runName}_run_result_path_matches_expected_per_seed_dir" -Passed $runResultPathMatchesExpected -Detail "RunResultPath must resolve exactly to '$expectedRunEvidenceDirName/run-result.json'"
     Add-Check -Name "${runName}_run_result_exists" -Passed $runResultExists -Detail 'RunResultPath must point at retained run-result.json'
     Add-Check -Name "${runName}_run_result_sha256_recorded" -Passed (Test-Sha256Text -Value $runResultSha256) -Detail 'RunResultSha256 must be retained as a valid SHA256'
     Add-Check -Name "${runName}_run_result_sha256_matches_retained_file" -Passed ($runResultExists -and [System.StringComparer]::OrdinalIgnoreCase.Equals((Get-FileSha256OrEmpty -Path $runResultPath), $runResultSha256)) -Detail 'RunResultSha256 must match the retained run-result.json bytes'
@@ -1223,18 +1250,21 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_runtime_probe_samples_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $runtimeProbeSamplesPath -Directory $resolvedEvidenceDir) -Detail 'RuntimeProbeSamplesPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_runtime_probe_samples_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $runtimeProbeSamplesPath -Directory $runEvidenceDir)) -Detail 'RuntimeProbeSamplesPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_runtime_probe_samples_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($runtimeProbeSamplesPath)) -and [System.IO.Path]::GetFileName($runtimeProbeSamplesPath) -eq 'runtime-probe-samples.json') -Detail 'RuntimeProbeSamplesPath must end with runtime-probe-samples.json'
+    Add-Check -Name "${runName}_runtime_probe_samples_path_matches_expected_per_seed_file" -Passed $runtimeProbeSamplesPathMatchesExpected -Detail "RuntimeProbeSamplesPath must resolve exactly to '$expectedRunEvidenceDirName/runtime-probe-samples.json'"
     Add-Check -Name "${runName}_runtime_probe_samples_exists" -Passed $runtimeProbeSamplesExists -Detail 'RuntimeProbeSamplesPath must point at retained runtime-probe-samples.json'
     Add-Check -Name "${runName}_runtime_probe_samples_sha256_recorded" -Passed (Test-Sha256Text -Value $runtimeProbeSamplesSha256) -Detail 'RuntimeProbeSamplesSha256 must be retained as a valid SHA256'
     Add-Check -Name "${runName}_autoslay_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -Detail 'AutoSlayLogPath must be retained'
     Add-Check -Name "${runName}_autoslay_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $resolvedEvidenceDir) -Detail 'AutoSlayLogPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_autoslay_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $autoSlayLogPath -Directory $runEvidenceDir)) -Detail 'AutoSlayLogPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_autoslay_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($autoSlayLogPath)) -and [System.IO.Path]::GetFileName($autoSlayLogPath) -eq 'autoslay.log') -Detail 'AutoSlayLogPath must end with autoslay.log'
+    Add-Check -Name "${runName}_autoslay_log_path_matches_expected_per_seed_file" -Passed $autoSlayLogPathMatchesExpected -Detail "AutoSlayLogPath must resolve exactly to '$expectedRunEvidenceDirName/autoslay.log'"
     Add-Check -Name "${runName}_autoslay_log_exists" -Passed $autoSlayLogExists -Detail 'AutoSlay log file must exist'
     Add-Check -Name "${runName}_autoslay_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($autoSlayLogSha256)) -Detail 'AutoSlayLogSha256 must be retained for each run'
     Add-Check -Name "${runName}_before_log_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogPath)) -Detail 'GodotLogBeforePath must retain the pre-launch shared godot.log snapshot'
     Add-Check -Name "${runName}_before_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $beforeLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogBeforePath must stay inside the evidence directory'
     Add-Check -Name "${runName}_before_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $beforeLogPath -Directory $runEvidenceDir)) -Detail 'GodotLogBeforePath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_before_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($beforeLogPath)) -and [System.IO.Path]::GetFileName($beforeLogPath) -eq 'godot.log.before') -Detail 'GodotLogBeforePath must end with godot.log.before'
+    Add-Check -Name "${runName}_before_log_path_matches_expected_per_seed_file" -Passed $beforeLogPathMatchesExpected -Detail "GodotLogBeforePath must resolve exactly to '$expectedRunEvidenceDirName/godot.log.before'"
     Add-Check -Name "${runName}_before_log_exists" -Passed $beforeLogExists -Detail 'GodotLogBeforePath must point at a retained pre-launch log'
     Add-Check -Name "${runName}_before_log_length_recorded" -Passed ($beforeLogLengthBytes -ge 0) -Detail 'GodotLogBeforeLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_before_log_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($beforeLogSha256)) -Detail 'GodotLogBeforeSha256 must be retained'
@@ -1242,6 +1272,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_after_launch_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $afterLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAfterLaunchPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_after_launch_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $afterLogPath -Directory $runEvidenceDir)) -Detail 'GodotLogAfterLaunchPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_after_launch_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($afterLogPath)) -and [System.IO.Path]::GetFileName($afterLogPath) -eq 'godot.log.after-launch') -Detail 'GodotLogAfterLaunchPath must end with godot.log.after-launch'
+    Add-Check -Name "${runName}_after_launch_log_path_matches_expected_per_seed_file" -Passed $afterLogPathMatchesExpected -Detail "GodotLogAfterLaunchPath must resolve exactly to '$expectedRunEvidenceDirName/godot.log.after-launch'"
     Add-Check -Name "${runName}_after_launch_log_exists" -Passed $afterLogExists -Detail 'GodotLogAfterLaunchPath must point at a retained post-launch log'
     Add-Check -Name "${runName}_after_launch_log_length_recorded" -Passed ($afterLogLengthBytes -ge 0) -Detail 'GodotLogAfterLaunchLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_after_launch_log_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($afterLogSha256)) -Detail 'GodotLogAfterLaunchSha256 must be retained'
@@ -1249,6 +1280,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_current_iteration_log_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $currentLogPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogCurrentIterationPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_current_iteration_log_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $currentLogPath -Directory $runEvidenceDir)) -Detail 'GodotLogCurrentIterationPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_current_iteration_log_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($currentLogPath)) -and [System.IO.Path]::GetFileName($currentLogPath) -eq 'godot.log.current-iteration') -Detail 'GodotLogCurrentIterationPath must end with godot.log.current-iteration'
+    Add-Check -Name "${runName}_current_iteration_log_path_matches_expected_per_seed_file" -Passed $currentLogPathMatchesExpected -Detail "GodotLogCurrentIterationPath must resolve exactly to '$expectedRunEvidenceDirName/godot.log.current-iteration'"
     Add-Check -Name "${runName}_current_iteration_log_exists" -Passed $currentLogExists -Detail 'GodotLogCurrentIterationPath must point at a retained current-iteration log'
     Add-Check -Name "${runName}_current_iteration_log_length_recorded" -Passed ($currentLogLengthBytes -ge 0) -Detail 'GodotLogCurrentIterationLengthBytes must be retained and non-negative'
     Add-Check -Name "${runName}_current_iteration_log_hash_present" -Passed (-not [string]::IsNullOrWhiteSpace($currentLogSha256)) -Detail 'GodotLogCurrentIterationSha256 must be retained for each run'
@@ -1256,11 +1288,13 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_audit_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $auditPath -Directory $resolvedEvidenceDir) -Detail 'GodotLogAuditPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_audit_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $auditPath -Directory $runEvidenceDir)) -Detail 'GodotLogAuditPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_audit_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($auditPath)) -and [System.IO.Path]::GetFileName($auditPath) -eq 'godot-log-audit.json') -Detail 'GodotLogAuditPath must end with godot-log-audit.json'
+    Add-Check -Name "${runName}_audit_path_matches_expected_per_seed_file" -Passed $auditPathMatchesExpected -Detail "GodotLogAuditPath must resolve exactly to '$expectedRunEvidenceDirName/godot-log-audit.json'"
     Add-Check -Name "${runName}_audit_exists" -Passed $auditExists -Detail 'GodotLogAuditPath must point at retained godot-log-audit.json'
     Add-Check -Name "${runName}_sts1_mode_check_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath)) -Detail 'Sts1ModeLogCheckPath must retain the StS1 mode verifier report'
     Add-Check -Name "${runName}_sts1_mode_check_under_evidence_dir" -Passed (Test-PathInsideDirectory -Path $sts1ModeCheckPath -Directory $resolvedEvidenceDir) -Detail 'Sts1ModeLogCheckPath must stay inside the evidence directory'
     Add-Check -Name "${runName}_sts1_mode_check_under_run_dir" -Passed ($runEvidenceDirValid -and (Test-PathInsideDirectory -Path $sts1ModeCheckPath -Directory $runEvidenceDir)) -Detail 'Sts1ModeLogCheckPath must stay inside the per-seed run evidence directory'
     Add-Check -Name "${runName}_sts1_mode_check_leaf_expected" -Passed ((-not [string]::IsNullOrWhiteSpace($sts1ModeCheckPath)) -and [System.IO.Path]::GetFileName($sts1ModeCheckPath) -eq 'sts1-mode-log-check.json') -Detail 'Sts1ModeLogCheckPath must end with sts1-mode-log-check.json'
+    Add-Check -Name "${runName}_sts1_mode_check_path_matches_expected_per_seed_file" -Passed $sts1ModeCheckPathMatchesExpected -Detail "Sts1ModeLogCheckPath must resolve exactly to '$expectedRunEvidenceDirName/sts1-mode-log-check.json'"
     Add-Check -Name "${runName}_sts1_mode_check_exists" -Passed $sts1ModeCheckExists -Detail 'Sts1ModeLogCheckPath must point at retained sts1-mode-log-check.json'
 
     $autoSlayLog = ''
