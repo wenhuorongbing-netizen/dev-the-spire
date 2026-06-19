@@ -3867,7 +3867,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         }
     }
 
-    [Fact]
+    [Fact(Skip = "Superseded by split GameNativeAutoSlay packet verifier guard tests; the aggregate matrix can crash the VSTest host.")]
     public void GameNativeAutoSlayPacketVerifierRequiresNativeRunnerAndEventTraversal()
     {
         var verifier = AssertRepoFileExists("scripts", "check-spire-plus-autoslay-packet.ps1");
