@@ -847,6 +847,8 @@ $planUnresponsiveSampleThreshold = if ($null -ne $plan) { [int](Get-JsonValue -O
 $summaryRequestedIterations = if ($null -ne $summary) { [int](Get-JsonValue -Object $summary -Name 'RequestedIterations' -DefaultValue 0) } else { 0 }
 $summaryCompletedIterations = if ($null -ne $summary) { [int](Get-JsonValue -Object $summary -Name 'CompletedIterations' -DefaultValue 0) } else { 0 }
 $expectedIterationCount = $ExpectedIterations
+$planExpectedPatchCount = if ($null -ne $plan) { [int](Get-JsonValue -Object $plan -Name 'ExpectedPatchCount' -DefaultValue 0) } else { 0 }
+$effectiveExpectedPatchCount = if ($ExpectedPatchCount -gt 0) { $ExpectedPatchCount } else { $planExpectedPatchCount }
 $planScenario = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue '') } else { '' }
 $planCommandSelectionMode = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue '') } else { '' }
 $planPlannedCommands = @(
@@ -881,6 +883,10 @@ if ($null -ne $plan) {
     }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) {
         Add-Check -Name 'plan_expected_ritsu_compat_branch_matches' -Passed ([string]::Equals([string](Get-JsonValue -Object $plan -Name 'ExpectedRitsuCompatBranch' -DefaultValue ''), $ExpectedRitsuCompatBranch, [System.StringComparison]::Ordinal)) -Detail "monkey-plan ExpectedRitsuCompatBranch must match '$ExpectedRitsuCompatBranch'"
+    }
+    Add-Check -Name 'plan_expected_patch_count_positive' -Passed ($planExpectedPatchCount -gt 0) -Detail 'monkey-plan ExpectedPatchCount must be retained and positive'
+    if ($ExpectedPatchCount -gt 0) {
+        Add-Check -Name 'plan_expected_patch_count_matches_parameter' -Passed ($planExpectedPatchCount -eq $ExpectedPatchCount) -Detail "monkey-plan ExpectedPatchCount must match -ExpectedPatchCount; plan=$planExpectedPatchCount parameter=$ExpectedPatchCount"
     }
     $sourceWorkspaceCheckPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckPath' -DefaultValue ''))
     $sourceWorkspaceCheckSha256 = [string](Get-JsonValue -Object $plan -Name 'SourceWorkspaceCheckSha256' -DefaultValue '')
@@ -1875,9 +1881,9 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_expected_ritsulib_marker_in_log" -Passed (Contains-Text -Text $currentIterationLogText -Needle $expectedRitsuMarker) -Detail "expected RitsuLib marker '$expectedRitsuMarker' in current-iteration log slice"
         }
 
-        if ($ExpectedPatchCount -gt 0) {
-            $patchHits = Get-PatchCountLineHits -Text $currentIterationLogText -ExpectedCount $ExpectedPatchCount
-            Add-Check -Name "${iterationName}_expected_patch_count_in_log" -Passed ($patchHits -gt 0) -Detail "expected Spire Plus patch-count markers for $ExpectedPatchCount applied and $ExpectedPatchCount registered patches in current-iteration log slice"
+        if ($effectiveExpectedPatchCount -gt 0) {
+            $patchHits = Get-PatchCountLineHits -Text $currentIterationLogText -ExpectedCount $effectiveExpectedPatchCount
+            Add-Check -Name "${iterationName}_expected_patch_count_in_log" -Passed ($patchHits -gt 0) -Detail "expected Spire Plus patch-count markers for $effectiveExpectedPatchCount applied and $effectiveExpectedPatchCount registered patches in current-iteration log slice"
         }
     }
 
@@ -1995,6 +2001,7 @@ $report = [pscustomobject]@{
     ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
     ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
     ExpectedPatchCount = $ExpectedPatchCount
+    EffectiveExpectedPatchCount = $effectiveExpectedPatchCount
     RequireCurrentSourceSnapshot = [bool]$RequireCurrentSourceSnapshot
     Checks = $checks
     Mismatches = $mismatches

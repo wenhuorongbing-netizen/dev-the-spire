@@ -2557,9 +2557,28 @@ function Analyze-Iteration {
             -EvidenceFiles $evidenceFiles
     }
 
+    $sts1ModeReportExpectedForOwner = $result -and
+        -not $isDirectSmoke -and
+        -not $isGameNativeAutoSlay -and
+        -not [string]::IsNullOrWhiteSpace($expectedSts1Mode)
+    $sts1ModeReportExists = -not [string]::IsNullOrWhiteSpace($sts1ModeCandidate) -and
+        (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf)
+    if ($sts1ModeReportExpectedForOwner -and -not $sts1ModeReportExists) {
+        $sts1ModeLogCheckTrustedForOwner = $false
+        Add-Finding `
+            -Findings $findings `
+            -Signal 'sts1_mode_log_check_missing' `
+            -Severity 'blocking' `
+            -OwnerArea 'RuntimeHarness' `
+            -Rationale 'The retained run plan expects StS1 mode evidence, but sts1-mode-log-check.json is missing from the iteration evidence.' `
+            -NextStep 'Retain sts1-mode-log-check.json generated from godot.log.current-iteration and godot-log-audit.json before assigning StS1 ownership.' `
+            -Confidence 'high' `
+            -EvidenceFiles $evidenceFiles
+    }
+
     if ((-not $isGameNativeAutoSlay -or $autoSlaySts1ModeArtifactTrustedForOwner) -and
         -not [string]::IsNullOrWhiteSpace($sts1ModeCandidate) -and
-        (Test-Path -LiteralPath $sts1ModeCandidate -PathType Leaf)) {
+        $sts1ModeReportExists) {
         $sts1Report = Read-JsonOrNull -Path $sts1ModeCandidate
         $sts1ModeReportTrustedForOwner = $true
         if ($null -eq $sts1Report) {

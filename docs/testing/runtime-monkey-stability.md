@@ -86,6 +86,11 @@ The first implementation layer is deliberately conservative:
 
 1. Create a timestamped evidence root under `.tools\runtime-evidence`.
 2. Write a deterministic command corpus and `monkey-plan.json`.
+   The plan must retain the expected package, game, RitsuLib, compat branch,
+   and positive `ExpectedPatchCount` values. The packet checker uses
+   `-ExpectedPatchCount` when supplied, otherwise it uses the retained
+   `monkey-plan.json` value; either way the current-iteration log must contain
+   matching Spire Plus patch-count lines.
 3. For each launched iteration, call `scripts\spire-plus-live-session.ps1` in
    prepare mode with explicit mod isolation and current-run isolation, retaining
    its stdout as `prepare-output.json`.
@@ -697,7 +702,7 @@ same trust rule: the report's `Mode` must bind to the retained run plan
 `godot.log.current-iteration`, and a fresh analyzer-side
 `check-sts1-enabled-mode-runtime-log.ps1` recomputation from the retained
 current log plus `godot-log-audit.json` must match the retained `Mismatches`
-and `Checks`. Stale, hand-edited, or unrecomputable StS1 reports are
+and `Checks`. Missing, stale, hand-edited, or unrecomputable StS1 reports are
 `RuntimeHarness` blockers and set `Sts1ModeLogCheckTrustedForOwner=false`;
 only trusted analyzer-side recomputed mismatches or failed checks, with trusted
 audit evidence, are routed to `Sts1Events`. A retained `sts1_mode_mismatch`

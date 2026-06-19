@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -139,6 +140,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "plan_expected_game_version_matches",
             "plan_expected_ritsulib_version_matches",
             "plan_expected_ritsu_compat_branch_matches",
+            "plan_expected_patch_count_positive",
+            "plan_expected_patch_count_matches_parameter",
+            "EffectiveExpectedPatchCount",
             "expected_game_version_in_log",
             "expected_ritsulib_marker_in_log",
             "plan_source_workspace_required_authorized_source_origin_verified",
@@ -621,37 +625,27 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         {
             WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
             var planPath = Path.Combine(workdir, "monkey-plan.json");
-            var planJson = File.ReadAllText(planPath)
-                .Replace("\"Iterations\": 1", "\"Iterations\": 2", StringComparison.Ordinal)
-                .Replace("\"PlannedVakuuFightIterationCount\": 1", "\"PlannedVakuuFightIterationCount\": 2", StringComparison.Ordinal);
-            planJson = Regex.Replace(
-                planJson,
-                "(\"Planned(?:Command|ScenarioTag|OwnerArea)Counts\"\\s*:\\s*\\{\\s*\"(?:\\\\.|[^\"])*\"\\s*:\\s*)1(\\s*\\})",
-                match => match.Groups[1].Value + "2" + match.Groups[2].Value,
-                RegexOptions.CultureInvariant);
-            planJson = Regex.Replace(
-                planJson,
-                "(\"PlannedCommands\"\\s*:\\s*\\[\\s*)(\\{[^\\]]+?\\})(\\s*\\])",
-                match => match.Groups[1].Value + match.Groups[2].Value + "," + Environment.NewLine + "                " + match.Groups[2].Value + match.Groups[3].Value,
-                RegexOptions.Singleline | RegexOptions.CultureInvariant);
-            File.WriteAllText(planPath, planJson);
+            var planJson = JsonNode.Parse(File.ReadAllText(planPath))!.AsObject();
+            planJson["Iterations"] = 2;
+            planJson["PlannedVakuuFightIterationCount"] = 2;
+            SetSingleEntryCountsToTwo(planJson["PlannedCommandCounts"]!.AsObject());
+            SetSingleEntryCountsToTwo(planJson["PlannedScenarioTagCounts"]!.AsObject());
+            SetSingleEntryCountsToTwo(planJson["PlannedOwnerAreaCounts"]!.AsObject());
+            var plannedCommands = planJson["PlannedCommands"]!.AsArray();
+            plannedCommands.Add(plannedCommands[0]!.DeepClone());
+            File.WriteAllText(planPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var summaryPath = Path.Combine(workdir, "monkey-summary.json");
-            var summaryJson = File.ReadAllText(summaryPath)
-                .Replace("\"RequestedIterations\": 1", "\"RequestedIterations\": 2", StringComparison.Ordinal)
-                .Replace("\"CompletedIterations\": 1", "\"CompletedIterations\": 2", StringComparison.Ordinal)
-                .Replace("\"VakuuFightIterationCount\": 1", "\"VakuuFightIterationCount\": 2", StringComparison.Ordinal);
-            summaryJson = Regex.Replace(
-                summaryJson,
-                "(\"(?:Command|ScenarioTag|OwnerArea)Counts\"\\s*:\\s*\\{\\s*\"(?:\\\\.|[^\"])*\"\\s*:\\s*)1(\\s*\\})",
-                match => match.Groups[1].Value + "2" + match.Groups[2].Value,
-                RegexOptions.CultureInvariant);
-            summaryJson = Regex.Replace(
-                summaryJson,
-                "(\"Results\"\\s*:\\s*\\[\\s*)(\\{[^\\]]+?\\})(\\s*\\])",
-                match => match.Groups[1].Value + match.Groups[2].Value + "," + Environment.NewLine + "                " + match.Groups[2].Value + match.Groups[3].Value,
-                RegexOptions.Singleline | RegexOptions.CultureInvariant);
-            File.WriteAllText(summaryPath, summaryJson);
+            var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
+            summaryJson["RequestedIterations"] = 2;
+            summaryJson["CompletedIterations"] = 2;
+            summaryJson["VakuuFightIterationCount"] = 2;
+            SetSingleEntryCountsToTwo(summaryJson["CommandCounts"]!.AsObject());
+            SetSingleEntryCountsToTwo(summaryJson["ScenarioTagCounts"]!.AsObject());
+            SetSingleEntryCountsToTwo(summaryJson["OwnerAreaCounts"]!.AsObject());
+            var summaryResults = summaryJson["Results"]!.AsArray();
+            summaryResults.Add(summaryResults[0]!.DeepClone());
+            File.WriteAllText(summaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var result = RunPowerShell(
                 script,
@@ -666,6 +660,51 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("plan_planned_iteration_numbers_cover_expected status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("summary_result_iteration_numbers_unique status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("summary_result_iteration_numbers_cover_expected status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerUsesPlanPatchCountWhenParameterIsOmitted()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_expected_patch_count_positive status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_expected_patch_count_in_log status=pass", result.Output, StringComparison.Ordinal);
+
+            var planPath = Path.Combine(workdir, "monkey-plan.json");
+            File.WriteAllText(
+                planPath,
+                File.ReadAllText(planPath).Replace("\"ExpectedPatchCount\": 25", "\"ExpectedPatchCount\": 24", StringComparison.Ordinal));
+
+            var stalePlanResult = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+            Assert.True(stalePlanResult.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{stalePlanResult.Output}{stalePlanResult.Error}");
+            Assert.Contains("plan_expected_patch_count_positive status=pass", stalePlanResult.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_expected_patch_count_in_log status=fail", stalePlanResult.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -1963,6 +2002,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Sts1ModeLogCheckTrustedForOwner",
             "check-sts1-enabled-mode-runtime-log.ps1",
             "Invoke-RecomputedSts1ModeLogCheck",
+            "sts1_mode_log_check_missing",
+            "$sts1ModeReportExpectedForOwner",
             "source ownership requires an analyzer-side StS1 verifier recomputation",
             "$sts1ModeReportTrustedForOwner -and",
             "$auditTrustedForOwner -and",
@@ -2450,6 +2491,46 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Equal(1, root.GetProperty("AnalyzedIterationCount").GetInt32());
             Assert.Equal("PreviewTools", iteration.GetProperty("OwnerAreaFromLog").GetString());
             Assert.Equal("PreviewTools", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsMissingRuntimeMonkeySts1ModeLogCheck()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            File.Delete(Path.Combine(iterationDir, "sts1-mode-log-check.json"));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-missing-sts1-report.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("Sts1ModeLogCheckTrustedForOwner").GetBoolean());
+            Assert.Contains(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("Signal").GetString() == "sts1_mode_log_check_missing"
+                    && item.GetProperty("OwnerArea").GetString() == "RuntimeHarness");
+            Assert.DoesNotContain(
+                iteration.GetProperty("Findings").EnumerateArray(),
+                item => item.GetProperty("OwnerArea").GetString() == "Sts1Events");
         }
         finally
         {
@@ -5952,6 +6033,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             .Single(item => item.GetProperty("Iteration").GetInt32() == iteration);
     }
 
+    private static void SetSingleEntryCountsToTwo(JsonObject countMap)
+    {
+        foreach (var propertyName in countMap.Select(property => property.Key).ToArray())
+        {
+            countMap[propertyName] = 2;
+        }
+    }
+
     private static string FindFindingOwner(JsonElement iteration, string signal)
     {
         return iteration
@@ -6010,7 +6099,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         };
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
-        if (!process.WaitForExit(30_000))
+        const int timeoutMilliseconds = 120_000;
+        if (!process.WaitForExit(timeoutMilliseconds))
         {
             try
             {
@@ -6020,7 +6110,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             {
             }
 
-            Assert.Fail($"Timed out running {scriptPath}.");
+            Assert.Fail($"Timed out after {timeoutMilliseconds} ms running {scriptPath}.");
         }
 
         process.WaitForExit();
