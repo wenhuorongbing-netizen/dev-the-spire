@@ -1559,6 +1559,8 @@ $sourceWorkspaceSummary = [ordered]@{
 }
 
 $random = [System.Random]::new($RandomSeed)
+$runnerScriptPath = [System.IO.Path]::GetFullPath($PSCommandPath)
+$runnerScriptSha256 = Get-FileSha256OrEmpty -Path $runnerScriptPath
 $plannedCommands = for ($i = 1; $i -le $Iterations; $i++) {
     $command = ''
     $commandIndex = -1
@@ -1587,12 +1589,18 @@ $plannedCommandCounts = Get-ValueCounts -Items $plannedCommands -PropertyName 'C
 $plannedScenarioTagCounts = Get-ValueCounts -Items $plannedCommands -PropertyName 'ScenarioTag'
 $plannedOwnerAreaCounts = Get-ValueCounts -Items $plannedCommands -PropertyName 'OwnerArea'
 $plannedVakuuFightIterationCount = @($plannedCommands | Where-Object { [string]$_.ScenarioTag -eq 'vakuu-fight' }).Count
+$commandCorpusPath = Join-Path $evidenceFull 'command-corpus.txt'
+$commandCorpusText = $CommandCorpus -join [Environment]::NewLine
+Set-Content -LiteralPath $commandCorpusPath -Encoding UTF8 -NoNewline -Value $commandCorpusText
+$commandCorpusSha256 = Get-FileSha256OrEmpty -Path $commandCorpusPath
 
 $plan = [ordered]@{
     HangProbeSchemaVersion = $hangProbeSchemaVersion
     CreatedAt = (Get-Date).ToString('o')
     RepoRoot = $repoRoot
     EvidenceRoot = $evidenceFull
+    RunnerScriptPath = $runnerScriptPath
+    RunnerScriptSha256 = $runnerScriptSha256
     Iterations = $Iterations
     Launch = [bool]$Launch
     GameRoot = $GameRoot
@@ -1604,6 +1612,8 @@ $plan = [ordered]@{
     Scenario = $Scenario
     CommandSelectionMode = $CommandSelectionMode
     CommandCorpusSource = $commandCorpusSource
+    CommandCorpusPath = $commandCorpusPath
+    CommandCorpusSha256 = $commandCorpusSha256
     MainMenuTimeoutSeconds = $MainMenuTimeoutSeconds
     ObservationIntervalSeconds = $ObservationIntervalSeconds
     UnresponsiveSampleThreshold = $UnresponsiveSampleThreshold
@@ -1685,7 +1695,6 @@ $plan = [ordered]@{
 }
 
 Save-Json -InputObject $plan -Path (Join-Path $evidenceFull 'monkey-plan.json')
-($CommandCorpus -join [Environment]::NewLine) | Set-Content -LiteralPath (Join-Path $evidenceFull 'command-corpus.txt') -Encoding UTF8
 
 if (-not $Launch) {
     [pscustomobject]@{
@@ -1786,6 +1795,7 @@ try {
             GameProcessStartTimeMatchesLiveSession = $false
             GameProcessPathMatchesLiveSession = $false
             RuntimeProbeSamplesPath = Join-Path $iterationDir 'runtime-probe-samples.json'
+            RuntimeProbeSamplesSha256 = ''
             GodotLogBeforePath = Join-Path $iterationDir 'godot.log.before'
             GodotLogAfterLaunchPath = Join-Path $iterationDir 'godot.log.after-launch'
             GodotLogCurrentIterationPath = Join-Path $iterationDir 'godot.log.current-iteration'
@@ -2112,8 +2122,9 @@ try {
         $result.HangSignals = @($hangSignals)
 
         Save-Json -InputObject @($probeSamples) -Path $result.RuntimeProbeSamplesPath
+        $result.RuntimeProbeSamplesSha256 = Get-FileSha256OrEmpty -Path ([string]$result.RuntimeProbeSamplesPath)
 
-        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSessionStateSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionRestoreStateSha256) -and [int]$result.LiveSessionRestoreSchemaVersion -gt 0 -and [bool]$result.LiveSessionStoppedSelectedGameProcess -and [bool]$result.LiveSessionRestoreItemCountsMatch -and ([int]$result.LiveSessionPreservedNewCurrentRunCount -eq 0 -or [bool]$result.LiveSessionPreservedNewCurrentRunsManifestBound) -and [int]$result.LiveSessionPostRestoreSlayProcessCount -eq 0 -and [int]$result.LiveSessionPostRestoreGodotProcessCount -eq 0 -and [bool]$result.LiveSessionSettingsRestoredFromBackup -and [bool]$result.LiveSessionSettingsBackupRestoredFromBackup -and
+        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and -not [string]::IsNullOrWhiteSpace([string]$result.RuntimeProbeSamplesSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSessionStateSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionRestoreStateSha256) -and [int]$result.LiveSessionRestoreSchemaVersion -gt 0 -and [bool]$result.LiveSessionStoppedSelectedGameProcess -and [bool]$result.LiveSessionRestoreItemCountsMatch -and ([int]$result.LiveSessionPreservedNewCurrentRunCount -eq 0 -or [bool]$result.LiveSessionPreservedNewCurrentRunsManifestBound) -and [int]$result.LiveSessionPostRestoreSlayProcessCount -eq 0 -and [int]$result.LiveSessionPostRestoreGodotProcessCount -eq 0 -and [bool]$result.LiveSessionSettingsRestoredFromBackup -and [bool]$result.LiveSessionSettingsBackupRestoredFromBackup -and
             ($devConsoleCommandsDisabled -or [string]::IsNullOrWhiteSpace([string]$planned.Command) -or $result.ConsoleCommandSent)
 
         Save-Json -InputObject $result -Path (Join-Path $iterationDir 'iteration-result.json')

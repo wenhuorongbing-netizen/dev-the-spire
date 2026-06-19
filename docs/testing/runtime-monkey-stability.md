@@ -90,7 +90,13 @@ The first implementation layer is deliberately conservative:
    and positive `ExpectedPatchCount` values. The packet checker uses
    `-ExpectedPatchCount` when supplied, otherwise it uses the retained
    `monkey-plan.json` value; either way the current-iteration log must contain
-   matching Spire Plus patch-count lines.
+   matching Spire Plus patch-count lines. The plan must also retain
+   `RunnerScriptPath` and `RunnerScriptSha256` for
+   `scripts\run-spire-plus-monkey-stability.ps1`; the packet checker rejects a
+   packet whose retained runner path or hash does not match the current repo
+   runner. The plan also retains `CommandCorpusPath` and `CommandCorpusSha256`;
+   `command-corpus.txt` must stay under the evidence root and its lines must
+   exactly match `monkey-plan.json` `CommandCorpus`.
 3. For each launched iteration, call `scripts\spire-plus-live-session.ps1` in
    prepare mode with explicit mod isolation and current-run isolation, retaining
    its stdout as `prepare-output.json`.
@@ -113,7 +119,9 @@ The first implementation layer is deliberately conservative:
    whenever the log exists. The retained sample array must also be chronological:
    `SampledAt` values cannot go backward, startup/main-menu samples cannot be
    retained after runtime samples, and `LogLengthBytes` must be non-negative and
-   nondecreasing whenever `LogExists` is true.
+   nondecreasing whenever `LogExists` is true. `iteration-result.json` must also
+   retain `RuntimeProbeSamplesSha256`, and the packet checker recomputes it from
+   the retained `runtime-probe-samples.json`.
    Startup also fails if the current process disappears, the window reports
    hung/not responding for
    `-UnresponsiveSampleThreshold` consecutive samples, or the log stops growing
@@ -167,6 +175,7 @@ The lane fails an iteration on:
 - missing `prepare-output.json`, missing Steam launch metadata, failed selected
   game process attribution, or runtime probe PID/start/path mismatch against the
   live-session-selected game process;
+- missing or hash-mismatched retained runtime probe samples;
 - the game window reporting hung or not responding for the configured
   consecutive-sample threshold;
 - `godot.log` not growing before main menu for the configured no-growth
@@ -538,9 +547,15 @@ process-observed, process-exited, stale-process, hung-window, log-observed,
 `NoLogGrowthTimeoutExceeded=false` state, and command-bearing runtime
 `LogGrew=true`. Startup-only or no-command observations do not require idle
 main-menu log growth. The checker also requires the retained
-`iteration-result.json` `GameProcessId`, `GameProcessStartTimeUtc`, and
+`iteration-result.json` `RuntimeProbeSamplesPath`,
+`RuntimeProbeSamplesSha256`, `GameProcessId`, `GameProcessStartTimeUtc`, and
 `GameProcessPath` to match the single positive process identity observed by
 `runtime-probe-samples.json` and the live-session-selected game process.
+`RuntimeProbeSamplesSha256` must match the retained standard
+`runtime-probe-samples.json` file before probe telemetry is trusted. Runtime
+probe `LogLengthBytes` must prove required post-command growth and must not
+exceed either recorded `GodotLogAfterLaunchLengthBytes` or retained
+`godot.log.after-launch` bytes.
 `sts1-mode-log-check.json` to match the plan's `Sts1EventMode` and bind its
 `LogPath`, `LogLength`, and `LogSha256` to `godot.log.current-iteration`.
 The packet checker reruns `check-sts1-enabled-mode-runtime-log.ps1` against
@@ -550,7 +565,7 @@ packet-check command omits explicit package/game/Ritsu target switches, the
 checker uses the retained `monkey-plan.json` target values for this recompute
 so real runner packets remain self-contained. It also
 requires exact Spire Plus patch-count lines from `godot.log.current-iteration`,
-probe sample paths and sliced-log paths that
+probe sample paths, probe sample SHA256 binding, and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
 and no `../` or absolute-path escape from `iteration-result.json` log/probe
 path fields. The packet checker rejects `iteration-result.json` log/probe paths that resolve outside the current `iteration-####` directory.
@@ -578,8 +593,9 @@ the retained `runtime-probe-samples.json` must include `StartupMainMenu` and
 `MainMenuObservation.Samples` and `RuntimeObservation.Samples`. For
 command-bearing iterations, the `PostCommandRuntime` samples' `LogLengthBytes`
 must also prove the `RuntimeObservation.LogGrew` claim by exceeding
-`RuntimeObservation.LogInitialLengthBytes`. It still does not prove deeper
-gameplay behavior.
+`RuntimeObservation.LogInitialLengthBytes` while staying within the retained
+`godot.log.after-launch` byte ceiling. It still does not prove deeper gameplay
+behavior.
 
 Current packet schema is `HangProbeSchemaVersion = 1`.
 
@@ -627,7 +643,10 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   exists, `ProcessId`, `ProcessStartTimeUtc`, `ProcessPath`, expected game
   process identity, process-id/start/path match booleans,
   stale/unknown/ambiguous process counts, window state, and responsiveness
-  state. `LogLastWriteTimeUtc` must not be later than `SampledAt`, `SampledAt`
+  state. `iteration-result.json` must retain `RuntimeProbeSamplesPath` and
+  `RuntimeProbeSamplesSha256`, and that hash must match the retained
+  per-iteration `runtime-probe-samples.json` before the samples can support
+  owner routing. `LogLastWriteTimeUtc` must not be later than `SampledAt`, `SampledAt`
   values must be nondecreasing in retained order, and `LogLengthBytes` must be
   non-negative and nondecreasing whenever `LogExists=true`. Runtime monkey phases are
   `StartupMainMenu` and `PostCommandRuntime`; the packet checker rejects
@@ -655,13 +674,18 @@ generic unsaved live-test setup line.
 
 The triage analyzer maps retained signals to owner areas. It records the planned
 `OwnerAreaHint` separately from `OwnerAreaFromLog` and `OwnerAreaFromCommand`.
+Runtime monkey analysis also records `RuntimeMonkeyRunArtifactsTrustedForOwner`,
+`RuntimeMonkeyProbeArtifactTrustedForOwner`, and `LogTextTrustedForOwner` so
+retained reports show which evidence layer was allowed to support owner routing.
 For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
+missing or hash-mismatched `RuntimeProbeSamplesSha256`,
 missing/invalid `runtime-probe-samples.json`, invalid probe timestamps, missing
 phase coverage, and phase-count or runtime log-growth timeline drift as `RuntimeHarness` blockers
 before source ownership routing. Those probe defects
 clear runtime-monkey run/probe/log trust, so retained `command_ack_missing` or
 unclassified `iteration-result.json` failure codes stay under `RuntimeHarness`
-until the packet evidence is valid. It also rejects
+until the packet evidence is valid. It also rejects probe `LogLengthBytes`
+values that exceed recorded or retained `godot.log.after-launch` bytes, and
 `iteration-result.json` log or probe paths that resolve outside the current
 `iteration-####` directory or to shadow/nonstandard files under that directory,
 and it does not use those escaped or noncanonical files for log-derived,

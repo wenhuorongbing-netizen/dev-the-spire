@@ -857,6 +857,8 @@ $planPlannedCommands = @(
     }
 )
 $summaryResults = @()
+$expectedRunnerScriptPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'run-spire-plus-monkey-stability.ps1'))
+$expectedRunnerScriptSha256 = Get-FileSha256OrEmpty -Path $expectedRunnerScriptPath
 if ($expectedIterationCount -le 0 -and $planIterations -gt 0) {
     $expectedIterationCount = $planIterations
 }
@@ -872,6 +874,32 @@ if ($null -ne $plan) {
     Add-Check -Name 'plan_scenario_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue ''))) -Detail 'Scenario must identify the planned risk lane'
     Add-Check -Name 'plan_command_selection_mode_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue ''))) -Detail 'CommandSelectionMode must be retained'
     Add-Check -Name 'plan_command_corpus_source_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'CommandCorpusSource' -DefaultValue ''))) -Detail 'CommandCorpusSource must be retained'
+    $planCommandCorpusPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'CommandCorpusPath' -DefaultValue ''))
+    $planCommandCorpusSha256 = [string](Get-JsonValue -Object $plan -Name 'CommandCorpusSha256' -DefaultValue '')
+    $planCommandCorpus = Get-JsonArrayProperty -Object $plan -Name 'CommandCorpus'
+    $planCommandCorpusExists = $planCommandCorpusPath -and (Test-Path -LiteralPath $planCommandCorpusPath -PathType Leaf)
+    Add-Check -Name 'plan_command_corpus_array' -Passed ([bool]$planCommandCorpus.IsArray) -Detail 'CommandCorpus must be retained as an array, even when empty'
+    Add-Check -Name 'plan_command_corpus_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($planCommandCorpusPath)) -Detail 'CommandCorpusPath must bind the retained command-corpus.txt file'
+    Add-Check -Name 'plan_command_corpus_path_under_evidence_dir' -Passed ($planCommandCorpusPath -and (Test-PathUnderDirectory -Path $planCommandCorpusPath -Directory $resolvedEvidenceDir)) -Detail 'CommandCorpusPath must stay inside the evidence directory'
+    Add-Check -Name 'plan_command_corpus_leaf_expected' -Passed ([string]::Equals([System.IO.Path]::GetFileName($planCommandCorpusPath), 'command-corpus.txt', [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'CommandCorpusPath must point at command-corpus.txt'
+    Add-Check -Name 'plan_command_corpus_exists' -Passed $planCommandCorpusExists -Detail 'command-corpus.txt must be retained'
+    Add-Check -Name 'plan_command_corpus_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($planCommandCorpusSha256)) -Detail 'CommandCorpusSha256 must bind the retained command corpus'
+    if ($planCommandCorpusExists -and -not [string]::IsNullOrWhiteSpace($planCommandCorpusSha256)) {
+        Add-Check -Name 'plan_command_corpus_hash_matches' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $planCommandCorpusPath), $planCommandCorpusSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'CommandCorpusSha256 must match the retained command-corpus.txt file'
+        $commandCorpusText = [System.IO.File]::ReadAllText($planCommandCorpusPath)
+        $commandCorpusLines = if ([string]::IsNullOrEmpty($commandCorpusText)) { @() } else { @($commandCorpusText -split '\r?\n') }
+        Add-Check -Name 'plan_command_corpus_file_matches_plan' -Passed (Test-StringArrayEquals -Actual $commandCorpusLines -Expected $planCommandCorpus.Value) -Detail 'command-corpus.txt lines must exactly match monkey-plan CommandCorpus'
+    }
+    $planRunnerScriptPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'RunnerScriptPath' -DefaultValue ''))
+    $planRunnerScriptSha256 = [string](Get-JsonValue -Object $plan -Name 'RunnerScriptSha256' -DefaultValue '')
+    $planRunnerScriptExists = $planRunnerScriptPath -and (Test-Path -LiteralPath $planRunnerScriptPath -PathType Leaf)
+    Add-Check -Name 'plan_runner_script_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($planRunnerScriptPath)) -Detail 'RunnerScriptPath must bind the packet to scripts/run-spire-plus-monkey-stability.ps1'
+    Add-Check -Name 'plan_runner_script_path_matches_current_runner' -Passed ($planRunnerScriptPath -and [System.StringComparer]::OrdinalIgnoreCase.Equals($planRunnerScriptPath, $expectedRunnerScriptPath)) -Detail 'RunnerScriptPath must match the current repo monkey runner'
+    Add-Check -Name 'plan_runner_script_exists' -Passed $planRunnerScriptExists -Detail 'RunnerScriptPath must point at an existing script file'
+    Add-Check -Name 'plan_runner_script_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($planRunnerScriptSha256)) -Detail 'RunnerScriptSha256 must bind the packet to the current runner script content'
+    if ($planRunnerScriptExists -and -not [string]::IsNullOrWhiteSpace($planRunnerScriptSha256)) {
+        Add-Check -Name 'plan_runner_script_hash_matches_current_runner' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $planRunnerScriptPath), $expectedRunnerScriptSha256, [System.StringComparison]::OrdinalIgnoreCase) -and [string]::Equals($planRunnerScriptSha256, $expectedRunnerScriptSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'RunnerScriptSha256 must match the current repo monkey runner SHA256'
+    }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) {
         Add-Check -Name 'plan_expected_package_version_matches' -Passed ([string]::Equals([string](Get-JsonValue -Object $plan -Name 'ExpectedPackageVersion' -DefaultValue ''), $ExpectedPackageVersion, [System.StringComparison]::Ordinal)) -Detail "monkey-plan ExpectedPackageVersion must match '$ExpectedPackageVersion'"
     }
@@ -1617,6 +1645,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             }
 
             $probeSamplesPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'RuntimeProbeSamplesPath' -DefaultValue ''))
+            $probeSamplesSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'RuntimeProbeSamplesSha256' -DefaultValue '')
             $probeSamplesExist = $probeSamplesPath -and (Test-Path -LiteralPath $probeSamplesPath -PathType Leaf)
             $probeSamplesUnderIteration = $probeSamplesPath -and (Test-PathUnderDirectory -Path $probeSamplesPath -Directory $iterationDir)
             $probeSamplesLeafExpected = $probeSamplesPath -and ([System.IO.Path]::GetFileName($probeSamplesPath) -eq 'runtime-probe-samples.json')
@@ -1624,6 +1653,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_runtime_probe_samples_leaf_expected" -Passed $probeSamplesLeafExpected -Detail 'RuntimeProbeSamplesPath must end with runtime-probe-samples.json'
             Add-Check -Name "${iterationName}_runtime_probe_samples_path_matches_retained_file" -Passed ($probeSamplesPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($probeSamplesPath, [System.IO.Path]::GetFullPath($probeSamplesCandidate)))) -Detail 'RuntimeProbeSamplesPath must point to the retained runtime-probe-samples.json file'
             Add-Check -Name "${iterationName}_runtime_probe_samples_exist" -Passed $probeSamplesExist -Detail 'requires retained runtime-probe-samples.json'
+            Add-Check -Name "${iterationName}_runtime_probe_samples_sha256_recorded" -Passed (Test-Sha256Text -Value $probeSamplesSha256) -Detail 'RuntimeProbeSamplesSha256 must be retained as a valid SHA256'
+            if (Test-Path -LiteralPath $probeSamplesCandidate -PathType Leaf) {
+                Add-Check -Name "${iterationName}_runtime_probe_samples_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($probeSamplesSha256, (Get-FileSha256OrEmpty -Path $probeSamplesCandidate))) -Detail 'RuntimeProbeSamplesSha256 must match retained runtime-probe-samples.json'
+            }
             if ($probeSamplesExist) {
                 try {
                     $probeSamplesJson = [System.IO.File]::ReadAllText($probeSamplesPath)
@@ -1728,6 +1761,13 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     $runtimeProbeLogGrowthMatchesObservation = -not ($runtimeLogGrowthRequiredForIteration -and $runtimeObservationLogGrewForProbeSamples) -or
                         ($runtimeObservationInitialLogLengthForProbeSamples -ge 0 -and $postCommandRuntimeProbeMaxLogLength -gt $runtimeObservationInitialLogLengthForProbeSamples)
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_growth_matches_runtime_observation" -Passed $runtimeProbeLogGrowthMatchesObservation -Detail "PostCommandRuntime probe LogLengthBytes must prove RuntimeObservation.LogGrew; initial=$runtimeObservationInitialLogLengthForProbeSamples maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength"
+                    $retainedAfterLaunchLogLengthForProbeSamples = if ($logExists) { [long](Get-Item -LiteralPath $logPath).Length } else { -1L }
+                    $runtimeProbeLogLengthWithinRecordedAfterLaunch = $postCommandRuntimeProbeMaxLogLength -lt 0 -or
+                        ($resultAfterLaunchLengthBytes -ge 0 -and $postCommandRuntimeProbeMaxLogLength -le $resultAfterLaunchLengthBytes)
+                    $runtimeProbeLogLengthWithinRetainedAfterLaunch = $postCommandRuntimeProbeMaxLogLength -lt 0 -or
+                        ($retainedAfterLaunchLogLengthForProbeSamples -ge 0 -and $postCommandRuntimeProbeMaxLogLength -le $retainedAfterLaunchLogLengthForProbeSamples)
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_within_recorded_after_launch" -Passed $runtimeProbeLogLengthWithinRecordedAfterLaunch -Detail "PostCommandRuntime probe LogLengthBytes must not exceed GodotLogAfterLaunchLengthBytes; recordedAfterLaunch=$resultAfterLaunchLengthBytes maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_within_retained_after_launch" -Passed $runtimeProbeLogLengthWithinRetainedAfterLaunch -Detail "PostCommandRuntime probe LogLengthBytes must not exceed retained godot.log.after-launch bytes; retainedAfterLaunch=$retainedAfterLaunchLogLengthForProbeSamples maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_start_time_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessStartTimeUtc') -Detail 'every probe sample must retain ProcessStartTimeUtc'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_path_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessPath') -Detail 'every probe sample must retain ProcessPath'

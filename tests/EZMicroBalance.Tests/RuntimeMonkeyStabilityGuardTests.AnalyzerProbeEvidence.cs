@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -21,6 +22,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var probeSamplesJson = File.ReadAllText(probeSamplesPath)
                 .Replace("\"Phase\":\"PostCommandRuntime\"", "\"Phase\":\"StartupMainMenu\"", StringComparison.Ordinal);
             File.WriteAllText(probeSamplesPath, probeSamplesJson);
+            RefreshRuntimeProbeSamplesHash(iterationDir);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
@@ -76,9 +78,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
             var root = document.RootElement;
             var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+            var iteration = FindIteration(root, 1);
 
             Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
             Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyProbeArtifactTrustedForOwner").GetBoolean());
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_samples_path_missing");
             Assert.Contains(
                 findings,
@@ -123,9 +127,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
             var root = document.RootElement;
             var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+            var iteration = FindIteration(root, 1);
 
             Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
             Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyProbeArtifactTrustedForOwner").GetBoolean());
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_samples_path_missing");
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_samples_missing");
             Assert.Contains(
@@ -164,6 +170,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "${1}1",
                 RegexOptions.CultureInvariant);
             File.WriteAllText(probeSamplesPath, probeSamplesJson);
+            RefreshRuntimeProbeSamplesHash(iterationDir);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
@@ -175,6 +182,51 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains(
                 findings,
                 finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_runtime_log_growth_mismatch" &&
+                    finding.GetProperty("OwnerArea").GetString() == "RuntimeHarness");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsProbeLogLengthsBeyondRetainedAfterLaunch()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamplesJson = Regex.Replace(
+                File.ReadAllText(probeSamplesPath),
+                "(\"Phase\":\"PostCommandRuntime\"[^}]*\"LogLengthBytes\":)\\d+",
+                "${1}999999999",
+                RegexOptions.CultureInvariant);
+            File.WriteAllText(probeSamplesPath, probeSamplesJson);
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
+            var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+            var iteration = FindIteration(root, 1);
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyProbeArtifactTrustedForOwner").GetBoolean());
+            Assert.Contains(
+                findings,
+                finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_log_length_exceeds_retained_after_launch" &&
                     finding.GetProperty("OwnerArea").GetString() == "RuntimeHarness");
         }
         finally
@@ -203,6 +255,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 .Replace("\"LogLastWriteTimeUtc\":\"2026-06-18T00:00:12.0000000Z\"", "\"LogLastWriteTimeUtc\":\"not-a-time\"", StringComparison.Ordinal)
                 .Replace("\"LogLastWriteTimeUtc\":\"2026-06-18T00:00:22.0000000Z\"", "\"LogLastWriteTimeUtc\":\"2999-01-01T00:00:00Z\"", StringComparison.Ordinal);
             File.WriteAllText(probeSamplesPath, probeSamplesJson);
+            RefreshRuntimeProbeSamplesHash(iterationDir);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
@@ -211,8 +264,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
             var root = document.RootElement;
             var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+            var iteration = FindIteration(root, 1);
 
             Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyProbeArtifactTrustedForOwner").GetBoolean());
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_timestamp_invalid");
         }
         finally
@@ -249,6 +304,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 .Replace("\"UnknownStartTimeProcessCount\":0", "\"UnknownStartTimeProcessCount\":1", StringComparison.Ordinal)
                 .Replace("\"AmbiguousCurrentProcessCount\":0", "\"AmbiguousCurrentProcessCount\":1", StringComparison.Ordinal);
             File.WriteAllText(probeSamplesPath, probeSamplesJson);
+            RefreshRuntimeProbeSamplesHash(iterationDir);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
@@ -262,6 +318,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
             Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
             Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyProbeArtifactTrustedForOwner").GetBoolean());
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_stale_process");
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_unknown_start_time_process");
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_probe_ambiguous_current_process");
@@ -348,6 +405,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var probeSamplesJson = File.ReadAllText(probeSamplesPath)
                 .Replace("\"ProcessId\":1234", "\"ProcessId\":9999", StringComparison.Ordinal);
             File.WriteAllText(probeSamplesPath, probeSamplesJson);
+            RefreshRuntimeProbeSamplesHash(iterationDir);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
@@ -394,6 +452,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
             File.WriteAllText(probeSamplesPath, "{ invalid runtime probe sample json");
+            RefreshRuntimeProbeSamplesHash(iterationDir);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
             var result = RunPowerShell(script, "-IterationDir", iterationDir, "-OutFile", outputPath);
@@ -422,5 +481,18 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Directory.Delete(workdir, recursive: true);
             }
         }
+    }
+
+    private static void RefreshRuntimeProbeSamplesHash(string iterationDir)
+    {
+        var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+        var resultPath = Path.Combine(iterationDir, "iteration-result.json");
+        var probeSamplesHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(probeSamplesPath))).ToLowerInvariant();
+        var resultJson = Regex.Replace(
+            File.ReadAllText(resultPath),
+            "\"RuntimeProbeSamplesSha256\"\\s*:\\s*\"[a-f0-9]{64}\"",
+            $"\"RuntimeProbeSamplesSha256\": {JsonSerializer.Serialize(probeSamplesHash)}",
+            RegexOptions.CultureInvariant);
+        File.WriteAllText(resultPath, resultJson);
     }
 }

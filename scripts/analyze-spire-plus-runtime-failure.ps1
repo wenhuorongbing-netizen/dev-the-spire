@@ -1103,7 +1103,7 @@ function Analyze-Iteration {
             [pscustomobject]@{ Label = 'godot.log.before'; OutsideSignal = 'runtime_monkey_before_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_before_log_not_retained_file'; Path = $beforeLogCandidate; CanonicalPath = $canonicalBeforeLogCandidate; NextStep = 'Retain godot.log.before as the standard file in the iteration directory before using runtime-monkey log slices for owner routing.' },
             [pscustomobject]@{ Label = 'godot.log.after-launch'; OutsideSignal = 'runtime_monkey_after_launch_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_after_launch_log_not_retained_file'; Path = $fullLogCandidate; CanonicalPath = $canonicalFullLogCandidate; NextStep = 'Retain godot.log.after-launch as the standard file in the iteration directory before using runtime-monkey log slices for owner routing.' },
             [pscustomobject]@{ Label = 'godot.log.current-iteration'; OutsideSignal = 'runtime_monkey_current_iteration_log_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_current_iteration_log_not_retained_file'; Path = $currentIterationLogCandidate; CanonicalPath = $canonicalCurrentIterationLogCandidate; NextStep = 'Retain godot.log.current-iteration as the standard file in the iteration directory before using runtime-monkey log lines for owner routing.' },
-            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; OutsideSignal = 'runtime_monkey_runtime_probe_samples_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_runtime_probe_samples_not_retained_file'; Path = $probeSamplesCandidate; CanonicalPath = $canonicalProbeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json as the standard file in the iteration directory before using runtime-monkey probe telemetry for triage.' },
+            [pscustomobject]@{ Label = 'runtime-probe-samples.json'; FieldName = 'RuntimeProbeSamplesPath'; HashField = 'RuntimeProbeSamplesSha256'; MissingPathSignal = 'runtime_monkey_runtime_probe_samples_path_missing'; MissingFileSignal = 'runtime_monkey_runtime_probe_samples_missing'; MissingHashSignal = 'runtime_monkey_runtime_probe_samples_hash_missing'; HashMismatchSignal = 'runtime_monkey_runtime_probe_samples_hash_mismatch'; OutsideSignal = 'runtime_monkey_runtime_probe_samples_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_runtime_probe_samples_not_retained_file'; Path = $probeSamplesCandidate; CanonicalPath = $canonicalProbeSamplesCandidate; NextStep = 'Retain runtime-probe-samples.json as the standard file in the iteration directory before using runtime-monkey probe telemetry for triage.' },
             [pscustomobject]@{ Label = 'session-state.json'; FieldName = 'LiveSessionSessionStatePath'; HashField = 'LiveSessionSessionStateSha256'; MissingPathSignal = 'runtime_monkey_session_state_path_missing'; MissingFileSignal = 'runtime_monkey_session_state_missing'; MissingHashSignal = 'runtime_monkey_session_state_hash_missing'; HashMismatchSignal = 'runtime_monkey_session_state_hash_mismatch'; OutsideSignal = 'runtime_monkey_session_state_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_session_state_not_retained_file'; Path = $sessionStateCandidate; CanonicalPath = $canonicalSessionStateCandidate; NextStep = 'Retain session-state.json as the standard file in the iteration directory before trusting live-session restore transaction evidence.' },
             [pscustomobject]@{ Label = 'restore-state.json'; FieldName = 'LiveSessionRestoreStatePath'; HashField = 'LiveSessionRestoreStateSha256'; MissingPathSignal = 'runtime_monkey_restore_state_path_missing'; MissingFileSignal = 'runtime_monkey_restore_state_missing'; MissingHashSignal = 'runtime_monkey_restore_state_hash_missing'; HashMismatchSignal = 'runtime_monkey_restore_state_hash_mismatch'; OutsideSignal = 'runtime_monkey_restore_state_outside_iteration_dir'; NonCanonicalSignal = 'runtime_monkey_restore_state_not_retained_file'; Path = $restoreStateCandidate; CanonicalPath = $canonicalRestoreStateCandidate; NextStep = 'Retain restore-state.json as the standard file in the iteration directory before trusting live-session restore transaction evidence.' }
         )
@@ -1112,15 +1112,20 @@ function Analyze-Iteration {
             $artifactPath = [string]$artifact.Path
             $artifactFieldName = if (Test-JsonProperty -Object $artifact -Name 'FieldName') { [string]$artifact.FieldName } else { '' }
             $artifactHashField = if (Test-JsonProperty -Object $artifact -Name 'HashField') { [string]$artifact.HashField } else { '' }
+            $artifactIsRuntimeProbeSamples = [string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)
             if (-not [string]::IsNullOrWhiteSpace($artifactFieldName) -and
                 (-not (Test-JsonProperty -Object $result -Name $artifactFieldName) -or [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $result -Name $artifactFieldName -DefaultValue '')))) {
                 $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                if ($artifactIsRuntimeProbeSamples) {
+                    $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                }
+
                 Add-Finding -Findings $findings -Signal ([string]$artifact.MissingPathSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey result JSON did not retain $artifactFieldName for $($artifact.Label)." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
                 continue
             }
             if ([string]::IsNullOrWhiteSpace($artifactPath)) {
                 $runtimeMonkeyRunArtifactsTrustedForOwner = $false
-                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                if ($artifactIsRuntimeProbeSamples) {
                     $runtimeMonkeyProbeArtifactTrustedForOwner = $false
                 }
 
@@ -1135,7 +1140,7 @@ function Analyze-Iteration {
                 [System.StringComparer]::OrdinalIgnoreCase.Equals($artifactFullPath, $canonicalFullPath)
             if (-not $artifactInsideIteration -or -not $artifactMatchesCanonical) {
                 $runtimeMonkeyRunArtifactsTrustedForOwner = $false
-                if ([string]::Equals([string]$artifact.Label, 'runtime-probe-samples.json', [System.StringComparison]::Ordinal)) {
+                if ($artifactIsRuntimeProbeSamples) {
                     $runtimeMonkeyProbeArtifactTrustedForOwner = $false
                 }
 
@@ -1149,6 +1154,10 @@ function Analyze-Iteration {
                 $artifactFileExists = Test-Path -LiteralPath $artifactPath -PathType Leaf
                 if (-not $artifactFileExists) {
                     $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                    if ($artifactIsRuntimeProbeSamples) {
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                    }
+
                     Add-Finding -Findings $findings -Signal ([string]$artifact.MissingFileSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey $($artifact.Label) path did not point to an existing retained file." -NextStep ([string]$artifact.NextStep) -Confidence 'high' -EvidenceFiles $evidenceFiles
                     continue
                 }
@@ -1156,14 +1165,22 @@ function Analyze-Iteration {
                 $recordedArtifactSha256 = [string](Get-JsonValue -Object $result -Name $artifactHashField -DefaultValue '')
                 if (-not (Test-JsonProperty -Object $result -Name $artifactHashField) -or -not (Test-Sha256Text -Value $recordedArtifactSha256)) {
                     $runtimeMonkeyRunArtifactsTrustedForOwner = $false
-                    Add-Finding -Findings $findings -Signal ([string]$artifact.MissingHashSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey result JSON did not retain a valid $artifactHashField for $($artifact.Label)." -NextStep 'Record SHA256 bindings for live-session state files before trusting restore evidence or routing gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    if ($artifactIsRuntimeProbeSamples) {
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                    }
+
+                    Add-Finding -Findings $findings -Signal ([string]$artifact.MissingHashSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey result JSON did not retain a valid $artifactHashField for $($artifact.Label)." -NextStep 'Record SHA256 bindings for retained runtime monkey artifacts before trusting probe, restore, or gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     continue
                 }
 
                 $actualArtifactSha256 = Get-FileSha256OrEmpty -Path $artifactPath
                 if (-not [System.StringComparer]::OrdinalIgnoreCase.Equals($recordedArtifactSha256, $actualArtifactSha256)) {
                     $runtimeMonkeyRunArtifactsTrustedForOwner = $false
-                    Add-Finding -Findings $findings -Signal ([string]$artifact.HashMismatchSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey $artifactHashField does not match retained $($artifact.Label); recorded=$recordedArtifactSha256 actual=$actualArtifactSha256." -NextStep 'Regenerate or reject the packet; do not route ownership from live-session state files whose retained hashes have drifted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    if ($artifactIsRuntimeProbeSamples) {
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                    }
+
+                    Add-Finding -Findings $findings -Signal ([string]$artifact.HashMismatchSignal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey $artifactHashField does not match retained $($artifact.Label); recorded=$recordedArtifactSha256 actual=$actualArtifactSha256." -NextStep 'Regenerate or reject the packet; do not route ownership from runtime monkey artifacts whose retained hashes have drifted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                 }
             }
         }
@@ -2150,6 +2167,18 @@ function Analyze-Iteration {
                         $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_log_growth_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "RuntimeObservation.LogGrew=true is not backed by retained PostCommandRuntime sample LogLengthBytes; initial=$runtimeObservationInitialLogLength maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength." -NextStep 'Regenerate the packet with runtime probe samples whose log-length timeline proves the post-command log growth claim.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
+                    $recordedAfterLaunchLogLength = if ($result) { [long](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchLengthBytes' -DefaultValue -1) } else { -1L }
+                    $retainedAfterLaunchLogLength = if ($fullLogExists) { [long](Get-Item -LiteralPath $fullLogCandidate).Length } else { -1L }
+                    $probeLengthExceedsRecordedAfterLaunch = $postCommandRuntimeProbeMaxLogLength -ge 0 -and
+                        $recordedAfterLaunchLogLength -ge 0 -and
+                        $postCommandRuntimeProbeMaxLogLength -gt $recordedAfterLaunchLogLength
+                    $probeLengthExceedsRetainedAfterLaunch = $postCommandRuntimeProbeMaxLogLength -ge 0 -and
+                        $retainedAfterLaunchLogLength -ge 0 -and
+                        $postCommandRuntimeProbeMaxLogLength -gt $retainedAfterLaunchLogLength
+                    if ($probeLengthExceedsRecordedAfterLaunch -or $probeLengthExceedsRetainedAfterLaunch) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_log_length_exceeds_retained_after_launch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey PostCommandRuntime sample LogLengthBytes exceeds retained after-launch log bytes; recordedAfterLaunch=$recordedAfterLaunchLogLength retainedAfterLaunch=$retainedAfterLaunchLogLength maxRuntimeSample=$postCommandRuntimeProbeMaxLogLength." -NextStep 'Regenerate or reject the packet; probe log-length telemetry must stay within the retained godot.log.after-launch byte ceiling before source ownership routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
                     }
                 }
             } catch {
@@ -2756,6 +2785,7 @@ function Analyze-Iteration {
         OwnerAreaFromLog = $logOwnerArea
         LogTextTrustedForOwner = $logTextTrustedForOwner
         RuntimeMonkeyRunArtifactsTrustedForOwner = $runtimeMonkeyRunArtifactsTrustedForOwner
+        RuntimeMonkeyProbeArtifactTrustedForOwner = $runtimeMonkeyProbeArtifactTrustedForOwner
         AutoSlaySidecarTrustedForOwner = $autoSlaySidecarTrustedForOwner
         AutoSlayRunArtifactsTrustedForOwner = $autoSlayRunArtifactsTrustedForOwner
         AutoSlayProbeArtifactTrustedForOwner = $autoSlayProbeArtifactTrustedForOwner

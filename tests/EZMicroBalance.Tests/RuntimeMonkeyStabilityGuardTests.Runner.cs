@@ -86,6 +86,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Get-SpireProcessSnapshot",
             "Add-ProbeSample",
             "runtime-probe-samples.json",
+            "RuntimeProbeSamplesSha256",
+            "Get-FileSha256OrEmpty -Path ([string]$result.RuntimeProbeSamplesPath)",
             "SampledAt",
             "LogExists",
             "LogLengthBytes",
