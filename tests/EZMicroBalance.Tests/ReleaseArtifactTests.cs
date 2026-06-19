@@ -53,7 +53,7 @@ public sealed class ReleaseArtifactTests
                 dependency.TryGetProperty("id", out var id) &&
                 id.GetString() == "BaseLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "v3.2.1");
+                minVersion.GetString() == "v3.3.0");
 
         foreach (var removedRootSurface in new[]
         {

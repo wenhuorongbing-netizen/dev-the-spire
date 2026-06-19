@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-19:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1` |
-| DLL | `35575A2651882B4C2D8EDD082A8FD7C6B6534CEB6433F846AEC59259353B19B4` |
-| PCK | `C4EFDCA19F5F98F6A945599110AAF13A89452E3E1B8069326385BD45575218F2` |
-| Manifest | `15C677876A056D0C695DAB05BB7A18A5CB9B13FDDEFD0E595746ADF36D652059` |
-| README_INSTALL | `E968521929ECA272A5C5FA62DA4D90FB37C5307922FD2893ABDA154C3A12DFBC` |
+| ZIP | `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D` |
+| DLL | `7CEAD97D55991C4ACE71A521E140B4DCA3EB814613B496E94943F137B6CFE37A` |
+| PCK | `069180E97CEFCABA586CB5D0893AEC96BEC90602006A99EC305E4D2B8E124C62` |
+| Manifest | `7A0E554EBE5F5E0F2BC739E61591A8E312433EA4BE82B90CB8151EC05DA02A09` |
+| README_INSTALL | `75C5E426A4A2269FA5D45A1ABE29427F7BA94FC39B139799FEB434395622E28A` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -34,10 +34,9 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean, and beta.86 Off/CanaryOnly/AdditiveBatch1 proof remains previous-package context.
-  Current beta.87 AdditiveBatch1 proof is clean on `v0.107.0` with BaseLib `v3.2.1`, RitsuLib `0.4.24`, and 10 StS1 event types / 14 registration calls.
-  Fresh beta.87 direct proof: AdditiveBatch1 reached main menu, audited clean, and passed retained mode/packet verifiers with 0 mismatches.
-  Runtime blocker root cause was dependency-floor drift plus verifier drift: old floors plus zero-byte `godot.log.before` rejection; fixed. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: historical `v0.106.1` smokes are clean, beta.85/beta.86/beta.87 proof remains previous-package/game-version context, and beta.88 AdditiveBatch1 proof is clean on `v0.107.1` with BaseLib `v3.3.0`, RitsuLib `0.4.24`, and 10 StS1 event types / 14 registration calls.
+  Fresh beta.88 direct proof: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu, audited clean, passed retained enabled-mode verifier 31 / 0, and passed packet verification with 0 mismatches.
+  Runtime blocker root cause was game `v0.107.1` compatibility drift: Spire Plus had one API drift fix in multiplayer diagnostics, and BaseLib `v3.2.1` logged two Harmony patch failures. BaseLib `v3.3.0` resolves the clean-loader blocker. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

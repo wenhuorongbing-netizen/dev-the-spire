@@ -15,7 +15,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         AssertSourceContains(
             bootstrap,
             "Spire Plus Windows bootstrap",
-            "Install BaseLib v3.2.1 under <GameRoot>\\mods\\BaseLib before game verification.",
+            "Install BaseLib v3.3.0 under <GameRoot>\\mods\\BaseLib before game verification.",
             "BaseLib plus Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
@@ -244,8 +244,10 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "475 passed / 21 skipped",
-            "67 passed / 2 skipped",
+            "current beta.88 pass",
+            "runtime preflight 27 / 0",
+            "current-doc claims 1119 / 0",
+            "static suite 15 / 0",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",
@@ -256,7 +258,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "Vakuu dedicated combat loop",
             "Ancient reward visibility",
             "Player text, UI, and resource routing",
-            "fails closed with 20 manual rows",
+            "fails closed with 21 manual rows",
             "release-ready-path-containment-smoke",
             "evidence dirs outside the evidence root",
             "required-file/screenshot paths that escape their row evidence dir",
@@ -563,14 +565,14 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Current beta.87 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Current beta.88 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Fresh loader smoke for the current beta.87 package hash is clean", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Fresh loader smoke for the current beta.88 package hash passed", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("current beta.87 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current beta.88 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
@@ -579,7 +581,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest package/runtime migration validation baseline", projectState, StringComparison.Ordinal);
-        Assert.Contains("runtime blocker is resolved for loader/patch application", projectState, StringComparison.Ordinal);
+        Assert.Contains("This closes the current clean-loader blocker only", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

@@ -1,6 +1,8 @@
 param(
     [string]$ModDirectory,
+    [string]$GameRoot,
     [string]$GameRootZipPath,
+    [string]$ExpectedPackageVersion,
     [string]$HandoffPath = "$PSScriptRoot\..\docs\private-beta-verification-handoff.md",
     [switch]$SkipGameRootZipCheck,
     [switch]$PassVerbose
@@ -66,12 +68,20 @@ function Get-HandoffPackageFileName {
 $expectedZipHash = Get-ExpectedHash 'Zip'
 $packageFileName = Get-HandoffPackageFileName
 
+if ($GameRoot -and -not $GameRootZipPath -and -not $SkipGameRootZipCheck -and $packageFileName) {
+    $GameRootZipPath = Join-Path $GameRoot $packageFileName
+}
+
 if (-not $GameRootZipPath -and -not $SkipGameRootZipCheck -and $packageFileName) {
     $resolvedModDirectory = Resolve-Path -LiteralPath $ModDirectory
     $modDirectoryInfo = [System.IO.DirectoryInfo]$resolvedModDirectory.Path
     if ($modDirectoryInfo.Name -eq 'EZMicroBalance' -and $modDirectoryInfo.Parent -and $modDirectoryInfo.Parent.Name -eq 'mods') {
         $GameRootZipPath = Join-Path $modDirectoryInfo.Parent.Parent.FullName $packageFileName
     }
+}
+
+if ($GameRootZipPath -and -not $SkipGameRootZipCheck -and $packageFileName -and (Test-Path -LiteralPath $GameRootZipPath -PathType Container)) {
+    $GameRootZipPath = Join-Path $GameRootZipPath $packageFileName
 }
 
 $expected = @{
@@ -117,6 +127,28 @@ foreach ($kv in $files.GetEnumerator()) {
     } else {
         $rows += "{0} | expected:{1} | actual:{2} | FAIL" -f $fileName, $expectedHash, $actualHash
         $allPass = $false
+    }
+}
+
+if ($ExpectedPackageVersion) {
+    $manifestPath = Join-Path $ModDirectory 'EZMicroBalance.json'
+    if (Test-Path -LiteralPath $manifestPath) {
+        $manifest = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+        if ($manifest.version -eq $ExpectedPackageVersion) {
+            $rows += "Installed manifest version | expected:$ExpectedPackageVersion | actual:$($manifest.version) | PASS"
+        } else {
+            $rows += "Installed manifest version | expected:$ExpectedPackageVersion | actual:$($manifest.version) | FAIL"
+            $allPass = $false
+        }
+    }
+
+    if ($packageFileName) {
+        if ($packageFileName.Contains($ExpectedPackageVersion)) {
+            $rows += "Handoff package filename version | expected:$ExpectedPackageVersion | actual:$packageFileName | PASS"
+        } else {
+            $rows += "Handoff package filename version | expected:$ExpectedPackageVersion | actual:$packageFileName | FAIL"
+            $allPass = $false
+        }
     }
 }
 

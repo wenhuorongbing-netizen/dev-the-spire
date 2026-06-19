@@ -204,6 +204,12 @@ function Get-FileSha256OrEmpty {
     return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
 }
 
+function Test-Sha256Text {
+    param([AllowEmptyString()][string]$Value)
+
+    return -not [string]::IsNullOrWhiteSpace($Value) -and $Value -match '^[A-Fa-f0-9]{64}$'
+}
+
 function Get-FileBytesAfterOffset {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -1033,6 +1039,41 @@ function Get-FailureReasonCodes {
     if (-not [bool]$Result.ExpectationPassed) { Add-FailureCode -Codes $codes -Code 'runtime_expectation_mismatch' }
     if (-not [bool]$Result.Sts1ModeVerifierPassed) { Add-FailureCode -Codes $codes -Code 'sts1_mode_mismatch' }
     if (-not [bool]$Result.RestoreSucceeded) { Add-FailureCode -Codes $codes -Code 'restore_failed' }
+    if ([bool]$Result.RestoreSucceeded) {
+        $sessionStatePath = [string]$Result.LiveSessionSessionStatePath
+        $restoreStatePath = [string]$Result.LiveSessionRestoreStatePath
+        if ([string]::IsNullOrWhiteSpace([string]$Result.LiveSessionSessionStateSha256) -or
+            [string]::IsNullOrWhiteSpace($sessionStatePath) -or
+            -not (Test-Path -LiteralPath $sessionStatePath -PathType Leaf)) {
+            Add-FailureCode -Codes $codes -Code 'live_session_session_state_missing'
+        }
+        if ([string]::IsNullOrWhiteSpace([string]$Result.LiveSessionRestoreStateSha256) -or
+            [string]::IsNullOrWhiteSpace($restoreStatePath) -or
+            -not (Test-Path -LiteralPath $restoreStatePath -PathType Leaf) -or
+            [int]$Result.LiveSessionRestoreSchemaVersion -le 0) {
+            Add-FailureCode -Codes $codes -Code 'live_session_restore_state_missing'
+        }
+        if ([int]$Result.LiveSessionPostRestoreSlayProcessCount -gt 0 -or
+            [int]$Result.LiveSessionPostRestoreGodotProcessCount -gt 0) {
+            Add-FailureCode -Codes $codes -Code 'post_restore_process_leak'
+        }
+        if (-not [bool]$Result.LiveSessionRestoreItemCountsMatch) {
+            Add-FailureCode -Codes $codes -Code 'restore_item_count_mismatch'
+        }
+        if ([int]$Result.LiveSessionPreservedNewCurrentRunCount -gt 0 -and
+            -not [bool]$Result.LiveSessionPreservedNewCurrentRunsManifestBound) {
+            Add-FailureCode -Codes $codes -Code 'preserved_current_runs_manifest_missing'
+        }
+        if ([bool]$Result.MainMenuReached -and
+            [int]$Result.LiveSessionSelectedGameProcessId -gt 0 -and
+            -not [bool]$Result.LiveSessionStoppedSelectedGameProcess) {
+            Add-FailureCode -Codes $codes -Code 'selected_game_process_not_stopped'
+        }
+        if (-not [bool]$Result.LiveSessionSettingsRestoredFromBackup -or
+            -not [bool]$Result.LiveSessionSettingsBackupRestoredFromBackup) {
+            Add-FailureCode -Codes $codes -Code 'restore_settings_hash_mismatch'
+        }
+    }
     if (-not $devConsoleCommandsDisabled -and -not [string]::IsNullOrWhiteSpace([string]$Result.Command) -and -not [bool]$Result.ConsoleCommandSent) {
         Add-FailureCode -Codes $codes -Code 'command_send_failed'
     }
@@ -1266,6 +1307,105 @@ function Invoke-LiveSessionRestore {
         -SteamExe $SteamExe `
         -StopGameOnRestore `
         -PreserveNewCurrentRunsOnRestore | Out-Null
+}
+
+function Update-LiveSessionRestoreStateFields {
+    param([Parameter(Mandatory = $true)]$Result)
+
+    $Result.LiveSessionSessionStateSha256 = Get-FileSha256OrEmpty -Path ([string]$Result.LiveSessionSessionStatePath)
+    $Result.LiveSessionRestoreStateSha256 = Get-FileSha256OrEmpty -Path ([string]$Result.LiveSessionRestoreStatePath)
+
+    $sessionState = Read-JsonOrNull -Path ([string]$Result.LiveSessionSessionStatePath)
+    $restoreState = Read-JsonOrNull -Path ([string]$Result.LiveSessionRestoreStatePath)
+    if ($null -eq $restoreState) {
+        return
+    }
+
+    if ($restoreState.PSObject.Properties.Name -contains 'RestoreSchemaVersion' -and $null -ne $restoreState.RestoreSchemaVersion) {
+        $Result.LiveSessionRestoreSchemaVersion = [int]$restoreState.RestoreSchemaVersion
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'StoppedSelectedGameProcess') {
+        $Result.LiveSessionStoppedSelectedGameProcess = [bool]$restoreState.StoppedSelectedGameProcess
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'RestoredModCount' -and $null -ne $restoreState.RestoredModCount) {
+        $Result.LiveSessionRestoredModCount = [int]$restoreState.RestoredModCount
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'RestoredCurrentRunCount' -and $null -ne $restoreState.RestoredCurrentRunCount) {
+        $Result.LiveSessionRestoredCurrentRunCount = [int]$restoreState.RestoredCurrentRunCount
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PreservedNewCurrentRunCount' -and $null -ne $restoreState.PreservedNewCurrentRunCount) {
+        $Result.LiveSessionPreservedNewCurrentRunCount = [int]$restoreState.PreservedNewCurrentRunCount
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PreservedNewCurrentRunsManifestPath') {
+        $Result.LiveSessionPreservedNewCurrentRunsManifestPath = [string]$restoreState.PreservedNewCurrentRunsManifestPath
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PreservedNewCurrentRunsManifestSha256') {
+        $Result.LiveSessionPreservedNewCurrentRunsManifestSha256 = [string]$restoreState.PreservedNewCurrentRunsManifestSha256
+    }
+    $preservedManifestPath = [string]$Result.LiveSessionPreservedNewCurrentRunsManifestPath
+    $preservedManifestSha256 = [string]$Result.LiveSessionPreservedNewCurrentRunsManifestSha256
+    $Result.LiveSessionPreservedNewCurrentRunsManifestBound = [int]$Result.LiveSessionPreservedNewCurrentRunCount -eq 0
+    if ([int]$Result.LiveSessionPreservedNewCurrentRunCount -gt 0 -and
+        -not [string]::IsNullOrWhiteSpace($preservedManifestPath) -and
+        (Test-Path -LiteralPath $preservedManifestPath -PathType Leaf) -and
+        (Test-Sha256Text -Value $preservedManifestSha256) -and
+        [System.StringComparer]::OrdinalIgnoreCase.Equals($preservedManifestSha256, (Get-FileSha256OrEmpty -Path $preservedManifestPath))) {
+        $Result.LiveSessionPreservedNewCurrentRunsManifestBound = $true
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PostRestoreSlayProcessCount' -and $null -ne $restoreState.PostRestoreSlayProcessCount) {
+        $Result.LiveSessionPostRestoreSlayProcessCount = [int]$restoreState.PostRestoreSlayProcessCount
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PostRestoreSlayProcessIds') {
+        $Result.LiveSessionPostRestoreSlayProcessIds = @($restoreState.PostRestoreSlayProcessIds)
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PostRestoreGodotProcessCount' -and $null -ne $restoreState.PostRestoreGodotProcessCount) {
+        $Result.LiveSessionPostRestoreGodotProcessCount = [int]$restoreState.PostRestoreGodotProcessCount
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'PostRestoreGodotProcessIds') {
+        $Result.LiveSessionPostRestoreGodotProcessIds = @($restoreState.PostRestoreGodotProcessIds)
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'SettingsHashAfterRestore') {
+        $Result.LiveSessionSettingsHashAfterRestore = [string]$restoreState.SettingsHashAfterRestore
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'SettingsBackupHashAfterRestore') {
+        $Result.LiveSessionSettingsBackupHashAfterRestore = [string]$restoreState.SettingsBackupHashAfterRestore
+    }
+    if ($restoreState.PSObject.Properties.Name -contains 'SettingsBackupExistsAfterRestore') {
+        $Result.LiveSessionSettingsBackupExistsAfterRestoreRecorded = $true
+        $Result.LiveSessionSettingsBackupExistsAfterRestore = [bool]$restoreState.SettingsBackupExistsAfterRestore
+    }
+
+    if ($null -ne $sessionState) {
+        $movedMods = if ($sessionState.PSObject.Properties.Name -contains 'MovedMods') { @($sessionState.MovedMods) } else { @() }
+        $movedCurrentRuns = if ($sessionState.PSObject.Properties.Name -contains 'MovedCurrentRuns') { @($sessionState.MovedCurrentRuns) } else { @() }
+        $movedModCount = @($movedMods).Count
+        $movedCurrentRunCount = @($movedCurrentRuns).Count
+        $Result.LiveSessionMovedModCount = [int]$movedModCount
+        $Result.LiveSessionMovedCurrentRunCount = [int]$movedCurrentRunCount
+        $Result.LiveSessionRestoreItemCountsMatch =
+            [int]$Result.LiveSessionRestoredModCount -eq [int]$movedModCount -and
+            [int]$Result.LiveSessionRestoredCurrentRunCount -eq [int]$movedCurrentRunCount
+
+        $settingsHashBefore = [string]$sessionState.SettingsHashBefore
+        $settingsBackupHashBefore = [string]$sessionState.SettingsBackupHashBefore
+        $settingsBackupExistedBefore = if ($sessionState.PSObject.Properties.Name -contains 'SettingsBackupExistedBefore') {
+            [bool]$sessionState.SettingsBackupExistedBefore
+        } else {
+            -not [string]::IsNullOrWhiteSpace($settingsBackupHashBefore)
+        }
+        $Result.LiveSessionSettingsBackupExistedBefore = [bool]$settingsBackupExistedBefore
+        $Result.LiveSessionSettingsRestoredFromBackup =
+            (-not [string]::IsNullOrWhiteSpace($settingsHashBefore)) -and
+            [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$Result.LiveSessionSettingsHashAfterRestore, $settingsHashBefore)
+        $Result.LiveSessionSettingsBackupRestoredFromBackup = if ($settingsBackupExistedBefore) {
+            (-not [string]::IsNullOrWhiteSpace($settingsBackupHashBefore)) -and
+            [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$Result.LiveSessionSettingsBackupHashAfterRestore, $settingsBackupHashBefore)
+        } else {
+            [bool]$Result.LiveSessionSettingsBackupExistsAfterRestoreRecorded -and
+            -not [bool]$Result.LiveSessionSettingsBackupExistsAfterRestore -and
+            [string]::IsNullOrWhiteSpace([string]$Result.LiveSessionSettingsBackupHashAfterRestore)
+        }
+    }
 }
 
 if (-not (Test-Path -LiteralPath $liveSessionScript -PathType Leaf)) {
@@ -1536,6 +1676,10 @@ $plan = [ordered]@{
         'expected package/game/RitsuLib/patch-count markers are absent from godot.log',
         'StS1 mode verifier reports that actual godot.log mode/package/game/Ritsu shape does not match this run',
         'live-session restore fails',
+        'live-session session/restore transaction files are missing, stale, or hash-unbound',
+        'live-session restore item counts do not match the moved item lists from session-state.json',
+        'live-session restore leaves SlayTheSpire2 or Godot processes running',
+        'live-session restore does not restore settings hashes from retained backups',
         'DevConsole command send fails when enabled'
     )
 }
@@ -1591,6 +1735,10 @@ try {
             CommandAckObserved = [string]::IsNullOrWhiteSpace([string]$planned.CommandAckPattern)
             LiveSessionPrepareOutputPath = Join-Path $iterationDir 'prepare-output.json'
             LiveSessionPrepareOutputSha256 = ''
+            LiveSessionSessionStatePath = Join-Path $iterationDir 'session-state.json'
+            LiveSessionSessionStateSha256 = ''
+            LiveSessionRestoreStatePath = Join-Path $iterationDir 'restore-state.json'
+            LiveSessionRestoreStateSha256 = ''
             LiveSessionEvidenceDir = ''
             LiveSessionLauncherKind = ''
             LiveSessionSteamAppId = ''
@@ -1611,6 +1759,28 @@ try {
             LiveSessionSelectedGameProcessPath = ''
             LiveSessionSelectedGameProcessParentProcessId = 0
             LiveSessionAttributionFailureReason = ''
+            LiveSessionRestoreSchemaVersion = 0
+            LiveSessionStoppedSelectedGameProcess = $false
+            LiveSessionMovedModCount = -1
+            LiveSessionMovedCurrentRunCount = -1
+            LiveSessionRestoredModCount = -1
+            LiveSessionRestoredCurrentRunCount = -1
+            LiveSessionRestoreItemCountsMatch = $false
+            LiveSessionPreservedNewCurrentRunCount = 0
+            LiveSessionPreservedNewCurrentRunsManifestPath = ''
+            LiveSessionPreservedNewCurrentRunsManifestSha256 = ''
+            LiveSessionPreservedNewCurrentRunsManifestBound = $true
+            LiveSessionPostRestoreSlayProcessCount = -1
+            LiveSessionPostRestoreSlayProcessIds = @()
+            LiveSessionPostRestoreGodotProcessCount = -1
+            LiveSessionPostRestoreGodotProcessIds = @()
+            LiveSessionSettingsHashAfterRestore = ''
+            LiveSessionSettingsBackupHashAfterRestore = ''
+            LiveSessionSettingsBackupExistedBefore = $false
+            LiveSessionSettingsBackupExistsAfterRestoreRecorded = $false
+            LiveSessionSettingsBackupExistsAfterRestore = $false
+            LiveSessionSettingsRestoredFromBackup = $false
+            LiveSessionSettingsBackupRestoredFromBackup = $false
             GameProcessStartTimeAfterLiveSessionLaunch = $false
             GameProcessIdMatchesLiveSession = $false
             GameProcessStartTimeMatchesLiveSession = $false
@@ -1709,6 +1879,7 @@ try {
                 $prepareOutputPath = [string]$result.LiveSessionPrepareOutputPath
                 & $liveSessionScript @prepareArgs | Out-File -LiteralPath $prepareOutputPath -Encoding UTF8
                 $result.LiveSessionPrepareOutputSha256 = Get-FileSha256OrEmpty -Path $prepareOutputPath
+                $result.LiveSessionSessionStateSha256 = Get-FileSha256OrEmpty -Path ([string]$result.LiveSessionSessionStatePath)
                 $prepareOutput = Read-JsonOrNull -Path $prepareOutputPath
                 if ($prepareOutput) {
                     $result.LiveSessionEvidenceDir = [string]$prepareOutput.EvidenceDir
@@ -1924,6 +2095,7 @@ try {
                         $result.Error = "restore failed: $restoreError"
                     }
                 }
+                Update-LiveSessionRestoreStateFields -Result $result
             } else {
                 if ([bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -gt 0) {
                     $result.RestoreSucceeded = $true
@@ -1941,7 +2113,7 @@ try {
 
         Save-Json -InputObject @($probeSamples) -Path $result.RuntimeProbeSamplesPath
 
-        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and
+        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSessionStateSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionRestoreStateSha256) -and [int]$result.LiveSessionRestoreSchemaVersion -gt 0 -and [bool]$result.LiveSessionStoppedSelectedGameProcess -and [bool]$result.LiveSessionRestoreItemCountsMatch -and ([int]$result.LiveSessionPreservedNewCurrentRunCount -eq 0 -or [bool]$result.LiveSessionPreservedNewCurrentRunsManifestBound) -and [int]$result.LiveSessionPostRestoreSlayProcessCount -eq 0 -and [int]$result.LiveSessionPostRestoreGodotProcessCount -eq 0 -and [bool]$result.LiveSessionSettingsRestoredFromBackup -and [bool]$result.LiveSessionSettingsBackupRestoredFromBackup -and
             ($devConsoleCommandsDisabled -or [string]::IsNullOrWhiteSpace([string]$planned.Command) -or $result.ConsoleCommandSent)
 
         Save-Json -InputObject $result -Path (Join-Path $iterationDir 'iteration-result.json')
@@ -1989,8 +2161,15 @@ try {
                 $codes -contains 'game_process_path_missing' -or
                 $codes -contains 'game_process_id_mismatch' -or
                 $codes -contains 'game_process_start_time_mismatch' -or
-                $codes -contains 'game_process_path_mismatch'
+                $codes -contains 'game_process_path_mismatch' -or
+                $codes -contains 'live_session_session_state_missing' -or
+                $codes -contains 'live_session_restore_state_missing'
             }).Count
+        LiveSessionRestoreItemCountMismatchCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'restore_item_count_mismatch' }).Count
+        LiveSessionPreservedCurrentRunManifestMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'preserved_current_runs_manifest_missing' }).Count
+        LiveSessionRestoreLeakCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'post_restore_process_leak' }).Count
+        LiveSessionRestoreHashMismatchCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'restore_settings_hash_mismatch' }).Count
+        LiveSessionSelectedProcessNotStoppedCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'selected_game_process_not_stopped' }).Count
         GodotLogBeforeMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'godot_log_before_missing' }).Count
         CurrentIterationLogMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'current_iteration_log_missing' }).Count
         UnresponsiveIterationCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'process_unresponsive' }).Count

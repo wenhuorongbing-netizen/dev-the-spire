@@ -143,7 +143,7 @@ After a launched run, check the retained packet without launching the game:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.87 `
+  -ExpectedPackageVersion v0.1.0-private-beta.88 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch
 ```
@@ -217,10 +217,10 @@ The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
 Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes.
-Installed beta.86 package parity is restored, and current beta.86 `v0.107.0` direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed retained log/packet verifiers with 10 event types / 14 registration calls.
+Installed beta.88 package parity is restored, and current beta.88 `v0.107.1` direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed retained log/packet verifiers with 10 event types / 14 registration calls.
 This is loader/registration proof only; gameplay, clicked UI, save-load, replacement behavior, co-op, QA, and handoff rows remain open.
 The earlier beta.86 Steam-client attempt under `.tools/runtime-evidence/v01070-beta86-additive-batch1-20260618-031043/` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not inherit the transient environment.
-The beta.85 Off/CanaryOnly smokes remain previous-package context, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
+The beta.85 Off/CanaryOnly smokes remain previous-package context, beta.87 direct proof remains previous-game-version context, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
 Current RitsuLib logs are class-only for some checks, so gameplay evidence still has to prove actual event behavior directly.
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.

@@ -6,7 +6,7 @@ Track the Slay the Spire 1 public event baseline inside Spire Plus (`EZMicroBala
 
 Account for the public 52-event StS1 Wiki baseline and the internal source reconciliation: `54` canonical rows, `50` registry identities, `48` model files, `47` compiling models, `57` RegisterAll calls, and `14` AdditiveBatch1 calls. Events live inside `EZMicroBalanceCode/Sts1Events/` and localization inside `EZMicroBalance/localization/`.
 
-Runtime gameplay, save-load, image rendering, enabled-mode loader proof, replacement-pool behavior, multiplayer behavior, and independent QA remain unverified for the current `v0.107.0` event modes. Current beta.85 Off loader proof is clean, but it only proves default-Off startup and patch application.
+Current beta.88 `v0.107.1` AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` covers loader/registration only: main-menu startup, 25/25 Spire Plus patches, 10 event types, 14 registration calls, clean audit, retained enabled-mode verifier 31 / 0, and runtime packet verifier 0 mismatches. Retained beta.85 Off/CanaryOnly and beta.87 AdditiveBatch1 logs remain previous-package/game-version loader context. Runtime gameplay, save-load, image rendering, replacement-pool behavior, multiplayer behavior, independent QA, tester handoff, and game-native AutoSlay/monkey batch proof remain unverified.
 
 Localization file parity is not full localization coverage: `localization-source-gap-scan-20260611.md` records 33 source-referenced result-page keys missing from both EN and ZHS. Use `localization-gap-closure-plan.md` for the validated resource-pass order; it does not change shipped localization resources by itself.
 

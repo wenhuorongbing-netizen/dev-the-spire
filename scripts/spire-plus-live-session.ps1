@@ -327,11 +327,42 @@ function Move-NewCurrentRunsBeforeRestore {
         }
     }
 
-    if ($moved.Count -gt 0) {
-        Save-Json -InputObject @($moved) -Path (Join-Path $preserveRoot 'moved-test-created-current-runs.json')
+    return $moved
+}
+
+function Get-PreservedCurrentRunsManifestPath {
+    param([Parameter(Mandatory = $true)][string]$EvidenceRoot)
+
+    return Join-Path (Join-Path $EvidenceRoot 'test-created-current-runs-before-restore') 'moved-test-created-current-runs.json'
+}
+
+function Move-CreatedBackupBeforeRestore {
+    param(
+        [string]$Path,
+        [Parameter(Mandatory = $true)][string]$EvidenceRoot,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if (-not $Path -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $null
     }
 
-    return $moved
+    $preserveDir = Join-Path $EvidenceRoot 'created-backups-before-restore'
+    New-DirectoryIfMissing -Path $preserveDir
+    $destination = Join-Path $preserveDir $Name
+    if (Test-Path -LiteralPath $destination) {
+        $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
+        $destination = Join-Path $preserveDir "$stamp-$Name"
+    }
+
+    Assert-PathInside -Child $destination -Parent $preserveDir -Label 'Created backup preserve destination'
+    Move-Item -LiteralPath $Path -Destination $destination
+    return [pscustomobject]@{
+        Name = $Name
+        From = $Path
+        To = $destination
+        Sha256 = Get-HashOrNull -Path $destination
+    }
 }
 
 function Stop-SpireProcesses {
@@ -343,7 +374,23 @@ function Stop-SpireProcesses {
         Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue
     }
 
+    foreach ($process in $targets) {
+        Wait-Process -Id $process.Id -Timeout 10 -ErrorAction SilentlyContinue
+    }
+
     return $targets
+}
+
+function Get-RestoreProcessIds {
+    param([Parameter(Mandatory = $true)][string]$Kind)
+
+    $processes = if ($Kind -eq 'Slay') {
+        @(Get-Process | Where-Object { $_.ProcessName -like '*Slay*' })
+    } else {
+        @(Get-Process | Where-Object { $_.ProcessName -eq 'Godot_v4.5.1-stable_mono_win64' })
+    }
+
+    return @($processes | ForEach-Object { [int]$_.Id } | Sort-Object)
 }
 
 function Get-ParentProcessIdOrZero {
@@ -495,9 +542,13 @@ if ($Mode -eq 'Prepare') {
         MoveCurrentRuns = [bool]$MoveCurrentRuns
         MovedMods = @($movedMods)
         MovedCurrentRuns = @($movedRuns)
+        SettingsBackupExistedBefore = Test-Path -LiteralPath (Join-Path $evidenceFull 'settings.save.backup.before') -PathType Leaf
         SettingsHashBefore = Get-HashOrNull -Path (Join-Path $evidenceFull 'settings.save.before')
+        SettingsBackupHashBefore = Get-HashOrNull -Path (Join-Path $evidenceFull 'settings.save.backup.before')
         SettingsHashAfterPrepare = Get-HashOrNull -Path $settingsPath
+        DefaultSettingsBackupExistedBefore = Test-Path -LiteralPath (Join-Path $evidenceFull 'default.settings.save.backup.before') -PathType Leaf
         DefaultSettingsHashBefore = Get-HashOrNull -Path (Join-Path $evidenceFull 'default.settings.save.before')
+        DefaultSettingsBackupHashBefore = Get-HashOrNull -Path (Join-Path $evidenceFull 'default.settings.save.backup.before')
         DefaultSettingsHashAfterPrepare = Get-HashOrNull -Path $defaultSettingsPath
     }
 
@@ -602,6 +653,7 @@ $restoredMods = Restore-MovedItems `
 
 $currentRunDestinations = @($session.SteamSaves, $session.DefaultSaves) | Where-Object { $_ }
 $restoredRuns = @()
+$preservedNewCurrentRuns = @()
 foreach ($destinationRoot in $currentRunDestinations) {
     $itemsForRoot = @($session.MovedCurrentRuns | Where-Object {
         $_.From -and ([System.IO.Path]::GetFullPath($_.From).StartsWith([System.IO.Path]::GetFullPath($destinationRoot).TrimEnd('\') + '\', [System.StringComparison]::OrdinalIgnoreCase))
@@ -611,10 +663,10 @@ foreach ($destinationRoot in $currentRunDestinations) {
     }
 
     if ($PreserveNewCurrentRunsOnRestore) {
-        Move-NewCurrentRunsBeforeRestore `
+        $preservedNewCurrentRuns += Move-NewCurrentRunsBeforeRestore `
             -Items $itemsForRoot `
             -EvidenceRoot $evidenceRestoreFull `
-            -DestinationRoot $destinationRoot | Out-Null
+            -DestinationRoot $destinationRoot
     }
 
     $restoredRuns += Restore-MovedItems `
@@ -629,9 +681,18 @@ if (Test-Path -LiteralPath $settingsBefore) {
     Copy-Item -LiteralPath $settingsBefore -Destination $session.SettingsPath -Force
 }
 
+$preservedCreatedBackups = @()
 $settingsBackupBefore = Join-Path $evidenceRestoreFull 'settings.save.backup.before'
 if (Test-Path -LiteralPath $settingsBackupBefore) {
     Copy-Item -LiteralPath $settingsBackupBefore -Destination $session.SettingsBackupPath -Force
+} elseif (($session.PSObject.Properties.Name -contains 'SettingsBackupExistedBefore') -and
+    -not [bool]$session.SettingsBackupExistedBefore -and
+    $session.SettingsBackupPath -and
+    (Test-Path -LiteralPath $session.SettingsBackupPath -PathType Leaf)) {
+    $preservedBackup = Move-CreatedBackupBeforeRestore -Path $session.SettingsBackupPath -EvidenceRoot $evidenceRestoreFull -Name 'settings.save.backup.created-during-session'
+    if ($preservedBackup) {
+        $preservedCreatedBackups += $preservedBackup
+    }
 }
 
 if ($session.PSObject.Properties.Name -contains 'PrepareDefaultSettings' -and [bool]$session.PrepareDefaultSettings) {
@@ -643,6 +704,14 @@ if ($session.PSObject.Properties.Name -contains 'PrepareDefaultSettings' -and [b
     $defaultSettingsBackupBefore = Join-Path $evidenceRestoreFull 'default.settings.save.backup.before'
     if ((Test-Path -LiteralPath $defaultSettingsBackupBefore) -and $session.DefaultSettingsBackupPath) {
         Copy-Item -LiteralPath $defaultSettingsBackupBefore -Destination $session.DefaultSettingsBackupPath -Force
+    } elseif (($session.PSObject.Properties.Name -contains 'DefaultSettingsBackupExistedBefore') -and
+        -not [bool]$session.DefaultSettingsBackupExistedBefore -and
+        $session.DefaultSettingsBackupPath -and
+        (Test-Path -LiteralPath $session.DefaultSettingsBackupPath -PathType Leaf)) {
+        $preservedBackup = Move-CreatedBackupBeforeRestore -Path $session.DefaultSettingsBackupPath -EvidenceRoot $evidenceRestoreFull -Name 'default.settings.save.backup.created-during-session'
+        if ($preservedBackup) {
+            $preservedCreatedBackups += $preservedBackup
+        }
     }
 }
 
@@ -650,14 +719,51 @@ if (Test-Path -LiteralPath $session.LogPath) {
     Copy-Item -LiteralPath $session.LogPath -Destination (Join-Path $evidenceRestoreFull 'godot.log.after-restore') -Force
 }
 
+$selectedGameProcessId = 0
+if ($session.PSObject.Properties.Name -contains 'SelectedGameProcessId' -and $null -ne $session.SelectedGameProcessId) {
+    $selectedGameProcessId = [int]$session.SelectedGameProcessId
+}
+
+$stoppedProcessIds = @($stopped | ForEach-Object { [int]$_.Id })
+$stoppedSelectedGameProcess = $false
+if ($selectedGameProcessId -gt 0) {
+    $stoppedSelectedGameProcess = $stoppedProcessIds -contains $selectedGameProcessId
+}
+
+$postRestoreSlayProcessIds = @(Get-RestoreProcessIds -Kind 'Slay')
+$postRestoreGodotProcessIds = @(Get-RestoreProcessIds -Kind 'Godot')
+$preservedNewCurrentRunsManifestPath = ''
+if (@($preservedNewCurrentRuns).Count -gt 0) {
+    $preservedNewCurrentRunsManifestPath = Get-PreservedCurrentRunsManifestPath -EvidenceRoot $evidenceRestoreFull
+    New-DirectoryIfMissing -Path (Split-Path -Parent $preservedNewCurrentRunsManifestPath)
+    Save-Json -InputObject @($preservedNewCurrentRuns) -Path $preservedNewCurrentRunsManifestPath
+}
+$preservedNewCurrentRunsManifestHash = if ($preservedNewCurrentRunsManifestPath) { Get-HashOrNull -Path $preservedNewCurrentRunsManifestPath } else { $null }
+if ($preservedNewCurrentRunsManifestPath -and -not (Test-Path -LiteralPath $preservedNewCurrentRunsManifestPath -PathType Leaf)) {
+    $preservedNewCurrentRunsManifestPath = ''
+}
+
 $restoreState = [ordered]@{
+    RestoreSchemaVersion = 1
     EvidenceDir = $evidenceRestoreFull
     RestoredAt = (Get-Date).ToString('o')
     StoppedProcesses = @($stopped | ForEach-Object { [pscustomobject]@{ ProcessName = $_.ProcessName; Id = $_.Id } })
+    StoppedSelectedGameProcess = [bool]$stoppedSelectedGameProcess
     RestoredModCount = @($restoredMods).Count
     RestoredCurrentRunCount = @($restoredRuns).Count
+    PreservedNewCurrentRunCount = @($preservedNewCurrentRuns).Count
+    PreservedNewCurrentRunsManifestPath = $preservedNewCurrentRunsManifestPath
+    PreservedNewCurrentRunsManifestSha256 = $preservedNewCurrentRunsManifestHash
+    PreservedCreatedBackupCount = @($preservedCreatedBackups).Count
+    PreservedCreatedBackups = @($preservedCreatedBackups)
+    PostRestoreSlayProcessCount = @($postRestoreSlayProcessIds).Count
+    PostRestoreSlayProcessIds = @($postRestoreSlayProcessIds)
+    PostRestoreGodotProcessCount = @($postRestoreGodotProcessIds).Count
+    PostRestoreGodotProcessIds = @($postRestoreGodotProcessIds)
+    SettingsBackupExistsAfterRestore = [bool](Test-Path -LiteralPath $session.SettingsBackupPath -PathType Leaf)
     SettingsHashAfterRestore = Get-HashOrNull -Path $session.SettingsPath
     SettingsBackupHashAfterRestore = Get-HashOrNull -Path $session.SettingsBackupPath
+    DefaultSettingsBackupExistsAfterRestore = if ($session.PSObject.Properties.Name -contains 'DefaultSettingsBackupPath') { [bool](Test-Path -LiteralPath $session.DefaultSettingsBackupPath -PathType Leaf) } else { $false }
     DefaultSettingsHashAfterRestore = if ($session.PSObject.Properties.Name -contains 'DefaultSettingsPath') { Get-HashOrNull -Path $session.DefaultSettingsPath } else { $null }
     DefaultSettingsBackupHashAfterRestore = if ($session.PSObject.Properties.Name -contains 'DefaultSettingsBackupPath') { Get-HashOrNull -Path $session.DefaultSettingsBackupPath } else { $null }
 }

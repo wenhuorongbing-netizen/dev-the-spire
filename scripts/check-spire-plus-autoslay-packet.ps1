@@ -102,6 +102,13 @@ function Get-NormalizedNonEmptyStringTokens {
         ForEach-Object { $_.Trim() })
 }
 
+function Get-NormalizedAncientIdTokens {
+    param([AllowNull()]$Value)
+
+    return @(Get-NormalizedNonEmptyStringTokens -Value $Value |
+        ForEach-Object { $_.ToUpperInvariant() })
+}
+
 function New-OrdinalStringSet {
     param([AllowNull()]$Values)
 
@@ -562,12 +569,14 @@ if ($planExists) {
     $plan = Read-JsonOrNull -Path $planPath -CheckName 'autoslay_plan_json_valid'
     if ($null -ne $plan) {
         Add-Check -Name 'autoslay_plan_json_valid' -Passed $true -Detail 'autoslay-plan.json parsed'
+        Add-Check -Name 'autoslay_plan_schema_version_one' -Passed ([int](Get-JsonValue -Object $plan -Name 'SchemaVersion' -DefaultValue 0) -eq 1) -Detail 'autoslay-plan.json SchemaVersion must be 1'
     }
 }
 if ($summaryExists) {
     $summary = Read-JsonOrNull -Path $summaryPath -CheckName 'autoslay_summary_json_valid'
     if ($null -ne $summary) {
         Add-Check -Name 'autoslay_summary_json_valid' -Passed $true -Detail 'autoslay-summary.json parsed'
+        Add-Check -Name 'autoslay_summary_schema_version_one' -Passed ([int](Get-JsonValue -Object $summary -Name 'SchemaVersion' -DefaultValue 0) -eq 1) -Detail 'autoslay-summary.json SchemaVersion must be 1'
     }
 }
 
@@ -736,13 +745,15 @@ if ($null -ne $plan) {
 
 $summaryRuns = @()
 $expectedAncientIdTokens = @(Get-DelimitedStringTokens -Value $ExpectedAncientIds)
-$expectedAncientIdsForCoverage = @(Get-NormalizedNonEmptyStringTokens -Value $ExpectedAncientIds)
+$expectedAncientIdsForCoverage = @(Get-NormalizedAncientIdTokens -Value $ExpectedAncientIds)
 $duplicateExpectedAncientIds = @($expectedAncientIdsForCoverage | Group-Object | Where-Object { $_.Count -gt 1 })
 $planExpectedAncientIdsForCoverage = @()
 $missingPlanExpectedAncientIds = @()
 $unexpectedPlanExpectedAncientIds = @()
 $observedAncientIds = @()
 $missingExpectedAncientIds = @()
+$traversedAncientIds = @()
+$missingExpectedTraversedAncientIds = @()
 Add-Check -Name 'expected_ancient_ids_required_for_proof_mode' -Passed (-not $FailOnMismatch -or $expectedAncientIdsForCoverage.Count -gt 0) -Detail 'AutoSlay proof packets must be checked with -ExpectedAncientIds when -FailOnMismatch is used'
 if ($expectedAncientIdTokens.Count -gt 0) {
     Add-Check -Name 'expected_ancient_ids_all_non_empty' -Passed ($expectedAncientIdsForCoverage.Count -eq $expectedAncientIdTokens.Count) -Detail 'ExpectedAncientIds entries must be non-empty when supplied'
@@ -750,7 +761,7 @@ if ($expectedAncientIdTokens.Count -gt 0) {
 
     if ($null -ne $plan) {
         $planExpectedAncientIdTokens = @(Get-DelimitedStringTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))
-        $planExpectedAncientIdsForCoverage = @(Get-NormalizedNonEmptyStringTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))
+        $planExpectedAncientIdsForCoverage = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))
         $duplicatePlanExpectedAncientIds = @($planExpectedAncientIdsForCoverage | Group-Object | Where-Object { $_.Count -gt 1 })
         $planExpectedAncientIdSet = New-OrdinalStringSet -Values $planExpectedAncientIdsForCoverage
         $expectedAncientIdSet = New-OrdinalStringSet -Values $expectedAncientIdsForCoverage
@@ -786,9 +797,9 @@ if ($null -ne $summary) {
 
     $observedAncientIdSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
     foreach ($run in $summaryRuns) {
-        $runAncientId = [string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')
+        $runAncientId = ([string](Get-JsonValue -Object $run -Name 'AncientId' -DefaultValue '')).Trim()
         if (-not [string]::IsNullOrWhiteSpace($runAncientId)) {
-            $observedAncientIdSet.Add($runAncientId) | Out-Null
+            $observedAncientIdSet.Add($runAncientId.ToUpperInvariant()) | Out-Null
         }
     }
     $observedAncientIds = @($observedAncientIdSet | Sort-Object)
@@ -799,6 +810,7 @@ if ($null -ne $summary) {
 }
 
 $eventTraversalObserved = $false
+$traversedAncientIdSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $run = $summaryRuns[$i]
     $runName = "run_{0:D4}" -f ($i + 1)
@@ -939,6 +951,67 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_runtime_probe_samples_log_exists_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogExists') -Detail 'every probe sample must retain LogExists'
             Add-Check -Name "${runName}_runtime_probe_samples_log_length_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogLengthBytes') -Detail 'every probe sample must retain LogLengthBytes'
             Add-Check -Name "${runName}_runtime_probe_samples_log_last_write_time_field_retained" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'LogLastWriteTimeUtc') -Detail 'every probe sample must retain LogLastWriteTimeUtc, even when the log is absent'
+            $invalidSampledAtProbeSamples = @($probeSamples | Where-Object {
+                $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
+                -not [bool]$sampledAtParse.Parsed
+            })
+            $invalidLogLastWriteProbeSamples = @($probeSamples | Where-Object {
+                $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                $logLastWriteParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue ''))
+                $logExists -and -not [bool]$logLastWriteParse.Parsed
+            })
+            $futureLogLastWriteProbeSamples = @($probeSamples | Where-Object {
+                $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
+                $logLastWriteParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue ''))
+                $logExists -and [bool]$sampledAtParse.Parsed -and [bool]$logLastWriteParse.Parsed -and $logLastWriteParse.Value -gt $sampledAtParse.Value
+            })
+            Add-Check -Name "${runName}_runtime_probe_samples_sampled_at_parseable" -Passed ($invalidSampledAtProbeSamples.Count -eq 0) -Detail "every probe sample SampledAt must be parseable; invalidCount=$($invalidSampledAtProbeSamples.Count)"
+            Add-Check -Name "${runName}_runtime_probe_samples_log_last_write_parseable_when_log_exists" -Passed ($invalidLogLastWriteProbeSamples.Count -eq 0) -Detail "LogLastWriteTimeUtc must be parseable when LogExists=true; invalidCount=$($invalidLogLastWriteProbeSamples.Count)"
+            Add-Check -Name "${runName}_runtime_probe_samples_log_last_write_not_after_sampled_at" -Passed ($futureLogLastWriteProbeSamples.Count -eq 0) -Detail "LogLastWriteTimeUtc must not be later than SampledAt; invalidCount=$($futureLogLastWriteProbeSamples.Count)"
+            $sampledAtRegressionCount = 0
+            $phaseOrderDefectCount = 0
+            $logLengthRegressionCount = 0
+            $negativeLogLengthProbeSamples = @($probeSamples | Where-Object {
+                [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                    [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) -lt 0
+            })
+            $previousSampledAt = $null
+            $previousLogLengthBytes = $null
+            $runtimePhaseSeen = $false
+            foreach ($probeSample in $probeSamples) {
+                $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $probeSample -Name 'SampledAt' -DefaultValue ''))
+                if ([bool]$sampledAtParse.Parsed) {
+                    if ($null -ne $previousSampledAt -and $sampledAtParse.Value -lt $previousSampledAt) {
+                        $sampledAtRegressionCount++
+                    }
+
+                    $previousSampledAt = $sampledAtParse.Value
+                }
+
+                $phase = [string](Get-JsonValue -Object $probeSample -Name 'Phase' -DefaultValue '')
+                if ([string]::Equals($phase, 'runtime', [System.StringComparison]::Ordinal)) {
+                    $runtimePhaseSeen = $true
+                } elseif ([string]::Equals($phase, 'main-menu', [System.StringComparison]::Ordinal) -and $runtimePhaseSeen) {
+                    $phaseOrderDefectCount++
+                }
+
+                if ([bool](Get-JsonValue -Object $probeSample -Name 'LogExists' -DefaultValue $false)) {
+                    $logLengthBytes = [long](Get-JsonValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1)
+                    if ($logLengthBytes -ge 0) {
+                        if ($null -ne $previousLogLengthBytes -and $logLengthBytes -lt $previousLogLengthBytes) {
+                            $logLengthRegressionCount++
+                        }
+
+                        $previousLogLengthBytes = $logLengthBytes
+                    }
+                }
+            }
+
+            Add-Check -Name "${runName}_runtime_probe_samples_sampled_at_nondecreasing" -Passed ($sampledAtRegressionCount -eq 0) -Detail "runtime-probe-samples.json SampledAt values must be retained in nondecreasing order; regressionCount=$sampledAtRegressionCount"
+            Add-Check -Name "${runName}_runtime_probe_samples_phase_ordered" -Passed ($phaseOrderDefectCount -eq 0) -Detail "main-menu samples must not appear after runtime samples; defectCount=$phaseOrderDefectCount"
+            Add-Check -Name "${runName}_runtime_probe_samples_log_length_nonnegative_when_log_exists" -Passed ($negativeLogLengthProbeSamples.Count -eq 0) -Detail "LogLengthBytes must be non-negative when LogExists=true; invalidCount=$($negativeLogLengthProbeSamples.Count)"
+            Add-Check -Name "${runName}_runtime_probe_samples_log_length_nondecreasing_when_log_exists" -Passed ($logLengthRegressionCount -eq 0) -Detail "LogLengthBytes must not regress across retained LogExists=true samples; regressionCount=$logLengthRegressionCount"
             Add-Check -Name "${runName}_runtime_probe_samples_main_menu_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu') -Detail 'runtime-probe-samples.json must include at least one main-menu phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_runtime_phase_observed" -Passed (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'runtime') -Detail 'runtime-probe-samples.json must include at least one runtime phase sample'
             Add-Check -Name "${runName}_runtime_probe_samples_process_id_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessId') -Detail 'every probe sample must retain ProcessId'
@@ -1071,6 +1144,14 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
         Add-Check -Name "${runName}_current_log_contains_ancient_id" -Passed (Contains-Text -Text $currentLog -Needle $ancientId) -Detail "current-iteration godot log must contain AncientId '$ancientId'"
     }
 
+    $ancientSelectionNeedle = if (-not [string]::IsNullOrWhiteSpace($ancientId)) { "Selecting event option: $ancientId" } else { '' }
+    $autoSlayLogSelectsAncientId = -not [string]::IsNullOrWhiteSpace($ancientSelectionNeedle) -and (Contains-Text -Text $autoSlayLog -Needle $ancientSelectionNeedle)
+    $currentLogSelectsAncientId = -not [string]::IsNullOrWhiteSpace($ancientSelectionNeedle) -and (Contains-Text -Text $currentLog -Needle $ancientSelectionNeedle)
+    if (-not [string]::IsNullOrWhiteSpace($ancientId)) {
+        Add-Check -Name "${runName}_autoslay_log_selects_ancient_id" -Passed ($AllowMissingEventTraversal -or $autoSlayLogSelectsAncientId) -Detail "AutoSlay sidecar log must bind the event option selection to AncientId '$ancientId'"
+        Add-Check -Name "${runName}_current_log_selects_ancient_id" -Passed ($AllowMissingEventTraversal -or $currentLogSelectsAncientId) -Detail "current-iteration godot log must bind the event option selection to AncientId '$ancientId'"
+    }
+
     $eventSequence = @(
         "Starting run with seed=$seed",
         'Entering Event room',
@@ -1080,8 +1161,13 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     )
     $autoSlayEventSequenceObserved = (-not [string]::IsNullOrWhiteSpace($seed)) -and (Test-OrderedTextSequence -Text $autoSlayLog -Needles $eventSequence)
     $currentLogEventSequenceObserved = (-not [string]::IsNullOrWhiteSpace($seed)) -and (Test-OrderedTextSequence -Text $currentLog -Needles $eventSequence)
-    $runEventTraversal = $autoSlayEventSequenceObserved -and $currentLogEventSequenceObserved
+    $runEventTraversal = $autoSlayEventSequenceObserved -and $currentLogEventSequenceObserved -and (
+        [string]::IsNullOrWhiteSpace($ancientId) -or
+        ($autoSlayLogSelectsAncientId -and $currentLogSelectsAncientId))
     $eventTraversalObserved = $eventTraversalObserved -or $runEventTraversal
+    if ($runEventTraversal -and -not [string]::IsNullOrWhiteSpace($ancientId)) {
+        $traversedAncientIdSet.Add($ancientId.Trim().ToUpperInvariant()) | Out-Null
+    }
     Add-Check -Name "${runName}_autoslay_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $autoSlayEventSequenceObserved) -Detail 'AutoSlay sidecar log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option, and completion markers'
     Add-Check -Name "${runName}_current_log_event_sequence_observed" -Passed ($AllowMissingEventTraversal -or $currentLogEventSequenceObserved) -Detail 'current-iteration godot log must contain ordered start, Entering Event room, Detected Ancient event, Selecting event option, and completion markers'
     Add-Check -Name "${runName}_event_room_traversal_observed" -Passed ($AllowMissingEventTraversal -or $runEventTraversal) -Detail 'AutoSlay event proof requires ordered event traversal in both sidecar and current-iteration godot logs'
@@ -1269,6 +1355,11 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
 }
 
 Add-Check -Name 'batch_event_room_traversal_observed' -Passed ($AllowMissingEventTraversal -or $eventTraversalObserved) -Detail 'at least one run must prove event-room traversal for event.md monkey proof'
+$traversedAncientIds = @($traversedAncientIdSet | Sort-Object)
+if ($expectedAncientIdsForCoverage.Count -gt 0) {
+    $missingExpectedTraversedAncientIds = @($expectedAncientIdsForCoverage | Where-Object { -not $traversedAncientIdSet.Contains($_) })
+    Add-Check -Name 'expected_ancient_ids_have_event_traversal' -Passed ($AllowMissingEventTraversal -or $missingExpectedTraversedAncientIds.Count -eq 0) -Detail "ExpectedAncientIds missing traversed proof=$($missingExpectedTraversedAncientIds -join ',') traversed=$($traversedAncientIds -join ',')"
+}
 
 $passed = $mismatches.Count -eq 0
 foreach ($check in $checks) {
@@ -1293,6 +1384,8 @@ if (-not [string]::IsNullOrWhiteSpace($OutFile)) {
         UnexpectedPlanExpectedAncientIds = $unexpectedPlanExpectedAncientIds
         ObservedAncientIds = $observedAncientIds
         MissingExpectedAncientIds = $missingExpectedAncientIds
+        TraversedAncientIds = $traversedAncientIds
+        MissingExpectedTraversedAncientIds = $missingExpectedTraversedAncientIds
         EventTraversalRequired = -not [bool]$AllowMissingEventTraversal
         EventTraversalObserved = $eventTraversalObserved
         Checks = $checks

@@ -1,4 +1,4 @@
-# StS1 Event Port 严格审核 v20 — beta.86 / v0.107 当前状态、June Dev Spec、Subagent 与 Overnight Run
+# StS1 Event Port Strict Audit v20 - beta.88 / v0.107.1 Current Loader Truth, June Dev Spec, Subagent, and Overnight Run
 
 日期：2026-06-18
 项目：`dev-the-spire` / `Spire Plus` / technical id `EZMicroBalance`
@@ -31,9 +31,10 @@ release handoff proof
 
 ```text
 Source/test/static guard: strong progress
-Current beta.85 default-Off loader: pass
-Current beta.85 CanaryOnly enabled-mode loader: pass
-Current beta.86 AdditiveBatch1 enabled-mode loader/registration: pass
+Retained beta.85 default-Off loader: previous-package/game-version pass
+Retained beta.85 CanaryOnly enabled-mode loader: previous-package/game-version pass
+Retained beta.87 AdditiveBatch1 enabled-mode loader/registration: previous-package/game-version pass
+Current beta.88 AdditiveBatch1 enabled-mode loader/registration: pass for v0.107.1 with BaseLib v3.3.0
 Gameplay parity: blocked / unverified
 Release-ready/live-ready: no
 Full StS1 experience: no
@@ -58,11 +59,21 @@ Allowed work during the pause is read-only/static checking, documentation/guard 
 
 Runtime, gameplay, QA, build/test/publish, package/release-evidence, staging, commit, and push instructions below apply only after the coordination pause is explicitly lifted. During the coordination pause, do not treat static or source-only work as closing runtime gates.
 
+### 0.2 Current beta.88 override
+
+As of 2026-06-19, current loader truth is beta.88 on Slay the Spire 2 `v0.107.1`: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu with BaseLib `v3.3.0`, STS2-RitsuLib `v0.4.24`, Spire Plus `v0.1.0-private-beta.88`, 25/25 Spire Plus patches applied, AdditiveBatch1 10 event types / 14 registration calls, clean audit, enabled-mode verifier 31 / 0, and runtime packet verifier 0 mismatches. Treat beta.85, beta.86, and beta.87 loader lines below as retained previous-package/game-version context unless a line explicitly names the beta.88 evidence path.
+
+This beta.88 packet is loader/registration proof only. It still does not close event gameplay, clicked UI, save-load, EN/ZHS runtime render, image/license/render, replacement functional behavior, multiplayer/fail-closed, independent QA, game-native AutoSlay batch proof, release, or tester handoff gates.
+
 Earlier pause-safe static checkpoint after the runtime-monkey AutoSlay boundary/source-contract, packet-verifier, and analyzer hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1025 checks / 0 mismatches after the v20 subagent coverage, status-board header, current-doc summary, optional no-launch preflight script, test-plan preflight prerequisite, read-only preflight guards, PROJECT_STATE static-summary alignment, active current-guidance route alignment, historical-review current-route alignment, v20 hard-stop report, v20 O76-O84 final-gate overlay, tuple-aware enabled-mode log verifier guards, CanaryOnly current-pass guard, repo-manifest runtime-preflight drift guard, beta.86 AdditiveBatch1 doc alignment, retained-loader subagent split, current pause-state snapshot alignment, current diff-check wording, retained current-slice binding guards, game-native AutoSlay source-contract boundary, game-native AutoSlay packet-verifier run-result/current-slice/audit/StS1-mode/patch-count/launcher/AncientId docs/scripts, AutoSlay runtime-failure analyzer run-result routing, AutoSlay probe phase/timestamp packet/analyzer guards, and runtime `RuntimeLogGrowthRequired` / command-bearing `LogGrew` / no-log-growth-timeout guards were guarded. The latest beta.86-target read-only `scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch` returned 27 checks / 0 mismatches because both the repo and installed `EZMicroBalance.json` now report `v0.1.0-private-beta.87`; `scripts/check-local-godot-source-workspace.ps1` returned 50 checks / 0 mismatches with all AutoSlay contract checks passing and 3 retained warnings (`source version=v0.106.0 installed version=v0.107.0`, GDRE failed scripts=18, GDRE parse errors=1); the retained previous synthetic rich AutoSlay packet checkpoint returned 171 checks / 0 mismatches through `scripts/check-spire-plus-autoslay-packet.ps1` before the later probe phase/timestamp guard additions; `scripts/check-sts1-event-static-suite.ps1` returned 15 static steps / 0 suite failures with the known 33-key localization gap; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 12 checks / 0 mismatches; `scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch` returned 534 checks / 0 mismatches; `scripts/check-sts1-v20-final-gate-overlay.ps1 -FailOnMismatch` returned 29 checks / 0 mismatches; `scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch` returned 70 checks / 0 mismatches; focused `git diff --check --` on the touched event-governance docs and guard script exited 0 with only CRLF warnings. This is static/preflight evidence and does not itself close gameplay, save/load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates.
 
-Latest pause-safe static checkpoint after the runtime-monkey packet escape, analyzer noncanonical-path, probe process identity, and AutoSlay malformed-path hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1090 checks / 0 mismatches; `scripts/check-sts1-event-static-suite.ps1` returned 15 static steps / 0 suite failures; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 12 checks / 0 mismatches; parser checks, diff-check, and batch-classifier checks passed. This is static/no-launch evidence only and does not close gameplay, save-load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates.
+Latest pause-safe static checkpoint after beta.88 event-goal/current-doc alignment, runtime-monkey packet escape, analyzer noncanonical-path, probe process identity, and AutoSlay malformed-path hardening pass: `scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch` returned 1122 checks / 0 mismatches; `scripts/check-sts1-event-static-suite.ps1` returned 15 static steps / 0 suite failures; `scripts/check-sts1-static-file-hygiene.ps1 -FailOnMismatch` returned 12 checks / 0 mismatches; parser checks, diff-check, and batch-classifier checks passed. This is static/no-launch evidence only and does not close gameplay, save-load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates.
 
-Latest pause-safe AutoSlay target-coverage follow-up: `check-spire-plus-autoslay-packet.ps1` now accepts comma-separated `-ExpectedAncientIds` values, requires `-ExpectedAncientIds` in `-FailOnMismatch` proof mode, requires the same target set in `autoslay-plan.json` `ExpectedAncientIds`, and fails a retained packet when the summary runs do not cover every requested Ancient id. Minimal no-launch packet probes confirmed a matching `VAKUU,URDA` plan target set passes the new `plan_expected_ancient_ids_*` checks, an omitted `URDA` plan target fails `plan_expected_ancient_ids_match_parameter`, a missing proof-mode target switch fails `expected_ancient_ids_required_for_proof_mode`, and a matching `VAKUU,URDA` plan with only `VAKUU` observed fails `summary_expected_ancient_ids_observed` with `ExpectedAncientIds missing=URDA`. This improves future game-native monkey proof quality but remains static/verifier evidence only; it still does not close gameplay, save-load, replacement, multiplayer, QA, release, or handoff gates.
+Latest pause-safe AutoSlay target-coverage follow-up: `check-spire-plus-autoslay-packet.ps1` now accepts comma-separated `-ExpectedAncientIds` values, requires `-ExpectedAncientIds` in `-FailOnMismatch` proof mode, requires the same target set in `autoslay-plan.json` `ExpectedAncientIds`, and fails a retained packet when summary runs or traversed sidecar-plus-current-log event evidence do not cover every requested Ancient id. Minimal no-launch packet probes confirmed a matching `VAKUU,URDA` plan target set passes the new `plan_expected_ancient_ids_*` checks, an omitted `URDA` plan target fails `plan_expected_ancient_ids_match_parameter`, a missing proof-mode target switch fails `expected_ancient_ids_required_for_proof_mode`, and a matching `VAKUU,URDA` plan with only `VAKUU` observed fails `summary_expected_ancient_ids_observed` with `ExpectedAncientIds missing=URDA`; a target Ancient id must also be bound to `Selecting event option: <AncientId>` in both the AutoSlay sidecar and current-iteration Godot log before it counts as traversed proof. This improves future game-native monkey proof quality but remains static/verifier evidence only; it still does not close gameplay, save-load, replacement, multiplayer, QA, release, or handoff gates.
+
+Latest pause-safe AutoSlay AncientId normalization/proof-mode follow-up: `check-spire-plus-autoslay-packet.ps1` now normalizes expected, plan, summary, and traversed Ancient ids to uppercase for target-coverage comparison so future game-native packets are not rejected solely because the native/log packet uses `Urda` while the proof command uses `URDA`. The per-run `run-result.json` versus `autoslay-summary.json` AncientId self-consistency check remains exact, and `-AllowMissingEventTraversal` is guarded as incompatible with `-FailOnMismatch` proof-mode verification. `RuntimeMonkeyStabilityGuardTests` now includes a no-launch verifier fixture for mixed-case plan/summary/run-result Ancient ids, a proof-mode failure fixture for `-AllowMissingEventTraversal`, and source/doc contract assertions for these rules, but it was not executed through `dotnet test` in this thread because the shared validation lane is paused. Pause-safe checks passed: parser check for `check-spire-plus-autoslay-packet.ps1`, current-doc claims 1133 / 0, static suite 15 / 0, static-file hygiene 12 / 0, `git diff --check` with only the existing CRLF warning, and batch-classifier 68 dirty entries / 0 unclassified. This remains verifier/test hardening only and does not close game-native AutoSlay batch proof, gameplay, save-load, replacement, multiplayer, QA, release, or handoff gates.
+
+Latest pause-safe direct-smoke analyzer follow-up: `analyze-spire-plus-runtime-failure.ps1` now treats failed direct smoke roots with `direct-smoke-summary.json`, bound `godot.log.current-iteration`, and `godot-log-audit.json` as `DirectSmoke` targets. Rerunning it against `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` reports `PackageRuntimeDrift`, 1 analyzed target, 2 package blockers, 0 harness blockers, and 0 gameplay blockers, so the current BaseLib `v3.2.1` / Slay the Spire 2 `v0.107.1` dirty audit is routed to dependency/runtime compatibility instead of StS1 event gameplay source. The report's `BaseLibPatchFailures` field now pinpoints `AdjustCustomMessageKeys::Fuckery()` as an undefined target-method failure, `NRelicCollectionCategory::LoadRelics` as an instruction matcher failure, and the 241-applied / 2-failed BaseLib patch summary. This is analyzer/test hardening only and still does not close clean-loader, gameplay, save-load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates.
 
 Shared validation update from the migration lane, 2026-06-18: fresh beta.85 CanaryOnly proof under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` reached main menu, audited clean, and passed retained log/packet verifiers with 4 event types / 6 registration calls. The beta.85 AdditiveBatch1 evidence under `.tools/runtime-evidence/v01070-beta85-additive-batch1-20260617-233759/` remains root-cause history for the 13/14 package/source-shape drift. The beta.86 direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu, audited clean, reported Spire Plus `v0.1.0-private-beta.87`, RitsuLib `0.4.24`, compat branch `0.107.0`, 25/25 Spire Plus patches, 30 SavedSpireFields, 10 event types / 14 registration calls, exact act/shared tuple parity including The Cleric in Overgrowth and Underdocks, retained log verifier 21 / 0, and packet verifier 45 / 0. Treat O25 and O33 as loader/registration proof only, and do not treat either as gameplay, save-load, render, replacement, multiplayer, QA, release, or handoff evidence.
 
@@ -112,8 +123,8 @@ Complementary no-build test-project lane: 480 passed / 0 failed / 39 skipped / 5
 Current split coverage after beta.86 post-doc/test reconciliation: 489 passed / 0 failed / 39 skipped / 528 total
 Opt-in installed-artifact lane: 67 passed / 0 failed / 2 skipped / 69 total
 Static suite: 15 static steps / 0 suite failures
-current-doc-claims: 1090 checks / 0 mismatches
-runtime-preflight: 27 checks / 0 mismatches (repo and installed package versions beta.86)
+current-doc-claims: 1133 checks / 0 mismatches
+runtime-preflight: 27 checks / 0 mismatches (local v0.107.1 / beta.88 target; read-only source/prereq only)
 static-file-hygiene: 12 checks / 0 mismatches
 v19 gate ledger: 534 checks / 0 mismatches
 v20 final-gate overlay: 29 checks / 0 mismatches
@@ -171,7 +182,7 @@ tuple-aware copied-log dry-run returned 21 checks / 0 mismatches
 
 严格解释：
 
-- Current CanaryOnly loader registration proof can be treated as current-pass for `O25` and loader-packet `O39`.
+- Retained beta.85 CanaryOnly loader registration proof remains previous-package/game-version loader context for `O25` and loader-packet `O39`; recapture current CanaryOnly before broader current-runtime claims.
 - It still does not prove Big Fish, Golden Idol, The Lab, or Divine Fountain gameplay, result state, save/load, EN/ZHS render, image/license/render, replacement, multiplayer, QA, or handoff readiness.
 - Do not derive AdditiveBatch1 proof from CanaryOnly proof.
 
@@ -191,7 +202,7 @@ retained runtime packet verifier 45 / 0
 
 严格解释：
 
-- Current AdditiveBatch1 loader registration proof can be treated as current-pass for `O33`.
+- Current beta.88 AdditiveBatch1 loader registration proof can be treated as current-pass for `O33`.
 - It still does not prove event encounter gameplay, result state, save/load, EN/ZHS render, image/license/render, replacement functional behavior, multiplayer, QA, or handoff readiness.
 
 ### 3.2 仍未通过的部分
@@ -199,7 +210,7 @@ retained runtime packet verifier 45 / 0
 当前 validation 明确说：
 
 ```text
-Beta.85 Off, beta.85 CanaryOnly, and beta.87 AdditiveBatch1 loader proof must not be extended to:
+Retained beta.85 Off, retained beta.85 CanaryOnly, retained beta.87 AdditiveBatch1, and current beta.88 AdditiveBatch1 loader proof must not be extended to:
 gameplay
 save-load
 replacement
@@ -340,8 +351,8 @@ StS1 events must be judged by gameplay behavior, not by source count.
 |---|---|---|
 | Build/test/static | Strong progress | Pass for source/static only |
 | beta.85 Off loader | Clean | Pass for default-Off only |
-| CanaryOnly enabled-mode | Current beta.85 proof retained | Pass for loader proof only |
-| AdditiveBatch1 enabled-mode | Current beta.86 direct proof retained: 10 event types / 14 calls | Pass for loader proof only |
+| CanaryOnly enabled-mode | Retained beta.85 proof | Previous-package/game-version loader proof only |
+| AdditiveBatch1 enabled-mode | Current beta.88 direct proof: 10 event types / 14 calls | Loader/registration proof only |
 | Canary gameplay | Missing | Blocked |
 | Simple batch gameplay | Missing | Blocked |
 | Save/load | Missing | Blocked |
@@ -371,8 +382,8 @@ Priority optimization:
 
 ```text
 - protect beta.85 Off loader clean state
-- preserve current beta.85 CanaryOnly loader proof
-- preserve current beta.86 AdditiveBatch1 loader/registration proof
+- preserve retained beta.85 CanaryOnly loader proof as previous-package/game-version context
+- preserve current beta.88 AdditiveBatch1 loader/registration proof
 - close or track 33 localization result-page key gaps
 - keep zero-warning build
 - maintain static-suite guards
@@ -746,7 +757,7 @@ coordination pause 解除后，继续 Mandatory Overnight Run v20。只能在 O0
 | Test matrix             | beta.86 post-doc/test reconciliation 记录为 `489 passed / 0 failed / 39 skipped / 528 total`                                                  |
 | Installed artifact lane | `67 passed / 0 failed / 2 skipped / 69 total`                                                                                           |
 | Static suite            | `15 static steps / 0 suite failures`                                                                                                    |
-| Current doc claims      | 后续静态检查最高记录为 `1090 checks / 0 mismatches`                                                                                                |
+| Current doc claims      | 后续静态检查最高记录为 `1133 checks / 0 mismatches` |
 | beta.85 Off loader      | **clean**：v0.107.0 + RitsuLib 0.4.24，25/25 patches，StS1Events default Off                                                               |
 | beta.85 CanaryOnly loader | **clean**：retained verifiers 证明 4 event types / 6 registration calls                                                                    |
 | beta.86 AdditiveBatch1 loader | **clean**：retained verifiers 证明 10 event types / 14 registration calls                                                                   |

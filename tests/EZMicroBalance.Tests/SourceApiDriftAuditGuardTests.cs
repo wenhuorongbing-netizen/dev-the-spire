@@ -127,7 +127,7 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             project,
-            "Alchyr.Sts2.BaseLib\" Version=\"3.2.1",
+            "Alchyr.Sts2.BaseLib\" Version=\"3.3.0",
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 

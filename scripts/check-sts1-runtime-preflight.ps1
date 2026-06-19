@@ -3,7 +3,7 @@ param(
     [string]$ExpectedGameVersion = 'v0.107.1',
     [string]$ExpectedRitsuLibVersion = '0.4.24',
     [string]$ExpectedRitsuCompatBranch = '0.107.0',
-    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.87',
+    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.88',
     [string]$ExpectedModId = 'EZMicroBalance',
     [string]$ExpectedRitsuModId = 'STS2-RitsuLib',
     [string]$OutFile,

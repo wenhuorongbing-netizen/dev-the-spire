@@ -37,9 +37,9 @@ Reproduce the per-spec static coverage check with:
 
 | Mode | Current source count | Notes |
 |------|----------------------|-------|
-| Off | 0 calls | Default path. Current beta.85 Off loader proof is clean, but this proves only disabled-mode startup and patch application. |
-| CanaryOnly | 6 calls / 4 event types | Big Fish and Golden Idol register to both StS2 Act 1 buckets; The Lab and Divine Fountain are shared. Current `v0.107.0` enabled-mode smoke passed as loader proof only; gameplay proof is still pending. |
-| AdditiveBatch1 | 14 calls / 10 event types | Canary set plus Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light. Current beta.86 `v0.107.0` enabled-mode smoke proves loader/registration shape only; gameplay proof is still pending. The beta.85 13/14 verifier mismatch is root-cause history only. |
+| Off | 0 calls | Default path. Retained beta.85 Off loader proof is previous-package/game-version context only and proves disabled-mode startup plus patch application, not gameplay. |
+| CanaryOnly | 6 calls / 4 event types | Big Fish and Golden Idol register to both StS2 Act 1 buckets; The Lab and Divine Fountain are shared. Retained beta.85 `v0.107.0` CanaryOnly smoke is previous-package loader proof only; current beta.88 AdditiveBatch1 includes the canary registrations but is not a CanaryOnly-mode launch. Gameplay proof is still pending. |
+| AdditiveBatch1 | 14 calls / 10 event types | Canary set plus Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light. Current beta.88 `v0.107.1` enabled-mode smoke proves loader/registration shape only with 10 event types / 14 registration calls, clean audit, retained enabled-mode verifier 31 / 0, and runtime packet verifier 0 mismatches. Gameplay proof is still pending. The beta.85 13/14 verifier mismatch and beta.87 `v0.107.1` BaseLib `v3.2.1` patch failure are root-cause history only. |
 | AdditiveAllDraft | 57 calls / 47 compiling event types | Unsafe/dev-only mode. Does not include compile-excluded Duplicator. |
 
 ## Non-Claims

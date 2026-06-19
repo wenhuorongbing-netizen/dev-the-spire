@@ -103,6 +103,12 @@ The first implementation layer is deliberately conservative:
    Runtime probe samples must match the live-session-selected game process
    identity by process id, start timestamp, and path; a different process is
    treated as harness contamination rather than gameplay evidence.
+   Runtime probe sample timestamps must be parseable, and retained log
+   last-write timestamps must be parseable and not later than the sample time
+   whenever the log exists. The retained sample array must also be chronological:
+   `SampledAt` values cannot go backward, startup/main-menu samples cannot be
+   retained after runtime samples, and `LogLengthBytes` must be non-negative and
+   nondecreasing whenever `LogExists` is true.
    Startup also fails if the current process disappears, the window reports
    hung/not responding for
    `-UnresponsiveSampleThreshold` consecutive samples, or the log stops growing
@@ -128,7 +134,19 @@ The first implementation layer is deliberately conservative:
    This uses `godot.log.current-iteration` as truth, not the evidence folder
    name or older log content.
 12. Restore the live session with `-StopGameOnRestore` and
-   `-PreserveNewCurrentRunsOnRestore`.
+   `-PreserveNewCurrentRunsOnRestore`, retaining `session-state.json` and
+   `restore-state.json` inside the same `iteration-####` directory. A clean
+   packet must bind both files from `iteration-result.json` by canonical
+   path and SHA256, prove restore schema version 1, prove the selected game
+   process was stopped, close restored mod/current-run counts against the
+   moved lists from `session-state.json`, record any preserved new current-run
+   manifest by path and SHA256 when its count is positive, require
+   post-restore SlayTheSpire2 and Godot process counts and id arrays to be
+   zero, and require restored settings hashes to match the retained
+   pre-prepare hashes. `settings.save.backup` may be absent before prepare, but
+   that absence must be recorded in `session-state.json`, restored by deleting
+   any test-created backup, and closed in `restore-state.json` with
+   `SettingsBackupExistsAfterRestore = false`.
 13. Write `iteration-result.json` and a root `monkey-summary.json`.
 
 The lane fails an iteration on:
@@ -151,7 +169,10 @@ The lane fails an iteration on:
 - package/game/RitsuLib/compat branch/patch-count expectation mismatch;
 - actual StS1 mode verifier mismatch;
 - DevConsole command failure when commands are enabled;
-- failed restore.
+- missing, escaped, hash-mismatched, or malformed retained `session-state.json`
+  / `restore-state.json`, restore item-count/hash mismatch, missing preserved
+  current-run manifest binding, post-restore process leak, selected-game-process
+  stop failure, or failed restore.
 
 This catches hangs and bad startup/runtime logs without depending on a fragile
 uncontrolled click bot. Later layers can add true random UI input after the
@@ -184,6 +205,9 @@ AutoSlay proof.
 A future AutoSlay-backed batch packet must retain all of the following before it
 can close a game-native monkey proof row:
 
+- top-level `autoslay-plan.json` and `autoslay-summary.json` with
+  `SchemaVersion: 1`, `RunnerKind: GameNativeAutoSlay`, and retained batch
+  metadata before any per-run artifacts can be trusted;
 - the exact launcher or mod hook that calls `AutoSlayer.Start(seed, logFile)`,
   retained as a hashed launcher/provenance artifact plus `LauncherKind`,
   `LauncherPath`, `LauncherSha256`, `HookId`, `HookAssembly`, and
@@ -213,8 +237,13 @@ can close a game-native monkey proof row:
   process and main-window observations, no hung-window samples, no
   `Responding=false` samples, `StaleProcessCount: 0`,
   `UnknownStartTimeProcessCount: 0`, and `AmbiguousCurrentProcessCount: 0` on
-  every sample; the file must be retained inside the same per-seed `run-####`
-  directory as that seed's `run-result.json`;
+  every sample; `SampledAt` must be parseable, and `LogLastWriteTimeUtc` must
+  be parseable and not later than `SampledAt` whenever `LogExists` is true; the
+  retained sample array must be chronological, with nondecreasing `SampledAt`
+  values, main-menu samples before runtime samples, and non-negative,
+  nondecreasing `LogLengthBytes` values while the log exists; the file must be
+  retained inside the same per-seed `run-####` directory as that seed's
+  `run-result.json`;
 - the seed, AutoSlay log path, exit code, Ancient id, ordered
   start/event/Ancient-dialogue/event-option/completion markers, with
   `AutoSlayLogSha256` bound to the retained log file; the sidecar log path must
@@ -244,7 +273,7 @@ After the packet is captured, verify it with:
   -EvidenceDir "<evidence>" `
   -MinRuns 1000 `
   -ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA `
-  -ExpectedPackageVersion v0.1.0-private-beta.87 `
+  -ExpectedPackageVersion v0.1.0-private-beta.88 `
   -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.24 `
   -ExpectedRitsuCompatBranch 0.107.0 `
@@ -256,10 +285,19 @@ After the packet is captured, verify it with:
 Pass multiple expected Ancient ids as a comma-separated `-ExpectedAncientIds`
 value; the verifier splits those tokens so process-launched test wrappers can
 exercise the same target-coverage checks as an interactive PowerShell run.
+Target coverage compares expected, plan, summary, and traversed Ancient ids
+case-insensitively after normalizing them to uppercase, while per-run
+`run-result.json` and `autoslay-summary.json` `AncientId` values must still
+match each other exactly.
 In `-FailOnMismatch` proof mode, `-ExpectedAncientIds` is required. A proof packet
 must also retain the same target set in `autoslay-plan.json`
-`ExpectedAncientIds`; summary-only target coverage is not sufficient.
+`ExpectedAncientIds`; summary-only target coverage is not sufficient. Each
+requested Ancient id must have sidecar and current-log traversal proof whose
+`Selecting event option:` line is bound to that same id.
 Omitting the target set fails `expected_ancient_ids_required_for_proof_mode`.
+Do not combine `-AllowMissingEventTraversal` with `-FailOnMismatch`; proof-mode
+verification fails `allow_missing_event_traversal_not_proof_mode` so a parser
+fixture bypass cannot be mistaken for game-native event traversal proof.
 
 This verifier is no-launch only. It rejects packets that do not identify
 `GameNativeAutoSlay`, do not record structured launcher/mod-hook provenance for
@@ -272,19 +310,24 @@ pass/failure state, before/after/current Godot log length/SHA256 metadata,
 `RuntimeProbeSamplesPath`, clean `MainMenuObservation` and
 `RuntimeObservation` records including runtime `LogGrew: true`, parseable
 ordered run-result timestamps, `main-menu` and `runtime` probe phases, probe
-sample `SampledAt`, `LogExists`, `LogLengthBytes`, and retained
-`LogLastWriteTimeUtc` fields, runtime sample `LogLengthBytes` growth beyond
+sample parseable `SampledAt`, `LogExists`, `LogLengthBytes`, and retained
+parseable `LogLastWriteTimeUtc` fields when the log exists, with no log
+last-write timestamp later than the sample timestamp, retained probe samples in
+nondecreasing `SampledAt` order, `main-menu` phases before `runtime` phases,
+non-negative and nondecreasing log lengths while `LogExists=true`, runtime sample
+`LogLengthBytes` growth beyond
 `RuntimeObservation.LogInitialLengthBytes`, unknown process start-time counts,
 ambiguous current-process counts, before/after/current Godot log-slice proof,
 clean audit recomputation, StS1 mode binding, `EventKind: Ancient` /
-`AncientId`, required proof-mode `-ExpectedAncientIds` plan and summary coverage, or ordered event-room
-traversal markers such as `Entering Event room`, `Detected Ancient event,
-clicking through dialogue`, and `Selecting event option:`. Use a smaller
+`AncientId`, required proof-mode `-ExpectedAncientIds` plan, summary, and
+traversed-id coverage, or ordered event-room traversal markers such as
+`Entering Event room`, `Detected Ancient event, clicking through dialogue`,
+and `Selecting event option: <AncientId>`. Use a smaller
 `-MinRuns` only for temporary parser or fixture tests; a real game-native
 monkey proof should use the intended proof count plus the intended target
 Ancient id coverage. A single-seed fixture packet is not batch proof; the verifier must fail when `-MinRuns` is higher than the retained plan and summary
 run count, and it must fail when any requested `-ExpectedAncientIds` value is
-missing from the retained summary runs.
+missing from the retained traversed Ancient ids.
 
 If a launched AutoSlay batch fails, triage the retained packet without launching
 anything:
@@ -294,6 +337,26 @@ anything:
   -EvidenceDir "<evidence>" `
   -OutFile "<evidence>\runtime-failure-analysis.json"
 ```
+
+For failed direct smoke evidence roots, the analyzer recognizes
+`direct-smoke-summary.json` as a `DirectSmoke` target even when the packet is
+incomplete. A failed or dirty DirectSmoke summary without retained
+`godot.log.current-iteration` or `godot-log-audit.json` fails closed as
+`RuntimeHarness` evidence before owner routing. When those artifacts are
+present, it binds the audit back to the current slice and routes BaseLib
+dirty-audit signatures such as
+`BaseLib patch failure` and `[ERROR] [BaseLib]` to `PackageRuntimeDrift`, not to
+StS1 event source. Nonzero DirectSmoke mode or packet verifier mismatch counts
+are reported as `direct_smoke_verifier_mismatch` under `PackageRuntimeDrift`.
+The JSON report's `BaseLibPatchFailures` array records
+patch-level details such as `AdjustCustomMessageKeys::Fuckery()` undefined
+target-method failures, `NRelicCollectionCategory::LoadRelics` instruction
+matcher failures, and the BaseLib applied/failed patch summary so dependency
+compatibility work can start from the exact failed patch signatures. Descriptive
+startup text that merely mentions
+`SPIREPLUS_ALLOW_UNVERIFIED_COOP_*` must not count as an enabled co-op override;
+only explicit `coop_*override_enabled` runtime markers should produce that
+blocker.
 
 For `GameNativeAutoSlay`, the analyzer reads `autoslay-summary.json`, each
 per-seed `run-result.json`, `runtime-probe-samples.json`, and sidecar log. It
@@ -306,14 +369,14 @@ probe samples, audit JSON, and StS1 reports with
 `RuntimeHarness` blockers before using those files for source routing. It
 also treats retained AutoSlay path fields that are empty, malformed, missing on
 disk, or not retained under the per-seed run directory as untrusted before owner
-routing.
-appends AutoSlay sidecar text to log-derived owner routing only when
+routing. It appends AutoSlay sidecar text to log-derived owner routing only when
 `autoslay.log` is retained in the per-seed run directory and
 `AutoSlayLogSha256` matches. It also reports missing launcher invocation,
 missing or unhealthy runtime probe samples, missing `main-menu` / `runtime`
-probe phases, invalid or reversed run-result timestamps, missing or unhealthy
-`MainMenuObservation` / `RuntimeObservation`, runtime probe `LogLengthBytes`
-drift from `RuntimeObservation.LogGrew`, `EventKind: Ancient` / `AncientId`,
+probe phases, invalid probe sample timestamps, invalid or reversed run-result timestamps,
+missing or unhealthy `MainMenuObservation` / `RuntimeObservation`,
+runtime probe `LogLengthBytes` drift from `RuntimeObservation.LogGrew`,
+`EventKind: Ancient` / `AncientId`,
 sidecar log, completion/failure marker, or ordered Ancient event traversal as
 `RuntimeHarness` evidence defects first. This makes failed AutoSlay packets
 useful for diagnosis, but it still does not turn a failed or source-only packet
@@ -383,7 +446,7 @@ After a launched run, verify the retained packet without launching anything:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.87 `
+  -ExpectedPackageVersion v0.1.0-private-beta.88 `
   -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.24 `
   -ExpectedRitsuCompatBranch 0.107.0 `
@@ -466,7 +529,14 @@ retained slice when required, a `godot-log-audit.json` whose scanned `Path`,
 `Length`, and `Sha256` bind to the retained current-iteration slice and whose
 signature counts match a packet-checker recomputation from that slice, no raw probe sample with
 `Responding=false`, and no probe sample or observation with
-`StaleProcessCount > 0`.
+`StaleProcessCount > 0`. It also requires the per-iteration
+  `session-state.json` and `restore-state.json` files, validates that both
+  states belong to the same iteration directory, validates result-file SHA256
+  bindings, and rejects malformed restore timestamps, stopped process fields,
+  scalar or missing moved-item/process-id arrays, restored item count
+  mismatches, post-restore SlayTheSpire2/Godot process leaks,
+  preserved-current-run manifest drift, or settings hashes/recorded backup
+  existence that do not match the retained pre-prepare session state.
 A clean packet means those signals stayed healthy for both sampled windows;
 the retained `runtime-probe-samples.json` must include `StartupMainMenu` and
 `PostCommandRuntime` samples, and those phase counts must match
@@ -505,27 +575,36 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `StaleProcessCount`, `StartupLogProbePassed`,
   `PostCommandLogProbePassed`, `CommandAckRequired`, `CommandAckPattern`,
   `CommandAckObserved`, `LiveSessionPrepareOutputPath`,
-  `LiveSessionPrepareOutputSha256`, `LiveSessionLaunchedAt`,
+  `LiveSessionPrepareOutputSha256`, `LiveSessionSessionStatePath`,
+  `LiveSessionSessionStateSha256`, `LiveSessionRestoreStatePath`,
+  `LiveSessionRestoreStateSha256`, `LiveSessionLaunchedAt`,
   `LiveSessionPidAttributionPassed`, `LiveSessionSelectedGameProcessId`,
   `LiveSessionSelectedGameProcessStartTimeUtc`,
   `LiveSessionSelectedGameProcessPath`,
   `GameProcessStartTimeAfterLiveSessionLaunch`,
   `GameProcessIdMatchesLiveSession`,
   `GameProcessStartTimeMatchesLiveSession`, `GameProcessPathMatchesLiveSession`,
-  `ResponsivenessProbePassed`, current-slice offset binding, `HangSignals`, and
-  `FailureReasonCodes`.
+  restore schema/count/process/settings fields, `ResponsivenessProbePassed`,
+  current-slice offset binding, `HangSignals`, and `FailureReasonCodes`.
 - Each iteration retains `runtime-probe-samples.json` with the sampled
-  process/window/log records, including `Phase`, `ProcessId`,
-  `ProcessStartTimeUtc`, `ProcessPath`, expected game process identity,
-  process-id/start/path match booleans, stale/unknown/ambiguous process counts,
-  window state, and responsiveness state. Runtime monkey phases are
+  process/window/log records, including `Phase`, parseable `SampledAt`,
+  `LogExists`, `LogLengthBytes`, parseable `LogLastWriteTimeUtc` when the log
+  exists, `ProcessId`, `ProcessStartTimeUtc`, `ProcessPath`, expected game
+  process identity, process-id/start/path match booleans,
+  stale/unknown/ambiguous process counts, window state, and responsiveness
+  state. `LogLastWriteTimeUtc` must not be later than `SampledAt`, `SampledAt`
+  values must be nondecreasing in retained order, and `LogLengthBytes` must be
+  non-negative and nondecreasing whenever `LogExists=true`. Runtime monkey phases are
   `StartupMainMenu` and `PostCommandRuntime`; the packet checker rejects
   unknown phase values, missing phase coverage, and phase-count drift versus
   the retained observation sample counts.
 - `monkey-summary.json` records `FailedIterationIds`, `FailureReasonCounts`,
   `ProcessExitCount`, `LiveSessionBindingMissingCount`,
-  `UnresponsiveIterationCount`, `LogStallIterationCount`,
-  `StaleProcessObservedCount`, `CommandAckMissingCount`, `CommandCounts`,
+  `LiveSessionRestoreItemCountMismatchCount`, `LiveSessionRestoreLeakCount`,
+  `LiveSessionRestoreHashMismatchCount`,
+  `LiveSessionSelectedProcessNotStoppedCount`, `UnresponsiveIterationCount`,
+  `LogStallIterationCount`, `StaleProcessObservedCount`,
+  `CommandAckMissingCount`, `CommandCounts`,
   `ScenarioTagCounts`,
   `OwnerAreaCounts`, `VakuuFightIterationCount`, `MaxMainMenuElapsedSeconds`,
   and `MaxSecondsWithoutLogGrowth`.
@@ -542,8 +621,8 @@ generic unsaved live-test setup line.
 The triage analyzer maps retained signals to owner areas. It records the planned
 `OwnerAreaHint` separately from `OwnerAreaFromLog` and `OwnerAreaFromCommand`.
 For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
-missing/invalid `runtime-probe-samples.json`, missing phase coverage, and
-phase-count or runtime log-growth timeline drift as `RuntimeHarness` blockers
+missing/invalid `runtime-probe-samples.json`, invalid probe timestamps, missing
+phase coverage, and phase-count or runtime log-growth timeline drift as `RuntimeHarness` blockers
 before source ownership routing. It also rejects
 `iteration-result.json` log or probe paths that resolve outside the current
 `iteration-####` directory or to shadow/nonstandard files under that directory,
@@ -551,6 +630,9 @@ and it does not use those escaped or noncanonical files for log-derived,
 audit-derived, or probe-derived owner routing. Retained probe samples must also
 bind to the `iteration-result.json` game process id, start time, and path, and
 to the live-session-selected process identity when those fields are present.
+Stale-process, unknown-start-time, ambiguous-current-process, non-single-current-process,
+or process-identity defects make the runtime monkey log text untrusted for
+owner routing.
 When `godot.log.current-iteration` exists, the analyzer requires
 `godot.log.before`, `godot.log.after-launch`, and `LogScanOffsetBytes`;
 otherwise it reports a `RuntimeHarness` blocker and does not route ownership
@@ -558,8 +640,9 @@ from the unbound current slice. When the binding files are present, the analyzer
 requires `LogScanOffsetBytes` to equal the before-log byte length, requires
 `godot.log.before` to be a byte prefix of `godot.log.after-launch`, and requires
 `godot.log.current-iteration` to match the after-launch bytes after that prefix.
-Any mismatch is a `RuntimeHarness` blocker and the log is not trusted for owner
-routing. If
+It also requires `iteration-result.json` before/after/current log length and
+SHA256 metadata to match the retained files. Any slice or metadata mismatch is
+a `RuntimeHarness` blocker and the log is not trusted for owner routing. If
 `iteration-result.json` is missing or invalid, `monkey-summary.json` may still
 provide a fallback row for routing, but the analyzer reports a `RuntimeHarness`
 blocker because summary data does not replace the canonical per-iteration
@@ -575,6 +658,16 @@ evidence until its scanned `Path`, `Length`, and `Sha256` bind to
 `audit-godot-log.ps1` recomputation agrees with the retained signature counts.
 Stale or hand-assembled audit JSON is reported as a `RuntimeHarness` blocker,
 and its signature hits are ignored for feature ownership.
+Current no-launch restore hardening binds `iteration-result.json` to retained
+`session-state.json` and `restore-state.json` paths/hashes, requires restored
+mod/current-run counts to close over the prepared moved lists, requires any
+preserved test-created current-run manifest to be path/hash bound, requires
+post-restore SlayTheSpire2/Godot process counts and id arrays to be zero,
+models an originally absent `settings.save.backup` as absent-after-restore
+instead of a hash mismatch, and routes restore transaction drift to
+`RuntimeHarness` or `LiveSessionRestore` before gameplay owner routing. This
+still needs a fresh live runtime packet after same-repo validation/runtime lanes
+are unpaused.
 For hung processes, unclassified retained failures, audit hits, Spire
 Plus error/exception hits, and co-op override failures, explicit log-derived
 package/runtime drift, StS1, preview-tool, or multiplayer-policy signatures take

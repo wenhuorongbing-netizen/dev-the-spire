@@ -29,9 +29,9 @@ Longhaul audit：仍不能恢复
 
 新的下月开发规范和 overnight run 以本文件当前内容为准；不要依赖 sandbox-only 下载链接作为当前证据。
 
-## 2026-06-18 Current Override
+## 2026-06-19 Current Override
 
-Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86 loader proof remains previous-package context, and current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`. Any older lines above or below that describe fresh beta.85 CanaryOnly/AdditiveBatch1 smokes as pending, or as the next active runtime target, are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending, and the same-repo validation pause still forbids starting build/test/publish/package/runtime/stage/commit/push work from this thread.
+Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and current beta.88 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`. Any older lines above or below that describe fresh beta.85 CanaryOnly/AdditiveBatch1 smokes as pending, or as the next active runtime target, are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending.
 
 ---
 

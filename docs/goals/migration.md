@@ -6,7 +6,7 @@ Date: 2026-06-19
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.87`
+Current package target: Spire Plus `v0.1.0-private-beta.88`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
@@ -26,9 +26,12 @@ current, and action-oriented.
 
 ## Current Conclusion
 
-Current runtime dependency drift was resolved for `v0.107.0` loader and AdditiveBatch1
-registration proof, but the local game is now `v0.107.1`; recapture loader proof before
-using it as current-runtime evidence.
+Current runtime dependency drift is resolved for `v0.107.1` loader and AdditiveBatch1
+registration proof after the BaseLib `v3.3.0` update. The first current-version
+direct AdditiveBatch1 recapture reached main menu and matched the expected StS1
+registration shape, but failed clean-loader proof because BaseLib `v3.2.1` logged 2 patch
+failures on Slay the Spire 2 `v0.107.1`; the beta.88 recapture with BaseLib `v3.3.0`
+passed clean audit and packet verification.
 The migration is not release-ready. Gameplay, Mod Settings UI page refresh, event screenshots,
 save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA,
 and tester-package handoff remain pending. Worktree and pushed-HEAD status must be recaptured
@@ -45,6 +48,9 @@ before any later handoff.
 | beta.85 AdditiveBatch1 proof | Historical fail | Previous-package mismatch: 13/14 registration calls because the installed package/source shape was stale. |
 | beta.87 build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.87`. |
 | beta.87 AdditiveBatch1 proof | Retained loader/registration pass | `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu on `v0.107.0` with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0 and packet verifier 52/0. Recapture before treating it as current `v0.107.1` runtime evidence. |
+| v0.107.1 AdditiveBatch1 recapture | Failed clean-loader gate | `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` reached main menu in 33.81s, loaded Spire Plus `v0.1.0-private-beta.87`, selected RitsuLib `0.4.24` compat branch `0.107.0`, applied 25/25 Spire Plus patches, and matched AdditiveBatch1 10 event types / 14 calls with exact act/shared tuple parity. It is not passing proof: BaseLib `v3.2.1` logged `Applied 241 patches successfully, 2 failed`, audit found 3 BaseLib patch-failure hits and 2 Godot ERROR lines, enabled-mode verifier mismatches=2, packet verifier mismatches=1. |
+| beta.88 BaseLib `v3.3.0` build/publish/package | Pass | `dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false`, `dotnet publish EZMicroBalance.sln -m:1`, package creation, and installed package parity passed for `v0.1.0-private-beta.88`; the package requires BaseLib `v3.3.0`. |
+| beta.88 AdditiveBatch1 proof | Current loader/registration pass | `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu on `v0.107.1` with BaseLib `v3.3.0`, RitsuLib `0.4.24`, and Spire Plus loaded; 25/25 patches; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0; packet verifier 0 mismatches. |
 | Tests | Current no-game pass | Recapture `git log -1 --oneline --decorate` and `git status --short --branch` at the start of each continuation and immediately before handoff; older run-start hashes are historical notes, not current status. The beta.87 pass recorded build 0 warnings / 0 errors, split no-build guards 139 passed / 0 failed / 15 skipped / 154 total, opt-in artifact/package coverage 46 passed / 0 failed / 1 skipped / 47 total, and later follow-ups passed Batch 4c static-review/classifier coverage plus malformed runtime-monkey result-path hardening: build 0 warnings / 0 errors, focused migration/compactness/governance/runtime-monkey guards 123 / 0 / 0 / 123, focused `RuntimeMonkeyStabilityGuardTests` 62 / 0 / 0 / 62, focused runtime/docs/migration guards 99 / 0 / 0 / 99, current-doc claims 1090 / 0, static suite 15 / 0, static-file hygiene 12 / 0, parser checks, format, diff-check, patch-inventory, and batch classification with 8 dirty entries / 0 unclassified. The package/runtime baseline is now beta.87 loader/registration proof, not the older beta.86 package baseline. |
 | Opt-in artifact subset | Current pass | 67 passed / 0 failed / 2 skipped / 69 total with release/package artifact tests enabled. |
 | StS1 static/governance lanes | Current pass | Current-doc claims 1090/0 after AutoSlay proof-mode `-ExpectedAncientIds` target coverage, runtime-monkey escaped-path and malformed-path hardening, analyzer noncanonical-path checks, probe process identity checks, and malformed AutoSlay retained-path rejection; v19 gate ledger 534/0; v20 final-gate overlay 29/0; runtime preflight target updated for local `v0.107.1`; static suite 15/0; static-file hygiene 12/0. |
@@ -54,7 +60,7 @@ before any later handoff.
 | Manual-test handoff scaffold | Prepared / live pending | No-launch handoff scaffold refreshed at `.tools/runtime-evidence/manual-test-handoff-20260619-095527/` on pushed HEAD `4e7aa523`; generated `handoff-summary.json` recorded 21 required live rows, 21 expected pending failures, 0 warnings, package ZIP `97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1`, and git handoff metadata with `GitHeadMatchesUpstream=true`. This is a template scaffold only; no game was launched. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |
 
-Current beta.85/beta.86 loader proof remains previous-package/game-version context, and retained beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`.
+Current beta.85/beta.86 loader proof remains previous-package/game-version context, retained beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`, and current beta.88 `v0.107.1` clean-loader proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`. The BaseLib `v3.2.1` patch failures in `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` are root-cause history.
 
 ## Boundaries
 
@@ -62,20 +68,21 @@ Current beta.85/beta.86 loader proof remains previous-package/game-version conte
 - Do not use `AllDraft` or `Replacement` as a tester/release path without owner approval and fresh targeted validation.
 - Do not perform Batch 4c migration without explicit owner approval.
 - Do not implement Ascension 21-30 or custom character work.
-- Do not bump compile package, manifest minimums, or dependency minimums unless an owner-approved package pass requires it.
+- Do not bump compile package, manifest minimums, or dependency minimums again unless an owner-approved package pass requires it.
 - Prefer BaseLib/template-supported APIs and keep Harmony patches narrow.
 - Treat the previous `v0.106.1` Off/CanaryOnly/AdditiveBatch1 smokes as historical loader evidence only.
 
 ## Next Actions
 
-1. Refresh Mod Settings UI proof for the current Spire Plus display-name package; the current no-launch scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/`, and it must be rerun with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
-2. Use `.tools/runtime-evidence/manual-test-handoff-20260619-095527/TESTER_START_HERE.md` as the current no-launch manual-test scaffold, then fill its rows with live files before any pass claim.
-3. Capture Canary gameplay proof for Big Fish, Golden Idol, The Lab, and Divine Fountain.
-4. Capture AdditiveBatch1 gameplay proof only after loader/registration evidence remains clean.
-5. Capture save-load and image/render proof for event and replacement surfaces.
-6. Verify multiplayer fail-closed behavior and any owner-approved two-client diagnostics.
-7. Record an owner decision for Batch 4c. The candidate list has static-review coverage; do not migrate unless the owner approves the scope.
-8. Recapture git status, pushed HEAD, and validation status before any later handoff.
+1. Keep the current BaseLib `v3.3.0` / beta.88 package target aligned before any later loader or gameplay proof; treat the BaseLib `v3.2.1` failure as resolved root-cause history.
+2. Refresh Mod Settings UI proof for the current Spire Plus display-name package; the current no-launch scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/`, and it must be rerun with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
+3. Use `.tools/runtime-evidence/manual-test-handoff-20260619-095527/TESTER_START_HERE.md` as the current no-launch manual-test scaffold, then fill its rows with live files before any pass claim.
+4. Capture Canary gameplay proof for Big Fish, Golden Idol, The Lab, and Divine Fountain only after recapturing any required current-version CanaryOnly loader packet or explicitly accepting the retained previous-package context for that narrow purpose.
+5. Capture AdditiveBatch1 gameplay proof only while the current beta.88 loader/registration evidence remains clean and package-matched.
+6. Capture save-load and image/render proof for event and replacement surfaces.
+7. Verify multiplayer fail-closed behavior and any owner-approved two-client diagnostics.
+8. Record an owner decision for Batch 4c. The candidate list has static-review coverage; do not migrate unless the owner approves the scope.
+9. Recapture git status, pushed HEAD, and validation status before any later handoff.
 
 ## Validation Snapshot
 
@@ -116,5 +123,28 @@ scripts/check-sts1-v20-final-gate-overlay.ps1 -FailOnMismatch
 scripts/check-sts1-v19-subagent-coverage.ps1 -FailOnMismatch
 ```
 
-The direct beta.87 AdditiveBatch1 smoke is loader/registration proof only. It does not close
+Current-version failed loader recapture attempt, retained as root-cause history:
+
+```text
+scripts/check-installed-spire-plus-package.ps1 -ModDirectory 'E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance'
+scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
+direct AdditiveBatch1 launch with temporary steam_appid.txt and SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1 -> .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/
+scripts/audit-godot-log.ps1 -Path .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/godot.log.current-iteration -OutFile .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/godot-log-audit.json -FailOnHit
+scripts/check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/godot.log.current-iteration -AuditPath .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/godot-log-audit.json -ExpectedPackageVersion v0.1.0-private-beta.87 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/enabled-mode-log-check.json -FailOnMismatch
+scripts/check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309 -ExpectedPackageVersion v0.1.0-private-beta.87 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/runtime-evidence-packet-check.json -FailOnMismatch
+```
+
+That attempt is a blocker packet, not passing proof: main menu and StS1 registration shape passed, but the clean-audit gate failed on BaseLib patch failures.
+
+Pause-safe analyzer follow-up: `analyze-spire-plus-runtime-failure.ps1` now treats this failed direct smoke evidence root as a `DirectSmoke` target via `direct-smoke-summary.json`, `godot.log.current-iteration`, and `godot-log-audit.json`. The retained `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` packet now triages as `PackageRuntimeDrift` with 1 analyzed target, 2 package blockers, 0 harness blockers, and 0 gameplay blockers; `BaseLibPatchFailures` pinpoints `AdjustCustomMessageKeys::Fuckery()` as an undefined target-method failure, `NRelicCollectionCategory::LoadRelics` as an instruction matcher failure, and the 241-applied / 2-failed BaseLib patch summary; the analyzer no longer turns explanatory `SPIREPLUS_ALLOW_UNVERIFIED_COOP_*` startup text into a false co-op override blocker.
+
+Current-version clean loader recapture:
+
+```text
+direct AdditiveBatch1 clean-log launch with temporary steam_appid.txt and SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1 -> .tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/
+scripts/check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath .tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/godot.log.current-iteration -AuditPath .tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/godot-log-audit.json -ExpectedPackageVersion v0.1.0-private-beta.88 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/sts1-enabled-mode-report.json -FailOnMismatch
+scripts/check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir .tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937 -LogFileName godot.log.current-iteration -ExpectedPackageVersion v0.1.0-private-beta.88 -ExpectedRitsuCompatBranch 0.107.0 -ExpectedRitsuLibVersion 0.4.24 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/sts1-runtime-evidence-packet.json -FailOnMismatch
+```
+
+The direct beta.88 AdditiveBatch1 smoke is loader/registration proof only. It does not close
 gameplay, UI, save-load, co-op, QA, release, or handoff gates.

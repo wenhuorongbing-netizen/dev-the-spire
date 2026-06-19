@@ -438,6 +438,40 @@ function Get-ArrayCount {
     return @($Value).Count
 }
 
+function Get-JsonArrayProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if ($null -eq $Object) {
+        return [pscustomobject]@{
+            Present = $false
+            IsArray = $false
+            Count = -1
+            Value = @()
+        }
+    }
+
+    $property = @($Object.PSObject.Properties | Where-Object { [string]::Equals($_.Name, $Name, [System.StringComparison]::Ordinal) } | Select-Object -First 1)
+    if ($property.Count -ne 1 -or $null -eq $property[0].Value -or -not ($property[0].Value -is [System.Array])) {
+        return [pscustomobject]@{
+            Present = $property.Count -eq 1
+            IsArray = $false
+            Count = -1
+            Value = @()
+        }
+    }
+
+    $value = @($property[0].Value)
+    return [pscustomobject]@{
+        Present = $true
+        IsArray = $true
+        Count = $value.Count
+        Value = $value
+    }
+}
+
 function Get-FileSha256OrEmpty {
     param([AllowEmptyString()][string]$Path)
 
@@ -454,6 +488,12 @@ function Get-FileSha256OrEmpty {
     } catch {
         return ''
     }
+}
+
+function Test-Sha256Text {
+    param([AllowEmptyString()][string]$Value)
+
+    return -not [string]::IsNullOrWhiteSpace($Value) -and $Value -match '^[A-Fa-f0-9]{64}$'
 }
 
 function ConvertTo-DateTimeUtcOrNull {
@@ -949,6 +989,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
 
     $resultPath = Join-Path $iterationDir 'iteration-result.json'
     $prepareOutputPath = Join-Path $iterationDir 'prepare-output.json'
+    $sessionStatePath = Join-Path $iterationDir 'session-state.json'
+    $restoreStatePath = Join-Path $iterationDir 'restore-state.json'
     $beforeLogPath = Join-Path $iterationDir 'godot.log.before'
     $logPath = Join-Path $iterationDir 'godot.log.after-launch'
     $currentIterationLogPath = Join-Path $iterationDir 'godot.log.current-iteration'
@@ -957,6 +999,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
     $sts1ModeCheckPath = Join-Path $iterationDir 'sts1-mode-log-check.json'
     $resultExists = Test-Path -LiteralPath $resultPath -PathType Leaf
     $prepareOutputExists = Test-Path -LiteralPath $prepareOutputPath -PathType Leaf
+    $sessionStateExists = Test-Path -LiteralPath $sessionStatePath -PathType Leaf
+    $restoreStateExists = Test-Path -LiteralPath $restoreStatePath -PathType Leaf
     $beforeLogExists = Test-Path -LiteralPath $beforeLogPath -PathType Leaf
     $logExists = Test-Path -LiteralPath $logPath -PathType Leaf
     $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogPath -PathType Leaf
@@ -965,6 +1009,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
 
     Add-Check -Name "${iterationName}_iteration_result_exists" -Passed $resultExists -Detail 'requires iteration-result.json'
     Add-Check -Name "${iterationName}_prepare_output_exists" -Passed $prepareOutputExists -Detail 'requires retained prepare-output.json from the launched prepare phase'
+    Add-Check -Name "${iterationName}_session_state_exists" -Passed $sessionStateExists -Detail 'requires retained session-state.json from live-session prepare'
+    Add-Check -Name "${iterationName}_restore_state_exists" -Passed $restoreStateExists -Detail 'requires retained restore-state.json from live-session restore'
     Add-Check -Name "${iterationName}_godot_log_before_exists" -Passed $beforeLogExists -Detail 'requires retained godot.log.before pre-launch snapshot'
     Add-Check -Name "${iterationName}_godot_log_exists" -Passed $logExists -Detail 'requires godot.log.after-launch'
     Add-Check -Name "${iterationName}_current_iteration_log_exists" -Passed $currentIterationLogExists -Detail 'requires godot.log.current-iteration sliced from the accepted scan offset'
@@ -975,10 +1021,24 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
 
     $iterationResult = $null
     $prepareOutput = $null
+    $sessionState = $null
+    $restoreState = $null
     if ($prepareOutputExists) {
         $prepareOutput = Read-JsonOrNull -Path $prepareOutputPath -CheckName "${iterationName}_prepare_output_json_valid"
         if ($null -ne $prepareOutput) {
             Add-Check -Name "${iterationName}_prepare_output_json_valid" -Passed $true -Detail 'prepare-output.json parsed'
+        }
+    }
+    if ($sessionStateExists) {
+        $sessionState = Read-JsonOrNull -Path $sessionStatePath -CheckName "${iterationName}_session_state_json_valid"
+        if ($null -ne $sessionState) {
+            Add-Check -Name "${iterationName}_session_state_json_valid" -Passed $true -Detail 'session-state.json parsed'
+        }
+    }
+    if ($restoreStateExists) {
+        $restoreState = Read-JsonOrNull -Path $restoreStatePath -CheckName "${iterationName}_restore_state_json_valid"
+        if ($null -ne $restoreState) {
+            Add-Check -Name "${iterationName}_restore_state_json_valid" -Passed $true -Detail 'restore-state.json parsed'
         }
     }
     if ($resultExists) {
@@ -1022,6 +1082,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
 
             $resultPrepareOutputPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPrepareOutputPath' -DefaultValue ''))
             $resultPrepareOutputSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPrepareOutputSha256' -DefaultValue '')
+            $resultSessionStatePath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSessionStatePath' -DefaultValue ''))
+            $resultSessionStateSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSessionStateSha256' -DefaultValue '')
+            $resultRestoreStatePath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreStatePath' -DefaultValue ''))
+            $resultRestoreStateSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreStateSha256' -DefaultValue '')
             $resultLiveSessionEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionEvidenceDir' -DefaultValue ''))
             $resultLiveSessionLauncherKind = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLauncherKind' -DefaultValue '')
             $resultLiveSessionSteamAppId = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSteamAppId' -DefaultValue '')
@@ -1052,6 +1116,22 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_live_session_prepare_output_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultPrepareOutputSha256)) -Detail 'LiveSessionPrepareOutputSha256 must be retained'
             if ($prepareOutputExists) {
                 Add-Check -Name "${iterationName}_live_session_prepare_output_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultPrepareOutputSha256, (Get-FileSha256OrEmpty -Path $prepareOutputPath))) -Detail 'LiveSessionPrepareOutputSha256 must match retained prepare-output.json'
+            }
+
+            Add-Check -Name "${iterationName}_live_session_session_state_under_iteration_dir" -Passed ($resultSessionStatePath -and (Test-PathUnderDirectory -Path $resultSessionStatePath -Directory $iterationDir)) -Detail 'LiveSessionSessionStatePath must stay inside the current iteration directory'
+            Add-Check -Name "${iterationName}_live_session_session_state_leaf_expected" -Passed ($resultSessionStatePath -and ([System.IO.Path]::GetFileName($resultSessionStatePath) -eq 'session-state.json')) -Detail 'LiveSessionSessionStatePath must end with session-state.json'
+            Add-Check -Name "${iterationName}_live_session_session_state_path_matches_retained_file" -Passed ($resultSessionStatePath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultSessionStatePath, [System.IO.Path]::GetFullPath($sessionStatePath)))) -Detail 'LiveSessionSessionStatePath must point to the retained session-state.json file'
+            Add-Check -Name "${iterationName}_live_session_session_state_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultSessionStateSha256)) -Detail 'LiveSessionSessionStateSha256 must be retained'
+            if ($sessionStateExists) {
+                Add-Check -Name "${iterationName}_live_session_session_state_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultSessionStateSha256, (Get-FileSha256OrEmpty -Path $sessionStatePath))) -Detail 'LiveSessionSessionStateSha256 must match retained session-state.json'
+            }
+
+            Add-Check -Name "${iterationName}_live_session_restore_state_under_iteration_dir" -Passed ($resultRestoreStatePath -and (Test-PathUnderDirectory -Path $resultRestoreStatePath -Directory $iterationDir)) -Detail 'LiveSessionRestoreStatePath must stay inside the current iteration directory'
+            Add-Check -Name "${iterationName}_live_session_restore_state_leaf_expected" -Passed ($resultRestoreStatePath -and ([System.IO.Path]::GetFileName($resultRestoreStatePath) -eq 'restore-state.json')) -Detail 'LiveSessionRestoreStatePath must end with restore-state.json'
+            Add-Check -Name "${iterationName}_live_session_restore_state_path_matches_retained_file" -Passed ($resultRestoreStatePath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultRestoreStatePath, [System.IO.Path]::GetFullPath($restoreStatePath)))) -Detail 'LiveSessionRestoreStatePath must point to the retained restore-state.json file'
+            Add-Check -Name "${iterationName}_live_session_restore_state_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultRestoreStateSha256)) -Detail 'LiveSessionRestoreStateSha256 must be retained'
+            if ($restoreStateExists) {
+                Add-Check -Name "${iterationName}_live_session_restore_state_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultRestoreStateSha256, (Get-FileSha256OrEmpty -Path $restoreStatePath))) -Detail 'LiveSessionRestoreStateSha256 must match retained restore-state.json'
             }
 
             Add-Check -Name "${iterationName}_result_live_session_evidence_dir_matches_iteration" -Passed ($resultLiveSessionEvidenceDir -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultLiveSessionEvidenceDir, [System.IO.Path]::GetFullPath($iterationDir)))) -Detail 'LiveSessionEvidenceDir must match the current iteration directory'
@@ -1124,6 +1204,36 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_start_time_matches_result" -Passed ($null -ne $prepareSelectedGameProcessStartTimeUtc -and $null -ne $resultGameProcessStartTimeUtc -and $prepareSelectedGameProcessStartTimeUtc -eq $resultGameProcessStartTimeUtc) -Detail 'prepare-output.json SelectedGameProcessStartTimeUtc must match GameProcessStartTimeUtc'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_path_matches_result" -Passed (-not [string]::IsNullOrWhiteSpace($prepareSelectedGameProcessPathFull) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($prepareSelectedGameProcessPathFull, $resultGameProcessPathFull)) -Detail 'prepare-output.json SelectedGameProcessPath must match GameProcessPath'
                 Add-Check -Name "${iterationName}_prepare_output_attribution_failure_reason_empty" -Passed ([string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $prepareOutput -Name 'AttributionFailureReason' -DefaultValue ''))) -Detail 'prepare-output.json AttributionFailureReason must be empty'
+            }
+
+            $sessionMovedModCount = -1
+            $sessionMovedCurrentRunCount = -1
+            $sessionSettingsHashBefore = ''
+            $sessionSettingsBackupHashBefore = ''
+            $sessionSettingsBackupExistedBefore = $false
+            $sessionSettingsBackupExistedBeforeRecorded = $false
+            if ($null -ne $sessionState) {
+                $sessionStateEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $sessionState -Name 'EvidenceDir' -DefaultValue ''))
+                $sessionMovedMods = Get-JsonArrayProperty -Object $sessionState -Name 'MovedMods'
+                $sessionMovedCurrentRuns = Get-JsonArrayProperty -Object $sessionState -Name 'MovedCurrentRuns'
+                $sessionMovedModCount = [int]$sessionMovedMods.Count
+                $sessionMovedCurrentRunCount = [int]$sessionMovedCurrentRuns.Count
+                $sessionSettingsHashBefore = [string](Get-JsonValue -Object $sessionState -Name 'SettingsHashBefore' -DefaultValue '')
+                $sessionSettingsBackupHashBefore = [string](Get-JsonValue -Object $sessionState -Name 'SettingsBackupHashBefore' -DefaultValue '')
+                $sessionSettingsBackupExistedBeforeRecorded = Test-JsonProperty -Object $sessionState -Name 'SettingsBackupExistedBefore'
+                $sessionSettingsBackupExistedBefore = [bool](Get-JsonValue -Object $sessionState -Name 'SettingsBackupExistedBefore' -DefaultValue $false)
+                Add-Check -Name "${iterationName}_session_state_evidence_dir_matches_iteration" -Passed ($sessionStateEvidenceDir -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sessionStateEvidenceDir, [System.IO.Path]::GetFullPath($iterationDir))) -Detail 'session-state.json EvidenceDir must match the current iteration directory'
+                Add-Check -Name "${iterationName}_session_state_move_other_mods_matches_plan" -Passed ([bool](Get-JsonValue -Object $sessionState -Name 'MoveOtherMods' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $plan -Name 'MoveOtherMods' -DefaultValue $false)) -Detail 'session-state.json MoveOtherMods must match monkey-plan.json'
+                Add-Check -Name "${iterationName}_session_state_move_current_runs_matches_plan" -Passed ([bool](Get-JsonValue -Object $sessionState -Name 'MoveCurrentRuns' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $plan -Name 'MoveCurrentRuns' -DefaultValue $false)) -Detail 'session-state.json MoveCurrentRuns must match monkey-plan.json'
+                Add-Check -Name "${iterationName}_session_state_moved_mods_array" -Passed ([bool]$sessionMovedMods.IsArray) -Detail 'session-state.json MovedMods must be retained as an array'
+                Add-Check -Name "${iterationName}_session_state_moved_current_runs_array" -Passed ([bool]$sessionMovedCurrentRuns.IsArray) -Detail 'session-state.json MovedCurrentRuns must be retained as an array'
+                Add-Check -Name "${iterationName}_session_state_settings_hash_before_sha256" -Passed (Test-Sha256Text -Value $sessionSettingsHashBefore) -Detail 'session-state.json SettingsHashBefore must retain the pre-prepare settings SHA256'
+                Add-Check -Name "${iterationName}_session_state_settings_backup_existence_recorded" -Passed $sessionSettingsBackupExistedBeforeRecorded -Detail 'session-state.json SettingsBackupExistedBefore must record whether settings.save.backup existed before prepare'
+                if ($sessionSettingsBackupExistedBefore) {
+                    Add-Check -Name "${iterationName}_session_state_settings_backup_hash_before_sha256" -Passed (Test-Sha256Text -Value $sessionSettingsBackupHashBefore) -Detail 'session-state.json SettingsBackupHashBefore must retain the pre-prepare backup SHA256 when settings.save.backup existed'
+                } else {
+                    Add-Check -Name "${iterationName}_session_state_settings_backup_absent_hash_blank" -Passed ([string]::IsNullOrWhiteSpace($sessionSettingsBackupHashBefore)) -Detail 'session-state.json SettingsBackupHashBefore must be blank when settings.save.backup did not exist before prepare'
+                }
             }
 
             Add-Check -Name "${iterationName}_result_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LogCopied' -DefaultValue $false)) -Detail 'LogCopied must be true'
@@ -1248,6 +1358,82 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_restore_succeeded" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'RestoreSucceeded' -DefaultValue $false)) -Detail 'RestoreSucceeded must be true'
             Add-Check -Name "${iterationName}_iteration_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)) -Detail 'Passed must be true'
 
+            if ($null -ne $restoreState) {
+                $restoreStateEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $restoreState -Name 'EvidenceDir' -DefaultValue ''))
+                $restoreStateRestoredAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $restoreState -Name 'RestoredAt' -DefaultValue $null)
+                $restoreStateSchemaVersion = [int](Get-JsonValue -Object $restoreState -Name 'RestoreSchemaVersion' -DefaultValue 0)
+                $restoreStateStoppedSelectedGameProcess = [bool](Get-JsonValue -Object $restoreState -Name 'StoppedSelectedGameProcess' -DefaultValue $false)
+                $restoreStateRestoredModCount = [int](Get-JsonValue -Object $restoreState -Name 'RestoredModCount' -DefaultValue -1)
+                $restoreStateRestoredCurrentRunCount = [int](Get-JsonValue -Object $restoreState -Name 'RestoredCurrentRunCount' -DefaultValue -1)
+                $restoreStatePreservedNewCurrentRunCount = [int](Get-JsonValue -Object $restoreState -Name 'PreservedNewCurrentRunCount' -DefaultValue -1)
+                $restoreStatePreservedManifestPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $restoreState -Name 'PreservedNewCurrentRunsManifestPath' -DefaultValue ''))
+                $restoreStatePreservedManifestSha256 = [string](Get-JsonValue -Object $restoreState -Name 'PreservedNewCurrentRunsManifestSha256' -DefaultValue '')
+                $restoreStatePostRestoreSlayProcessCount = [int](Get-JsonValue -Object $restoreState -Name 'PostRestoreSlayProcessCount' -DefaultValue -1)
+                $restoreStatePostRestoreGodotProcessCount = [int](Get-JsonValue -Object $restoreState -Name 'PostRestoreGodotProcessCount' -DefaultValue -1)
+                $restoreStateSettingsHash = [string](Get-JsonValue -Object $restoreState -Name 'SettingsHashAfterRestore' -DefaultValue '')
+                $restoreStateSettingsBackupHash = [string](Get-JsonValue -Object $restoreState -Name 'SettingsBackupHashAfterRestore' -DefaultValue '')
+                $restoreStateSettingsBackupExistsAfterRecorded = Test-JsonProperty -Object $restoreState -Name 'SettingsBackupExistsAfterRestore'
+                $restoreStateSettingsBackupExistsAfter = [bool](Get-JsonValue -Object $restoreState -Name 'SettingsBackupExistsAfterRestore' -DefaultValue $false)
+                $restoreStateStoppedProcessesProperty = @($restoreState.PSObject.Properties | Where-Object { [string]::Equals($_.Name, 'StoppedProcesses', [System.StringComparison]::Ordinal) } | Select-Object -First 1)
+                $restoreStateStoppedProcessesIsArray = $restoreStateStoppedProcessesProperty.Count -eq 1 -and $restoreStateStoppedProcessesProperty[0].Value -is [System.Array]
+                $restoreStatePostRestoreSlayProcessIds = Get-JsonArrayProperty -Object $restoreState -Name 'PostRestoreSlayProcessIds'
+                $restoreStatePostRestoreGodotProcessIds = Get-JsonArrayProperty -Object $restoreState -Name 'PostRestoreGodotProcessIds'
+                Add-Check -Name "${iterationName}_restore_state_schema_version" -Passed ($restoreStateSchemaVersion -eq 1) -Detail 'restore-state.json RestoreSchemaVersion must be 1'
+                Add-Check -Name "${iterationName}_restore_state_evidence_dir_matches_iteration" -Passed ($restoreStateEvidenceDir -and [System.StringComparer]::OrdinalIgnoreCase.Equals($restoreStateEvidenceDir, [System.IO.Path]::GetFullPath($iterationDir))) -Detail 'restore-state.json EvidenceDir must match the current iteration directory'
+                Add-Check -Name "${iterationName}_restore_state_restored_at_parseable" -Passed ($null -ne $restoreStateRestoredAtUtc) -Detail 'restore-state.json RestoredAt must be parseable'
+                Add-Check -Name "${iterationName}_restore_state_restored_mod_count_recorded" -Passed ($restoreStateRestoredModCount -ge 0) -Detail 'restore-state.json RestoredModCount must be retained and non-negative'
+                Add-Check -Name "${iterationName}_restore_state_restored_mod_count_matches_session" -Passed ($sessionMovedModCount -ge 0 -and $restoreStateRestoredModCount -eq $sessionMovedModCount) -Detail 'restore-state.json RestoredModCount must match session-state.json MovedMods count'
+                Add-Check -Name "${iterationName}_restore_state_restored_current_run_count_recorded" -Passed ($restoreStateRestoredCurrentRunCount -ge 0) -Detail 'restore-state.json RestoredCurrentRunCount must be retained and non-negative'
+                Add-Check -Name "${iterationName}_restore_state_restored_current_run_count_matches_session" -Passed ($sessionMovedCurrentRunCount -ge 0 -and $restoreStateRestoredCurrentRunCount -eq $sessionMovedCurrentRunCount) -Detail 'restore-state.json RestoredCurrentRunCount must match session-state.json MovedCurrentRuns count'
+                $restoreItemCountsMatch = $sessionMovedModCount -ge 0 -and $sessionMovedCurrentRunCount -ge 0 -and $restoreStateRestoredModCount -eq $sessionMovedModCount -and $restoreStateRestoredCurrentRunCount -eq $sessionMovedCurrentRunCount
+                Add-Check -Name "${iterationName}_result_restore_item_counts_match_flag_true" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreItemCountsMatch' -DefaultValue $false)) -Detail 'iteration-result.json LiveSessionRestoreItemCountsMatch must be true for a clean packet'
+                Add-Check -Name "${iterationName}_result_restore_item_counts_match_flag_matches_restore_state" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreItemCountsMatch' -DefaultValue $false) -eq $restoreItemCountsMatch) -Detail 'iteration-result.json LiveSessionRestoreItemCountsMatch must match restore/session count parity'
+                Add-Check -Name "${iterationName}_restore_state_stopped_processes_field_present" -Passed (Test-JsonProperty -Object $restoreState -Name 'StoppedProcesses') -Detail 'restore-state.json must retain StoppedProcesses from -StopGameOnRestore'
+                Add-Check -Name "${iterationName}_restore_state_stopped_processes_array" -Passed $restoreStateStoppedProcessesIsArray -Detail 'restore-state.json StoppedProcesses must be an array, even when empty'
+                Add-Check -Name "${iterationName}_restore_state_stopped_selected_game_process" -Passed $restoreStateStoppedSelectedGameProcess -Detail 'restore-state.json StoppedSelectedGameProcess must be true for a passed launched iteration'
+                Add-Check -Name "${iterationName}_restore_state_post_restore_slay_process_count_zero" -Passed ($restoreStatePostRestoreSlayProcessCount -eq 0) -Detail 'restore-state.json PostRestoreSlayProcessCount must be 0 after restore'
+                Add-Check -Name "${iterationName}_restore_state_post_restore_slay_process_ids_array" -Passed ([bool]$restoreStatePostRestoreSlayProcessIds.IsArray) -Detail 'restore-state.json PostRestoreSlayProcessIds must be retained as an array'
+                Add-Check -Name "${iterationName}_restore_state_post_restore_slay_process_ids_empty" -Passed ([bool]$restoreStatePostRestoreSlayProcessIds.IsArray -and [int]$restoreStatePostRestoreSlayProcessIds.Count -eq 0) -Detail 'restore-state.json PostRestoreSlayProcessIds must be empty after restore'
+                Add-Check -Name "${iterationName}_restore_state_post_restore_godot_process_count_zero" -Passed ($restoreStatePostRestoreGodotProcessCount -eq 0) -Detail 'restore-state.json PostRestoreGodotProcessCount must be 0 after restore'
+                Add-Check -Name "${iterationName}_restore_state_post_restore_godot_process_ids_array" -Passed ([bool]$restoreStatePostRestoreGodotProcessIds.IsArray) -Detail 'restore-state.json PostRestoreGodotProcessIds must be retained as an array'
+                Add-Check -Name "${iterationName}_restore_state_post_restore_godot_process_ids_empty" -Passed ([bool]$restoreStatePostRestoreGodotProcessIds.IsArray -and [int]$restoreStatePostRestoreGodotProcessIds.Count -eq 0) -Detail 'restore-state.json PostRestoreGodotProcessIds must be empty after restore'
+                Add-Check -Name "${iterationName}_restore_state_settings_backup_exists_after_recorded" -Passed $restoreStateSettingsBackupExistsAfterRecorded -Detail 'restore-state.json SettingsBackupExistsAfterRestore must record whether settings.save.backup exists after restore'
+                $settingsBackupStateClosed = if ($sessionSettingsBackupExistedBefore) {
+                    (Test-Sha256Text -Value $restoreStateSettingsBackupHash) -and
+                    [System.StringComparer]::OrdinalIgnoreCase.Equals($restoreStateSettingsBackupHash, $sessionSettingsBackupHashBefore) -and
+                    $restoreStateSettingsBackupExistsAfter
+                } else {
+                    $restoreStateSettingsBackupExistsAfterRecorded -and
+                    -not $restoreStateSettingsBackupExistsAfter -and
+                    [string]::IsNullOrWhiteSpace($restoreStateSettingsBackupHash)
+                }
+                $settingsBackupHashShapeClosed = if ($sessionSettingsBackupExistedBefore) {
+                    Test-Sha256Text -Value $restoreStateSettingsBackupHash
+                } else {
+                    [string]::IsNullOrWhiteSpace($restoreStateSettingsBackupHash)
+                }
+                Add-Check -Name "${iterationName}_restore_state_settings_hashes_recorded" -Passed ((-not [string]::IsNullOrWhiteSpace($restoreStateSettingsHash)) -and $settingsBackupHashShapeClosed) -Detail 'restore-state.json must retain settings hash and conditionally retain backup hash only when settings.save.backup existed before prepare'
+                Add-Check -Name "${iterationName}_restore_state_settings_hashes_sha256_format" -Passed ((Test-Sha256Text -Value $restoreStateSettingsHash) -and $settingsBackupHashShapeClosed) -Detail 'restore-state.json settings hashes must use SHA256 format when files are expected to exist'
+                Add-Check -Name "${iterationName}_restore_state_settings_hash_matches_session_before" -Passed ((Test-Sha256Text -Value $sessionSettingsHashBefore) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($restoreStateSettingsHash, $sessionSettingsHashBefore)) -Detail 'restore-state.json SettingsHashAfterRestore must match session-state.json SettingsHashBefore'
+                Add-Check -Name "${iterationName}_restore_state_settings_backup_hash_matches_session_before" -Passed $settingsBackupStateClosed -Detail 'restore-state.json SettingsBackupHashAfterRestore must match session-state.json SettingsBackupHashBefore when the backup existed, or prove absence was restored'
+                Add-Check -Name "${iterationName}_restore_state_preserved_current_run_count_recorded" -Passed ($restoreStatePreservedNewCurrentRunCount -ge 0) -Detail 'restore-state.json PreservedNewCurrentRunCount must be retained and non-negative'
+                if ($restoreStatePreservedNewCurrentRunCount -gt 0) {
+                    Add-Check -Name "${iterationName}_restore_state_preserved_current_runs_manifest_under_iteration_dir" -Passed ($restoreStatePreservedManifestPath -and (Test-PathUnderDirectory -Path $restoreStatePreservedManifestPath -Directory $iterationDir)) -Detail 'PreservedNewCurrentRunsManifestPath must stay inside the current iteration directory'
+                    Add-Check -Name "${iterationName}_restore_state_preserved_current_runs_manifest_exists" -Passed ($restoreStatePreservedManifestPath -and (Test-Path -LiteralPath $restoreStatePreservedManifestPath -PathType Leaf)) -Detail 'PreservedNewCurrentRunsManifestPath must point to a retained manifest when count is positive'
+                    Add-Check -Name "${iterationName}_restore_state_preserved_current_runs_manifest_sha256_recorded" -Passed (Test-Sha256Text -Value $restoreStatePreservedManifestSha256) -Detail 'PreservedNewCurrentRunsManifestSha256 must be retained when count is positive'
+                    if ($restoreStatePreservedManifestPath -and (Test-Path -LiteralPath $restoreStatePreservedManifestPath -PathType Leaf)) {
+                        Add-Check -Name "${iterationName}_restore_state_preserved_current_runs_manifest_sha256_matches" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($restoreStatePreservedManifestSha256, (Get-FileSha256OrEmpty -Path $restoreStatePreservedManifestPath))) -Detail 'PreservedNewCurrentRunsManifestSha256 must match the retained manifest'
+                    }
+                    Add-Check -Name "${iterationName}_result_preserved_current_runs_manifest_bound" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPreservedNewCurrentRunsManifestBound' -DefaultValue $false)) -Detail 'iteration-result.json LiveSessionPreservedNewCurrentRunsManifestBound must be true when preserved current-run count is positive'
+                }
+                Add-Check -Name "${iterationName}_result_restore_schema_matches_restore_state" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreSchemaVersion' -DefaultValue 0) -eq $restoreStateSchemaVersion) -Detail 'iteration-result.json LiveSessionRestoreSchemaVersion must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_restore_stopped_selected_matches_restore_state" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionStoppedSelectedGameProcess' -DefaultValue $false) -eq $restoreStateStoppedSelectedGameProcess) -Detail 'iteration-result.json LiveSessionStoppedSelectedGameProcess must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_post_restore_process_counts_match_restore_state" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPostRestoreSlayProcessCount' -DefaultValue -1) -eq $restoreStatePostRestoreSlayProcessCount -and [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPostRestoreGodotProcessCount' -DefaultValue -1) -eq $restoreStatePostRestoreGodotProcessCount) -Detail 'iteration-result.json post-restore process counts must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_restore_settings_hashes_match_restore_state" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsHashAfterRestore' -DefaultValue ''), $restoreStateSettingsHash) -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupHashAfterRestore' -DefaultValue ''), $restoreStateSettingsBackupHash)) -Detail 'iteration-result.json restore settings hashes must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_restore_settings_backup_existence_matches_restore_state" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupExistsAfterRestore' -DefaultValue $false) -eq $restoreStateSettingsBackupExistsAfter) -Detail 'iteration-result.json LiveSessionSettingsBackupExistsAfterRestore must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_restore_settings_restored_flags_true" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsRestoredFromBackup' -DefaultValue $false) -and [bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupRestoredFromBackup' -DefaultValue $false)) -Detail 'iteration-result.json restore settings restored flags must be true'
+            }
+
             if ($null -ne $plannedForIteration) {
                 $resultScenario = [string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue '')
                 $resultCommand = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
@@ -1340,6 +1526,65 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_exists_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogExists') -Detail 'every probe sample must retain LogExists'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogLengthBytes') -Detail 'every probe sample must retain LogLengthBytes'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_last_write_field_present" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'LogLastWriteTimeUtc') -Detail 'every probe sample must retain LogLastWriteTimeUtc, even when the value is null before log creation'
+                    $invalidSampledAtProbeSamples = @($probeSamples | Where-Object {
+                        $null -eq (ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue $null))
+                    })
+                    $invalidLogLastWriteProbeSamples = @($probeSamples | Where-Object {
+                        [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                            $null -eq (ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue $null))
+                    })
+                    $futureLogLastWriteProbeSamples = @($probeSamples | Where-Object {
+                        $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                        $sampledAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue $null)
+                        $logLastWriteUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue $null)
+                        $logExists -and $null -ne $sampledAtUtc -and $null -ne $logLastWriteUtc -and $logLastWriteUtc -gt $sampledAtUtc
+                    })
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_sampled_at_parseable" -Passed ($invalidSampledAtProbeSamples.Count -eq 0) -Detail "every probe sample SampledAt must be parseable; invalidCount=$($invalidSampledAtProbeSamples.Count)"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_last_write_parseable_when_log_exists" -Passed ($invalidLogLastWriteProbeSamples.Count -eq 0) -Detail "LogLastWriteTimeUtc must be parseable when LogExists=true; invalidCount=$($invalidLogLastWriteProbeSamples.Count)"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_last_write_not_after_sampled_at" -Passed ($futureLogLastWriteProbeSamples.Count -eq 0) -Detail "LogLastWriteTimeUtc must not be later than SampledAt; invalidCount=$($futureLogLastWriteProbeSamples.Count)"
+                    $sampledAtRegressionCount = 0
+                    $phaseOrderDefectCount = 0
+                    $logLengthRegressionCount = 0
+                    $negativeLogLengthProbeSamples = @($probeSamples | Where-Object {
+                        [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                            [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) -lt 0
+                    })
+                    $previousSampledAtUtc = $null
+                    $previousLogLengthBytes = $null
+                    $runtimePhaseSeen = $false
+                    foreach ($probeSample in $probeSamples) {
+                        $sampledAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $probeSample -Name 'SampledAt' -DefaultValue $null)
+                        if ($null -ne $sampledAtUtc) {
+                            if ($null -ne $previousSampledAtUtc -and $sampledAtUtc -lt $previousSampledAtUtc) {
+                                $sampledAtRegressionCount++
+                            }
+
+                            $previousSampledAtUtc = $sampledAtUtc
+                        }
+
+                        $phase = [string](Get-JsonValue -Object $probeSample -Name 'Phase' -DefaultValue '')
+                        if ([string]::Equals($phase, 'PostCommandRuntime', [System.StringComparison]::Ordinal)) {
+                            $runtimePhaseSeen = $true
+                        } elseif ([string]::Equals($phase, 'StartupMainMenu', [System.StringComparison]::Ordinal) -and $runtimePhaseSeen) {
+                            $phaseOrderDefectCount++
+                        }
+
+                        if ([bool](Get-JsonValue -Object $probeSample -Name 'LogExists' -DefaultValue $false)) {
+                            $logLengthBytes = [long](Get-JsonValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1)
+                            if ($logLengthBytes -ge 0) {
+                                if ($null -ne $previousLogLengthBytes -and $logLengthBytes -lt $previousLogLengthBytes) {
+                                    $logLengthRegressionCount++
+                                }
+
+                                $previousLogLengthBytes = $logLengthBytes
+                            }
+                        }
+                    }
+
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_sampled_at_nondecreasing" -Passed ($sampledAtRegressionCount -eq 0) -Detail "runtime-probe-samples.json SampledAt values must be retained in nondecreasing order; regressionCount=$sampledAtRegressionCount"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_phase_ordered" -Passed ($phaseOrderDefectCount -eq 0) -Detail "StartupMainMenu samples must not appear after PostCommandRuntime samples; defectCount=$phaseOrderDefectCount"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_nonnegative_when_log_exists" -Passed ($negativeLogLengthProbeSamples.Count -eq 0) -Detail "LogLengthBytes must be non-negative when LogExists=true; invalidCount=$($negativeLogLengthProbeSamples.Count)"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_nondecreasing_when_log_exists" -Passed ($logLengthRegressionCount -eq 0) -Detail "LogLengthBytes must not regress across retained LogExists=true samples; regressionCount=$logLengthRegressionCount"
                     $runtimeObservationInitialLogLengthForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { [long](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'LogInitialLengthBytes' -DefaultValue -1) } else { -1L }
                     $runtimeObservationLogGrewForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { [bool](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'LogGrew' -DefaultValue $false) } else { $false }
                     $postCommandRuntimeProbeLogLengths = @($postCommandRuntimeProbeSamples |

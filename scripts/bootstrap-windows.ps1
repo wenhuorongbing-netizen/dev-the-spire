@@ -72,7 +72,7 @@ foreach ($file in $baseLibFiles) {
 
 if ($missingBaseLib.Count -gt 0) {
     Write-Warning "BaseLib appears incomplete. Missing: $($missingBaseLib -join ', ')"
-    Write-Warning 'Install BaseLib v3.2.1 under <GameRoot>\mods\BaseLib before game verification.'
+    Write-Warning 'Install BaseLib v3.3.0 under <GameRoot>\mods\BaseLib before game verification.'
 } else {
     Write-Host 'BaseLib runtime files found.'
 }

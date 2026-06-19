@@ -2,13 +2,13 @@
 
 ## Current Target
 
-Date: 2026-06-18
+Date: 2026-06-19
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.87`
+Current package target: Spire Plus `v0.1.0-private-beta.88`
 
-Runtime dependency target: BaseLib `v3.2.1`, STS2-RitsuLib `v0.4.24`, Slay the Spire 2 `v0.107.0`
+Runtime dependency target: BaseLib `v3.3.0`, STS2-RitsuLib `v0.4.24`, Slay the Spire 2 `v0.107.1`
 
 Use these current files as the source of truth before acting on this goal:
 
@@ -25,10 +25,11 @@ current, and action-oriented.
 ## Current Conclusion
 
 The original runtime blocker is resolved for loader and registration proof. The beta.84 failure root
-cause was Spire Plus runtime API drift, not missing or too-old BaseLib/RitsuLib. The dependency floor
-is now aligned on BaseLib `v3.2.1` and STS2-RitsuLib `v0.4.24`.
+cause was Spire Plus runtime API drift, not missing or too-old BaseLib/RitsuLib. The later `v0.107.1`
+clean-audit blocker was BaseLib `v3.2.1` patch drift; the dependency floor is now aligned on
+BaseLib `v3.3.0` and STS2-RitsuLib `v0.4.24`.
 
-Current beta.85/beta.86 loader proof remains previous-package context, and current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`.
+Current beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and current beta.88 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`.
 
 This is still source/static/no-game governance plus loader/registration proof. Do not claim enabled-mode safe beyond the retained loader evidence. Gameplay, Mod Settings UI page proof,
 save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA,
@@ -38,9 +39,9 @@ release readiness, and tester-package handoff remain pending.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Runtime dependency blocker | Closed for loader/registration | BaseLib `v3.2.1` and STS2-RitsuLib `v0.4.24` are installed for Slay the Spire 2 `v0.107.0`; beta.87 AdditiveBatch1 direct proof reached main menu with clean retained verifiers. |
+| Runtime dependency blocker | Closed for loader/registration | BaseLib `v3.3.0` and STS2-RitsuLib `v0.4.24` are installed for Slay the Spire 2 `v0.107.1`; beta.88 AdditiveBatch1 direct proof reached main menu with clean retained verifiers. |
 | CanaryOnly proof | Historical loader pass | CanaryOnly beta.85 / v0.107.0 smoke remains previous-package loader proof only: 4 event types / 6 registration calls. |
-| AdditiveBatch1 proof | Current loader/registration pass | beta.87 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, and retained packet/log verifier parity. |
+| AdditiveBatch1 proof | Current loader/registration pass | beta.88 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 0 mismatches. |
 | AutoSlay/runtime evidence governance | Current no-game hardening | Packet/analyzer guards reject malformed, escaped, noncanonical, missing, or blank retained artifact paths before owner routing; this protects future runtime packets from stale or shadow evidence. |
 | Batch 4c | Proposal only / static review recaptured | The 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration. |
 | Documentation compactness | In progress | Player-facing naming guard coverage may be split into source-preserving partial files when the assertions remain unchanged and focused tests pass. |
