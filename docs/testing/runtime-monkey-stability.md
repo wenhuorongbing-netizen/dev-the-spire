@@ -238,7 +238,10 @@ can close a game-native monkey proof row:
 
 - top-level `autoslay-plan.json` and `autoslay-summary.json` with
   `SchemaVersion: 1`, `RunnerKind: GameNativeAutoSlay`, and retained batch
-  metadata before any per-run artifacts can be trusted;
+  metadata before any per-run artifacts can be trusted. `autoslay-summary.json`
+  `Passed` and `FailedRuns` must match the aggregation of `Runs[]` `Passed`,
+  `FailureReasonCodes`, and `HangSignals`; top-level green fields are not
+  accepted as proof unless the rows are also clean;
 - top-level `autoslay-summary.json` `AncientIdCounts` keyed by normalized
   Ancient id, with non-negative integer counts that exactly match the
   aggregation of per-run `Runs[].AncientId` values and give every requested
@@ -258,6 +261,9 @@ can close a game-native monkey proof row:
   `NoLogGrowthTimeoutExceeded: false`, and the retained per-run before,
   after-launch, and current-iteration Godot log paths, byte lengths, and
   SHA256 hashes;
+- each `autoslay-summary.json` `Runs[]` row must retain `RunResultPath` and
+  `RunResultSha256`, and the hash must match that seed's retained
+  `run-result.json` bytes before the run-result data is trusted;
 - one retained `runtime-probe-samples.json` per seed with `Phase`, `SampledAt`,
   `LogExists`, `LogLengthBytes`, retained `LogLastWriteTimeUtc`, `ProcessId`,
   `ProcessStartTimeUtc`, `ProcessPath`, `ExpectedGameProcessId`,
@@ -339,7 +345,9 @@ retained plan count, so a stale plan cannot be hidden by the verifier command.
 non-negative integer values match `Runs[].AncientId` aggregation exactly, whose
 total equals the retained run count, and whose value for each requested target
 Ancient id is greater than zero. Extra zero-count keys still fail because the
-map must not claim an Ancient id that never appeared in `Runs[]`. Each requested
+map must not claim an Ancient id that never appeared in `Runs[]`. The same
+summary binding applies to batch status: `Passed` and `FailedRuns` must be
+recomputed from `Runs[]` rather than trusted as standalone counters. Each requested
 Ancient id must have sidecar and current-log traversal proof whose ordered
 `Selecting event option: <AncientId>` line is bound to that same id after the
 event-room and Ancient-dialogue markers, not merely present somewhere else in
@@ -355,8 +363,8 @@ This verifier is no-launch only. It rejects packets that do not identify
 `check-local-godot-source-workspace.ps1` report, schema fields, policy flags,
 and source-version summary, omit the explicit package/game/Ritsu/patch target
 switches, duplicate or drop planned seeds, place any per-seed artifact outside
-that seed's `run-####` folder, lack per-seed run-result JSON, clean
-pass/failure state, before/after/current Godot log length/SHA256 metadata,
+that seed's `run-####` folder, lack per-seed run-result JSON or matching
+`RunResultSha256`, clean pass/failure state, before/after/current Godot log length/SHA256 metadata,
 `RuntimeProbeSamplesPath`, clean `MainMenuObservation` and
 `RuntimeObservation` records including runtime `LogGrew: true`, parseable
 ordered run-result timestamps, `main-menu` and `runtime` probe phases, probe
@@ -372,7 +380,9 @@ clean audit recomputation, StS1 mode binding, `EventKind: Ancient` /
 `AncientId`, required proof-mode `-ExpectedAncientIds` plan, summary, and
 traversed-id coverage, or ordered event-room traversal markers such as
 `Entering Event room`, `Detected Ancient event, clicking through dialogue`,
-and `Selecting event option: <AncientId>`. Use a smaller
+and `Selecting event option: <AncientId>`. Malformed numeric fields are treated
+as failed checks rather than verifier crashes, so hand-edited JSON remains
+diagnosable as rejected evidence. Use a smaller
 `-MinRuns` only for temporary parser or fixture tests, and never set it to 0 or
 a negative value; a real game-native monkey proof should use the intended proof
 count plus the intended target Ancient id coverage. A single-seed fixture packet is not batch proof; the verifier must fail when `-MinRuns` is higher than the retained plan and summary
@@ -416,10 +426,17 @@ blocker.
 
 For `GameNativeAutoSlay`, the analyzer reads `autoslay-summary.json`, each
 per-seed `run-result.json`, `runtime-probe-samples.json`, and sidecar log. It
-refuses to route source ownership from `godot.log.current-iteration` unless
+requires `autoslay-summary.json` `Runs[].RunResultPath` to resolve under the
+evidence root, and requires `autoslay-summary.json` `Runs[].RunResultSha256` to match the retained per-seed `run-result.json`. The AutoSlay summary target and
+per-seed `run-result.json` must also agree on `RunnerKind: GameNativeAutoSlay`
+before run-result fields can drive owner routing. It also requires retained summary row `Passed`, `FailureReasonCodes`, and
+`HangSignals` to match the retained `run-result.json` before owner routing.
+It refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes and the run-result before/after/current Godot log byte-length/SHA256
-metadata matches the retained files. It rejects GameNativeAutoSlay
+metadata matches the retained files. Malformed numeric evidence fields are
+treated as failed harness evidence checks with sentinel values rather than
+analyzer crashes or gameplay-owner signals. It rejects GameNativeAutoSlay
 `RunResultPath` escapes and root/shared GameNativeAutoSlay Godot logs, runtime
 probe samples, audit JSON, and StS1 reports with
 `RuntimeHarness` blockers before using those files for source routing. It
@@ -687,6 +704,13 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `MaxSecondsWithoutLogGrowth`, and `MaxConsecutiveUnresponsiveSamples`.
   Summary max telemetry must match the maximum values recomputed from
   `Results[]`; stale or hand-edited max values fail packet verification.
+  Each `Results[]` runtime-probe path/SHA256 field must match the corresponding
+  `iteration-result.json` `RuntimeProbeSamplesPath` and
+  `RuntimeProbeSamplesSha256` field before probe evidence can be trusted.
+  Each `Results[]` live-session state path/SHA256 field must match the
+  corresponding `iteration-result.json` `LiveSessionSessionStatePath`,
+  `LiveSessionSessionStateSha256`, `LiveSessionRestoreStatePath`, and
+  `LiveSessionRestoreStateSha256` field before restore evidence can be trusted.
   Each `Results[]` row must also retain empty `FailureReasonCodes` and
   `HangSignals` for a clean packet, and those arrays must match the canonical
   `iteration-result.json` row for the same iteration.

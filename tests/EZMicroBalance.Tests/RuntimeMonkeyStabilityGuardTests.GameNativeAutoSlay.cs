@@ -28,6 +28,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "$traversedAncientIdSet.Add($ancientId.Trim().ToUpperInvariant())",
             "runtime_probe_samples_sha256_matches_retained_file",
             "run_result_runtime_probe_samples_sha256_matches_summary",
+            "run_result_sha256_matches_retained_file",
+            "summary_passed_matches_runs_array",
+            "summary_failed_runs_matches_runs_array",
+            "$summaryProblemRunRows = @($summaryRuns | Where-Object {",
+            "problemRows=$($summaryProblemRunRows.Count)",
             "plan_expected_patch_count_positive",
             "plan_expected_patch_count_matches_expected",
             "${runName}_run_result_ancient_id_matches_summary");
@@ -61,8 +66,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_expected_patch_count_positive status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_expected_patch_count_matches_expected status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_passed_matches_runs_array status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_failed_runs_matches_runs_array status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_expected_ancient_ids_observed status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_ancient_id_counts_match_runs status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_sha256_recorded status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_runtime_probe_samples_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_runtime_probe_samples_sha256_matches_summary status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=pass", result.Output, StringComparison.Ordinal);
@@ -153,102 +162,192 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
-    public void GameNativeAutoSlayPacketVerifierRejectsAncientCoverageBypasses()
+    public void GameNativeAutoSlayPacketVerifierNormalizesAncientCoverageCase()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        File.WriteAllText(fixture.PlanPath, fixture.OriginalPlanJson.Replace("\"ExpectedAncientIds\": [\"VAKUU\"]", "\"ExpectedAncientIds\": [\"vakuu\"]", StringComparison.Ordinal));
+        File.WriteAllText(fixture.SummaryPath, fixture.OriginalSummaryJson.Replace("\"AncientId\": \"VAKUU\"", "\"AncientId\": \"Vakuu\"", StringComparison.Ordinal));
+        File.WriteAllText(fixture.RunResultPath, fixture.OriginalRunResultJson.Replace("\"AncientId\": \"VAKUU\"", "\"AncientId\": \"Vakuu\"", StringComparison.Ordinal));
+        fixture.RefreshSummaryRunResultHash();
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier should normalize AncientId target coverage case:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_ids_observed status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_ancient_id_counts_match_runs status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("expected_ancient_ids_have_event_traversal status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsMissingExpectedAncientCoverage()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        File.WriteAllText(
+            fixture.PlanPath,
+            fixture.OriginalPlanJson.Replace("\"ExpectedAncientIds\": [\"VAKUU\"]", "\"ExpectedAncientIds\": [\"VAKUU\", \"URDA\"]", StringComparison.Ordinal));
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU,URDA");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("expected_ancient_ids_unique status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_ids_observed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_id_counts_positive status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("expected_ancient_ids_have_event_traversal status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("ExpectedAncientIds missing=URDA", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRequiresExpectedAncientIdsInProofMode()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var result = fixture.RunVerifier("-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("expected_ancient_ids_required_for_proof_mode status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsMissingTraversalBypassInProofMode()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU", "-AllowMissingEventTraversal", "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("allow_missing_event_traversal_not_proof_mode status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAncientIdCountMismatches()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        File.WriteAllText(
+            fixture.SummaryPath,
+            fixture.OriginalSummaryJson.Replace("\"AncientIdCounts\": { \"VAKUU\": 1 }", "\"AncientIdCounts\": { \"VAKUU\": 0 }", StringComparison.Ordinal));
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("summary_ancient_id_counts_present status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_ancient_id_counts_valid status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_ancient_id_counts_match_runs status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_ancient_id_counts_total_matches_runs status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_id_counts_positive status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsExtraZeroAncientIdCounts()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        File.WriteAllText(
+            fixture.SummaryPath,
+            fixture.OriginalSummaryJson.Replace("\"AncientIdCounts\": { \"VAKUU\": 1 }", "\"AncientIdCounts\": { \"VAKUU\": 1, \"URDA\": 0 }", StringComparison.Ordinal));
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("summary_ancient_id_counts_match_runs status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("URDA:extra_summary=0", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_ancient_id_counts_total_matches_runs status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsUndersizedRunCounts()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var result = fixture.RunVerifier("-MinRuns", "2", "-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("expected_ancient_ids_required_for_proof_mode status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_seed_count_meets_minimum status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_total_runs_meets_minimum status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_event_room_traversal_observed status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsNonPositiveMinRuns()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var result = fixture.RunVerifier("-MinRuns", "0", "-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("min_runs_positive status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_seed_count_meets_minimum status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_total_runs_meets_minimum status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsStaleSummaryPassAndFailureSignals()
     {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
-            File.WriteAllText(fixture.PlanPath, fixture.OriginalPlanJson.Replace("\"ExpectedAncientIds\": [\"VAKUU\"]", "\"ExpectedAncientIds\": [\"vakuu\"]", StringComparison.Ordinal));
-            File.WriteAllText(fixture.SummaryPath, fixture.OriginalSummaryJson.Replace("\"AncientId\": \"VAKUU\"", "\"AncientId\": \"Vakuu\"", StringComparison.Ordinal));
-            File.WriteAllText(fixture.RunResultPath, fixture.OriginalRunResultJson.Replace("\"AncientId\": \"VAKUU\"", "\"AncientId\": \"Vakuu\"", StringComparison.Ordinal));
-
-            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
-
-            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier should normalize AncientId target coverage case:{Environment.NewLine}{result.Output}{result.Error}");
-            Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_expected_ancient_ids_observed status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_ancient_id_counts_match_runs status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("expected_ancient_ids_have_event_traversal status=pass", result.Output, StringComparison.Ordinal);
-        }
-
-        using (var fixture = CreateGameNativeAutoSlayFixture())
-        {
-            File.WriteAllText(
-                fixture.PlanPath,
-                fixture.OriginalPlanJson.Replace("\"ExpectedAncientIds\": [\"VAKUU\"]", "\"ExpectedAncientIds\": [\"VAKUU\", \"URDA\"]", StringComparison.Ordinal));
-            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU,URDA");
+            var staleSummaryPassedRow = Regex.Replace(
+                fixture.OriginalSummaryJson,
+                "(\"Seed\":\\s*" + Regex.Escape(JsonSerializer.Serialize(fixture.Seed)) + "\\s*,\\s*)\"Passed\": true",
+                "$1\"Passed\": false",
+                RegexOptions.CultureInvariant);
+            Assert.NotEqual(fixture.OriginalSummaryJson, staleSummaryPassedRow);
+            File.WriteAllText(fixture.SummaryPath, staleSummaryPassedRow);
+            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
 
             Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
-            Assert.Contains("expected_ancient_ids_unique status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_expected_ancient_ids_observed status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_expected_ancient_id_counts_positive status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("expected_ancient_ids_have_event_traversal status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("ExpectedAncientIds missing=URDA", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_passed status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_runs_zero status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_passed_matches_runs_array status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_runs_matches_runs_array status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("problemRows=1", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_summary_run_passed_true status=fail", result.Output, StringComparison.Ordinal);
         }
 
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
-            var result = fixture.RunVerifier("-FailOnMismatch");
+            var summaryWithProblemSignals = fixture.OriginalSummaryJson
+                .Replace("\"FailureReasonCodes\": []", "\"FailureReasonCodes\": [\"autoslay_seed_failed\"]", StringComparison.Ordinal)
+                .Replace("\"HangSignals\": []", "\"HangSignals\": [\"runtime_not_responding\"]", StringComparison.Ordinal);
+            Assert.NotEqual(fixture.OriginalSummaryJson, summaryWithProblemSignals);
+            File.WriteAllText(fixture.SummaryPath, summaryWithProblemSignals);
+            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
 
-            Assert.NotEqual(0, result.ExitCode);
-            Assert.Contains("expected_ancient_ids_required_for_proof_mode status=fail", result.Output, StringComparison.Ordinal);
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("summary_passed status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_runs_zero status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_passed_matches_runs_array status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_runs_matches_runs_array status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("problemRows=1", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_summary_run_passed_true status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_summary_run_failure_reason_codes_empty status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_summary_run_hang_signals_empty status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_failure_reason_codes_match_summary status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_hang_signals_match_summary status=fail", result.Output, StringComparison.Ordinal);
         }
+    }
 
-        using (var fixture = CreateGameNativeAutoSlayFixture())
-        {
-            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU", "-AllowMissingEventTraversal", "-FailOnMismatch");
-
-            Assert.NotEqual(0, result.ExitCode);
-            Assert.Contains("allow_missing_event_traversal_not_proof_mode status=fail", result.Output, StringComparison.Ordinal);
-        }
-
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsMalformedNumericEvidenceWithoutCrashing()
+    {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
             File.WriteAllText(
                 fixture.SummaryPath,
-                fixture.OriginalSummaryJson.Replace("\"AncientIdCounts\": { \"VAKUU\": 1 }", "\"AncientIdCounts\": { \"VAKUU\": 0 }", StringComparison.Ordinal));
+                fixture.OriginalSummaryJson.Replace("\"ExitCode\": 0", "\"ExitCode\": \"oops\"", StringComparison.Ordinal));
             var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
 
             Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
-            Assert.Contains("summary_ancient_id_counts_present status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_ancient_id_counts_valid status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_ancient_id_counts_match_runs status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_ancient_id_counts_total_matches_runs status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_expected_ancient_id_counts_positive status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_exit_code_zero status=fail", result.Output, StringComparison.Ordinal);
         }
 
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
             File.WriteAllText(
-                fixture.SummaryPath,
-                fixture.OriginalSummaryJson.Replace("\"AncientIdCounts\": { \"VAKUU\": 1 }", "\"AncientIdCounts\": { \"VAKUU\": 1, \"URDA\": 0 }", StringComparison.Ordinal));
+                fixture.RunResultPath,
+                fixture.OriginalRunResultJson.Replace(
+                    "\"GodotLogBeforeLengthBytes\": " + fixture.BeforeLogLength,
+                    "\"GodotLogBeforeLengthBytes\": \"oops\"",
+                    StringComparison.Ordinal));
+            fixture.RefreshSummaryRunResultHash();
             var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
 
             Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
-            Assert.Contains("summary_ancient_id_counts_match_runs status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("URDA:extra_summary=0", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_ancient_id_counts_total_matches_runs status=pass", result.Output, StringComparison.Ordinal);
-        }
-
-        using (var fixture = CreateGameNativeAutoSlayFixture())
-        {
-            var result = fixture.RunVerifier("-MinRuns", "2", "-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
-
-            Assert.NotEqual(0, result.ExitCode);
-            Assert.Contains("expected_ancient_ids_required_for_proof_mode status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("plan_seed_count_meets_minimum status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_total_runs_meets_minimum status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("run_0001_event_room_traversal_observed status=pass", result.Output, StringComparison.Ordinal);
-        }
-
-        using (var fixture = CreateGameNativeAutoSlayFixture())
-        {
-            var result = fixture.RunVerifier("-MinRuns", "0", "-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
-
-            Assert.NotEqual(0, result.ExitCode);
-            Assert.Contains("min_runs_positive status=fail", result.Output, StringComparison.Ordinal);
-            Assert.Contains("plan_seed_count_meets_minimum status=pass", result.Output, StringComparison.Ordinal);
-            Assert.Contains("summary_total_runs_meets_minimum status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_before_log_length_matches_summary status=fail", result.Output, StringComparison.Ordinal);
         }
     }
 
@@ -282,6 +381,16 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_runtime_probe_samples_under_run_dir status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_leaf_expected status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_runtime_probe_samples_path_matches_summary status=pass", result.Output, StringComparison.Ordinal);
+        }
+
+        using (var fixture = CreateGameNativeAutoSlayFixture())
+        {
+            File.AppendAllText(fixture.RunResultPath, " ");
+            var result = fixture.RunVerifier();
+
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("run_0001_run_result_sha256_recorded status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_sha256_matches_retained_file status=fail", result.Output, StringComparison.Ordinal);
         }
 
         using (var fixture = CreateGameNativeAutoSlayFixture())
@@ -329,7 +438,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
-    public void GameNativeAutoSlayPacketVerifierRejectsRuntimeProbeTimestampHookAndTraversalDrift()
+    public void GameNativeAutoSlayPacketVerifierRejectsRuntimeObservationDrift()
     {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
@@ -358,7 +467,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
             Assert.Contains("run_0001_run_result_process_id_matches_runtime_probe_samples status=fail", result.Output, StringComparison.Ordinal);
         }
+    }
 
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsRuntimeProbeTimestampAndPhaseDrift()
+    {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
             File.WriteAllText(
@@ -454,7 +567,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_runtime_probe_samples_main_menu_phase_observed status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_runtime_probe_samples_runtime_phase_observed status=pass", result.Output, StringComparison.Ordinal);
         }
+    }
 
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsRunTimestampDrift()
+    {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
             File.WriteAllText(fixture.RunResultPath, fixture.OriginalRunResultJson.Replace("\"EndTimestamp\": \"2026-06-18T10:00:30Z\"", "\"EndTimestamp\": \"not-a-timestamp\"", StringComparison.Ordinal));
@@ -475,7 +592,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_run_result_end_timestamp_parseable status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_timestamp_order_valid status=fail", result.Output, StringComparison.Ordinal);
         }
+    }
 
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsPlanAndSourceDrift()
+    {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
             File.WriteAllText(fixture.PlanPath, fixture.OriginalPlanJson.Replace("\"ExpectedPatchCount\": 25", "\"ExpectedPatchCount\": 24", StringComparison.Ordinal));
@@ -513,7 +634,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("plan_source_workspace_check_hash_matches status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("plan_source_workspace_schema_version_one status=fail", result.Output, StringComparison.Ordinal);
         }
+    }
 
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAutoSlayTraversalDrift()
+    {
         using (var fixture = CreateGameNativeAutoSlayFixture())
         {
             File.WriteAllText(
@@ -632,8 +757,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             OriginalRunResultJson = BuildRunResultJson(launcherHash);
             OriginalPlanJson = BuildPlanJson(launcherHash);
-            OriginalSummaryJson = BuildSummaryJson();
             File.WriteAllText(RunResultPath, OriginalRunResultJson);
+            RunResultHash = Sha256File(RunResultPath);
+            OriginalSummaryJson = BuildSummaryJson();
             File.WriteAllText(PlanPath, OriginalPlanJson);
             File.WriteAllText(SummaryPath, OriginalSummaryJson);
             OriginalSourceWorkspaceReportJson = File.ReadAllText(SourceWorkspaceReportPath);
@@ -657,6 +783,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         public string Sts1ModeCheckPath { get; }
         public string RuntimeProbeSamplesPath { get; }
         public string RuntimeProbeSamplesHash { get; }
+        public string RunResultHash { get; }
         public string GameProcessPath { get; }
         public string OriginalSourceWorkspaceReportJson { get; }
         public string OriginalPlanJson { get; }
@@ -707,6 +834,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 .Replace(JsonSerializer.Serialize(AfterLaunchLogHash), JsonSerializer.Serialize(afterLaunchLogHash), StringComparison.Ordinal)
                 .Replace($"\"GodotLogCurrentIterationLengthBytes\": {CurrentLogLength}", $"\"GodotLogCurrentIterationLengthBytes\": {currentLogLength}", StringComparison.Ordinal)
                 .Replace(JsonSerializer.Serialize(CurrentLogHash), JsonSerializer.Serialize(currentLogHash), StringComparison.Ordinal);
+
+        public void RefreshSummaryRunResultHash()
+        {
+            var summaryJson = File.ReadAllText(SummaryPath);
+            File.WriteAllText(
+                SummaryPath,
+                summaryJson.Replace(
+                    JsonSerializer.Serialize(RunResultHash),
+                    JsonSerializer.Serialize(Sha256File(RunResultPath)),
+                    StringComparison.Ordinal));
+        }
 
         public void Dispose()
         {
@@ -987,6 +1125,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "FailureReasonCodes": [],
                   "HangSignals": [],
                   "RunResultPath": "run-0001/run-result.json",
+                  "RunResultSha256": {{JsonSerializer.Serialize(RunResultHash)}},
                   "RuntimeProbeSamplesPath": "run-0001/runtime-probe-samples.json",
                   "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(RuntimeProbeSamplesHash)}},
                   "AutoSlayLogPath": "run-0001/autoslay.log",
