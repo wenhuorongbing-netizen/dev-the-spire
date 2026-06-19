@@ -88,6 +88,23 @@ function ConvertTo-LongOrDefault {
     }
 }
 
+function ConvertTo-BoolOrDefault {
+    param(
+        [AllowNull()]$Value,
+        [bool]$DefaultValue = $false
+    )
+
+    if ($null -eq $Value) {
+        return $DefaultValue
+    }
+
+    if ($Value -is [bool]) {
+        return [bool]$Value
+    }
+
+    return $DefaultValue
+}
+
 function Get-JsonIntValue {
     param(
         [AllowNull()]$Object,
@@ -108,6 +125,38 @@ function Get-JsonLongValue {
     return ConvertTo-LongOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
 }
 
+function Get-JsonBoolValue {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [bool]$DefaultValue = $false
+    )
+
+    return ConvertTo-BoolOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
+}
+
+function Test-JsonBoolProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    return (Test-JsonProperty -Object $Object -Name $Name) -and
+        $null -ne $Object.$Name -and
+        $Object.$Name -is [bool]
+}
+
+function Test-JsonArrayProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    return (Test-JsonProperty -Object $Object -Name $Name) -and
+        $null -ne $Object.$Name -and
+        $Object.$Name -is [System.Array]
+}
+
 function Get-JsonArrayValues {
     param(
         [AllowNull()]$Object,
@@ -116,12 +165,12 @@ function Get-JsonArrayValues {
 
     $items = [System.Collections.Generic.List[object]]::new()
     if (-not (Test-JsonProperty -Object $Object -Name $Name)) {
-        return ,$items
+        return
     }
 
     $value = $Object.$Name
     if ($null -eq $value) {
-        return ,$items
+        return
     }
 
     if ($value -is [System.Array]) {
@@ -132,7 +181,9 @@ function Get-JsonArrayValues {
         $items.Add($value) | Out-Null
     }
 
-    return ,$items
+    foreach ($item in $items) {
+        Write-Output -NoEnumerate $item
+    }
 }
 
 function ConvertTo-StringArray {
@@ -164,6 +215,302 @@ function Test-StringArrayEquals {
     }
 
     return $true
+}
+
+function Get-FailureCodeGroupCount {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string[]]$FailureCodes
+    )
+
+    $count = 0
+    foreach ($item in @($Items)) {
+        $itemCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $item -Name 'FailureReasonCodes' -DefaultValue @()))
+        foreach ($failureCode in $FailureCodes) {
+            if ($itemCodes -contains $failureCode) {
+                $count++
+                break
+            }
+        }
+    }
+
+    return $count
+}
+
+function Get-FailureReasonCounts {
+    param([AllowNull()]$Items)
+
+    $counts = [ordered]@{}
+    foreach ($item in @($Items)) {
+        $itemCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $item -Name 'FailureReasonCodes' -DefaultValue @()))
+        foreach ($code in $itemCodes) {
+            if ([string]::IsNullOrWhiteSpace($code)) {
+                continue
+            }
+
+            if (-not $counts.Contains($code)) {
+                $counts[$code] = 0
+            }
+
+            $counts[$code]++
+        }
+    }
+
+    return $counts
+}
+
+function Test-CountMapMatches {
+    param(
+        [AllowNull()]$ActualCountMap,
+        [Parameter(Mandatory = $true)]$ExpectedCounts
+    )
+
+    if ($null -eq $ActualCountMap) {
+        return $false
+    }
+
+    $actualProperties = @($ActualCountMap.PSObject.Properties)
+    $expectedKeys = @($ExpectedCounts.Keys)
+    if ($actualProperties.Count -ne $expectedKeys.Count) {
+        return $false
+    }
+
+    foreach ($key in $expectedKeys) {
+        $actualProperty = $ActualCountMap.PSObject.Properties[$key]
+        if ($null -eq $actualProperty -or
+            (ConvertTo-IntOrDefault -Value $actualProperty.Value -DefaultValue -1) -ne
+            (ConvertTo-IntOrDefault -Value $ExpectedCounts[$key] -DefaultValue -2)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-RuntimeMonkeySummaryMismatchDetails {
+    param([AllowNull()]$Summary)
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Summary -or -not (Test-JsonProperty -Object $Summary -Name 'Results')) {
+        return @()
+    }
+
+    $summaryResults = @($Summary.Results)
+    $failedSummaryResults = @($summaryResults | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
+    $summaryRequestedIterations = Get-JsonIntValue -Object $Summary -Name 'RequestedIterations' -DefaultValue 0
+    $summaryCompletedIterations = Get-JsonIntValue -Object $Summary -Name 'CompletedIterations' -DefaultValue 0
+    $expectedSummaryPassed = $summaryResults.Count -gt 0 -and $failedSummaryResults.Count -eq 0 -and $summaryCompletedIterations -eq $summaryRequestedIterations
+    $summaryPassed = (Get-JsonBoolValue -Object $Summary -Name 'Passed' -DefaultValue $false)
+    if ($summaryPassed -ne $expectedSummaryPassed) {
+        $details.Add("Passed expected=$expectedSummaryPassed actual=$summaryPassed") | Out-Null
+    }
+
+    $summaryFailedIterations = Get-JsonIntValue -Object $Summary -Name 'FailedIterations' -DefaultValue -1
+    if ($summaryFailedIterations -ne $failedSummaryResults.Count) {
+        $details.Add("FailedIterations expected=$($failedSummaryResults.Count) actual=$summaryFailedIterations") | Out-Null
+    }
+
+    $summaryFailedIterationIds = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $Summary -Name 'FailedIterationIds' -DefaultValue @()))
+    $expectedFailedIterationIds = @($failedSummaryResults | ForEach-Object { [string](Get-JsonIntValue -Object $_ -Name 'Iteration' -DefaultValue 0) })
+    if (-not (Test-StringArrayEquals -Actual $summaryFailedIterationIds -Expected $expectedFailedIterationIds)) {
+        $details.Add("FailedIterationIds expected=$($expectedFailedIterationIds -join ',') actual=$($summaryFailedIterationIds -join ',')") | Out-Null
+    }
+
+    $failureReasonCounts = Get-JsonValue -Object $Summary -Name 'FailureReasonCounts' -DefaultValue $null
+    if (-not (Test-CountMapMatches -ActualCountMap $failureReasonCounts -ExpectedCounts (Get-FailureReasonCounts -Items $summaryResults))) {
+        $details.Add('FailureReasonCounts mismatch') | Out-Null
+    }
+
+    $summaryCounterChecks = @(
+        [pscustomobject]@{ Name = 'ProcessExitCount'; Codes = @('game_process_exited') },
+        [pscustomobject]@{ Name = 'MainWindowMissingCount'; Codes = @('main_window_missing') },
+        [pscustomobject]@{ Name = 'LiveSessionBindingMissingCount'; Codes = @(
+                'live_session_prepare_output_missing',
+                'live_session_launch_metadata_missing',
+                'live_session_pid_attribution_missing',
+                'live_session_pid_attribution_failed',
+                'game_process_start_time_unbound',
+                'game_process_path_missing',
+                'game_process_id_mismatch',
+                'game_process_start_time_mismatch',
+                'game_process_path_mismatch',
+                'live_session_session_state_missing',
+                'live_session_restore_state_missing'
+            ) },
+        [pscustomobject]@{ Name = 'LiveSessionRestoreItemCountMismatchCount'; Codes = @('restore_item_count_mismatch') },
+        [pscustomobject]@{ Name = 'LiveSessionPreservedCurrentRunManifestMissingCount'; Codes = @('preserved_current_runs_manifest_missing') },
+        [pscustomobject]@{ Name = 'LiveSessionRestoreLeakCount'; Codes = @('post_restore_process_leak') },
+        [pscustomobject]@{ Name = 'LiveSessionRestoreHashMismatchCount'; Codes = @('restore_settings_hash_mismatch') },
+        [pscustomobject]@{ Name = 'LiveSessionSelectedProcessNotStoppedCount'; Codes = @('selected_game_process_not_stopped') },
+        [pscustomobject]@{ Name = 'GodotLogBeforeMissingCount'; Codes = @('godot_log_before_missing') },
+        [pscustomobject]@{ Name = 'CurrentIterationLogMissingCount'; Codes = @('current_iteration_log_missing') },
+        [pscustomobject]@{ Name = 'UnresponsiveIterationCount'; Codes = @('process_unresponsive') },
+        [pscustomobject]@{ Name = 'StaleProcessObservedCount'; Codes = @('stale_process_observed') },
+        [pscustomobject]@{ Name = 'LogStallIterationCount'; Codes = @('startup_log_stalled', 'runtime_log_stalled') },
+        [pscustomobject]@{ Name = 'CommandAckMissingCount'; Codes = @('command_ack_missing') }
+    )
+
+    foreach ($counterCheck in $summaryCounterChecks) {
+        $actualCounter = Get-JsonIntValue -Object $Summary -Name ([string]$counterCheck.Name) -DefaultValue -1
+        $expectedCounter = Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes ([string[]]$counterCheck.Codes)
+        if ($actualCounter -ne $expectedCounter) {
+            $details.Add("$($counterCheck.Name) expected=$expectedCounter actual=$actualCounter") | Out-Null
+        }
+    }
+
+    return @($details.ToArray())
+}
+
+function Get-RuntimeMonkeySummaryResultMismatchDetails {
+    param(
+        [AllowNull()]$Result,
+        [AllowNull()]$SummaryResult
+    )
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Result -or $null -eq $SummaryResult) {
+        return @()
+    }
+
+    $stringFields = @(
+        'Scenario',
+        'CommandSelectionMode',
+        'Command',
+        'CommandFilePath',
+        'CommandFileSha256',
+        'RuntimeProbeSamplesPath',
+        'RuntimeProbeSamplesSha256',
+        'LiveSessionSessionStatePath',
+        'LiveSessionSessionStateSha256',
+        'LiveSessionRestoreStatePath',
+        'LiveSessionRestoreStateSha256',
+        'ScenarioTag',
+        'OwnerArea',
+        'CommandAckPattern'
+    )
+
+    foreach ($fieldName in $stringFields) {
+        $resultValue = [string](Get-JsonValue -Object $Result -Name $fieldName -DefaultValue '')
+        $summaryValue = [string](Get-JsonValue -Object $SummaryResult -Name $fieldName -DefaultValue '')
+        if (-not [string]::Equals($resultValue, $summaryValue, [System.StringComparison]::Ordinal)) {
+            $details.Add("$fieldName expected='$resultValue' actual='$summaryValue'") | Out-Null
+        }
+    }
+
+    foreach ($fieldName in @('Passed', 'CommandAckRequired', 'CommandAckObserved')) {
+        $resultValue = (Get-JsonBoolValue -Object $Result -Name $fieldName -DefaultValue $false)
+        $summaryValue = (Get-JsonBoolValue -Object $SummaryResult -Name $fieldName -DefaultValue $false)
+        if ($resultValue -ne $summaryValue) {
+            $details.Add("$fieldName expected=$resultValue actual=$summaryValue") | Out-Null
+        }
+    }
+
+    foreach ($fieldName in @('FailureReasonCodes', 'HangSignals')) {
+        $resultValues = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $Result -Name $fieldName -DefaultValue @()))
+        $summaryValues = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $SummaryResult -Name $fieldName -DefaultValue @()))
+        if (-not (Test-StringArrayEquals -Actual $summaryValues -Expected $resultValues)) {
+            $details.Add("$fieldName expected=$($resultValues -join ',') actual=$($summaryValues -join ',')") | Out-Null
+        }
+    }
+
+    return @($details.ToArray())
+}
+
+function Get-RuntimeMonkeySummaryPlanMismatchDetails {
+    param(
+        [AllowNull()]$Summary,
+        [AllowNull()]$Plan
+    )
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Summary -or $null -eq $Plan -or -not (Test-JsonProperty -Object $Plan -Name 'PlannedCommands')) {
+        return @()
+    }
+
+    $stringFields = @(
+        'Scenario',
+        'CommandSelectionMode',
+        'Sts1EventMode',
+        'ExpectedPackageVersion',
+        'ExpectedGameVersion',
+        'ExpectedRitsuLibVersion',
+        'ExpectedRitsuCompatBranch'
+    )
+
+    foreach ($fieldName in $stringFields) {
+        $planValue = [string](Get-JsonValue -Object $Plan -Name $fieldName -DefaultValue '')
+        $summaryValue = [string](Get-JsonValue -Object $Summary -Name $fieldName -DefaultValue '')
+        if (-not [string]::Equals($summaryValue, $planValue, [System.StringComparison]::Ordinal)) {
+            $details.Add("$fieldName expected='$planValue' actual='$summaryValue'") | Out-Null
+        }
+    }
+
+    $planPatchCount = Get-JsonIntValue -Object $Plan -Name 'ExpectedPatchCount' -DefaultValue 0
+    $summaryPatchCount = Get-JsonIntValue -Object $Summary -Name 'ExpectedPatchCount' -DefaultValue 0
+    if ($summaryPatchCount -ne $planPatchCount) {
+        $details.Add("ExpectedPatchCount expected='$planPatchCount' actual='$summaryPatchCount'") | Out-Null
+    }
+
+    return @($details.ToArray())
+}
+
+function Get-RuntimeMonkeyPlanResultMismatchDetails {
+    param(
+        [AllowNull()]$Plan,
+        [AllowNull()]$Result
+    )
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    if ($null -eq $Plan -or $null -eq $Result -or -not (Test-JsonProperty -Object $Plan -Name 'PlannedCommands')) {
+        return @()
+    }
+
+    $iteration = Get-JsonIntValue -Object $Result -Name 'Iteration' -DefaultValue 0
+    $planScenario = [string](Get-JsonValue -Object $Plan -Name 'Scenario' -DefaultValue '')
+    $resultScenario = [string](Get-JsonValue -Object $Result -Name 'Scenario' -DefaultValue '')
+    if (-not [string]::Equals($resultScenario, $planScenario, [System.StringComparison]::Ordinal)) {
+        $details.Add("Scenario expected='$planScenario' actual='$resultScenario'") | Out-Null
+    }
+
+    $planCommandSelectionMode = [string](Get-JsonValue -Object $Plan -Name 'CommandSelectionMode' -DefaultValue '')
+    $resultCommandSelectionMode = [string](Get-JsonValue -Object $Result -Name 'CommandSelectionMode' -DefaultValue '')
+    if (-not [string]::Equals($resultCommandSelectionMode, $planCommandSelectionMode, [System.StringComparison]::Ordinal)) {
+        $details.Add("CommandSelectionMode expected='$planCommandSelectionMode' actual='$resultCommandSelectionMode'") | Out-Null
+    }
+
+    $plannedCommands = @(Get-JsonArrayValues -Object $Plan -Name 'PlannedCommands')
+    $plannedMatches = @($plannedCommands | Where-Object { (Get-JsonIntValue -Object $_ -Name 'Iteration' -DefaultValue 0) -eq $iteration })
+    if ($iteration -le 0) {
+        $details.Add("Iteration expected=positive actual=$iteration") | Out-Null
+        return @($details.ToArray())
+    }
+
+    if ($plannedMatches.Count -eq 0) {
+        $details.Add("PlannedCommands missing Iteration=$iteration") | Out-Null
+        return @($details.ToArray())
+    }
+
+    if ($plannedMatches.Count -gt 1) {
+        $details.Add("PlannedCommands duplicate Iteration=$iteration count=$($plannedMatches.Count)") | Out-Null
+        return @($details.ToArray())
+    }
+
+    $plannedCommand = $plannedMatches[0]
+    foreach ($fieldName in @('Command', 'CommandSelectionMode', 'ScenarioTag', 'OwnerArea', 'CommandAckPattern')) {
+        $expected = [string](Get-JsonValue -Object $plannedCommand -Name $fieldName -DefaultValue '')
+        $actual = [string](Get-JsonValue -Object $Result -Name $fieldName -DefaultValue '')
+        if (-not [string]::Equals($actual, $expected, [System.StringComparison]::Ordinal)) {
+            $details.Add("$fieldName expected='$expected' actual='$actual'") | Out-Null
+        }
+    }
+
+    $expectedCommandIndex = Get-JsonIntValue -Object $plannedCommand -Name 'CommandIndex' -DefaultValue -1
+    $actualCommandIndex = Get-JsonIntValue -Object $Result -Name 'CommandIndex' -DefaultValue -2
+    if ($actualCommandIndex -ne $expectedCommandIndex) {
+        $details.Add("CommandIndex expected=$expectedCommandIndex actual=$actualCommandIndex") | Out-Null
+    }
+
+    return @($details.ToArray())
 }
 
 function Read-JsonOrNull {
@@ -477,7 +824,7 @@ function Test-AnyJsonPropertyTrue {
     )
 
     foreach ($item in @($Items)) {
-        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+        if ((Get-JsonBoolValue -Object $item -Name $Name -DefaultValue $false)) {
             return $true
         }
     }
@@ -492,7 +839,7 @@ function Test-NoJsonPropertyTrue {
     )
 
     foreach ($item in @($Items)) {
-        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+        if ((Test-JsonProperty -Object $item -Name $Name) -and ($null -eq $item.$Name -or $item.$Name -isnot [bool] -or [bool]$item.$Name)) {
             return $false
         }
     }
@@ -507,7 +854,7 @@ function Test-NoJsonPropertyFalse {
     )
 
     foreach ($item in @($Items)) {
-        if ((Test-JsonProperty -Object $item -Name $Name) -and $null -ne $item.$Name -and -not [bool]$item.$Name) {
+        if ((Test-JsonProperty -Object $item -Name $Name) -and ($null -eq $item.$Name -or $item.$Name -isnot [bool] -or -not [bool]$item.$Name)) {
             return $false
         }
     }
@@ -559,13 +906,13 @@ function Get-UnhealthyObservationFields {
     }
 
     foreach ($field in $RequiredTrueFields) {
-        if (-not [bool](Get-JsonValue -Object $Observation -Name $field -DefaultValue $false)) {
+        if (-not (Get-JsonBoolValue -Object $Observation -Name $field -DefaultValue $false)) {
             $failures.Add($field) | Out-Null
         }
     }
 
     foreach ($field in $RequiredFalseFields) {
-        if ([bool](Get-JsonValue -Object $Observation -Name $field -DefaultValue $true)) {
+        if ((Get-JsonBoolValue -Object $Observation -Name $field -DefaultValue $true)) {
             $failures.Add($field) | Out-Null
         }
     }
@@ -813,7 +1160,7 @@ function Get-AuditHits {
         }
     }
 
-    return ,$hits
+    return @($hits.ToArray())
 }
 
 function Get-BaseLibPatchFailureDetails {
@@ -900,7 +1247,7 @@ function ConvertTo-AuditSummary {
     $itemSha256s = [System.Collections.Generic.List[string]]::new()
 
     foreach ($item in $items) {
-        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
+        if (-not (Get-JsonBoolValue -Object $item -Name 'Clean' -DefaultValue $false)) {
             $dirtyItems++
         }
 
@@ -954,7 +1301,7 @@ function Get-CheckSignatureArray {
 
     return @($Items | ForEach-Object {
         $name = [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
-        $passed = [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+        $passed = (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
         $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
         "${name}|${passed}|${detail}"
     })
@@ -1028,6 +1375,9 @@ function Analyze-Iteration {
         [bool]$RunResultPathInsideEvidenceDir = $true,
         [string]$ExpectedRunnerKind = '',
         [string[]]$SummaryFailedIterationIdsInvalidDetails = @(),
+        [string[]]$SummaryMismatchDetails = @(),
+        [bool]$RequireRuntimeMonkeyPlanBinding = $false,
+        [AllowNull()]$Summary = $null,
         [AllowNull()]$Plan = $null
     )
 
@@ -1080,6 +1430,13 @@ function Analyze-Iteration {
         if ($null -ne $planParent) {
             $planName = if ($isGameNativeAutoSlay) { 'autoslay-plan.json' } else { 'monkey-plan.json' }
             $analysisPlan = Read-JsonOrNull -Path (Join-Path $planParent.FullName $planName)
+        }
+    }
+    $analysisSummary = $Summary
+    if ($null -eq $analysisSummary -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+        $summaryParent = [System.IO.Directory]::GetParent($Directory)
+        if ($null -ne $summaryParent) {
+            $analysisSummary = Read-JsonOrNull -Path (Join-Path $summaryParent.FullName 'monkey-summary.json')
         }
     }
 
@@ -1167,9 +1524,49 @@ function Analyze-Iteration {
         }
         Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Evidence target was selected as '$ExpectedRunnerKind' but the retained run result reported RunnerKind='$observedRunnerKind'." -NextStep 'Regenerate or reject the packet; summary target type and retained per-run result type must agree before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
-    if (@($SummaryFailedIterationIdsInvalidDetails).Count -gt 0 -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+    $summaryFailedIterationIdsInvalidDetailArray = @($SummaryFailedIterationIdsInvalidDetails)
+    $summaryFailedIterationIdsInvalidDetailCount = ($SummaryFailedIterationIdsInvalidDetails | Measure-Object).Count
+    if ($summaryFailedIterationIdsInvalidDetailCount -gt 0 -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
         $runtimeMonkeyRunArtifactsTrustedForOwner = $false
-        Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_failed_iteration_ids_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json FailedIterationIds contains invalid target entries: $($SummaryFailedIterationIdsInvalidDetails -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; failed iteration ids must be positive integers before summary-directed owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_failed_iteration_ids_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json FailedIterationIds contains invalid target entries: $($summaryFailedIterationIdsInvalidDetailArray -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; failed iteration ids must be positive integers before summary-directed owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    $summaryMismatchDetailArray = @($SummaryMismatchDetails)
+    $summaryMismatchDetailCount = ($summaryMismatchDetailArray | Measure-Object).Count
+    if ($summaryMismatchDetailCount -gt 0 -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_counter_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json top-level counters do not match Results[] aggregation: $($summaryMismatchDetailArray -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; top-level summary counters must match Results[] before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    $summaryResultMismatchDetails = if ($null -ne $SummaryResult -and -not $iterationResultMissing -and $result -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+        @(Get-RuntimeMonkeySummaryResultMismatchDetails -Result $result -SummaryResult $SummaryResult)
+    } else {
+        @()
+    }
+    if (($summaryResultMismatchDetails | Measure-Object).Count -gt 0) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_result_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json Results[] row does not match iteration-result.json: $($summaryResultMismatchDetails -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; summary Results rows must match canonical iteration-result.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    if ($RequireRuntimeMonkeyPlanBinding -and $result -and -not $iterationResultMissing -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke -and
+        ($null -eq $analysisPlan -or -not (Test-JsonProperty -Object $analysisPlan -Name 'PlannedCommands'))) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_plan_missing_or_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey batch evidence did not retain a parseable monkey-plan.json with PlannedCommands.' -NextStep 'Regenerate or reject the packet; batch owner routing requires retained monkey-plan.json PlannedCommands binding.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    $summaryPlanMismatchDetails = if ($null -ne $analysisSummary -and $result -and -not $iterationResultMissing -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+        @(Get-RuntimeMonkeySummaryPlanMismatchDetails -Summary $analysisSummary -Plan $analysisPlan)
+    } else {
+        @()
+    }
+    if (($summaryPlanMismatchDetails | Measure-Object).Count -gt 0) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_plan_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json batch metadata does not match monkey-plan.json: $($summaryPlanMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; summary batch metadata must match retained monkey-plan.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    $planResultMismatchDetails = if ($result -and -not $iterationResultMissing -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+        @(Get-RuntimeMonkeyPlanResultMismatchDetails -Plan $analysisPlan -Result $result)
+    } else {
+        @()
+    }
+    if (($planResultMismatchDetails | Measure-Object).Count -gt 0) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_plan_result_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-plan.json PlannedCommands row does not match iteration-result.json: $($planResultMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; planned command metadata must match canonical iteration-result.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
 
     if ($result -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
@@ -1281,11 +1678,18 @@ function Analyze-Iteration {
 
             if (-not $iterationResultMissing) {
                 if (Test-JsonProperty -Object $SummaryResult -Name 'Passed') {
-                    $summaryPassed = [bool](Get-JsonValue -Object $SummaryResult -Name 'Passed' -DefaultValue $false)
-                    $resultPassed = [bool](Get-JsonValue -Object $result -Name 'Passed' -DefaultValue $false)
-                    if ($summaryPassed -ne $resultPassed) {
+                    $summaryPassedIsBool = Test-JsonBoolProperty -Object $SummaryResult -Name 'Passed'
+                    $resultPassedIsBool = Test-JsonBoolProperty -Object $result -Name 'Passed'
+                    if (-not $summaryPassedIsBool -or -not $resultPassedIsBool) {
                         $autoSlayRunArtifactsTrustedForOwner = $false
-                        Add-Finding -Findings $findings -Signal 'autoslay_summary_passed_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json Runs[] Passed disagrees with the retained run-result.json.' -NextStep 'Regenerate or reject the packet; summary pass/fail state must match the retained run-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        Add-Finding -Findings $findings -Signal 'autoslay_passed_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay Passed fields must be native JSON booleans; summary=$summaryPassedIsBool result=$resultPassedIsBool." -NextStep 'Regenerate or reject the packet; string/null pass-fail fields cannot be used for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    } else {
+                        $summaryPassed = (Get-JsonBoolValue -Object $SummaryResult -Name 'Passed' -DefaultValue $false)
+                        $resultPassed = (Get-JsonBoolValue -Object $result -Name 'Passed' -DefaultValue $false)
+                        if ($summaryPassed -ne $resultPassed) {
+                            $autoSlayRunArtifactsTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'autoslay_summary_passed_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json Runs[] Passed disagrees with the retained run-result.json.' -NextStep 'Regenerate or reject the packet; summary pass/fail state must match the retained run-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        }
                     }
                 }
 
@@ -1295,10 +1699,18 @@ function Analyze-Iteration {
                 )
                 foreach ($comparison in $summarySignalComparisons) {
                     $fieldName = [string]$comparison.FieldName
-                    if (Test-JsonProperty -Object $SummaryResult -Name $fieldName) {
+                    if ((Test-JsonProperty -Object $SummaryResult -Name $fieldName) -or (Test-JsonProperty -Object $result -Name $fieldName)) {
+                        $summarySignalsAreArray = Test-JsonArrayProperty -Object $SummaryResult -Name $fieldName
+                        $resultSignalsAreArray = Test-JsonArrayProperty -Object $result -Name $fieldName
+                        if (-not $summarySignalsAreArray -or -not $resultSignalsAreArray) {
+                            $autoSlayRunArtifactsTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'autoslay_signal_array_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay $fieldName fields must be native JSON arrays; summary=$summarySignalsAreArray result=$resultSignalsAreArray." -NextStep 'Regenerate or reject the packet; scalar/null failure and hang signal fields cannot be used for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                            continue
+                        }
+
                         $summarySignals = Get-JsonArrayValues -Object $SummaryResult -Name $fieldName
                         $resultSignals = Get-JsonArrayValues -Object $result -Name $fieldName
-                        if (-not (Test-StringArrayEquals -Actual $summarySignals.ToArray() -Expected $resultSignals.ToArray())) {
+                        if (-not (Test-StringArrayEquals -Actual @($summarySignals) -Expected @($resultSignals))) {
                             $autoSlayRunArtifactsTrustedForOwner = $false
                             Add-Finding -Findings $findings -Signal ([string]$comparison.Signal) -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale ([string]$comparison.Rationale) -NextStep 'Regenerate or reject the packet; summary failure and hang signals must match the retained run-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                         }
@@ -1803,7 +2215,7 @@ function Analyze-Iteration {
                 } else {
                     $invalidTimestampProbeSamples = @($probeSamples | Where-Object {
                         $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
-                        $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                        $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                         $logLastWriteParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue ''))
                         (-not [bool]$sampledAtParse.Parsed) -or
                             ($logExists -and -not [bool]$logLastWriteParse.Parsed) -or
@@ -1891,12 +2303,12 @@ function Analyze-Iteration {
                     }
 
                     $observedProcessIds = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ProcessId' -DefaultValue 0 } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
                     $observedProcessStartTimes = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object {
                             $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue ''))
                             if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
@@ -1904,17 +2316,17 @@ function Analyze-Iteration {
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $observedProcessPaths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $observedExpectedProcessIds = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0 } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
                     $observedExpectedProcessStartTimes = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object {
                             $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue ''))
                             if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
@@ -1922,16 +2334,16 @@ function Analyze-Iteration {
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $observedExpectedProcessPaths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $identityMismatchProbeSamples = @($probeSamples | Where-Object {
-                        [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
-                        (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+                        (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                        (-not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
                     })
                     if ($observedProcessIds.Count -ne 1) {
                         $autoSlayRunArtifactsTrustedForOwner = $false
@@ -1963,13 +2375,13 @@ function Analyze-Iteration {
                     }
 
                     $probeRuntimeObservation = if ($result) { Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null } else { $null }
-                    $runtimeObservationLogGrew = $null -ne $probeRuntimeObservation -and [bool](Get-JsonValue -Object $probeRuntimeObservation -Name 'LogGrew' -DefaultValue $false)
+                    $runtimeObservationLogGrew = $null -ne $probeRuntimeObservation -and (Get-JsonBoolValue -Object $probeRuntimeObservation -Name 'LogGrew' -DefaultValue $false)
                     $runtimeObservationInitialLogLength = if ($null -ne $probeRuntimeObservation) { Get-JsonLongValue -Object $probeRuntimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1 } else { -1L }
                     $runtimeObservationFinalLogLength = if ($null -ne $probeRuntimeObservation) { Get-JsonLongValue -Object $probeRuntimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1 } else { -1L }
                     $runtimeProbeLogLengths = @($probeSamples |
                         Where-Object {
                             [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'runtime', [System.StringComparison]::Ordinal) -and
-                            [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                            (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                         } |
                         ForEach-Object { Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1 } |
                         Where-Object { $_ -ge 0 })
@@ -2264,7 +2676,7 @@ function Analyze-Iteration {
 
                     $invalidTimestampProbeSamples = @($probeSamples | Where-Object {
                         $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
-                        $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                        $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                         $logLastWriteParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue ''))
                         (-not [bool]$sampledAtParse.Parsed) -or
                             ($logExists -and -not [bool]$logLastWriteParse.Parsed) -or
@@ -2320,12 +2732,12 @@ function Analyze-Iteration {
                     $resultLiveSessionStartTime = if ([bool]$resultLiveSessionStartParse.Parsed) { $resultLiveSessionStartParse.Value.ToString('o') } else { '' }
                     $resultLiveSessionPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $result -Name 'LiveSessionSelectedGameProcessPath' -DefaultValue ''))
                     $observedProbeProcessIds = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ProcessId' -DefaultValue 0 } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
                     $observedProbeStartTimes = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object {
                             $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue ''))
                             if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
@@ -2333,17 +2745,17 @@ function Analyze-Iteration {
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $observedProbePaths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $observedProbeExpectedProcessIds = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0 } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
                     $observedProbeExpectedStartTimes = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object {
                             $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue ''))
                             if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
@@ -2351,16 +2763,16 @@ function Analyze-Iteration {
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $observedProbeExpectedPaths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
                         Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                         Sort-Object -Unique)
                     $identityMismatchProbeSamples = @($probeSamples | Where-Object {
-                        [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
-                        (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+                        (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                        (-not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
                     })
                     $identityDefects = [System.Collections.Generic.List[string]]::new()
                     if ($resultGameProcessId -le 0) { $identityDefects.Add('result GameProcessId missing') | Out-Null }
@@ -2381,15 +2793,15 @@ function Analyze-Iteration {
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_process_identity_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json does not bind to iteration-result.json/live-session process identity: $($identityDefects -join '; ')." -NextStep 'Regenerate the packet with probe samples from the live-session-selected game process before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
-                    $runtimeObservationLogGrowthRequired = if ($null -ne $runtimeObservation) { [bool](Get-JsonValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue $false) } else { $false }
-                    $runtimeObservationLogGrew = if ($null -ne $runtimeObservation) { [bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false) } else { $false }
+                    $runtimeObservationLogGrowthRequired = if ($null -ne $runtimeObservation) { (Get-JsonBoolValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue $false) } else { $false }
+                    $runtimeObservationLogGrew = if ($null -ne $runtimeObservation) { (Get-JsonBoolValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false) } else { $false }
                     $runtimeObservationInitialLogLength = if ($null -ne $runtimeObservation) { Get-JsonLongValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1 } else { -1L }
                     $postCommandRuntimeProbeLogLengths = @($postCommandRuntimeProbeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
                         ForEach-Object { Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1 } |
                         Where-Object { $_ -ge 0 })
                     $probeSampleLogLengths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
                         ForEach-Object { Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1 } |
                         Where-Object { $_ -ge 0 })
                     $postCommandRuntimeProbeMaxLogLength = if ($postCommandRuntimeProbeLogLengths.Count -gt 0) {
@@ -2465,10 +2877,10 @@ function Analyze-Iteration {
     $auditSummary = if ($null -ne $auditData) { ConvertTo-AuditSummary -Audit $auditData } else { $null }
     $auditTrustedForOwner = $false
     $auditHits = [System.Collections.Generic.List[object]]::new()
-    $failureCodes = if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { [System.Collections.Generic.List[object]]::new() }
-    $hangSignals = if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { [System.Collections.Generic.List[object]]::new() }
+    $failureCodes = @(if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { @() })
+    $hangSignals = @(if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { @() })
 
-    if ($result -and -not $currentIterationLogExists -and -not ($failureCodes.ToArray() -contains 'current_iteration_log_missing')) {
+    if ($result -and -not $currentIterationLogExists -and -not (@($failureCodes) -contains 'current_iteration_log_missing')) {
         Add-Finding `
             -Findings $findings `
             -Signal 'current_iteration_log_missing' `
@@ -2481,8 +2893,8 @@ function Analyze-Iteration {
     }
 
     if ($isDirectSmoke -and $result) {
-        $directSmokePassed = [bool](Get-JsonValue -Object $result -Name 'Passed' -DefaultValue $false)
-        $directSmokeAuditClean = [bool](Get-JsonValue -Object $result -Name 'AuditClean' -DefaultValue $false)
+        $directSmokePassed = (Get-JsonBoolValue -Object $result -Name 'Passed' -DefaultValue $false)
+        $directSmokeAuditClean = (Get-JsonBoolValue -Object $result -Name 'AuditClean' -DefaultValue $false)
         $directSmokeModeVerifierMismatches = Get-JsonIntValue -Object $result -Name 'ModeVerifierMismatches' -DefaultValue 0
         $directSmokePacketVerifierMismatches = Get-JsonIntValue -Object $result -Name 'PacketVerifierMismatches' -DefaultValue 0
         $directSmokeFailedOrDirty = (-not $directSmokePassed) -or
@@ -2648,7 +3060,10 @@ function Analyze-Iteration {
                     if ($auditMatchesRecomputed) {
                         if ($autoSlayRunArtifactsTrustedForOwner -and $autoSlayAuditArtifactTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner) {
                             $auditTrustedForOwner = $true
-                            $auditHits = Get-AuditHits -AuditItems @($recomputedAudit)
+                            $auditHits.Clear()
+                            foreach ($hit in @(Get-AuditHits -AuditItems @($recomputedAudit))) {
+                                $auditHits.Add($hit) | Out-Null
+                            }
                         }
                     } else {
                         if ($isGameNativeAutoSlay) {
@@ -2684,7 +3099,14 @@ function Analyze-Iteration {
         }
     }
 
-    $retainedSignals = @(($hangSignals.ToArray() + $failureCodes.ToArray()) | Select-Object -Unique)
+    $retainedSignalItems = [System.Collections.Generic.List[object]]::new()
+    foreach ($signalItem in @($hangSignals)) {
+        $retainedSignalItems.Add($signalItem) | Out-Null
+    }
+    foreach ($signalItem in @($failureCodes)) {
+        $retainedSignalItems.Add($signalItem) | Out-Null
+    }
+    $retainedSignals = @($retainedSignalItems.ToArray()) | Select-Object -Unique
     $addRetainedSignalFindings = {
         param([bool]$AutoSlayEvidenceInvalidForOwner)
 
@@ -2818,9 +3240,9 @@ function Analyze-Iteration {
 
     $blockingFindingsSoFar = @($findings | Where-Object { [string]$_.Severity -eq 'blocking' }).Count
     if ($result -and
-        -not [bool](Get-JsonValue -Object $result -Name 'Passed' -DefaultValue $false) -and
-        $failureCodes.Count -eq 0 -and
-        $hangSignals.Count -eq 0 -and
+        -not (Get-JsonBoolValue -Object $result -Name 'Passed' -DefaultValue $false) -and
+        @($failureCodes).Count -eq 0 -and
+        @($hangSignals).Count -eq 0 -and
         $auditHits.Count -eq 0 -and
         $blockingFindingsSoFar -eq 0) {
         Add-Finding `
@@ -2914,8 +3336,8 @@ function Analyze-Iteration {
                 }
             }
 
-            $sts1Mismatches = @(ConvertTo-StringArray -Value (Get-JsonArrayValues -Object $sts1Report -Name 'Mismatches').ToArray())
-            $sts1Checks = @((Get-JsonArrayValues -Object $sts1Report -Name 'Checks').ToArray())
+            $sts1Mismatches = @(ConvertTo-StringArray -Value @(Get-JsonArrayValues -Object $sts1Report -Name 'Mismatches'))
+            $sts1Checks = @(Get-JsonArrayValues -Object $sts1Report -Name 'Checks')
             $sts1CheckSignatures = @(Get-CheckSignatureArray -Items $sts1Checks)
 
             if ([string]::IsNullOrWhiteSpace($expectedSts1Mode)) {
@@ -2968,10 +3390,10 @@ function Analyze-Iteration {
                         }
                     }
 
-                    $recomputedSts1Mismatches = @(ConvertTo-StringArray -Value (Get-JsonArrayValues -Object $recomputedSts1Report -Name 'Mismatches').ToArray())
-                    $recomputedSts1Checks = @((Get-JsonArrayValues -Object $recomputedSts1Report -Name 'Checks').ToArray())
+                    $recomputedSts1Mismatches = @(ConvertTo-StringArray -Value @(Get-JsonArrayValues -Object $recomputedSts1Report -Name 'Mismatches'))
+                    $recomputedSts1Checks = @(Get-JsonArrayValues -Object $recomputedSts1Report -Name 'Checks')
                     $recomputedSts1FailedChecks = @($recomputedSts1Checks | Where-Object {
-                        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                        -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
                     })
                     $recomputedSts1CheckSignatures = @(Get-CheckSignatureArray -Items $recomputedSts1Checks)
 
@@ -3040,7 +3462,8 @@ function Analyze-Iteration {
         Add-Finding -Findings $findings -Signal 'coop_preview_ui_only_observed' -Severity 'info' -OwnerArea 'PreviewTools' -Rationale 'The log shows preview tools running as local UI only in multiplayer.' -NextStep 'This supports preview-tool co-op policy, but still does not prove two-client behavior without live evidence.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
 
-    if ($command -match '(?i)spireplus_test_ancient\s+VAKUU' -and (@($hangSignals).Count -gt 0 -or @($failureCodes).Count -gt 0)) {
+    $commandText = [string]$command
+    if ([regex]::IsMatch($commandText, '(?i)spireplus_test_ancient\s+VAKUU') -and (@($hangSignals).Count -gt 0 -or @($failureCodes).Count -gt 0)) {
         if ($runtimeMonkeyProbeEvidenceInvalid -or -not $runtimeMonkeyRunArtifactsTrustedForOwner -or $autoSlayEvidenceInvalidForOwner) {
             Add-Finding -Findings $findings -Signal 'vakuu_command_failed_or_hung' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'The failing iteration targeted Vakuu through a live-test command, but runtime or AutoSlay run/probe/traversal evidence is missing, invalid, or not byte-bound to retained files.' -NextStep 'Fix runtime monkey or AutoSlay artifact retention and probe/sample/traversal binding before assigning Vakuu source ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         } else {
@@ -3049,12 +3472,20 @@ function Analyze-Iteration {
         }
     }
 
-    $signals = @(
-        $failureCodes.ToArray() +
-        $hangSignals.ToArray() +
-        @($auditHits.ToArray() | ForEach-Object { "audit:$($_.Name)" }) +
-        @($findings | ForEach-Object { $_.Signal })
-    ) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
+    $signalItems = [System.Collections.Generic.List[object]]::new()
+    foreach ($signalItem in @($failureCodes)) {
+        $signalItems.Add($signalItem) | Out-Null
+    }
+    foreach ($signalItem in @($hangSignals)) {
+        $signalItems.Add($signalItem) | Out-Null
+    }
+    foreach ($hit in @($auditHits.ToArray())) {
+        $signalItems.Add("audit:$([string](Get-JsonValue -Object $hit -Name 'Name' -DefaultValue ''))") | Out-Null
+    }
+    foreach ($finding in @($findings)) {
+        $signalItems.Add((Get-JsonValue -Object $finding -Name 'Signal' -DefaultValue '')) | Out-Null
+    }
+    $signals = @($signalItems.ToArray()) | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } | Select-Object -Unique
 
     [pscustomobject]@{
         IterationDir = $Directory
@@ -3063,7 +3494,7 @@ function Analyze-Iteration {
         RunnerKind = $runnerKind
         EventKind = $eventKind
         AncientId = $ancientId
-        Passed = if ($result) { [bool](Get-JsonValue -Object $result -Name 'Passed' -DefaultValue $false) } else { $false }
+        Passed = if ($result) { (Get-JsonBoolValue -Object $result -Name 'Passed' -DefaultValue $false) } else { $false }
         Command = $command
         ScenarioTag = $scenarioTag
         OwnerAreaHint = $resultOwnerArea
@@ -3080,8 +3511,8 @@ function Analyze-Iteration {
         OwnerAreaFromCommand = $commandOwnerArea
         Signals = @($signals)
         EvidenceFiles = @($evidenceFiles)
-        FailureReasonCodes = @($failureCodes.ToArray())
-        HangSignals = @($hangSignals.ToArray())
+        FailureReasonCodes = @($failureCodes)
+        HangSignals = @($hangSignals)
         AuditTrustedForOwner = $auditTrustedForOwner
         AuditHits = @($auditHits.ToArray())
         BaseLibPatchFailures = @($baseLibPatchFailures)
@@ -3092,6 +3523,7 @@ function Analyze-Iteration {
 $analysisTargets = @()
 $summary = $null
 $summaryResultsByIteration = @{}
+$summaryMismatchDetails = @()
 $evidenceFull = ''
 
 if ($IterationDir) {
@@ -3150,6 +3582,7 @@ if ($IterationDir) {
         }
     } else {
         if ($summary -and (Test-JsonProperty -Object $summary -Name 'Results')) {
+            $summaryMismatchDetails = @(Get-RuntimeMonkeySummaryMismatchDetails -Summary $summary)
             foreach ($result in @($summary.Results)) {
                 $summaryResultsByIteration[(Get-JsonIntValue -Object $result -Name 'Iteration' -DefaultValue 0)] = $result
             }
@@ -3159,22 +3592,23 @@ if ($IterationDir) {
         $failedIterationIdsInvalidDetails = @()
         if ($Iteration -gt 0) {
             $iterationDirs = @(Join-Path $evidenceFull ('iteration-{0:D4}' -f $Iteration))
-        } elseif ($summary -and (Test-JsonProperty -Object $summary -Name 'FailedIterationIds') -and @($summary.FailedIterationIds).Count -gt 0) {
+        } elseif ($summary -and (Test-JsonProperty -Object $summary -Name 'FailedIterationIds') -and ($summary.FailedIterationIds | Measure-Object).Count -gt 0) {
             $failedIterationIds = [System.Collections.Generic.List[int]]::new()
             $failedIterationIdValues = @($summary.FailedIterationIds)
-            for ($failedIterationIdIndex = 0; $failedIterationIdIndex -lt $failedIterationIdValues.Count; $failedIterationIdIndex++) {
+            $failedIterationIdValueCount = ($failedIterationIdValues | Measure-Object).Count
+            for ($failedIterationIdIndex = 0; $failedIterationIdIndex -lt $failedIterationIdValueCount; $failedIterationIdIndex++) {
                 $rawFailedIterationId = $failedIterationIdValues[$failedIterationIdIndex]
                 $failedIterationId = ConvertTo-IntOrDefault -Value $rawFailedIterationId -DefaultValue 0
                 if ($failedIterationId -le 0) {
-                    $failedIterationIdsInvalidDetails += "index=$failedIterationIdIndex value='$rawFailedIterationId'"
+                    $failedIterationIdsInvalidDetails = @($failedIterationIdsInvalidDetails) + "index=$failedIterationIdIndex value='$rawFailedIterationId'"
                 } else {
                     $failedIterationIds.Add($failedIterationId) | Out-Null
                 }
             }
 
-            if ($failedIterationIdsInvalidDetails.Count -gt 0) {
+            if (($failedIterationIdsInvalidDetails | Measure-Object).Count -gt 0) {
                 $iterationDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'iteration-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
-                if ($iterationDirs.Count -eq 0) {
+                if (($iterationDirs | Measure-Object).Count -eq 0) {
                     $iterationDirs = @($evidenceFull)
                 }
             } else {
@@ -3186,7 +3620,7 @@ if ($IterationDir) {
             $iterationDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'iteration-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
         }
 
-        if ($iterationDirs.Count -eq 0 -and
+        if (($iterationDirs | Measure-Object).Count -eq 0 -and
             $Iteration -le 0 -and
             $directSmokeSummary) {
             $analysisTargets += [pscustomobject]@{
@@ -3206,6 +3640,9 @@ if ($IterationDir) {
                 ResultFileName = 'iteration-result.json'
                 DefaultIteration = $iterationNumber
                 SummaryFailedIterationIdsInvalidDetails = @($failedIterationIdsInvalidDetails)
+                SummaryMismatchDetails = @($summaryMismatchDetails)
+                RequireRuntimeMonkeyPlanBinding = $null -ne $summary
+                Summary = $summary
             }
         }
     }
@@ -3233,7 +3670,15 @@ $iterationReports = foreach ($target in $analysisTargets) {
     $runResultPathInsideEvidenceDir = if ($null -ne $target.PSObject.Properties['RunResultPathInsideEvidenceDir']) { [bool]$target.RunResultPathInsideEvidenceDir } else { $true }
     $expectedRunnerKind = if ($null -ne $target.PSObject.Properties['ExpectedRunnerKind']) { [string]$target.ExpectedRunnerKind } else { '' }
     $summaryFailedIterationIdsInvalidDetails = if ($null -ne $target.PSObject.Properties['SummaryFailedIterationIdsInvalidDetails']) { @($target.SummaryFailedIterationIdsInvalidDetails) } else { @() }
-    Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir -ExpectedRunnerKind $expectedRunnerKind -SummaryFailedIterationIdsInvalidDetails $summaryFailedIterationIdsInvalidDetails
+    $summaryMismatchDetails = if ($null -ne $target.PSObject.Properties['SummaryMismatchDetails']) { @($target.SummaryMismatchDetails) } else { @() }
+    $requireRuntimeMonkeyPlanBinding = if ($null -ne $target.PSObject.Properties['RequireRuntimeMonkeyPlanBinding']) { [bool]$target.RequireRuntimeMonkeyPlanBinding } else { $false }
+    $analysisSummary = if ($null -ne $target.PSObject.Properties['Summary']) { $target.Summary } else { $null }
+    try {
+        Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir -ExpectedRunnerKind $expectedRunnerKind -SummaryFailedIterationIdsInvalidDetails $summaryFailedIterationIdsInvalidDetails -SummaryMismatchDetails $summaryMismatchDetails -RequireRuntimeMonkeyPlanBinding $requireRuntimeMonkeyPlanBinding -Summary $analysisSummary
+    } catch {
+        $scriptStack = if ([string]::IsNullOrWhiteSpace([string]$_.ScriptStackTrace)) { '<no script stack>' } else { [string]$_.ScriptStackTrace }
+        throw "Analyze-Iteration failed for '$($target.Directory)' result '$($target.ResultFileName)': $($_.Exception.Message)`n$scriptStack"
+    }
 }
 
 $allFindings = @($iterationReports | ForEach-Object { @($_.Findings) })

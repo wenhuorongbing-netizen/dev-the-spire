@@ -2159,6 +2159,14 @@ try {
         EvidenceRoot = $evidenceFull
         RequestedIterations = $Iterations
         CompletedIterations = $results.Count
+        Scenario = $Scenario
+        CommandSelectionMode = $CommandSelectionMode
+        Sts1EventMode = $Sts1EventMode
+        ExpectedPackageVersion = $ExpectedPackageVersion
+        ExpectedGameVersion = $ExpectedGameVersion
+        ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
+        ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
+        ExpectedPatchCount = $ExpectedPatchCount
         Passed = $results.Count -gt 0 -and $failed.Count -eq 0 -and $results.Count -eq $Iterations
         FailedIterations = $failed.Count
         FailedIterationIds = @($failed | ForEach-Object { [int]$_.Iteration })

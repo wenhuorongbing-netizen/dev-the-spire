@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -35,6 +36,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "problemRows=$($summaryProblemRunRows.Count)",
             "plan_expected_patch_count_positive",
             "plan_expected_patch_count_matches_expected",
+            "summary_package_version_matches_plan",
+            "summary_expected_patch_count_matches_plan",
+            "summary_expected_ancient_ids_match_plan",
             "${runName}_run_result_ancient_id_matches_summary");
     }
 
@@ -61,6 +65,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("plan_source_workspace_policy_runtime_proof_still_requires_launch status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_source_workspace_report_matches_installed_game status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_run_seeds_match_plan_seeds status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_package_version_matches_plan status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_patch_count_matches_plan status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_ids_match_plan status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("expected_ancient_ids_required_for_proof_mode status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("expected_ancient_ids_unique status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
@@ -86,6 +93,26 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("expected_ancient_ids_have_event_traversal status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("allow_missing_event_traversal_not_proof_mode status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("mismatches=0", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierBindsSummaryBatchMetadataToPlan()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var tamperedSummary = fixture.OriginalSummaryJson
+            .Replace("\"PackageVersion\": \"v0.1.0-private-beta.87\"", "\"PackageVersion\": \"v0.1.0-private-beta.86\"", StringComparison.Ordinal)
+            .Replace("\"ExpectedPatchCount\": 25", "\"ExpectedPatchCount\": 24", StringComparison.Ordinal)
+            .Replace("\"ExpectedAncientIds\": [\"VAKUU\"]", "\"ExpectedAncientIds\": [\"URDA\"]", StringComparison.Ordinal);
+        Assert.NotEqual(fixture.OriginalSummaryJson, tamperedSummary);
+        File.WriteAllText(fixture.SummaryPath, tamperedSummary);
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("summary_package_version_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_patch_count_matches_plan status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_ids_match_plan status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("missing=VAKUU unexpected=URDA", result.Output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -349,6 +376,163 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_run_result_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_before_log_length_matches_summary status=fail", result.Output, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsMalformedBooleanEvidenceWithoutFailingOpen()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+
+        var planJson = JsonNode.Parse(File.ReadAllText(fixture.PlanPath))!.AsObject();
+        var sourceWorkspaceJson = planJson["SourceWorkspace"]!.AsObject();
+        sourceWorkspaceJson["Checked"] = "false";
+        sourceWorkspaceJson["MatchesInstalledGame"] = "false";
+        sourceWorkspaceJson["OriginMatchesInstalledGamePck"] = "";
+        sourceWorkspaceJson["NotRuntimeProof"] = "true";
+        File.WriteAllText(fixture.PlanPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        summaryJson["Passed"] = "true";
+        summaryJson["Runs"]!.AsArray()[0]!.AsObject()["Passed"] = "true";
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["Launch"] = "true";
+        runResultJson["Passed"] = "true";
+        var mainMenuObservation = runResultJson["MainMenuObservation"]!.AsObject();
+        mainMenuObservation["Passed"] = "true";
+        mainMenuObservation["MainMenuReached"] = "true";
+        mainMenuObservation["ProcessObserved"] = "true";
+        mainMenuObservation["ProcessExitedAfterObservation"] = null;
+        mainMenuObservation["HungWindowDetected"] = "false";
+        mainMenuObservation["StaleProcessObserved"] = "";
+        mainMenuObservation["NoLogGrowthTimeoutExceeded"] = "false";
+        var runtimeObservation = runResultJson["RuntimeObservation"]!.AsObject();
+        runtimeObservation["Passed"] = "true";
+        runtimeObservation["ProcessObserved"] = "true";
+        runtimeObservation["ProcessExitedAfterObservation"] = null;
+        runtimeObservation["HungWindowDetected"] = "false";
+        runtimeObservation["StaleProcessObserved"] = "";
+        runtimeObservation["NoLogGrowthTimeoutExceeded"] = "false";
+        runtimeObservation["LogGrew"] = "true";
+
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        foreach (var sampleNode in probeSamples)
+        {
+            var sample = sampleNode!.AsObject();
+            sample["ProcessObserved"] = "true";
+            sample["ProcessIdMatchesExpected"] = "true";
+            sample["ProcessStartTimeMatchesExpected"] = "true";
+            sample["ProcessPathMatchesExpected"] = "true";
+            sample["ProcessIdentityMatchesExpected"] = "true";
+            sample["HungWindow"] = "";
+            sample["Responding"] = "false";
+            sample["LogExists"] = "true";
+        }
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryJson["Runs"]!.AsArray()[0]!.AsObject()["RuntimeProbeSamplesSha256"] = probeHash;
+
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryJson["Runs"]!.AsArray()[0]!.AsObject()["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var auditJson = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!.AsArray();
+        auditJson[0]!.AsObject()["Clean"] = "true";
+        File.WriteAllText(fixture.AuditPath, auditJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("plan_source_workspace_checked status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_source_workspace_matches_installed_game status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_source_workspace_origin_matches_installed_game_pck status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_passed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_summary_run_passed_true status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_launch_true status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_passed_true status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_observation_passed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_no_process_exit status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_no_hung_window status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_passed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_log_grew status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_process_observed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_no_hung_window status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_no_not_responding status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_all_match_expected_identity status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlayBooleanEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["Passed"] = "false";
+        summaryRunJson["FailureReasonCodes"] = new JsonArray(JsonValue.Create("process_unresponsive"));
+        summaryRunJson["HangSignals"] = new JsonArray(JsonValue.Create("process_unresponsive"));
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["Passed"] = "false";
+        runResultJson["FailureReasonCodes"] = new JsonArray(JsonValue.Create("process_unresponsive"));
+        runResultJson["HangSignals"] = new JsonArray(JsonValue.Create("process_unresponsive"));
+        var mainMenuObservation = runResultJson["MainMenuObservation"]!.AsObject();
+        mainMenuObservation["Passed"] = "true";
+        mainMenuObservation["MainMenuReached"] = "true";
+        mainMenuObservation["ProcessObserved"] = "true";
+        mainMenuObservation["ProcessExitedAfterObservation"] = null;
+        var runtimeObservation = runResultJson["RuntimeObservation"]!.AsObject();
+        runtimeObservation["Passed"] = "true";
+        runtimeObservation["ProcessObserved"] = "true";
+        runtimeObservation["HungWindowDetected"] = "false";
+        runtimeObservation["NoLogGrowthTimeoutExceeded"] = "false";
+        runtimeObservation["LogGrew"] = "true";
+
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        foreach (var sampleNode in probeSamples)
+        {
+            var sample = sampleNode!.AsObject();
+            sample["ProcessObserved"] = "false";
+            sample["ProcessIdMatchesExpected"] = "true";
+            sample["ProcessStartTimeMatchesExpected"] = "true";
+            sample["ProcessPathMatchesExpected"] = "true";
+            sample["ProcessIdentityMatchesExpected"] = "true";
+            sample["HungWindow"] = "";
+            sample["Responding"] = "false";
+            sample["LogExists"] = "true";
+        }
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-malformed-autoslay-booleans.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_passed_boolean_malformed");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_unhealthy");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_observation_unhealthy");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_process_identity_unstable");
+        Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
     }
 
     [Fact]
@@ -1111,6 +1295,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             {
               "SchemaVersion": 1,
               "RunnerKind": "GameNativeAutoSlay",
+              "Sts1EventMode": "Off",
+              "PackageVersion": {{JsonSerializer.Serialize(PackageVersion)}},
+              "GameVersion": {{JsonSerializer.Serialize(GameVersion)}},
+              "RitsuLibVersion": {{JsonSerializer.Serialize(RitsuLibVersion)}},
+              "RitsuCompatBranch": {{JsonSerializer.Serialize(RitsuCompatBranch)}},
+              "ExpectedPatchCount": {{ExpectedPatchCount}},
+              "ExpectedAncientIds": ["VAKUU"],
               "Passed": true,
               "TotalRuns": 1,
               "FailedRuns": 0,

@@ -115,6 +115,23 @@ function ConvertTo-LongOrDefault {
     }
 }
 
+function ConvertTo-BoolOrDefault {
+    param(
+        [AllowNull()]$Value,
+        [bool]$DefaultValue = $false
+    )
+
+    if ($null -eq $Value) {
+        return $DefaultValue
+    }
+
+    if ($Value -is [bool]) {
+        return [bool]$Value
+    }
+
+    return $DefaultValue
+}
+
 function Get-JsonIntValue {
     param(
         [AllowNull()]$Object,
@@ -135,6 +152,16 @@ function Get-JsonLongValue {
     return ConvertTo-LongOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
 }
 
+function Get-JsonBoolValue {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [bool]$DefaultValue = $false
+    )
+
+    return ConvertTo-BoolOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
+}
+
 function Get-ArrayValues {
     param([AllowNull()]$Value)
 
@@ -147,6 +174,17 @@ function Get-ArrayValues {
     }
 
     return @($Value)
+}
+
+function Test-JsonArrayProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    return (Test-JsonProperty -Object $Object -Name $Name) -and
+        $null -ne $Object.$Name -and
+        $Object.$Name -is [System.Array]
 }
 
 function Get-DelimitedStringTokens {
@@ -414,7 +452,7 @@ function Test-AnyJsonPropertyTrue {
     )
 
     foreach ($item in @($Items)) {
-        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+        if ((Get-JsonBoolValue -Object $item -Name $Name -DefaultValue $false)) {
             return $true
         }
     }
@@ -429,7 +467,7 @@ function Test-NoJsonPropertyTrue {
     )
 
     foreach ($item in @($Items)) {
-        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+        if ((Test-JsonProperty -Object $item -Name $Name) -and ($null -eq $item.$Name -or $item.$Name -isnot [bool] -or [bool]$item.$Name)) {
             return $false
         }
     }
@@ -444,7 +482,7 @@ function Test-NoJsonPropertyFalse {
     )
 
     foreach ($item in @($Items)) {
-        if ((Test-JsonProperty -Object $item -Name $Name) -and $null -ne $item.$Name -and -not [bool]$item.$Name) {
+        if ((Test-JsonProperty -Object $item -Name $Name) -and ($null -eq $item.$Name -or $item.$Name -isnot [bool] -or -not [bool]$item.$Name)) {
             return $false
         }
     }
@@ -587,7 +625,7 @@ function ConvertTo-AuditSummary {
     $itemSha256s = [System.Collections.Generic.List[string]]::new()
 
     foreach ($item in $items) {
-        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
+        if (-not (Get-JsonBoolValue -Object $item -Name 'Clean' -DefaultValue $false)) {
             $dirtyItems++
         }
 
@@ -656,7 +694,7 @@ function Get-CheckSignatureArray {
 
     return @($Items | ForEach-Object {
         $name = [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
-        $passed = [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+        $passed = (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
         $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
         "$name|$passed|$detail"
     })
@@ -787,6 +825,7 @@ if ($null -ne $plan) {
     Add-Check -Name 'plan_hook_id_present' -Passed (-not [string]::IsNullOrWhiteSpace($hookId)) -Detail 'HookId must identify the concrete mod hook that starts game-native AutoSlay'
     Add-Check -Name 'plan_hook_assembly_present' -Passed (-not [string]::IsNullOrWhiteSpace($hookAssembly)) -Detail 'HookAssembly must identify the assembly that owns the AutoSlay hook'
     Add-Check -Name 'plan_invocation_command_calls_autoslayer_start' -Passed (Contains-Text -Text $invocationCommand -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'InvocationCommand must record the exact launcher/mod-hook command that calls AutoSlayer.Start(seed, logFile)'
+    Add-Check -Name 'plan_seeds_array' -Passed (Test-JsonArrayProperty -Object $plan -Name 'Seeds') -Detail 'autoslay-plan.json Seeds must be a native JSON array'
     Add-Check -Name 'plan_seed_count_meets_minimum' -Passed ($planSeeds.Count -ge $MinRuns) -Detail "Seeds count must be at least $MinRuns; found $($planSeeds.Count)"
     Add-Check -Name 'plan_seeds_all_non_empty' -Passed ($nonEmptyPlanSeeds.Count -eq $planSeeds.Count) -Detail 'all plan Seeds entries must be non-empty'
     Add-Check -Name 'plan_seeds_unique' -Passed ($duplicatePlanSeeds.Count -eq 0) -Detail "plan Seeds must be unique; duplicate seed groups=$($duplicatePlanSeeds.Count)"
@@ -824,12 +863,12 @@ if ($null -ne $plan) {
     $sourceWorkspaceExists = Test-PathLeafSafe -Path $sourceWorkspaceCheckPath
     Add-Check -Name 'plan_source_workspace_summary_present' -Passed ($null -ne $sourceWorkspace) -Detail 'SourceWorkspace summary must retain source version/disposition and evidence-use policy'
     if ($null -ne $sourceWorkspace) {
-        Add-Check -Name 'plan_source_workspace_checked' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
-        Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
+        Add-Check -Name 'plan_source_workspace_checked' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
+        Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
         Add-Check -Name 'plan_source_workspace_disposition_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue ''))) -Detail 'SourceWorkspace must retain the recovered-source disposition'
-        Add-Check -Name 'plan_source_workspace_matches_installed_game' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'game-native AutoSlay proof requires a source snapshot that matches the installed game'
-        Add-Check -Name 'plan_source_workspace_authorized_source_origin_verified' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'SourceWorkspace summary must retain authorized source-origin verification'
-        Add-Check -Name 'plan_source_workspace_origin_matches_installed_game_pck' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'game-native AutoSlay proof requires GDRE Opening file to installed PCK binding'
+        Add-Check -Name 'plan_source_workspace_matches_installed_game' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'game-native AutoSlay proof requires a source snapshot that matches the installed game'
+        Add-Check -Name 'plan_source_workspace_authorized_source_origin_verified' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'SourceWorkspace summary must retain authorized source-origin verification'
+        Add-Check -Name 'plan_source_workspace_origin_matches_installed_game_pck' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'game-native AutoSlay proof requires GDRE Opening file to installed PCK binding'
         Add-Check -Name 'plan_source_workspace_ritsulib_version_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVersion' -DefaultValue ''))) -Detail 'SourceWorkspace summary must retain RitsuLib manifest version'
         Add-Check -Name 'plan_source_workspace_ritsulib_variant_dll_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVariantDllSha256' -DefaultValue ''))) -Detail 'SourceWorkspace summary must retain selected RitsuLib variant DLL hash'
     }
@@ -852,25 +891,25 @@ if ($null -ne $plan) {
             foreach ($name in @('CreatedAt', 'RepoRoot', 'SourceRoot', 'GameRoot')) {
                 Add-Check -Name "plan_source_workspace_$($name.ToLowerInvariant())_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceReport -Name $name -DefaultValue ''))) -Detail "retained source-workspace report must include $name from check-local-godot-source-workspace.ps1"
             }
-            Add-Check -Name 'plan_source_workspace_report_passed' -Passed ([bool](Get-JsonValue -Object $sourceReport -Name 'Passed' -DefaultValue $false)) -Detail 'source-workspace report must have Passed=true'
+            Add-Check -Name 'plan_source_workspace_report_passed' -Passed ((Get-JsonBoolValue -Object $sourceReport -Name 'Passed' -DefaultValue $false)) -Detail 'source-workspace report must have Passed=true'
             Add-Check -Name 'plan_source_workspace_report_mismatches_empty' -Passed ($reportMismatches.Count -eq 0) -Detail "source-workspace report mismatches must be empty; found $($reportMismatches.Count)"
-            Add-Check -Name 'plan_source_workspace_policy_no_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'NoLaunch' -DefaultValue $false)) -Detail 'source-workspace report must record that the checker did not launch Godot or the game'
-            Add-Check -Name 'plan_source_workspace_policy_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection alone is not runtime proof'
-            Add-Check -Name 'plan_source_workspace_policy_local_source_reference_only' -Passed ([bool](Get-JsonValue -Object $policy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
-            Add-Check -Name 'plan_source_workspace_policy_authorized_local_install_only' -Passed ([bool](Get-JsonValue -Object $policy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
-            Add-Check -Name 'plan_source_workspace_policy_authorized_source_origin_verified' -Passed ([bool](Get-JsonValue -Object $policy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'source-workspace report must verify the GDRE Opening file against the installed game PCK'
-            Add-Check -Name 'plan_source_workspace_policy_third_party_dumps_prohibited' -Passed ([bool](Get-JsonValue -Object $policy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
-            Add-Check -Name 'plan_source_workspace_policy_runtime_proof_still_requires_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'RuntimeProofStillRequiresLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must record that runtime proof still requires launch evidence'
-            Add-Check -Name 'plan_source_workspace_policy_autoslay_still_requires_launch' -Passed ([bool](Get-JsonValue -Object $policy -Name 'GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must keep AutoSlay source checks separate from runtime proof'
+            Add-Check -Name 'plan_source_workspace_policy_no_launch' -Passed ((Get-JsonBoolValue -Object $policy -Name 'NoLaunch' -DefaultValue $false)) -Detail 'source-workspace report must record that the checker did not launch Godot or the game'
+            Add-Check -Name 'plan_source_workspace_policy_not_runtime_proof' -Passed ((Get-JsonBoolValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection alone is not runtime proof'
+            Add-Check -Name 'plan_source_workspace_policy_local_source_reference_only' -Passed ((Get-JsonBoolValue -Object $policy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
+            Add-Check -Name 'plan_source_workspace_policy_authorized_local_install_only' -Passed ((Get-JsonBoolValue -Object $policy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
+            Add-Check -Name 'plan_source_workspace_policy_authorized_source_origin_verified' -Passed ((Get-JsonBoolValue -Object $policy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'source-workspace report must verify the GDRE Opening file against the installed game PCK'
+            Add-Check -Name 'plan_source_workspace_policy_third_party_dumps_prohibited' -Passed ((Get-JsonBoolValue -Object $policy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
+            Add-Check -Name 'plan_source_workspace_policy_runtime_proof_still_requires_launch' -Passed ((Get-JsonBoolValue -Object $policy -Name 'RuntimeProofStillRequiresLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must record that runtime proof still requires launch evidence'
+            Add-Check -Name 'plan_source_workspace_policy_autoslay_still_requires_launch' -Passed ((Get-JsonBoolValue -Object $policy -Name 'GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence' -DefaultValue $false)) -Detail 'source-workspace report must keep AutoSlay source checks separate from runtime proof'
             foreach ($name in @('StartSeedLogFileSignature', 'NonInteractiveCheck', 'DebugSeedOverride', 'AutoCardSelector', 'AncientDialogueHandler', 'EventOptionSelectionLog', 'EventTriggeredCombatLog', 'EventCombatStartedLog')) {
-                Add-Check -Name "plan_source_workspace_autoslay_$name" -Passed ([bool](Get-JsonValue -Object $autoSlay -Name $name -DefaultValue $false)) -Detail "AutoSlay source-contract field $name must be true"
+                Add-Check -Name "plan_source_workspace_autoslay_$name" -Passed ((Get-JsonBoolValue -Object $autoSlay -Name $name -DefaultValue $false)) -Detail "AutoSlay source-contract field $name must be true"
             }
 
             $reportRecoveredSource = Get-JsonValue -Object $sourceReport -Name 'RecoveredSource' -DefaultValue $null
             $reportGame = Get-JsonValue -Object $sourceReport -Name 'Game' -DefaultValue $null
             $reportRitsuLib = Get-JsonValue -Object $sourceReport -Name 'RitsuLib' -DefaultValue $null
-            Add-Check -Name 'plan_source_workspace_report_matches_installed_game' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'RecoveredSource.MatchesInstalledGame must be true for game-native AutoSlay proof'
-            Add-Check -Name 'plan_source_workspace_report_origin_matches_installed_game_pck' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'RecoveredSource.OriginMatchesInstalledGamePck must be true for game-native AutoSlay proof'
+            Add-Check -Name 'plan_source_workspace_report_matches_installed_game' -Passed ((Get-JsonBoolValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'RecoveredSource.MatchesInstalledGame must be true for game-native AutoSlay proof'
+            Add-Check -Name 'plan_source_workspace_report_origin_matches_installed_game_pck' -Passed ((Get-JsonBoolValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'RecoveredSource.OriginMatchesInstalledGamePck must be true for game-native AutoSlay proof'
             Add-Check -Name 'plan_source_workspace_report_ritsulib_present' -Passed ($null -ne $reportRitsuLib) -Detail 'source-workspace report must retain RitsuLib provenance'
             if ($null -ne $reportRitsuLib) {
                 foreach ($name in @('Version', 'CompatBranch', 'ManifestPath', 'ManifestSha256', 'VariantsPath', 'VariantsSha256', 'VariantDllPath', 'VariantDllSha256', 'ExpectedVariantDllSha256', 'CompatTargetPath', 'CompatTargetText')) {
@@ -882,7 +921,7 @@ if ($null -ne $plan) {
             }
             if ($null -ne $sourceWorkspace) {
                 $summaryMatchesReport =
-                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Passed' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $sourceReport -Name 'Passed' -DefaultValue $false)) -and
+                    ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'Passed' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $sourceReport -Name 'Passed' -DefaultValue $false)) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Version' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceCommit' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Commit' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Branch' -DefaultValue '')) -and
@@ -892,9 +931,9 @@ if ($null -ne $plan) {
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'Branch' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameMainAssemblyHash' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'MainAssemblyHash' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Disposition' -DefaultValue '')) -and
-                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -and
+                    ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'OriginPckPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginPckPath' -DefaultValue '')) -and
-                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -and
+                    ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'Version' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatBranch' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibManifestPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ManifestPath' -DefaultValue '')) -and
@@ -906,9 +945,9 @@ if ($null -ne $plan) {
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibExpectedVariantDllSha256' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ExpectedVariantDllSha256' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatTargetPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatTargetPath' -DefaultValue '')) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatTargetText' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatTargetText' -DefaultValue '')) -and
-                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true) -eq [bool](Get-JsonValue -Object $policy -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true)) -and
-                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -and
-                    ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $policy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -and
+                    ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true) -eq (Get-JsonBoolValue -Object $policy -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true)) -and
+                    ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $policy -Name 'NotRuntimeProof' -DefaultValue $false)) -and
+                    ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $policy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -and
                     ([string](Get-JsonValue -Object $sourceWorkspace -Name 'ReportSha256' -DefaultValue '') -eq $sourceWorkspaceCheckSha256)
                 Add-Check -Name 'plan_source_workspace_report_matches_summary' -Passed $summaryMatchesReport -Detail 'SourceWorkspace summary must match the retained source-workspace report and ReportSha256'
             }
@@ -943,6 +982,7 @@ if ($expectedAncientIdTokens.Count -gt 0) {
         $missingPlanExpectedAncientIds = @($expectedAncientIdsForCoverage | Where-Object { -not $planExpectedAncientIdSet.Contains($_) })
         $unexpectedPlanExpectedAncientIds = @($planExpectedAncientIdsForCoverage | Where-Object { -not $expectedAncientIdSet.Contains($_) })
 
+        Add-Check -Name 'plan_expected_ancient_ids_array' -Passed (Test-JsonArrayProperty -Object $plan -Name 'ExpectedAncientIds') -Detail 'autoslay-plan.json ExpectedAncientIds must be a native JSON array'
         Add-Check -Name 'plan_expected_ancient_ids_present' -Passed ($planExpectedAncientIdTokens.Count -gt 0) -Detail 'autoslay-plan.json must retain ExpectedAncientIds when target coverage is requested'
         Add-Check -Name 'plan_expected_ancient_ids_all_non_empty' -Passed ($planExpectedAncientIdsForCoverage.Count -eq $planExpectedAncientIdTokens.Count) -Detail 'autoslay-plan.json ExpectedAncientIds entries must be non-empty when supplied'
         Add-Check -Name 'plan_expected_ancient_ids_unique' -Passed ($duplicatePlanExpectedAncientIds.Count -eq 0) -Detail "autoslay-plan.json ExpectedAncientIds must be unique; duplicate groups=$($duplicatePlanExpectedAncientIds.Count)"
@@ -951,15 +991,15 @@ if ($expectedAncientIdTokens.Count -gt 0) {
 }
 if ($null -ne $summary) {
     $runnerKind = [string](Get-JsonValue -Object $summary -Name 'RunnerKind' -DefaultValue '')
-    $summaryPassed = [bool](Get-JsonValue -Object $summary -Name 'Passed' -DefaultValue $false)
+    $summaryPassed = (Get-JsonBoolValue -Object $summary -Name 'Passed' -DefaultValue $false)
     $summaryRuns = @(Get-ArrayValues -Value (Get-JsonValue -Object $summary -Name 'Runs' -DefaultValue @()))
     $totalRuns = Get-JsonIntValue -Object $summary -Name 'TotalRuns' -DefaultValue -1
     $failedRuns = Get-JsonIntValue -Object $summary -Name 'FailedRuns' -DefaultValue -1
-    $failedSummaryRunRows = @($summaryRuns | Where-Object { -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false) })
+    $failedSummaryRunRows = @($summaryRuns | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     $summaryRunsWithFailureReasonCodes = @($summaryRuns | Where-Object { @(Get-ArrayValues -Value (Get-JsonValue -Object $_ -Name 'FailureReasonCodes' -DefaultValue @())).Count -gt 0 })
     $summaryRunsWithHangSignals = @($summaryRuns | Where-Object { @(Get-ArrayValues -Value (Get-JsonValue -Object $_ -Name 'HangSignals' -DefaultValue @())).Count -gt 0 })
     $summaryProblemRunRows = @($summaryRuns | Where-Object {
-        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false) -or
+        -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) -or
         @(Get-ArrayValues -Value (Get-JsonValue -Object $_ -Name 'FailureReasonCodes' -DefaultValue @())).Count -gt 0 -or
         @(Get-ArrayValues -Value (Get-JsonValue -Object $_ -Name 'HangSignals' -DefaultValue @())).Count -gt 0
     })
@@ -967,6 +1007,34 @@ if ($null -ne $summary) {
         $summaryProblemRunRows.Count -eq 0
 
     Add-Check -Name 'summary_runner_kind_is_game_native_autoslay' -Passed ([string]::Equals($runnerKind, 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) -Detail "RunnerKind must be GameNativeAutoSlay; found '$runnerKind'"
+    Add-Check -Name 'summary_runs_array' -Passed (Test-JsonArrayProperty -Object $summary -Name 'Runs') -Detail 'autoslay-summary.json Runs must be a native JSON array'
+    if ($null -ne $plan) {
+        $summaryPlanFieldChecks = @(
+            [pscustomobject]@{ Field = 'RunnerKind'; Check = 'summary_runner_kind_matches_plan' },
+            [pscustomobject]@{ Field = 'Sts1EventMode'; Check = 'summary_sts1_event_mode_matches_plan' },
+            [pscustomobject]@{ Field = 'PackageVersion'; Check = 'summary_package_version_matches_plan' },
+            [pscustomobject]@{ Field = 'GameVersion'; Check = 'summary_game_version_matches_plan' },
+            [pscustomobject]@{ Field = 'RitsuLibVersion'; Check = 'summary_ritsulib_version_matches_plan' },
+            [pscustomobject]@{ Field = 'RitsuCompatBranch'; Check = 'summary_ritsu_compat_branch_matches_plan' }
+        )
+        foreach ($fieldCheck in $summaryPlanFieldChecks) {
+            $planValue = [string](Get-JsonValue -Object $plan -Name ([string]$fieldCheck.Field) -DefaultValue '')
+            $summaryValue = [string](Get-JsonValue -Object $summary -Name ([string]$fieldCheck.Field) -DefaultValue '')
+            Add-Check -Name ([string]$fieldCheck.Check) -Passed ([string]::Equals($summaryValue, $planValue, [System.StringComparison]::Ordinal)) -Detail "autoslay-summary.json $($fieldCheck.Field) must match autoslay-plan.json; summary='$summaryValue' plan='$planValue'"
+        }
+
+        $summaryExpectedPatchCount = Get-JsonIntValue -Object $summary -Name 'ExpectedPatchCount' -DefaultValue 0
+        Add-Check -Name 'summary_expected_patch_count_matches_plan' -Passed ($summaryExpectedPatchCount -eq $planExpectedPatchCount) -Detail "autoslay-summary.json ExpectedPatchCount must match autoslay-plan.json; summary=$summaryExpectedPatchCount plan=$planExpectedPatchCount"
+
+        $planExpectedAncientIdsForSummary = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))
+        $summaryExpectedAncientIdsForCoverage = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $summary -Name 'ExpectedAncientIds' -DefaultValue @()))
+        $summaryExpectedAncientIdSet = New-OrdinalStringSet -Values $summaryExpectedAncientIdsForCoverage
+        $planExpectedAncientIdSetForSummary = New-OrdinalStringSet -Values $planExpectedAncientIdsForSummary
+        $missingSummaryExpectedAncientIds = @($planExpectedAncientIdsForSummary | Where-Object { -not $summaryExpectedAncientIdSet.Contains($_) })
+        $unexpectedSummaryExpectedAncientIds = @($summaryExpectedAncientIdsForCoverage | Where-Object { -not $planExpectedAncientIdSetForSummary.Contains($_) })
+        Add-Check -Name 'summary_expected_ancient_ids_array' -Passed (Test-JsonArrayProperty -Object $summary -Name 'ExpectedAncientIds') -Detail 'autoslay-summary.json ExpectedAncientIds must be a native JSON array'
+        Add-Check -Name 'summary_expected_ancient_ids_match_plan' -Passed ($missingSummaryExpectedAncientIds.Count -eq 0 -and $unexpectedSummaryExpectedAncientIds.Count -eq 0) -Detail "autoslay-summary.json ExpectedAncientIds must match autoslay-plan.json; missing=$($missingSummaryExpectedAncientIds -join ',') unexpected=$($unexpectedSummaryExpectedAncientIds -join ',')"
+    }
     Add-Check -Name 'summary_passed' -Passed $summaryPassed -Detail 'autoslay-summary.json Passed must be true for proof packets'
     Add-Check -Name 'summary_passed_matches_runs_array' -Passed ($summaryPassed -eq $computedSummaryPassed) -Detail "autoslay-summary.json Passed must match Runs[] pass/failure/hang aggregation; passed=$summaryPassed computed=$computedSummaryPassed failedRows=$($failedSummaryRunRows.Count) failureRows=$($summaryRunsWithFailureReasonCodes.Count) hangRows=$($summaryRunsWithHangSignals.Count)"
     Add-Check -Name 'summary_total_runs_matches_runs_array' -Passed ($totalRuns -eq $summaryRuns.Count) -Detail "TotalRuns must match Runs array count; TotalRuns=$totalRuns Runs=$($summaryRuns.Count)"
@@ -1092,7 +1160,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     $runName = "run_{0:D4}" -f ($i + 1)
     $expectedRunEvidenceDirName = "run-{0:D4}" -f ($i + 1)
     $seed = [string](Get-JsonValue -Object $run -Name 'Seed' -DefaultValue '')
-    $summaryRunPassed = [bool](Get-JsonValue -Object $run -Name 'Passed' -DefaultValue $false)
+    $summaryRunPassed = (Get-JsonBoolValue -Object $run -Name 'Passed' -DefaultValue $false)
     $exitCode = Get-JsonIntValue -Object $run -Name 'ExitCode' -DefaultValue -999
     $summaryFailureReasonCodes = @(Get-ArrayValues -Value (Get-JsonValue -Object $run -Name 'FailureReasonCodes' -DefaultValue @()))
     $summaryHangSignals = @(Get-ArrayValues -Value (Get-JsonValue -Object $run -Name 'HangSignals' -DefaultValue @()))
@@ -1137,6 +1205,8 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
     Add-Check -Name "${runName}_seed_present" -Passed (-not [string]::IsNullOrWhiteSpace($seed)) -Detail 'each AutoSlay run must retain its seed'
     Add-Check -Name "${runName}_seed_listed_in_plan" -Passed ($planSeeds -contains $seed) -Detail "seed '$seed' must be listed in autoslay-plan.json Seeds"
     Add-Check -Name "${runName}_summary_run_passed_true" -Passed $summaryRunPassed -Detail 'each summary run must record Passed=true for proof packets'
+    Add-Check -Name "${runName}_summary_run_failure_reason_codes_array" -Passed (Test-JsonArrayProperty -Object $run -Name 'FailureReasonCodes') -Detail 'summary run FailureReasonCodes must be a native JSON array'
+    Add-Check -Name "${runName}_summary_run_hang_signals_array" -Passed (Test-JsonArrayProperty -Object $run -Name 'HangSignals') -Detail 'summary run HangSignals must be a native JSON array'
     Add-Check -Name "${runName}_summary_run_failure_reason_codes_empty" -Passed ($summaryFailureReasonCodes.Count -eq 0) -Detail "summary run FailureReasonCodes must be empty; found $($summaryFailureReasonCodes.Count)"
     Add-Check -Name "${runName}_summary_run_hang_signals_empty" -Passed ($summaryHangSignals.Count -eq 0) -Detail "summary run HangSignals must be empty; found $($summaryHangSignals.Count)"
     Add-Check -Name "${runName}_exit_code_zero" -Passed ($exitCode -eq 0) -Detail "ExitCode must be 0 for proof packets; found $exitCode"
@@ -1246,12 +1316,12 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 -not [bool]$sampledAtParse.Parsed
             })
             $invalidLogLastWriteProbeSamples = @($probeSamples | Where-Object {
-                $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                 $logLastWriteParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue ''))
                 $logExists -and -not [bool]$logLastWriteParse.Parsed
             })
             $futureLogLastWriteProbeSamples = @($probeSamples | Where-Object {
-                $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                 $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
                 $logLastWriteParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue ''))
                 $logExists -and [bool]$sampledAtParse.Parsed -and [bool]$logLastWriteParse.Parsed -and $logLastWriteParse.Value -gt $sampledAtParse.Value
@@ -1263,7 +1333,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $phaseOrderDefectCount = 0
             $logLengthRegressionCount = 0
             $negativeLogLengthProbeSamples = @($probeSamples | Where-Object {
-                [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
                     (Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) -lt 0
             })
             $previousSampledAt = $null
@@ -1286,7 +1356,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                     $phaseOrderDefectCount++
                 }
 
-                if ([bool](Get-JsonValue -Object $probeSample -Name 'LogExists' -DefaultValue $false)) {
+                if ((Get-JsonBoolValue -Object $probeSample -Name 'LogExists' -DefaultValue $false)) {
                     $logLengthBytes = Get-JsonLongValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1
                     if ($logLengthBytes -ge 0) {
                         if ($null -ne $previousLogLengthBytes -and $logLengthBytes -lt $previousLogLengthBytes) {
@@ -1335,13 +1405,13 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $currentProcessCountSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'CurrentProcessCount' -DefaultValue -1) -ne 1 })
             Add-Check -Name "${runName}_runtime_probe_samples_single_current_process" -Passed ($currentProcessCountSamples.Count -eq 0) -Detail 'probe samples must record CurrentProcessCount=1 for the launched SlayTheSpire2 process'
             $observedRuntimeProbeProcessIds = @($probeSamples |
-                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ProcessId' -DefaultValue 0 } |
                 Where-Object { $_ -gt 0 } |
                 Sort-Object -Unique)
             Add-Check -Name "${runName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedRuntimeProbeProcessIds.Count)"
             $observedRuntimeProbeStartTimes = @($probeSamples |
-                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object {
                     $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue ''))
                     if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
@@ -1349,17 +1419,17 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                 Sort-Object -Unique)
             $observedRuntimeProbePaths = @($probeSamples |
-                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
                 Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                 Sort-Object -Unique)
             $observedRuntimeProbeExpectedProcessIds = @($probeSamples |
-                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0 } |
                 Where-Object { $_ -gt 0 } |
                 Sort-Object -Unique)
             $observedRuntimeProbeExpectedStartTimes = @($probeSamples |
-                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object {
                     $parse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue ''))
                     if ([bool]$parse.Parsed) { $parse.Value.ToString('o') }
@@ -1367,16 +1437,16 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                 Sort-Object -Unique)
             $observedRuntimeProbeExpectedPaths = @($probeSamples |
-                Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                 ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
                 Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_) } |
                 Sort-Object -Unique)
             $identityMismatchRuntimeProbeSamples = @($probeSamples | Where-Object {
-                [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
-                (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
-                    -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
-                    -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
-                    -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+                (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                (-not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                    -not (Get-JsonBoolValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                    -not (Get-JsonBoolValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                    -not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
             })
             Add-Check -Name "${runName}_runtime_probe_samples_single_process_start_time" -Passed ($observedRuntimeProbeStartTimes.Count -eq 1) -Detail "observed probe samples must bind to one process start time; count=$($observedRuntimeProbeStartTimes.Count) values=$($observedRuntimeProbeStartTimes -join ',')"
             Add-Check -Name "${runName}_runtime_probe_samples_single_process_path" -Passed ($observedRuntimeProbePaths.Count -eq 1) -Detail "observed probe samples must bind to one process path; count=$($observedRuntimeProbePaths.Count) values=$($observedRuntimeProbePaths -join ',')"
@@ -1387,7 +1457,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $runtimeProbeLogLengths = @($probeSamples |
                 Where-Object {
                     [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'runtime', [System.StringComparison]::Ordinal) -and
-                    [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                    (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                 } |
                 ForEach-Object { Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1 } |
                 Where-Object { $_ -ge 0 })
@@ -1509,7 +1579,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $sts1Mismatches = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
             $sts1Checks = @(Get-ArrayValues -Value (Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()))
             $sts1FailedChecks = @($sts1Checks | Where-Object {
-                -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
             })
             $sts1CheckSignatures = @(Get-CheckSignatureArray -Items $sts1Checks)
             $effectiveExpectedPackageVersion = if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) { $ExpectedPackageVersion } else { [string](Get-JsonValue -Object $plan -Name 'PackageVersion' -DefaultValue '') }
@@ -1550,7 +1620,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                     $recomputedSts1Mismatches = @(Get-ArrayValues -Value (Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
                     $recomputedSts1Checks = @(Get-ArrayValues -Value (Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Checks' -DefaultValue @()))
                     $recomputedSts1FailedChecks = @($recomputedSts1Checks | Where-Object {
-                        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                        -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
                     })
                     $recomputedSts1CheckSignatures = @(Get-CheckSignatureArray -Items $recomputedSts1Checks)
                     $recomputedSts1FailedCheckNames = @($recomputedSts1FailedChecks | ForEach-Object {
@@ -1597,7 +1667,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $resultHookAssembly = [string](Get-JsonValue -Object $runResult -Name 'HookAssembly' -DefaultValue '')
             $resultInvocationCommand = [string](Get-JsonValue -Object $runResult -Name 'InvocationCommand' -DefaultValue '')
             Add-Check -Name "${runName}_run_result_schema_version_one" -Passed ((Get-JsonIntValue -Object $runResult -Name 'SchemaVersion' -DefaultValue 0) -eq 1) -Detail 'run-result.json SchemaVersion must be 1'
-            Add-Check -Name "${runName}_run_result_launch_true" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Launch' -DefaultValue $false)) -Detail 'run-result.json must record Launch=true'
+            Add-Check -Name "${runName}_run_result_launch_true" -Passed ((Get-JsonBoolValue -Object $runResult -Name 'Launch' -DefaultValue $false)) -Detail 'run-result.json must record Launch=true'
             Add-Check -Name "${runName}_run_result_runner_kind_game_native_autoslay" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) -Detail 'run-result.json RunnerKind must be GameNativeAutoSlay'
             Add-Check -Name "${runName}_run_result_invocation_calls_autoslayer_start" -Passed (Contains-Text -Text $resultInvocation -Needle 'AutoSlayer.Start(seed, logFile)') -Detail 'run-result.json Invocation must record the launcher/mod hook that calls AutoSlayer.Start(seed, logFile)'
             Add-Check -Name "${runName}_run_result_launcher_kind_matches_plan" -Passed ([string]::Equals($resultLauncherKind, $launcherKind, [System.StringComparison]::Ordinal)) -Detail 'run-result.json LauncherKind must match autoslay-plan.json'
@@ -1610,8 +1680,10 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             Add-Check -Name "${runName}_run_result_seed_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'Seed' -DefaultValue ''), $seed, [System.StringComparison]::Ordinal)) -Detail 'run-result.json Seed must match autoslay-summary.json run Seed'
             Add-Check -Name "${runName}_run_result_event_kind_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'EventKind' -DefaultValue ''), $eventKind, [System.StringComparison]::Ordinal)) -Detail 'run-result.json EventKind must match autoslay-summary.json run EventKind'
             Add-Check -Name "${runName}_run_result_ancient_id_matches_summary" -Passed ([string]::Equals([string](Get-JsonValue -Object $runResult -Name 'AncientId' -DefaultValue ''), $ancientId, [System.StringComparison]::Ordinal)) -Detail 'run-result.json AncientId must match autoslay-summary.json run AncientId'
-            Add-Check -Name "${runName}_run_result_passed_true" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Passed' -DefaultValue $false)) -Detail 'run-result.json Passed must be true for proof packets'
-            Add-Check -Name "${runName}_run_result_passed_matches_summary" -Passed ([bool](Get-JsonValue -Object $runResult -Name 'Passed' -DefaultValue $false) -eq $summaryRunPassed) -Detail 'run-result.json Passed must match autoslay-summary.json run Passed'
+            Add-Check -Name "${runName}_run_result_passed_true" -Passed ((Get-JsonBoolValue -Object $runResult -Name 'Passed' -DefaultValue $false)) -Detail 'run-result.json Passed must be true for proof packets'
+            Add-Check -Name "${runName}_run_result_passed_matches_summary" -Passed ((Get-JsonBoolValue -Object $runResult -Name 'Passed' -DefaultValue $false) -eq $summaryRunPassed) -Detail 'run-result.json Passed must match autoslay-summary.json run Passed'
+            Add-Check -Name "${runName}_run_result_failure_reason_codes_array" -Passed (Test-JsonArrayProperty -Object $runResult -Name 'FailureReasonCodes') -Detail 'run-result.json FailureReasonCodes must be a native JSON array'
+            Add-Check -Name "${runName}_run_result_hang_signals_array" -Passed (Test-JsonArrayProperty -Object $runResult -Name 'HangSignals') -Detail 'run-result.json HangSignals must be a native JSON array'
             Add-Check -Name "${runName}_run_result_failure_reason_codes_empty" -Passed ($resultFailureReasonCodes.Count -eq 0) -Detail "run-result.json FailureReasonCodes must be empty; found $($resultFailureReasonCodes.Count)"
             Add-Check -Name "${runName}_run_result_hang_signals_empty" -Passed ($resultHangSignals.Count -eq 0) -Detail "run-result.json HangSignals must be empty; found $($resultHangSignals.Count)"
             Add-Check -Name "${runName}_run_result_failure_reason_codes_match_summary" -Passed ([string]::Equals([string]::Join("`n", @($summaryFailureReasonCodes | ForEach-Object { [string]$_ })), [string]::Join("`n", @($resultFailureReasonCodes | ForEach-Object { [string]$_ })), [System.StringComparison]::Ordinal)) -Detail 'run-result.json FailureReasonCodes must match autoslay-summary.json'
@@ -1659,28 +1731,28 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
             $mainMenuObservation = Get-JsonValue -Object $runResult -Name 'MainMenuObservation' -DefaultValue $null
             Add-Check -Name "${runName}_run_result_main_menu_observation_exists" -Passed ($null -ne $mainMenuObservation) -Detail 'run-result.json must retain MainMenuObservation telemetry'
             if ($null -ne $mainMenuObservation) {
-                Add-Check -Name "${runName}_run_result_main_menu_observation_passed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'Passed' -DefaultValue $false)) -Detail 'MainMenuObservation.Passed must be true'
-                Add-Check -Name "${runName}_run_result_main_menu_reached" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuObservation.MainMenuReached must be true'
-                Add-Check -Name "${runName}_run_result_main_menu_process_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
-                Add-Check -Name "${runName}_run_result_main_menu_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
-                Add-Check -Name "${runName}_run_result_main_menu_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung before main menu'
-                Add-Check -Name "${runName}_run_result_main_menu_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${runName}_run_result_main_menu_observation_passed" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'Passed' -DefaultValue $false)) -Detail 'MainMenuObservation.Passed must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_reached" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuObservation.MainMenuReached must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_process_observed" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_no_process_exit" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
+                Add-Check -Name "${runName}_run_result_main_menu_no_hung_window" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung before main menu'
+                Add-Check -Name "${runName}_run_result_main_menu_no_stale_process" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
                 Add-Check -Name "${runName}_run_result_main_menu_stale_process_count_zero" -Passed ((Get-JsonIntValue -Object $mainMenuObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'MainMenuObservation.MaxStaleProcessCount must be 0'
-                Add-Check -Name "${runName}_run_result_main_menu_log_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
-                Add-Check -Name "${runName}_run_result_main_menu_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'MainMenuObservation.NoLogGrowthTimeoutExceeded must be false'
+                Add-Check -Name "${runName}_run_result_main_menu_log_observed" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
+                Add-Check -Name "${runName}_run_result_main_menu_no_log_growth_timeout" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'MainMenuObservation.NoLogGrowthTimeoutExceeded must be false'
             }
 
             $runtimeObservation = Get-JsonValue -Object $runResult -Name 'RuntimeObservation' -DefaultValue $null
             Add-Check -Name "${runName}_run_result_runtime_observation_exists" -Passed ($null -ne $runtimeObservation) -Detail 'run-result.json must retain RuntimeObservation telemetry'
             if ($null -ne $runtimeObservation) {
-                Add-Check -Name "${runName}_run_result_runtime_observation_passed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'Passed' -DefaultValue $false)) -Detail 'RuntimeObservation.Passed must be true'
-                Add-Check -Name "${runName}_run_result_runtime_process_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
-                Add-Check -Name "${runName}_run_result_runtime_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
-                Add-Check -Name "${runName}_run_result_runtime_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung during runtime observation'
-                Add-Check -Name "${runName}_run_result_runtime_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${runName}_run_result_runtime_observation_passed" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'Passed' -DefaultValue $false)) -Detail 'RuntimeObservation.Passed must be true'
+                Add-Check -Name "${runName}_run_result_runtime_process_observed" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
+                Add-Check -Name "${runName}_run_result_runtime_no_process_exit" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
+                Add-Check -Name "${runName}_run_result_runtime_no_hung_window" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung during runtime observation'
+                Add-Check -Name "${runName}_run_result_runtime_no_stale_process" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
                 Add-Check -Name "${runName}_run_result_runtime_stale_process_count_zero" -Passed ((Get-JsonIntValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'RuntimeObservation.MaxStaleProcessCount must be 0'
-                Add-Check -Name "${runName}_run_result_runtime_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
-                $runtimeObservationLogGrew = [bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)
+                Add-Check -Name "${runName}_run_result_runtime_log_observed" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
+                $runtimeObservationLogGrew = (Get-JsonBoolValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)
                 $runtimeObservationInitialLogLength = Get-JsonLongValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1
                 $runtimeObservationFinalLogLength = Get-JsonLongValue -Object $runtimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1
                 Add-Check -Name "${runName}_run_result_runtime_log_grew" -Passed $runtimeObservationLogGrew -Detail 'RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
@@ -1688,7 +1760,7 @@ for ($i = 0; $i -lt $summaryRuns.Count; $i++) {
                 Add-Check -Name "${runName}_run_result_runtime_log_final_length_present" -Passed ((Test-JsonProperty -Object $runtimeObservation -Name 'LogFinalLengthBytes') -and $runtimeObservationFinalLogLength -ge 0) -Detail 'RuntimeObservation.LogFinalLengthBytes must retain the post-runtime log length'
                 Add-Check -Name "${runName}_run_result_runtime_log_length_growth_matches_log_grew" -Passed ($runtimeObservationLogGrew -and $runtimeObservationInitialLogLength -ge 0 -and $runtimeObservationFinalLogLength -gt $runtimeObservationInitialLogLength) -Detail "RuntimeObservation.LogGrew=true must be backed by final log length growth; initial=$runtimeObservationInitialLogLength final=$runtimeObservationFinalLogLength"
                 Add-Check -Name "${runName}_runtime_probe_samples_log_growth_matches_runtime_observation" -Passed ($runtimeObservationLogGrew -and $runtimeObservationInitialLogLength -ge 0 -and $runtimeProbeRuntimeMaxLogLength -gt $runtimeObservationInitialLogLength) -Detail "runtime-phase probe sample LogLengthBytes must exceed RuntimeObservation.LogInitialLengthBytes; initial=$runtimeObservationInitialLogLength maxRuntimeSample=$runtimeProbeRuntimeMaxLogLength"
-                Add-Check -Name "${runName}_run_result_runtime_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'RuntimeObservation.NoLogGrowthTimeoutExceeded must be false'
+                Add-Check -Name "${runName}_run_result_runtime_no_log_growth_timeout" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'RuntimeObservation.NoLogGrowthTimeoutExceeded must be false'
             }
         }
     }

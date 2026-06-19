@@ -91,6 +91,114 @@ function Get-JsonValue {
     return $DefaultValue
 }
 
+function ConvertTo-IntOrDefault {
+    param(
+        [AllowNull()]$Value,
+        [int]$DefaultValue = 0
+    )
+
+    if ($null -eq $Value) {
+        return $DefaultValue
+    }
+
+    try {
+        return [int]$Value
+    } catch {
+        return $DefaultValue
+    }
+}
+
+function ConvertTo-LongOrDefault {
+    param(
+        [AllowNull()]$Value,
+        [long]$DefaultValue = 0
+    )
+
+    if ($null -eq $Value) {
+        return $DefaultValue
+    }
+
+    try {
+        return [long]$Value
+    } catch {
+        return $DefaultValue
+    }
+}
+
+function ConvertTo-DoubleOrDefault {
+    param(
+        [AllowNull()]$Value,
+        [double]$DefaultValue = 0.0
+    )
+
+    if ($null -eq $Value) {
+        return $DefaultValue
+    }
+
+    try {
+        return [double]$Value
+    } catch {
+        return $DefaultValue
+    }
+}
+
+function ConvertTo-BoolOrDefault {
+    param(
+        [AllowNull()]$Value,
+        [bool]$DefaultValue = $false
+    )
+
+    if ($null -eq $Value) {
+        return $DefaultValue
+    }
+
+    if ($Value -is [bool]) {
+        return [bool]$Value
+    }
+
+    return $DefaultValue
+}
+
+function Get-JsonIntValue {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [int]$DefaultValue = 0
+    )
+
+    return ConvertTo-IntOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
+}
+
+function Get-JsonLongValue {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [long]$DefaultValue = 0
+    )
+
+    return ConvertTo-LongOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
+}
+
+function Get-JsonDoubleValue {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [double]$DefaultValue = 0.0
+    )
+
+    return ConvertTo-DoubleOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
+}
+
+function Get-JsonBoolValue {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [bool]$DefaultValue = $false
+    )
+
+    return ConvertTo-BoolOrDefault -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $DefaultValue) -DefaultValue $DefaultValue
+}
+
 function Read-JsonOrNull {
     param(
         [Parameter(Mandatory = $true)][string]$Path,
@@ -219,7 +327,7 @@ function ConvertTo-AuditSummary {
     $itemSha256s = [System.Collections.Generic.List[string]]::new()
 
     foreach ($item in $items) {
-        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not [bool]$item.Clean) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not (ConvertTo-BoolOrDefault -Value $item.Clean -DefaultValue $false)) {
             $dirtyItems++
         }
 
@@ -228,7 +336,7 @@ function ConvertTo-AuditSummary {
         }
 
         if (Test-JsonProperty -Object $item -Name 'Length') {
-            $itemLengths.Add([long]$item.Length) | Out-Null
+            $itemLengths.Add((ConvertTo-LongOrDefault -Value $item.Length -DefaultValue -1)) | Out-Null
         }
 
         if ((Test-JsonProperty -Object $item -Name 'Sha256') -and -not [string]::IsNullOrWhiteSpace([string]$item.Sha256)) {
@@ -241,7 +349,7 @@ function ConvertTo-AuditSummary {
 
         foreach ($hit in @($item.SignatureHits)) {
             if (Test-JsonProperty -Object $hit -Name 'Count') {
-                $hitCount += [int]$hit.Count
+                $hitCount += ConvertTo-IntOrDefault -Value $hit.Count -DefaultValue 0
             }
         }
     }
@@ -285,7 +393,7 @@ function Get-CheckSignatureArray {
 
     return @($Items | ForEach-Object {
         $name = [string](Get-JsonValue -Object $_ -Name 'Name' -DefaultValue '')
-        $passed = [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+        $passed = (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
         $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
         "$name|$passed|$detail"
     })
@@ -681,7 +789,7 @@ function Test-AnyJsonPropertyTrue {
     )
 
     foreach ($item in @($Items)) {
-        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
+        if ((Get-JsonBoolValue -Object $item -Name $Name -DefaultValue $false)) {
             return $true
         }
     }
@@ -696,8 +804,11 @@ function Test-NoJsonPropertyTrue {
     )
 
     foreach ($item in @($Items)) {
-        if ([bool](Get-JsonValue -Object $item -Name $Name -DefaultValue $false)) {
-            return $false
+        if (Test-JsonProperty -Object $item -Name $Name) {
+            $value = Get-JsonValue -Object $item -Name $Name -DefaultValue $null
+            if ($null -eq $value -or -not ($value -is [bool]) -or [bool]$value) {
+                return $false
+            }
         }
     }
 
@@ -711,8 +822,11 @@ function Test-NoJsonPropertyFalse {
     )
 
     foreach ($item in @($Items)) {
-        if ((Test-JsonProperty -Object $item -Name $Name) -and $null -ne $item.$Name -and -not [bool]$item.$Name) {
-            return $false
+        if (Test-JsonProperty -Object $item -Name $Name) {
+            $value = Get-JsonValue -Object $item -Name $Name -DefaultValue $null
+            if ($null -eq $value -or -not ($value -is [bool]) -or -not [bool]$value) {
+                return $false
+            }
         }
     }
 
@@ -762,6 +876,28 @@ function Get-FailureCodeGroupCount {
     return $count
 }
 
+function Get-FailureReasonCounts {
+    param([AllowNull()]$Items)
+
+    $counts = [ordered]@{}
+    foreach ($item in @($Items)) {
+        $itemCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $item -Name 'FailureReasonCodes' -DefaultValue @()))
+        foreach ($code in $itemCodes) {
+            if ([string]::IsNullOrWhiteSpace($code)) {
+                continue
+            }
+
+            if (-not $counts.Contains($code)) {
+                $counts[$code] = 0
+            }
+
+            $counts[$code]++
+        }
+    }
+
+    return $counts
+}
+
 function Get-MaxNumericProperty {
     param(
         [AllowNull()]$Items,
@@ -774,9 +910,9 @@ function Get-MaxNumericProperty {
         $value = Get-JsonValue -Object $_ -Name $PropertyName -DefaultValue $null
         if ($null -ne $value) {
             if ($Type -eq 'Int') {
-                [int]$value
+                ConvertTo-IntOrDefault -Value $value -DefaultValue -1
             } else {
-                [double]$value
+                ConvertTo-DoubleOrDefault -Value $value -DefaultValue -1.0
             }
         }
     })
@@ -801,7 +937,7 @@ function Get-CountMapTotal {
 
     $total = 0
     foreach ($property in @($CountMap.PSObject.Properties)) {
-        $total += [int]$property.Value
+        $total += ConvertTo-IntOrDefault -Value $property.Value -DefaultValue 0
     }
 
     return $total
@@ -825,7 +961,7 @@ function Test-CountMapMatches {
 
     foreach ($key in $expectedKeys) {
         $actualProperty = $ActualCountMap.PSObject.Properties[$key]
-        if ($null -eq $actualProperty -or [int]$actualProperty.Value -ne [int]$ExpectedCounts[$key]) {
+        if ($null -eq $actualProperty -or (ConvertTo-IntOrDefault -Value $actualProperty.Value -DefaultValue -1) -ne (ConvertTo-IntOrDefault -Value $ExpectedCounts[$key] -DefaultValue -2)) {
             return $false
         }
     }
@@ -839,13 +975,13 @@ function Get-IterationNumberAudit {
         [int]$ExpectedCount
     )
 
-    $iterationNumbers = @($Items | ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'Iteration' -DefaultValue 0) })
+    $iterationNumbers = @($Items | ForEach-Object { Get-JsonIntValue -Object $_ -Name 'Iteration' -DefaultValue 0 })
     $nonPositiveNumbers = @($iterationNumbers | Where-Object { $_ -le 0 })
     $duplicateNumbers = @($iterationNumbers |
         Where-Object { $_ -gt 0 } |
         Group-Object |
         Where-Object { $_.Count -gt 1 } |
-        ForEach-Object { [int]$_.Name })
+        ForEach-Object { ConvertTo-IntOrDefault -Value $_.Name -DefaultValue 0 })
     $outOfRangeNumbers = @()
     $missingNumbers = @()
 
@@ -907,12 +1043,12 @@ if ($summaryExists) {
     }
 }
 
-$planIterations = if ($null -ne $plan) { [int](Get-JsonValue -Object $plan -Name 'Iterations' -DefaultValue 0) } else { 0 }
-$planUnresponsiveSampleThreshold = if ($null -ne $plan) { [int](Get-JsonValue -Object $plan -Name 'UnresponsiveSampleThreshold' -DefaultValue 0) } else { 0 }
-$summaryRequestedIterations = if ($null -ne $summary) { [int](Get-JsonValue -Object $summary -Name 'RequestedIterations' -DefaultValue 0) } else { 0 }
-$summaryCompletedIterations = if ($null -ne $summary) { [int](Get-JsonValue -Object $summary -Name 'CompletedIterations' -DefaultValue 0) } else { 0 }
+$planIterations = if ($null -ne $plan) { Get-JsonIntValue -Object $plan -Name 'Iterations' -DefaultValue 0 } else { 0 }
+$planUnresponsiveSampleThreshold = if ($null -ne $plan) { Get-JsonIntValue -Object $plan -Name 'UnresponsiveSampleThreshold' -DefaultValue 0 } else { 0 }
+$summaryRequestedIterations = if ($null -ne $summary) { Get-JsonIntValue -Object $summary -Name 'RequestedIterations' -DefaultValue 0 } else { 0 }
+$summaryCompletedIterations = if ($null -ne $summary) { Get-JsonIntValue -Object $summary -Name 'CompletedIterations' -DefaultValue 0 } else { 0 }
 $expectedIterationCount = $ExpectedIterations
-$planExpectedPatchCount = if ($null -ne $plan) { [int](Get-JsonValue -Object $plan -Name 'ExpectedPatchCount' -DefaultValue 0) } else { 0 }
+$planExpectedPatchCount = if ($null -ne $plan) { Get-JsonIntValue -Object $plan -Name 'ExpectedPatchCount' -DefaultValue 0 } else { 0 }
 $effectiveExpectedPatchCount = if ($ExpectedPatchCount -gt 0) { $ExpectedPatchCount } else { $planExpectedPatchCount }
 $planScenario = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue '') } else { '' }
 $planCommandSelectionMode = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue '') } else { '' }
@@ -933,8 +1069,8 @@ if ($expectedIterationCount -le 0 -and $summaryRequestedIterations -gt 0) {
 }
 
 if ($null -ne $plan) {
-    Add-Check -Name 'plan_hang_probe_schema_version' -Passed ([int](Get-JsonValue -Object $plan -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'HangProbeSchemaVersion must be 1'
-    Add-Check -Name 'plan_launch_true' -Passed ([bool](Get-JsonValue -Object $plan -Name 'Launch' -DefaultValue $false)) -Detail 'monkey packets require a launched run; dry-run plans have no runtime evidence'
+    Add-Check -Name 'plan_hang_probe_schema_version' -Passed ((Get-JsonIntValue -Object $plan -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'HangProbeSchemaVersion must be 1'
+    Add-Check -Name 'plan_launch_true' -Passed ((Get-JsonBoolValue -Object $plan -Name 'Launch' -DefaultValue $false)) -Detail 'monkey packets require a launched run; dry-run plans have no runtime evidence'
     Add-Check -Name 'plan_iterations_positive' -Passed ($planIterations -gt 0) -Detail "plan Iterations must be positive; found $planIterations"
     Add-Check -Name 'plan_scenario_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue ''))) -Detail 'Scenario must identify the planned risk lane'
     Add-Check -Name 'plan_command_selection_mode_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue ''))) -Detail 'CommandSelectionMode must be retained'
@@ -999,20 +1135,20 @@ if ($null -ne $plan) {
             Add-Check -Name 'plan_source_workspace_check_json_valid' -Passed $true -Detail 'retained source-workspace JSON report parsed'
             $sourceWorkspaceReportMismatches = Get-ArrayCount -Value (Get-JsonValue -Object $sourceWorkspaceReport -Name 'Mismatches' -DefaultValue @())
             $sourceWorkspaceReportPolicy = Get-JsonValue -Object $sourceWorkspaceReport -Name 'EvidenceUsePolicy' -DefaultValue $null
-            Add-Check -Name 'plan_source_workspace_report_passed' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReport -Name 'Passed' -DefaultValue $false)) -Detail 'retained source-workspace report must have Passed=true'
+            Add-Check -Name 'plan_source_workspace_report_passed' -Passed ((Get-JsonBoolValue -Object $sourceWorkspaceReport -Name 'Passed' -DefaultValue $false)) -Detail 'retained source-workspace report must have Passed=true'
             Add-Check -Name 'plan_source_workspace_report_mismatches_field_present' -Passed (Test-JsonProperty -Object $sourceWorkspaceReport -Name 'Mismatches') -Detail 'retained source-workspace report must retain Mismatches'
             Add-Check -Name 'plan_source_workspace_report_mismatches_empty' -Passed ((Test-JsonProperty -Object $sourceWorkspaceReport -Name 'Mismatches') -and $sourceWorkspaceReportMismatches -eq 0) -Detail "retained source-workspace report mismatches must be empty; found $sourceWorkspaceReportMismatches"
-            Add-Check -Name 'plan_source_workspace_report_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection is not runtime proof'
-            Add-Check -Name 'plan_source_workspace_report_local_source_reference_only' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
-            Add-Check -Name 'plan_source_workspace_report_authorized_local_install_only' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
+            Add-Check -Name 'plan_source_workspace_report_not_runtime_proof' -Passed ((Get-JsonBoolValue -Object $sourceWorkspaceReportPolicy -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'source-workspace report must record that source inspection is not runtime proof'
+            Add-Check -Name 'plan_source_workspace_report_local_source_reference_only' -Passed ((Get-JsonBoolValue -Object $sourceWorkspaceReportPolicy -Name 'LocalSourceReferenceOnly' -DefaultValue $false)) -Detail 'source-workspace report must record local-source-reference-only policy'
+            Add-Check -Name 'plan_source_workspace_report_authorized_local_install_only' -Passed ((Get-JsonBoolValue -Object $sourceWorkspaceReportPolicy -Name 'AuthorizedLocalInstallOnly' -DefaultValue $false)) -Detail 'source-workspace report must record authorized-local-install-only policy'
             Add-Check -Name 'plan_source_workspace_report_authorized_source_origin_field_present' -Passed (Test-JsonProperty -Object $sourceWorkspaceReportPolicy -Name 'AuthorizedSourceOriginVerified') -Detail 'source-workspace report must retain whether the GDRE Opening file was verified against the installed game PCK'
-            Add-Check -Name 'plan_source_workspace_report_third_party_dumps_prohibited' -Passed ([bool](Get-JsonValue -Object $sourceWorkspaceReportPolicy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
+            Add-Check -Name 'plan_source_workspace_report_third_party_dumps_prohibited' -Passed ((Get-JsonBoolValue -Object $sourceWorkspaceReportPolicy -Name 'ThirdPartyDumpsProhibited' -DefaultValue $false)) -Detail 'source-workspace report must record that third-party dumps are prohibited'
         }
     }
     Add-Check -Name 'plan_source_workspace_summary_present' -Passed ($null -ne $sourceWorkspace) -Detail 'SourceWorkspace summary must retain source version/disposition and evidence-use policy'
     if ($null -ne $sourceWorkspace) {
-        Add-Check -Name 'plan_source_workspace_checked' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
-        Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
+        Add-Check -Name 'plan_source_workspace_checked' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'Checked' -DefaultValue $false)) -Detail 'SourceWorkspace.Checked must be true'
+        Add-Check -Name 'plan_source_workspace_not_runtime_proof' -Passed ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false)) -Detail 'SourceWorkspace must record that source inspection is not runtime proof'
         Add-Check -Name 'plan_source_workspace_disposition_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue ''))) -Detail 'SourceWorkspace must retain the recovered-source disposition'
         Add-Check -Name 'plan_source_workspace_authorized_source_origin_field_present' -Passed (Test-JsonProperty -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified') -Detail 'SourceWorkspace summary must retain whether source-origin verification passed'
         Add-Check -Name 'plan_source_workspace_origin_matches_installed_game_pck_field_present' -Passed (Test-JsonProperty -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck') -Detail 'SourceWorkspace summary must retain GDRE Opening file to installed PCK binding state'
@@ -1033,7 +1169,7 @@ if ($null -ne $plan) {
             }
         }
         $summaryMatchesReport =
-            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'Passed' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $sourceWorkspaceReport -Name 'Passed' -DefaultValue $false)) -and
+            ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'Passed' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $sourceWorkspaceReport -Name 'Passed' -DefaultValue $false)) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Version' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceCommit' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Commit' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'SourceBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Branch' -DefaultValue '')) -and
@@ -1043,9 +1179,9 @@ if ($null -ne $plan) {
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'Branch' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'InstalledGameMainAssemblyHash' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportGame -Name 'MainAssemblyHash' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'Disposition' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'Disposition' -DefaultValue '')) -and
-            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -and
+            ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'MatchesInstalledGame' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'OriginPckPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginPckPath' -DefaultValue '')) -and
-            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -and
+            ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibVersion' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'Version' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatBranch' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatBranch' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibManifestPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ManifestPath' -DefaultValue '')) -and
@@ -1057,24 +1193,24 @@ if ($null -ne $plan) {
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibExpectedVariantDllSha256' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'ExpectedVariantDllSha256' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatTargetPath' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatTargetPath' -DefaultValue '')) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'RitsuLibCompatTargetText' -DefaultValue '') -eq [string](Get-JsonValue -Object $reportRitsuLib -Name 'CompatTargetText' -DefaultValue '')) -and
-            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true) -eq [bool](Get-JsonValue -Object $reportPolicy -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true)) -and
-            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportPolicy -Name 'NotRuntimeProof' -DefaultValue $false)) -and
-            ([bool](Get-JsonValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $reportPolicy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -and
+            ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true) -eq (Get-JsonBoolValue -Object $reportPolicy -Name 'RefreshSourceSnapshotBeforeCurrentApiClaims' -DefaultValue $true)) -and
+            ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'NotRuntimeProof' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $reportPolicy -Name 'NotRuntimeProof' -DefaultValue $false)) -and
+            ((Get-JsonBoolValue -Object $sourceWorkspace -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $reportPolicy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -and
             ([string](Get-JsonValue -Object $sourceWorkspace -Name 'ReportSha256' -DefaultValue '') -eq $sourceWorkspaceCheckSha256)
         Add-Check -Name 'plan_source_workspace_report_matches_summary' -Passed $summaryMatchesReport -Detail 'SourceWorkspace summary must match the retained source-workspace report and ReportSha256'
 
-        $currentSourceRequired = [bool]$RequireCurrentSourceSnapshot -or [bool](Get-JsonValue -Object $sourceWorkspace -Name 'RequireCurrentSourceSnapshot' -DefaultValue $false)
+        $currentSourceRequired = [bool]$RequireCurrentSourceSnapshot -or (Get-JsonBoolValue -Object $sourceWorkspace -Name 'RequireCurrentSourceSnapshot' -DefaultValue $false)
         if ($currentSourceRequired) {
-            Add-Check -Name 'plan_source_workspace_required_current_snapshot_matches_game' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires RecoveredSource.MatchesInstalledGame=true in the retained report'
-            Add-Check -Name 'plan_source_workspace_required_current_snapshot_origin_verified' -Passed ([bool](Get-JsonValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires RecoveredSource.OriginMatchesInstalledGamePck=true in the retained report'
-            Add-Check -Name 'plan_source_workspace_required_authorized_source_origin_verified' -Passed ([bool](Get-JsonValue -Object $reportPolicy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires EvidenceUsePolicy.AuthorizedSourceOriginVerified=true in the retained report'
+            Add-Check -Name 'plan_source_workspace_required_current_snapshot_matches_game' -Passed ((Get-JsonBoolValue -Object $reportRecoveredSource -Name 'MatchesInstalledGame' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires RecoveredSource.MatchesInstalledGame=true in the retained report'
+            Add-Check -Name 'plan_source_workspace_required_current_snapshot_origin_verified' -Passed ((Get-JsonBoolValue -Object $reportRecoveredSource -Name 'OriginMatchesInstalledGamePck' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires RecoveredSource.OriginMatchesInstalledGamePck=true in the retained report'
+            Add-Check -Name 'plan_source_workspace_required_authorized_source_origin_verified' -Passed ((Get-JsonBoolValue -Object $reportPolicy -Name 'AuthorizedSourceOriginVerified' -DefaultValue $false)) -Detail 'RequireCurrentSourceSnapshot requires EvidenceUsePolicy.AuthorizedSourceOriginVerified=true in the retained report'
         }
     } elseif ($null -ne $sourceWorkspace) {
         Add-Check -Name 'plan_source_workspace_report_matches_summary' -Passed $false -Detail 'SourceWorkspace summary cannot be trusted without a valid retained source-workspace report'
     }
-    Add-Check -Name 'plan_observation_interval_positive' -Passed ([int](Get-JsonValue -Object $plan -Name 'ObservationIntervalSeconds' -DefaultValue 0) -gt 0) -Detail 'ObservationIntervalSeconds must be present and positive'
+    Add-Check -Name 'plan_observation_interval_positive' -Passed ((Get-JsonIntValue -Object $plan -Name 'ObservationIntervalSeconds' -DefaultValue 0) -gt 0) -Detail 'ObservationIntervalSeconds must be present and positive'
     Add-Check -Name 'plan_unresponsive_sample_threshold_positive' -Passed ($planUnresponsiveSampleThreshold -gt 0) -Detail 'UnresponsiveSampleThreshold must be present and positive'
-    Add-Check -Name 'plan_no_log_growth_timeout_positive' -Passed ([int](Get-JsonValue -Object $plan -Name 'NoLogGrowthTimeoutSeconds' -DefaultValue 0) -gt 0) -Detail 'NoLogGrowthTimeoutSeconds must be present and positive'
+    Add-Check -Name 'plan_no_log_growth_timeout_positive' -Passed ((Get-JsonIntValue -Object $plan -Name 'NoLogGrowthTimeoutSeconds' -DefaultValue 0) -gt 0) -Detail 'NoLogGrowthTimeoutSeconds must be present and positive'
     Add-Check -Name 'plan_process_probe_present' -Passed (Test-JsonProperty -Object $plan -Name 'ProcessProbe') -Detail 'ProcessProbe must describe process/window checks'
     Add-Check -Name 'plan_log_growth_probe_present' -Passed (Test-JsonProperty -Object $plan -Name 'LogGrowthProbe') -Detail 'LogGrowthProbe must describe log-growth checks'
     Add-Check -Name 'plan_command_scenario_matrix_present' -Passed (Test-JsonProperty -Object $plan -Name 'CommandScenarioMatrix') -Detail 'CommandScenarioMatrix must map commands to owner areas'
@@ -1089,7 +1225,7 @@ if ($null -ne $plan) {
     Add-Check -Name 'plan_planned_command_counts_match' -Passed (Test-CountMapMatches -ActualCountMap (Get-JsonValue -Object $plan -Name 'PlannedCommandCounts' -DefaultValue $null) -ExpectedCounts $plannedCommandCounts) -Detail 'PlannedCommandCounts must match PlannedCommands'
 
     $plannedVakuuFightCount = @($planPlannedCommands | Where-Object { [string](Get-JsonValue -Object $_ -Name 'ScenarioTag' -DefaultValue '') -eq 'vakuu-fight' }).Count
-    Add-Check -Name 'plan_vakuu_fight_planned_count_matches' -Passed ([int](Get-JsonValue -Object $plan -Name 'PlannedVakuuFightIterationCount' -DefaultValue -1) -eq $plannedVakuuFightCount) -Detail "PlannedVakuuFightIterationCount must match PlannedCommands; expected $plannedVakuuFightCount"
+    Add-Check -Name 'plan_vakuu_fight_planned_count_matches' -Passed ((Get-JsonIntValue -Object $plan -Name 'PlannedVakuuFightIterationCount' -DefaultValue -1) -eq $plannedVakuuFightCount) -Detail "PlannedVakuuFightIterationCount must match PlannedCommands; expected $plannedVakuuFightCount"
     if ($planScenario -eq 'VakuuFightSmoke') {
         Add-Check -Name 'plan_vakuu_fight_smoke_all_iterations_are_fight' -Passed ($plannedVakuuFightCount -eq $planIterations) -Detail "VakuuFightSmoke must plan only vakuu-fight iterations; found $plannedVakuuFightCount of $planIterations"
     } elseif ($planScenario -eq 'AncientUiPlusVakuuFight') {
@@ -1109,19 +1245,63 @@ if ($null -ne $summary) {
         $summaryResults = @($summary.Results)
     }
 
-    Add-Check -Name 'summary_hang_probe_schema_version' -Passed ([int](Get-JsonValue -Object $summary -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'summary HangProbeSchemaVersion must be 1'
-    Add-Check -Name 'summary_passed' -Passed ([bool](Get-JsonValue -Object $summary -Name 'Passed' -DefaultValue $false)) -Detail 'monkey-summary.json Passed must be true'
-    Add-Check -Name 'summary_failed_iterations_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'FailedIterations' -DefaultValue -1) -eq 0) -Detail "FailedIterations must be 0; found $(Get-JsonValue -Object $summary -Name 'FailedIterations' -DefaultValue 'missing')"
+    $failedSummaryResults = @($summaryResults | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
+    $expectedFailedIterationIds = @($failedSummaryResults | ForEach-Object { [string](Get-JsonIntValue -Object $_ -Name 'Iteration' -DefaultValue 0) })
+    $summaryFailedIterationIds = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $summary -Name 'FailedIterationIds' -DefaultValue @()))
+    $summaryPassed = (Get-JsonBoolValue -Object $summary -Name 'Passed' -DefaultValue $false)
+    $summaryFailedIterations = Get-JsonIntValue -Object $summary -Name 'FailedIterations' -DefaultValue -1
+    $summaryProcessExitCount = Get-JsonIntValue -Object $summary -Name 'ProcessExitCount' -DefaultValue -1
+    $summaryMainWindowMissingCount = Get-JsonIntValue -Object $summary -Name 'MainWindowMissingCount' -DefaultValue -1
+    $summaryLiveSessionBindingMissingCount = Get-JsonIntValue -Object $summary -Name 'LiveSessionBindingMissingCount' -DefaultValue -1
+    $summaryGodotLogBeforeMissingCount = Get-JsonIntValue -Object $summary -Name 'GodotLogBeforeMissingCount' -DefaultValue -1
+    $summaryCurrentIterationLogMissingCount = Get-JsonIntValue -Object $summary -Name 'CurrentIterationLogMissingCount' -DefaultValue -1
+    $summaryUnresponsiveIterationCount = Get-JsonIntValue -Object $summary -Name 'UnresponsiveIterationCount' -DefaultValue -1
+    $summaryStaleProcessObservedCount = Get-JsonIntValue -Object $summary -Name 'StaleProcessObservedCount' -DefaultValue -1
+    $summaryLogStallIterationCount = Get-JsonIntValue -Object $summary -Name 'LogStallIterationCount' -DefaultValue -1
+    $summaryCommandAckMissingCount = Get-JsonIntValue -Object $summary -Name 'CommandAckMissingCount' -DefaultValue -1
+    $expectedSummaryPassed = $summaryResults.Count -gt 0 -and $failedSummaryResults.Count -eq 0 -and $summaryCompletedIterations -eq $summaryRequestedIterations
+
+    Add-Check -Name 'summary_hang_probe_schema_version' -Passed ((Get-JsonIntValue -Object $summary -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'summary HangProbeSchemaVersion must be 1'
+    if ($null -ne $plan) {
+        Add-Check -Name 'summary_scenario_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'Scenario' -DefaultValue ''), $planScenario, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Scenario must match monkey-plan.json Scenario'
+        Add-Check -Name 'summary_command_selection_mode_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'CommandSelectionMode' -DefaultValue ''), $planCommandSelectionMode, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json CommandSelectionMode must match monkey-plan.json CommandSelectionMode'
+        Add-Check -Name 'summary_sts1_event_mode_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'Sts1EventMode' -DefaultValue ''), [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue ''), [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Sts1EventMode must match monkey-plan.json Sts1EventMode'
+        Add-Check -Name 'summary_expected_package_version_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'ExpectedPackageVersion' -DefaultValue ''), [string](Get-JsonValue -Object $plan -Name 'ExpectedPackageVersion' -DefaultValue ''), [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json ExpectedPackageVersion must match monkey-plan.json ExpectedPackageVersion'
+        Add-Check -Name 'summary_expected_game_version_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'ExpectedGameVersion' -DefaultValue ''), [string](Get-JsonValue -Object $plan -Name 'ExpectedGameVersion' -DefaultValue ''), [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json ExpectedGameVersion must match monkey-plan.json ExpectedGameVersion'
+        Add-Check -Name 'summary_expected_ritsu_lib_version_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'ExpectedRitsuLibVersion' -DefaultValue ''), [string](Get-JsonValue -Object $plan -Name 'ExpectedRitsuLibVersion' -DefaultValue ''), [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json ExpectedRitsuLibVersion must match monkey-plan.json ExpectedRitsuLibVersion'
+        Add-Check -Name 'summary_expected_ritsu_compat_branch_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'ExpectedRitsuCompatBranch' -DefaultValue ''), [string](Get-JsonValue -Object $plan -Name 'ExpectedRitsuCompatBranch' -DefaultValue ''), [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json ExpectedRitsuCompatBranch must match monkey-plan.json ExpectedRitsuCompatBranch'
+        Add-Check -Name 'summary_expected_patch_count_matches_plan' -Passed ((Get-JsonIntValue -Object $summary -Name 'ExpectedPatchCount' -DefaultValue 0) -eq $planExpectedPatchCount) -Detail 'monkey-summary.json ExpectedPatchCount must match monkey-plan.json ExpectedPatchCount'
+    }
+    Add-Check -Name 'summary_passed' -Passed $summaryPassed -Detail 'monkey-summary.json Passed must be true'
+    Add-Check -Name 'summary_passed_matches_results' -Passed ($summaryPassed -eq $expectedSummaryPassed) -Detail 'monkey-summary.json Passed must match Results failed rows and requested/completed counts'
+    Add-Check -Name 'summary_failed_iterations_zero' -Passed ($summaryFailedIterations -eq 0) -Detail "FailedIterations must be 0; found $(Get-JsonValue -Object $summary -Name 'FailedIterations' -DefaultValue 'missing')"
+    Add-Check -Name 'summary_failed_iterations_matches_results' -Passed ($summaryFailedIterations -eq $failedSummaryResults.Count) -Detail 'FailedIterations must match failed Results rows'
     $failedIterationIdsCount = Get-ArrayCount -Value (Get-JsonValue -Object $summary -Name 'FailedIterationIds' -DefaultValue @())
     Add-Check -Name 'summary_failed_iteration_ids_empty' -Passed ($failedIterationIdsCount -eq 0) -Detail 'FailedIterationIds must be empty for a clean packet'
-    Add-Check -Name 'summary_process_exit_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'ProcessExitCount' -DefaultValue -1) -eq 0) -Detail 'ProcessExitCount must be 0'
-    Add-Check -Name 'summary_main_window_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'MainWindowMissingCount' -DefaultValue -1) -eq 0) -Detail 'MainWindowMissingCount must be 0'
-    Add-Check -Name 'summary_live_session_binding_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'LiveSessionBindingMissingCount' -DefaultValue -1) -eq 0) -Detail 'LiveSessionBindingMissingCount must be 0'
-    $summaryLiveSessionRestoreItemCountMismatchCount = [int](Get-JsonValue -Object $summary -Name 'LiveSessionRestoreItemCountMismatchCount' -DefaultValue -1)
-    $summaryLiveSessionPreservedCurrentRunManifestMissingCount = [int](Get-JsonValue -Object $summary -Name 'LiveSessionPreservedCurrentRunManifestMissingCount' -DefaultValue -1)
-    $summaryLiveSessionRestoreLeakCount = [int](Get-JsonValue -Object $summary -Name 'LiveSessionRestoreLeakCount' -DefaultValue -1)
-    $summaryLiveSessionRestoreHashMismatchCount = [int](Get-JsonValue -Object $summary -Name 'LiveSessionRestoreHashMismatchCount' -DefaultValue -1)
-    $summaryLiveSessionSelectedProcessNotStoppedCount = [int](Get-JsonValue -Object $summary -Name 'LiveSessionSelectedProcessNotStoppedCount' -DefaultValue -1)
+    Add-Check -Name 'summary_failed_iteration_ids_match_results' -Passed (Test-StringArrayEquals -Actual $summaryFailedIterationIds -Expected $expectedFailedIterationIds) -Detail 'FailedIterationIds must match failed Results Iteration values'
+    Add-Check -Name 'summary_process_exit_count_zero' -Passed ($summaryProcessExitCount -eq 0) -Detail 'ProcessExitCount must be 0'
+    Add-Check -Name 'summary_main_window_missing_count_zero' -Passed ($summaryMainWindowMissingCount -eq 0) -Detail 'MainWindowMissingCount must be 0'
+    Add-Check -Name 'summary_live_session_binding_missing_count_zero' -Passed ($summaryLiveSessionBindingMissingCount -eq 0) -Detail 'LiveSessionBindingMissingCount must be 0'
+    $summaryLiveSessionRestoreItemCountMismatchCount = Get-JsonIntValue -Object $summary -Name 'LiveSessionRestoreItemCountMismatchCount' -DefaultValue -1
+    $summaryLiveSessionPreservedCurrentRunManifestMissingCount = Get-JsonIntValue -Object $summary -Name 'LiveSessionPreservedCurrentRunManifestMissingCount' -DefaultValue -1
+    $summaryLiveSessionRestoreLeakCount = Get-JsonIntValue -Object $summary -Name 'LiveSessionRestoreLeakCount' -DefaultValue -1
+    $summaryLiveSessionRestoreHashMismatchCount = Get-JsonIntValue -Object $summary -Name 'LiveSessionRestoreHashMismatchCount' -DefaultValue -1
+    $summaryLiveSessionSelectedProcessNotStoppedCount = Get-JsonIntValue -Object $summary -Name 'LiveSessionSelectedProcessNotStoppedCount' -DefaultValue -1
+    Add-Check -Name 'summary_process_exit_count_matches_results' -Passed ($summaryProcessExitCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('game_process_exited'))) -Detail 'ProcessExitCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_main_window_missing_count_matches_results' -Passed ($summaryMainWindowMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('main_window_missing'))) -Detail 'MainWindowMissingCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_live_session_binding_missing_count_matches_results' -Passed ($summaryLiveSessionBindingMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @(
+                    'live_session_prepare_output_missing',
+                    'live_session_launch_metadata_missing',
+                    'live_session_pid_attribution_missing',
+                    'live_session_pid_attribution_failed',
+                    'game_process_start_time_unbound',
+                    'game_process_path_missing',
+                    'game_process_id_mismatch',
+                    'game_process_start_time_mismatch',
+                    'game_process_path_mismatch',
+                    'live_session_session_state_missing',
+                    'live_session_restore_state_missing'
+                ))) -Detail 'LiveSessionBindingMissingCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_live_session_restore_item_count_mismatch_count_zero' -Passed ($summaryLiveSessionRestoreItemCountMismatchCount -eq 0) -Detail 'LiveSessionRestoreItemCountMismatchCount must be 0'
     Add-Check -Name 'summary_live_session_preserved_current_run_manifest_missing_count_zero' -Passed ($summaryLiveSessionPreservedCurrentRunManifestMissingCount -eq 0) -Detail 'LiveSessionPreservedCurrentRunManifestMissingCount must be 0'
     Add-Check -Name 'summary_live_session_restore_leak_count_zero' -Passed ($summaryLiveSessionRestoreLeakCount -eq 0) -Detail 'LiveSessionRestoreLeakCount must be 0'
@@ -1132,18 +1312,24 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_live_session_restore_leak_count_matches_results' -Passed ($summaryLiveSessionRestoreLeakCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('post_restore_process_leak'))) -Detail 'LiveSessionRestoreLeakCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_live_session_restore_hash_mismatch_count_matches_results' -Passed ($summaryLiveSessionRestoreHashMismatchCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('restore_settings_hash_mismatch'))) -Detail 'LiveSessionRestoreHashMismatchCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_live_session_selected_process_not_stopped_count_matches_results' -Passed ($summaryLiveSessionSelectedProcessNotStoppedCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('selected_game_process_not_stopped'))) -Detail 'LiveSessionSelectedProcessNotStoppedCount must match summary Results FailureReasonCodes'
-    Add-Check -Name 'summary_godot_log_before_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'GodotLogBeforeMissingCount' -DefaultValue -1) -eq 0) -Detail 'GodotLogBeforeMissingCount must be 0'
-    Add-Check -Name 'summary_current_iteration_log_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CurrentIterationLogMissingCount' -DefaultValue -1) -eq 0) -Detail 'CurrentIterationLogMissingCount must be 0'
-    Add-Check -Name 'summary_unresponsive_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'UnresponsiveIterationCount' -DefaultValue -1) -eq 0) -Detail 'UnresponsiveIterationCount must be 0'
-    Add-Check -Name 'summary_stale_process_observed_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'StaleProcessObservedCount' -DefaultValue -1) -eq 0) -Detail 'StaleProcessObservedCount must be 0 because pre-existing SlayTheSpire2 processes can contaminate the shared godot.log'
-    Add-Check -Name 'summary_log_stall_iteration_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'LogStallIterationCount' -DefaultValue -1) -eq 0) -Detail 'LogStallIterationCount must be 0'
-    Add-Check -Name 'summary_command_ack_missing_count_zero' -Passed ([int](Get-JsonValue -Object $summary -Name 'CommandAckMissingCount' -DefaultValue -1) -eq 0) -Detail 'CommandAckMissingCount must be 0'
-    $summaryMaxMainMenuElapsedSeconds = [double](Get-JsonValue -Object $summary -Name 'MaxMainMenuElapsedSeconds' -DefaultValue -1)
-    $summaryMaxSecondsWithoutLogGrowth = [int](Get-JsonValue -Object $summary -Name 'MaxSecondsWithoutLogGrowth' -DefaultValue -1)
-    $summaryMaxConsecutiveUnresponsiveSamples = [int](Get-JsonValue -Object $summary -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1)
-    $expectedMaxMainMenuElapsedSeconds = [double](Get-MaxNumericProperty -Items $summaryResults -PropertyName 'MainMenuElapsedSeconds' -Type Double)
-    $expectedMaxSecondsWithoutLogGrowth = [int](Get-MaxNumericProperty -Items $summaryResults -PropertyName 'MaxSecondsWithoutLogGrowth' -Type Int)
-    $expectedMaxConsecutiveUnresponsiveSamples = [int](Get-MaxNumericProperty -Items $summaryResults -PropertyName 'MaxConsecutiveUnresponsiveSamples' -Type Int)
+    Add-Check -Name 'summary_godot_log_before_missing_count_zero' -Passed ($summaryGodotLogBeforeMissingCount -eq 0) -Detail 'GodotLogBeforeMissingCount must be 0'
+    Add-Check -Name 'summary_current_iteration_log_missing_count_zero' -Passed ($summaryCurrentIterationLogMissingCount -eq 0) -Detail 'CurrentIterationLogMissingCount must be 0'
+    Add-Check -Name 'summary_unresponsive_iteration_count_zero' -Passed ($summaryUnresponsiveIterationCount -eq 0) -Detail 'UnresponsiveIterationCount must be 0'
+    Add-Check -Name 'summary_stale_process_observed_count_zero' -Passed ($summaryStaleProcessObservedCount -eq 0) -Detail 'StaleProcessObservedCount must be 0 because pre-existing SlayTheSpire2 processes can contaminate the shared godot.log'
+    Add-Check -Name 'summary_log_stall_iteration_count_zero' -Passed ($summaryLogStallIterationCount -eq 0) -Detail 'LogStallIterationCount must be 0'
+    Add-Check -Name 'summary_command_ack_missing_count_zero' -Passed ($summaryCommandAckMissingCount -eq 0) -Detail 'CommandAckMissingCount must be 0'
+    Add-Check -Name 'summary_godot_log_before_missing_count_matches_results' -Passed ($summaryGodotLogBeforeMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('godot_log_before_missing'))) -Detail 'GodotLogBeforeMissingCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_current_iteration_log_missing_count_matches_results' -Passed ($summaryCurrentIterationLogMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('current_iteration_log_missing'))) -Detail 'CurrentIterationLogMissingCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_unresponsive_iteration_count_matches_results' -Passed ($summaryUnresponsiveIterationCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('process_unresponsive'))) -Detail 'UnresponsiveIterationCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_stale_process_observed_count_matches_results' -Passed ($summaryStaleProcessObservedCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('stale_process_observed'))) -Detail 'StaleProcessObservedCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_log_stall_iteration_count_matches_results' -Passed ($summaryLogStallIterationCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('startup_log_stalled', 'runtime_log_stalled'))) -Detail 'LogStallIterationCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_command_ack_missing_count_matches_results' -Passed ($summaryCommandAckMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('command_ack_missing'))) -Detail 'CommandAckMissingCount must match summary Results FailureReasonCodes'
+    $summaryMaxMainMenuElapsedSeconds = Get-JsonDoubleValue -Object $summary -Name 'MaxMainMenuElapsedSeconds' -DefaultValue -1
+    $summaryMaxSecondsWithoutLogGrowth = Get-JsonIntValue -Object $summary -Name 'MaxSecondsWithoutLogGrowth' -DefaultValue -1
+    $summaryMaxConsecutiveUnresponsiveSamples = Get-JsonIntValue -Object $summary -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1
+    $expectedMaxMainMenuElapsedSeconds = ConvertTo-DoubleOrDefault -Value (Get-MaxNumericProperty -Items $summaryResults -PropertyName 'MainMenuElapsedSeconds' -Type Double) -DefaultValue -1
+    $expectedMaxSecondsWithoutLogGrowth = ConvertTo-IntOrDefault -Value (Get-MaxNumericProperty -Items $summaryResults -PropertyName 'MaxSecondsWithoutLogGrowth' -Type Int) -DefaultValue -1
+    $expectedMaxConsecutiveUnresponsiveSamples = ConvertTo-IntOrDefault -Value (Get-MaxNumericProperty -Items $summaryResults -PropertyName 'MaxConsecutiveUnresponsiveSamples' -Type Int) -DefaultValue -1
     Add-Check -Name 'summary_max_main_menu_elapsed_recorded' -Passed ($summaryMaxMainMenuElapsedSeconds -ge 0) -Detail 'MaxMainMenuElapsedSeconds must be recorded'
     Add-Check -Name 'summary_max_seconds_without_log_growth_recorded' -Passed ($summaryMaxSecondsWithoutLogGrowth -ge 0) -Detail 'MaxSecondsWithoutLogGrowth must be recorded'
     Add-Check -Name 'summary_max_consecutive_unresponsive_recorded' -Passed ($summaryMaxConsecutiveUnresponsiveSamples -ge 0) -Detail 'MaxConsecutiveUnresponsiveSamples must be recorded'
@@ -1157,13 +1343,14 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_owner_area_counts_match_results' -Passed (Test-CountMapMatches -ActualCountMap (Get-JsonValue -Object $summary -Name 'OwnerAreaCounts' -DefaultValue $null) -ExpectedCounts $resultOwnerAreaCounts) -Detail 'OwnerAreaCounts must match summary Results'
     Add-Check -Name 'summary_command_counts_match_results' -Passed (Test-CountMapMatches -ActualCountMap (Get-JsonValue -Object $summary -Name 'CommandCounts' -DefaultValue $null) -ExpectedCounts $resultCommandCounts) -Detail 'CommandCounts must match summary Results'
     $summaryVakuuFightCount = @($summaryResults | Where-Object { [string](Get-JsonValue -Object $_ -Name 'ScenarioTag' -DefaultValue '') -eq 'vakuu-fight' }).Count
-    Add-Check -Name 'summary_vakuu_fight_iteration_count_matches_results' -Passed ([int](Get-JsonValue -Object $summary -Name 'VakuuFightIterationCount' -DefaultValue -1) -eq $summaryVakuuFightCount) -Detail "VakuuFightIterationCount must match summary Results; expected $summaryVakuuFightCount"
+    Add-Check -Name 'summary_vakuu_fight_iteration_count_matches_results' -Passed ((Get-JsonIntValue -Object $summary -Name 'VakuuFightIterationCount' -DefaultValue -1) -eq $summaryVakuuFightCount) -Detail "VakuuFightIterationCount must match summary Results; expected $summaryVakuuFightCount"
     $failureReasonCountsValue = Get-JsonValue -Object $summary -Name 'FailureReasonCounts' -DefaultValue $null
     $failureReasonCountProperties = @()
     if ($null -ne $failureReasonCountsValue) {
         $failureReasonCountProperties = @($failureReasonCountsValue.PSObject.Properties)
     }
 
+    Add-Check -Name 'summary_failure_reason_counts_match_results' -Passed (Test-CountMapMatches -ActualCountMap $failureReasonCountsValue -ExpectedCounts (Get-FailureReasonCounts -Items $summaryResults)) -Detail 'FailureReasonCounts must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_failure_reason_counts_empty' -Passed ($failureReasonCountProperties.Count -eq 0) -Detail 'FailureReasonCounts must be empty for a clean packet'
 
     if ($expectedIterationCount -gt 0) {
@@ -1171,8 +1358,6 @@ if ($null -ne $summary) {
         Add-Check -Name 'summary_completed_iterations_match_expected' -Passed ($summaryCompletedIterations -eq $expectedIterationCount) -Detail "summary CompletedIterations expected $expectedIterationCount, found $summaryCompletedIterations"
         Add-Check -Name 'summary_result_count_matches_expected' -Passed ($summaryResults.Count -eq $expectedIterationCount) -Detail "summary Results expected $expectedIterationCount entries, found $($summaryResults.Count)"
     }
-
-    $failedSummaryResults = @($summaryResults | Where-Object { -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     Add-Check -Name 'summary_results_all_passed' -Passed ($failedSummaryResults.Count -eq 0) -Detail "summary Results contains $($failedSummaryResults.Count) failed entries"
 }
 
@@ -1190,7 +1375,7 @@ if ($expectedIterationCount -gt 0) {
 
 $plannedByIteration = @{}
 foreach ($plannedCommand in $planPlannedCommands) {
-    $plannedIteration = [int](Get-JsonValue -Object $plannedCommand -Name 'Iteration' -DefaultValue 0)
+    $plannedIteration = Get-JsonIntValue -Object $plannedCommand -Name 'Iteration' -DefaultValue 0
     if ($plannedIteration -gt 0 -and -not $plannedByIteration.ContainsKey($plannedIteration)) {
         $plannedByIteration[$plannedIteration] = $plannedCommand
     }
@@ -1198,7 +1383,7 @@ foreach ($plannedCommand in $planPlannedCommands) {
 
 $summaryResultByIteration = @{}
 foreach ($summaryResult in $summaryResults) {
-    $summaryIteration = [int](Get-JsonValue -Object $summaryResult -Name 'Iteration' -DefaultValue 0)
+    $summaryIteration = Get-JsonIntValue -Object $summaryResult -Name 'Iteration' -DefaultValue 0
     if ($summaryIteration -gt 0 -and -not $summaryResultByIteration.ContainsKey($summaryIteration)) {
         $summaryResultByIteration[$summaryIteration] = $summaryResult
     }
@@ -1298,39 +1483,39 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         $iterationResult = Read-JsonOrNull -Path $resultPath -CheckName "${iterationName}_iteration_result_json_valid"
         if ($null -ne $iterationResult) {
             Add-Check -Name "${iterationName}_iteration_result_json_valid" -Passed $true -Detail 'iteration-result.json parsed'
-            $resultIterationNumber = [int](Get-JsonValue -Object $iterationResult -Name 'Iteration' -DefaultValue 0)
+            $resultIterationNumber = Get-JsonIntValue -Object $iterationResult -Name 'Iteration' -DefaultValue 0
             Add-Check -Name "${iterationName}_iteration_number_matches_directory" -Passed ($resultIterationNumber -eq $iteration) -Detail "iteration-result.json Iteration must match directory $iterationName; found $resultIterationNumber"
-            Add-Check -Name "${iterationName}_hang_probe_schema_version" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'iteration HangProbeSchemaVersion must be 1'
+            Add-Check -Name "${iterationName}_hang_probe_schema_version" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'iteration HangProbeSchemaVersion must be 1'
             Add-Check -Name "${iterationName}_scenario_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue ''))) -Detail 'Scenario must be retained for packet binding'
             Add-Check -Name "${iterationName}_scenario_tag_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue ''))) -Detail 'ScenarioTag must be retained for triage'
             Add-Check -Name "${iterationName}_owner_area_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue ''))) -Detail 'OwnerArea must be retained for triage'
             Add-Check -Name "${iterationName}_command_selection_mode_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'CommandSelectionMode' -DefaultValue ''))) -Detail 'CommandSelectionMode must be retained for triage'
-            Add-Check -Name "${iterationName}_main_menu_reached" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuReached must be true; false means main-menu timeout or launch failure'
-            Add-Check -Name "${iterationName}_main_menu_observation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'MainMenuObservationPassed' -DefaultValue $false)) -Detail 'MainMenuObservationPassed must be true'
-            Add-Check -Name "${iterationName}_runtime_observation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'RuntimeObservationPassed' -DefaultValue $false)) -Detail 'RuntimeObservationPassed must be true'
-            Add-Check -Name "${iterationName}_startup_log_probe_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'StartupLogProbePassed' -DefaultValue $false)) -Detail 'StartupLogProbePassed must be true'
-            Add-Check -Name "${iterationName}_post_command_log_probe_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'PostCommandLogProbePassed' -DefaultValue $false)) -Detail 'PostCommandLogProbePassed must be true'
-            Add-Check -Name "${iterationName}_responsiveness_probe_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'ResponsivenessProbePassed' -DefaultValue $false)) -Detail 'ResponsivenessProbePassed must be true'
+            Add-Check -Name "${iterationName}_main_menu_reached" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuReached must be true; false means main-menu timeout or launch failure'
+            Add-Check -Name "${iterationName}_main_menu_observation_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'MainMenuObservationPassed' -DefaultValue $false)) -Detail 'MainMenuObservationPassed must be true'
+            Add-Check -Name "${iterationName}_runtime_observation_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'RuntimeObservationPassed' -DefaultValue $false)) -Detail 'RuntimeObservationPassed must be true'
+            Add-Check -Name "${iterationName}_startup_log_probe_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'StartupLogProbePassed' -DefaultValue $false)) -Detail 'StartupLogProbePassed must be true'
+            Add-Check -Name "${iterationName}_post_command_log_probe_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'PostCommandLogProbePassed' -DefaultValue $false)) -Detail 'PostCommandLogProbePassed must be true'
+            Add-Check -Name "${iterationName}_responsiveness_probe_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'ResponsivenessProbePassed' -DefaultValue $false)) -Detail 'ResponsivenessProbePassed must be true'
             $resultCommandForRuntimeObservation = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
-            $resultCommandAckRequiredForRuntimeObservation = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
+            $resultCommandAckRequiredForRuntimeObservation = (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
             $runtimeLogGrowthRequiredForIteration = -not [string]::IsNullOrWhiteSpace($resultCommandForRuntimeObservation) -or $resultCommandAckRequiredForRuntimeObservation
-            Add-Check -Name "${iterationName}_command_ack_observed" -Passed ((-not $resultCommandAckRequiredForRuntimeObservation) -or [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)) -Detail 'required command acknowledgement must be observed when applicable'
+            Add-Check -Name "${iterationName}_command_ack_observed" -Passed ((-not $resultCommandAckRequiredForRuntimeObservation) -or (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)) -Detail 'required command acknowledgement must be observed when applicable'
             $failureReasonCodesCount = Get-ArrayCount -Value (Get-JsonValue -Object $iterationResult -Name 'FailureReasonCodes' -DefaultValue @())
             $hangSignalsCount = Get-ArrayCount -Value (Get-JsonValue -Object $iterationResult -Name 'HangSignals' -DefaultValue @())
             Add-Check -Name "${iterationName}_failure_reason_codes_empty" -Passed ($failureReasonCodesCount -eq 0) -Detail 'FailureReasonCodes must be empty for a clean packet'
             Add-Check -Name "${iterationName}_hang_signals_empty" -Passed ($hangSignalsCount -eq 0) -Detail 'HangSignals must be empty for a clean packet'
-            Add-Check -Name "${iterationName}_game_process_id_positive" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0) -gt 0) -Detail 'GameProcessId must identify SlayTheSpire2'
-            $iterationGameProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0)
-            Add-Check -Name "${iterationName}_main_window_observed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'MainWindowObserved' -DefaultValue $false)) -Detail 'MainWindowObserved must be true'
-            Add-Check -Name "${iterationName}_main_menu_elapsed_recorded" -Passed ([double](Get-JsonValue -Object $iterationResult -Name 'MainMenuElapsedSeconds' -DefaultValue 0) -gt 0) -Detail 'MainMenuElapsedSeconds must be positive'
-            Add-Check -Name "${iterationName}_max_no_log_growth_recorded" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'MaxSecondsWithoutLogGrowth' -DefaultValue -1) -ge 0) -Detail 'MaxSecondsWithoutLogGrowth must be recorded'
-            $iterationMaxUnresponsive = [int](Get-JsonValue -Object $iterationResult -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1)
+            Add-Check -Name "${iterationName}_game_process_id_positive" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0) -gt 0) -Detail 'GameProcessId must identify SlayTheSpire2'
+            $iterationGameProcessId = Get-JsonIntValue -Object $iterationResult -Name 'GameProcessId' -DefaultValue 0
+            Add-Check -Name "${iterationName}_main_window_observed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'MainWindowObserved' -DefaultValue $false)) -Detail 'MainWindowObserved must be true'
+            Add-Check -Name "${iterationName}_main_menu_elapsed_recorded" -Passed ((Get-JsonDoubleValue -Object $iterationResult -Name 'MainMenuElapsedSeconds' -DefaultValue 0) -gt 0) -Detail 'MainMenuElapsedSeconds must be positive'
+            Add-Check -Name "${iterationName}_max_no_log_growth_recorded" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'MaxSecondsWithoutLogGrowth' -DefaultValue -1) -ge 0) -Detail 'MaxSecondsWithoutLogGrowth must be recorded'
+            $iterationMaxUnresponsive = Get-JsonIntValue -Object $iterationResult -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1
             Add-Check -Name "${iterationName}_max_consecutive_unresponsive_recorded" -Passed ($iterationMaxUnresponsive -ge 0) -Detail 'MaxConsecutiveUnresponsiveSamples must be recorded'
             if ($planUnresponsiveSampleThreshold -gt 0) {
                 Add-Check -Name "${iterationName}_max_consecutive_unresponsive_below_threshold" -Passed ($iterationMaxUnresponsive -lt $planUnresponsiveSampleThreshold) -Detail "MaxConsecutiveUnresponsiveSamples must stay below threshold $planUnresponsiveSampleThreshold; found $iterationMaxUnresponsive"
             }
-            $iterationStaleProcessCount = [int](Get-JsonValue -Object $iterationResult -Name 'StaleProcessCount' -DefaultValue -1)
-            Add-Check -Name "${iterationName}_stale_process_observed_false" -Passed (-not [bool](Get-JsonValue -Object $iterationResult -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'StaleProcessObserved must be false; stale pre-existing processes can contaminate shared godot.log evidence'
+            $iterationStaleProcessCount = Get-JsonIntValue -Object $iterationResult -Name 'StaleProcessCount' -DefaultValue -1
+            Add-Check -Name "${iterationName}_stale_process_observed_false" -Passed (-not (Get-JsonBoolValue -Object $iterationResult -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'StaleProcessObserved must be false; stale pre-existing processes can contaminate shared godot.log evidence'
             Add-Check -Name "${iterationName}_stale_process_count_zero" -Passed ($iterationStaleProcessCount -eq 0) -Detail "StaleProcessCount must be recorded as 0; found $iterationStaleProcessCount"
 
             $resultCommandFilePath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'CommandFilePath' -DefaultValue ''))
@@ -1354,14 +1539,14 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $resultLiveSessionSteamAppId = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSteamAppId' -DefaultValue '')
             $resultLiveSessionLaunchFilePath = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchFilePath' -DefaultValue '')
             $resultLiveSessionLaunchArgumentList = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchArgumentList' -DefaultValue @()))
-            $resultLiveSessionLaunchedProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchedProcessId' -DefaultValue 0)
+            $resultLiveSessionLaunchedProcessId = Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionLaunchedProcessId' -DefaultValue 0
             $resultLiveSessionLaunchedAt = Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchedAt' -DefaultValue $null
             $resultLiveSessionLaunchReturnedAt = Get-JsonValue -Object $iterationResult -Name 'LiveSessionLaunchReturnedAt' -DefaultValue $null
             $resultLiveSessionLaunchedAtUtc = ConvertTo-DateTimeUtcOrNull -Value $resultLiveSessionLaunchedAt
             $resultLiveSessionLaunchReturnedAtUtc = ConvertTo-DateTimeUtcOrNull -Value $resultLiveSessionLaunchReturnedAt
             $resultLiveSessionPidProbeStartedAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidProbeStartedAtUtc' -DefaultValue $null)
             $resultLiveSessionPidProbeFinishedAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidProbeFinishedAtUtc' -DefaultValue $null)
-            $resultLiveSessionSelectedGameProcessId = [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessId' -DefaultValue 0)
+            $resultLiveSessionSelectedGameProcessId = Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessId' -DefaultValue 0
             $resultLiveSessionSelectedGameProcessStartTimeUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessStartTimeUtc' -DefaultValue $null)
             $resultLiveSessionSelectedGameProcessStartTimeText = if ($null -ne $resultLiveSessionSelectedGameProcessStartTimeUtc) { $resultLiveSessionSelectedGameProcessStartTimeUtc.ToString('o') } else { '' }
             $resultLiveSessionSelectedGameProcessPath = [string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSelectedGameProcessPath' -DefaultValue '')
@@ -1409,15 +1594,15 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_result_live_session_launch_returned_after_launched_at" -Passed ($resultLiveSessionLaunchReturnedAtUtc -ge $resultLiveSessionLaunchedAtUtc) -Detail 'LiveSessionLaunchReturnedAt must be at or after LiveSessionLaunchedAt'
             }
 
-            Add-Check -Name "${iterationName}_result_live_session_pid_attribution_schema_version_positive" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidAttributionSchemaVersion' -DefaultValue 0) -gt 0) -Detail 'LiveSessionPidAttributionSchemaVersion must be retained'
-            Add-Check -Name "${iterationName}_result_live_session_pid_attribution_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidAttributionPassed' -DefaultValue $false)) -Detail 'LiveSessionPidAttributionPassed must be true'
+            Add-Check -Name "${iterationName}_result_live_session_pid_attribution_schema_version_positive" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionPidAttributionSchemaVersion' -DefaultValue 0) -gt 0) -Detail 'LiveSessionPidAttributionSchemaVersion must be retained'
+            Add-Check -Name "${iterationName}_result_live_session_pid_attribution_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionPidAttributionPassed' -DefaultValue $false)) -Detail 'LiveSessionPidAttributionPassed must be true'
             Add-Check -Name "${iterationName}_result_live_session_pid_attribution_method_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPidAttributionMethod' -DefaultValue ''))) -Detail 'LiveSessionPidAttributionMethod must describe how the game process was selected'
             Add-Check -Name "${iterationName}_result_live_session_pid_probe_started_at_parseable" -Passed ($null -ne $resultLiveSessionPidProbeStartedAtUtc) -Detail 'LiveSessionPidProbeStartedAtUtc must be parseable'
             Add-Check -Name "${iterationName}_result_live_session_pid_probe_finished_at_parseable" -Passed ($null -ne $resultLiveSessionPidProbeFinishedAtUtc) -Detail 'LiveSessionPidProbeFinishedAtUtc must be parseable'
             if ($null -ne $resultLiveSessionPidProbeStartedAtUtc -and $null -ne $resultLiveSessionPidProbeFinishedAtUtc) {
                 Add-Check -Name "${iterationName}_result_live_session_pid_probe_finished_after_started" -Passed ($resultLiveSessionPidProbeFinishedAtUtc -ge $resultLiveSessionPidProbeStartedAtUtc) -Detail 'LiveSession PID probe finish time must be at or after start time'
             }
-            Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_count_zero" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessCount' -DefaultValue -1) -eq 0) -Detail 'LiveSessionPreLaunchSlayProcessCount must be 0 so prior game processes cannot contaminate shared godot.log evidence'
+            Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_count_zero" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessCount' -DefaultValue -1) -eq 0) -Detail 'LiveSessionPreLaunchSlayProcessCount must be 0 so prior game processes cannot contaminate shared godot.log evidence'
             Add-Check -Name "${iterationName}_result_live_session_prelaunch_slay_process_ids_empty" -Passed ((Get-ArrayCount -Value (Get-JsonValue -Object $iterationResult -Name 'LiveSessionPreLaunchSlayProcessIds' -DefaultValue @())) -eq 0) -Detail 'LiveSessionPreLaunchSlayProcessIds must be empty'
             Add-Check -Name "${iterationName}_result_live_session_selected_game_process_id_matches_result" -Passed ($resultLiveSessionSelectedGameProcessId -gt 0 -and $resultLiveSessionSelectedGameProcessId -eq $iterationGameProcessId) -Detail 'LiveSessionSelectedGameProcessId must match iteration-result GameProcessId'
             Add-Check -Name "${iterationName}_result_live_session_selected_game_process_start_time_parseable" -Passed ($null -ne $resultLiveSessionSelectedGameProcessStartTimeUtc) -Detail 'LiveSessionSelectedGameProcessStartTimeUtc must be parseable'
@@ -1425,13 +1610,13 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_result_live_session_attribution_failure_reason_empty" -Passed ([string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionAttributionFailureReason' -DefaultValue ''))) -Detail 'LiveSessionAttributionFailureReason must be empty when attribution passed'
             Add-Check -Name "${iterationName}_result_game_process_start_time_parseable" -Passed ($null -ne $resultGameProcessStartTimeUtc) -Detail 'GameProcessStartTimeUtc must be parseable'
             Add-Check -Name "${iterationName}_result_game_process_path_present" -Passed (-not [string]::IsNullOrWhiteSpace($resultGameProcessPathFull)) -Detail 'GameProcessPath must be retained'
-            Add-Check -Name "${iterationName}_result_game_process_id_matches_live_session" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessIdMatchesLiveSession' -DefaultValue $false)) -Detail 'GameProcessIdMatchesLiveSession must be true'
-            Add-Check -Name "${iterationName}_result_game_process_start_time_matches_live_session" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessStartTimeMatchesLiveSession' -DefaultValue $false)) -Detail 'GameProcessStartTimeMatchesLiveSession must be true'
-            Add-Check -Name "${iterationName}_result_game_process_path_matches_live_session" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessPathMatchesLiveSession' -DefaultValue $false)) -Detail 'GameProcessPathMatchesLiveSession must be true'
+            Add-Check -Name "${iterationName}_result_game_process_id_matches_live_session" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'GameProcessIdMatchesLiveSession' -DefaultValue $false)) -Detail 'GameProcessIdMatchesLiveSession must be true'
+            Add-Check -Name "${iterationName}_result_game_process_start_time_matches_live_session" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'GameProcessStartTimeMatchesLiveSession' -DefaultValue $false)) -Detail 'GameProcessStartTimeMatchesLiveSession must be true'
+            Add-Check -Name "${iterationName}_result_game_process_path_matches_live_session" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'GameProcessPathMatchesLiveSession' -DefaultValue $false)) -Detail 'GameProcessPathMatchesLiveSession must be true'
             Add-Check -Name "${iterationName}_result_game_process_start_time_matches_selected_live_session" -Passed ($null -ne $resultGameProcessStartTimeUtc -and $null -ne $resultLiveSessionSelectedGameProcessStartTimeUtc -and $resultGameProcessStartTimeUtc -eq $resultLiveSessionSelectedGameProcessStartTimeUtc) -Detail 'GameProcessStartTimeUtc must match LiveSessionSelectedGameProcessStartTimeUtc'
             Add-Check -Name "${iterationName}_result_game_process_path_matches_selected_live_session" -Passed (-not [string]::IsNullOrWhiteSpace($resultGameProcessPathFull) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($resultGameProcessPathFull, $resultLiveSessionSelectedGameProcessPathFull)) -Detail 'GameProcessPath must match LiveSessionSelectedGameProcessPath'
             $gameProcessStartAfterLiveSessionLaunch = $null -ne $resultGameProcessStartTimeUtc -and $null -ne $resultLiveSessionLaunchedAtUtc -and $resultGameProcessStartTimeUtc -ge $resultLiveSessionLaunchedAtUtc
-            Add-Check -Name "${iterationName}_result_game_process_start_time_after_live_session_launch" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GameProcessStartTimeAfterLiveSessionLaunch' -DefaultValue $false) -and $gameProcessStartAfterLiveSessionLaunch) -Detail 'GameProcessStartTimeUtc must be at or after LiveSessionLaunchedAt'
+            Add-Check -Name "${iterationName}_result_game_process_start_time_after_live_session_launch" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'GameProcessStartTimeAfterLiveSessionLaunch' -DefaultValue $false) -and $gameProcessStartAfterLiveSessionLaunch) -Detail 'GameProcessStartTimeUtc must be at or after LiveSessionLaunchedAt'
 
             if ($null -ne $prepareOutput) {
                 $prepareOutputEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $prepareOutput -Name 'EvidenceDir' -DefaultValue ''))
@@ -1449,20 +1634,20 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_prepare_output_launch_file_path_matches_result" -Passed (-not [string]::IsNullOrWhiteSpace($prepareLaunchFilePathFull) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($prepareLaunchFilePathFull, $resultLiveSessionLaunchFilePathFull)) -Detail 'prepare-output.json LaunchFilePath must match iteration-result LiveSessionLaunchFilePath'
                 Add-Check -Name "${iterationName}_prepare_output_launch_argument_list_matches_sts2" -Passed (Test-StringArrayEquals -Actual $prepareLaunchArgumentList -Expected $expectedSteamLaunchArgumentList) -Detail 'prepare-output.json LaunchArgumentList must be -applaunch 2868840'
                 Add-Check -Name "${iterationName}_prepare_output_launch_argument_list_matches_result" -Passed (Test-StringArrayEquals -Actual $prepareLaunchArgumentList -Expected $resultLiveSessionLaunchArgumentList) -Detail 'prepare-output.json LaunchArgumentList must match iteration-result LiveSessionLaunchArgumentList'
-                Add-Check -Name "${iterationName}_prepare_output_launched_process_id_positive" -Passed ([int](Get-JsonValue -Object $prepareOutput -Name 'LaunchedProcessId' -DefaultValue 0) -gt 0) -Detail 'prepare-output.json must retain the Steam launch process id'
-                Add-Check -Name "${iterationName}_prepare_output_launched_process_id_matches_result" -Passed ([int](Get-JsonValue -Object $prepareOutput -Name 'LaunchedProcessId' -DefaultValue 0) -eq $resultLiveSessionLaunchedProcessId) -Detail 'prepare-output.json LaunchedProcessId must match iteration-result LiveSessionLaunchedProcessId'
+                Add-Check -Name "${iterationName}_prepare_output_launched_process_id_positive" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'LaunchedProcessId' -DefaultValue 0) -gt 0) -Detail 'prepare-output.json must retain the Steam launch process id'
+                Add-Check -Name "${iterationName}_prepare_output_launched_process_id_matches_result" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'LaunchedProcessId' -DefaultValue 0) -eq $resultLiveSessionLaunchedProcessId) -Detail 'prepare-output.json LaunchedProcessId must match iteration-result LiveSessionLaunchedProcessId'
                 Add-Check -Name "${iterationName}_prepare_output_launched_at_parseable" -Passed ($null -ne $prepareLaunchedAtUtc) -Detail 'prepare-output.json LaunchedAt must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_launched_at_matches_result" -Passed ($null -ne $prepareLaunchedAtUtc -and $null -ne $resultLiveSessionLaunchedAtUtc -and $prepareLaunchedAtUtc -eq $resultLiveSessionLaunchedAtUtc) -Detail 'prepare-output.json LaunchedAt must match iteration-result LiveSessionLaunchedAt'
                 Add-Check -Name "${iterationName}_prepare_output_launch_returned_at_parseable" -Passed ($null -ne $prepareLaunchReturnedAtUtc) -Detail 'prepare-output.json LaunchReturnedAt must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_launch_returned_at_matches_result" -Passed ($null -ne $prepareLaunchReturnedAtUtc -and $null -ne $resultLiveSessionLaunchReturnedAtUtc -and $prepareLaunchReturnedAtUtc -eq $resultLiveSessionLaunchReturnedAtUtc) -Detail 'prepare-output.json LaunchReturnedAt must match iteration-result LiveSessionLaunchReturnedAt'
-                Add-Check -Name "${iterationName}_prepare_output_pid_attribution_schema_version_positive" -Passed ([int](Get-JsonValue -Object $prepareOutput -Name 'PidAttributionSchemaVersion' -DefaultValue 0) -gt 0) -Detail 'prepare-output.json PidAttributionSchemaVersion must be retained'
-                Add-Check -Name "${iterationName}_prepare_output_pid_attribution_passed" -Passed ([bool](Get-JsonValue -Object $prepareOutput -Name 'PidAttributionPassed' -DefaultValue $false)) -Detail 'prepare-output.json PidAttributionPassed must be true'
+                Add-Check -Name "${iterationName}_prepare_output_pid_attribution_schema_version_positive" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'PidAttributionSchemaVersion' -DefaultValue 0) -gt 0) -Detail 'prepare-output.json PidAttributionSchemaVersion must be retained'
+                Add-Check -Name "${iterationName}_prepare_output_pid_attribution_passed" -Passed ((Get-JsonBoolValue -Object $prepareOutput -Name 'PidAttributionPassed' -DefaultValue $false)) -Detail 'prepare-output.json PidAttributionPassed must be true'
                 Add-Check -Name "${iterationName}_prepare_output_pid_probe_started_at_parseable" -Passed ($null -ne $preparePidProbeStartedAtUtc) -Detail 'prepare-output.json PidProbeStartedAtUtc must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_pid_probe_finished_at_parseable" -Passed ($null -ne $preparePidProbeFinishedAtUtc) -Detail 'prepare-output.json PidProbeFinishedAtUtc must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_pid_probe_times_match_result" -Passed ($null -ne $preparePidProbeStartedAtUtc -and $null -ne $preparePidProbeFinishedAtUtc -and $preparePidProbeStartedAtUtc -eq $resultLiveSessionPidProbeStartedAtUtc -and $preparePidProbeFinishedAtUtc -eq $resultLiveSessionPidProbeFinishedAtUtc) -Detail 'prepare-output.json PID probe timestamps must match iteration-result'
-                Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_count_zero" -Passed ([int](Get-JsonValue -Object $prepareOutput -Name 'PreLaunchSlayProcessCount' -DefaultValue -1) -eq 0) -Detail 'prepare-output.json PreLaunchSlayProcessCount must be 0'
+                Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_count_zero" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'PreLaunchSlayProcessCount' -DefaultValue -1) -eq 0) -Detail 'prepare-output.json PreLaunchSlayProcessCount must be 0'
                 Add-Check -Name "${iterationName}_prepare_output_prelaunch_slay_process_ids_empty" -Passed ((Get-ArrayCount -Value (Get-JsonValue -Object $prepareOutput -Name 'PreLaunchSlayProcessIds' -DefaultValue @())) -eq 0) -Detail 'prepare-output.json PreLaunchSlayProcessIds must be empty'
-                Add-Check -Name "${iterationName}_prepare_output_selected_game_process_id_matches_result" -Passed ([int](Get-JsonValue -Object $prepareOutput -Name 'SelectedGameProcessId' -DefaultValue 0) -eq $iterationGameProcessId) -Detail 'prepare-output.json SelectedGameProcessId must match iteration-result GameProcessId'
+                Add-Check -Name "${iterationName}_prepare_output_selected_game_process_id_matches_result" -Passed ((Get-JsonIntValue -Object $prepareOutput -Name 'SelectedGameProcessId' -DefaultValue 0) -eq $iterationGameProcessId) -Detail 'prepare-output.json SelectedGameProcessId must match iteration-result GameProcessId'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_start_time_parseable" -Passed ($null -ne $prepareSelectedGameProcessStartTimeUtc) -Detail 'prepare-output.json SelectedGameProcessStartTimeUtc must be parseable'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_start_time_matches_result" -Passed ($null -ne $prepareSelectedGameProcessStartTimeUtc -and $null -ne $resultGameProcessStartTimeUtc -and $prepareSelectedGameProcessStartTimeUtc -eq $resultGameProcessStartTimeUtc) -Detail 'prepare-output.json SelectedGameProcessStartTimeUtc must match GameProcessStartTimeUtc'
                 Add-Check -Name "${iterationName}_prepare_output_selected_game_process_path_matches_result" -Passed (-not [string]::IsNullOrWhiteSpace($prepareSelectedGameProcessPathFull) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($prepareSelectedGameProcessPathFull, $resultGameProcessPathFull)) -Detail 'prepare-output.json SelectedGameProcessPath must match GameProcessPath'
@@ -1476,7 +1661,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $sessionSettingsBackupExistedBefore = $false
             $sessionSettingsBackupExistedBeforeRecorded = $false
             $resultLiveSessionSettingsBackupExistedBeforeRecorded = Test-JsonProperty -Object $iterationResult -Name 'LiveSessionSettingsBackupExistedBefore'
-            $resultLiveSessionSettingsBackupExistedBefore = [bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupExistedBefore' -DefaultValue $false)
+            $resultLiveSessionSettingsBackupExistedBefore = (Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionSettingsBackupExistedBefore' -DefaultValue $false)
             if ($null -ne $sessionState) {
                 $sessionStateEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $sessionState -Name 'EvidenceDir' -DefaultValue ''))
                 $sessionMovedMods = Get-JsonArrayProperty -Object $sessionState -Name 'MovedMods'
@@ -1486,10 +1671,10 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 $sessionSettingsHashBefore = [string](Get-JsonValue -Object $sessionState -Name 'SettingsHashBefore' -DefaultValue '')
                 $sessionSettingsBackupHashBefore = [string](Get-JsonValue -Object $sessionState -Name 'SettingsBackupHashBefore' -DefaultValue '')
                 $sessionSettingsBackupExistedBeforeRecorded = Test-JsonProperty -Object $sessionState -Name 'SettingsBackupExistedBefore'
-                $sessionSettingsBackupExistedBefore = [bool](Get-JsonValue -Object $sessionState -Name 'SettingsBackupExistedBefore' -DefaultValue $false)
+                $sessionSettingsBackupExistedBefore = (Get-JsonBoolValue -Object $sessionState -Name 'SettingsBackupExistedBefore' -DefaultValue $false)
                 Add-Check -Name "${iterationName}_session_state_evidence_dir_matches_iteration" -Passed ($sessionStateEvidenceDir -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sessionStateEvidenceDir, [System.IO.Path]::GetFullPath($iterationDir))) -Detail 'session-state.json EvidenceDir must match the current iteration directory'
-                Add-Check -Name "${iterationName}_session_state_move_other_mods_matches_plan" -Passed ([bool](Get-JsonValue -Object $sessionState -Name 'MoveOtherMods' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $plan -Name 'MoveOtherMods' -DefaultValue $false)) -Detail 'session-state.json MoveOtherMods must match monkey-plan.json'
-                Add-Check -Name "${iterationName}_session_state_move_current_runs_matches_plan" -Passed ([bool](Get-JsonValue -Object $sessionState -Name 'MoveCurrentRuns' -DefaultValue $false) -eq [bool](Get-JsonValue -Object $plan -Name 'MoveCurrentRuns' -DefaultValue $false)) -Detail 'session-state.json MoveCurrentRuns must match monkey-plan.json'
+                Add-Check -Name "${iterationName}_session_state_move_other_mods_matches_plan" -Passed ((Get-JsonBoolValue -Object $sessionState -Name 'MoveOtherMods' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $plan -Name 'MoveOtherMods' -DefaultValue $false)) -Detail 'session-state.json MoveOtherMods must match monkey-plan.json'
+                Add-Check -Name "${iterationName}_session_state_move_current_runs_matches_plan" -Passed ((Get-JsonBoolValue -Object $sessionState -Name 'MoveCurrentRuns' -DefaultValue $false) -eq (Get-JsonBoolValue -Object $plan -Name 'MoveCurrentRuns' -DefaultValue $false)) -Detail 'session-state.json MoveCurrentRuns must match monkey-plan.json'
                 Add-Check -Name "${iterationName}_session_state_moved_mods_array" -Passed ([bool]$sessionMovedMods.IsArray) -Detail 'session-state.json MovedMods must be retained as an array'
                 Add-Check -Name "${iterationName}_session_state_moved_current_runs_array" -Passed ([bool]$sessionMovedCurrentRuns.IsArray) -Detail 'session-state.json MovedCurrentRuns must be retained as an array'
                 Add-Check -Name "${iterationName}_session_state_settings_hash_before_sha256" -Passed (Test-Sha256Text -Value $sessionSettingsHashBefore) -Detail 'session-state.json SettingsHashBefore must retain the pre-prepare settings SHA256'
@@ -1503,9 +1688,9 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_result_live_session_settings_backup_existed_before_recorded" -Passed $resultLiveSessionSettingsBackupExistedBeforeRecorded -Detail 'iteration-result.json LiveSessionSettingsBackupExistedBefore must record whether settings.save.backup existed before prepare'
             Add-Check -Name "${iterationName}_result_live_session_settings_backup_existed_before_matches_session" -Passed ($resultLiveSessionSettingsBackupExistedBeforeRecorded -and $sessionSettingsBackupExistedBeforeRecorded -and $resultLiveSessionSettingsBackupExistedBefore -eq $sessionSettingsBackupExistedBefore) -Detail 'iteration-result.json LiveSessionSettingsBackupExistedBefore must match session-state.json SettingsBackupExistedBefore'
 
-            Add-Check -Name "${iterationName}_result_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LogCopied' -DefaultValue $false)) -Detail 'LogCopied must be true'
-            Add-Check -Name "${iterationName}_result_current_iteration_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'CurrentIterationLogCopied' -DefaultValue $false)) -Detail 'CurrentIterationLogCopied must be true'
-            Add-Check -Name "${iterationName}_result_before_log_copied" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'GodotLogBeforeCopied' -DefaultValue $false)) -Detail 'GodotLogBeforeCopied must be true'
+            Add-Check -Name "${iterationName}_result_log_copied" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LogCopied' -DefaultValue $false)) -Detail 'LogCopied must be true'
+            Add-Check -Name "${iterationName}_result_current_iteration_log_copied" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'CurrentIterationLogCopied' -DefaultValue $false)) -Detail 'CurrentIterationLogCopied must be true'
+            Add-Check -Name "${iterationName}_result_before_log_copied" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'GodotLogBeforeCopied' -DefaultValue $false)) -Detail 'GodotLogBeforeCopied must be true'
             $resultBeforeLogPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'GodotLogBeforePath' -DefaultValue ''))
             $resultAfterLaunchLogPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'GodotLogAfterLaunchPath' -DefaultValue ''))
             $resultGodotCurrentIterationLogPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'GodotLogCurrentIterationPath' -DefaultValue ''))
@@ -1518,11 +1703,11 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_godot_current_iteration_log_under_iteration_dir" -Passed ($resultGodotCurrentIterationLogPath -and (Test-PathUnderDirectory -Path $resultGodotCurrentIterationLogPath -Directory $iterationDir)) -Detail 'GodotLogCurrentIterationPath must stay inside the current iteration directory'
             Add-Check -Name "${iterationName}_godot_current_iteration_log_leaf_expected" -Passed ($resultGodotCurrentIterationLogPath -and ([System.IO.Path]::GetFileName($resultGodotCurrentIterationLogPath) -eq 'godot.log.current-iteration')) -Detail 'GodotLogCurrentIterationPath must end with godot.log.current-iteration'
             Add-Check -Name "${iterationName}_godot_current_iteration_log_path_matches_retained_file" -Passed ($resultGodotCurrentIterationLogPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultGodotCurrentIterationLogPath, [System.IO.Path]::GetFullPath($currentIterationLogPath)))) -Detail 'GodotLogCurrentIterationPath must point to the retained godot.log.current-iteration file'
-            $resultBeforeLogLengthBytes = [long](Get-JsonValue -Object $iterationResult -Name 'GodotLogBeforeLengthBytes' -DefaultValue -1)
+            $resultBeforeLogLengthBytes = Get-JsonLongValue -Object $iterationResult -Name 'GodotLogBeforeLengthBytes' -DefaultValue -1
             $resultBeforeLogSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'GodotLogBeforeSha256' -DefaultValue '')
-            $resultAfterLaunchLengthBytes = [long](Get-JsonValue -Object $iterationResult -Name 'GodotLogAfterLaunchLengthBytes' -DefaultValue -1)
+            $resultAfterLaunchLengthBytes = Get-JsonLongValue -Object $iterationResult -Name 'GodotLogAfterLaunchLengthBytes' -DefaultValue -1
             $resultAfterLaunchSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'GodotLogAfterLaunchSha256' -DefaultValue '')
-            $resultCurrentIterationLengthBytes = [long](Get-JsonValue -Object $iterationResult -Name 'GodotLogCurrentIterationLengthBytes' -DefaultValue -1)
+            $resultCurrentIterationLengthBytes = Get-JsonLongValue -Object $iterationResult -Name 'GodotLogCurrentIterationLengthBytes' -DefaultValue -1
             $resultCurrentIterationSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'GodotLogCurrentIterationSha256' -DefaultValue '')
             Add-Check -Name "${iterationName}_godot_log_before_length_recorded" -Passed ($resultBeforeLogLengthBytes -ge 0) -Detail 'GodotLogBeforeLengthBytes must be retained and non-negative'
             Add-Check -Name "${iterationName}_godot_log_before_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultBeforeLogSha256)) -Detail 'GodotLogBeforeSha256 must be retained'
@@ -1546,7 +1731,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_current_iteration_log_under_iteration_dir" -Passed ($resultCurrentIterationLogPath -and (Test-PathUnderDirectory -Path $resultCurrentIterationLogPath -Directory $iterationDir)) -Detail 'CurrentIterationLogPath must stay inside the current iteration directory'
             Add-Check -Name "${iterationName}_current_iteration_log_leaf_expected" -Passed ($resultCurrentIterationLogPath -and ([System.IO.Path]::GetFileName($resultCurrentIterationLogPath) -eq 'godot.log.current-iteration')) -Detail 'CurrentIterationLogPath must end with godot.log.current-iteration'
             Add-Check -Name "${iterationName}_current_iteration_log_path_matches_retained_file" -Passed ($resultCurrentIterationLogPath -and ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultCurrentIterationLogPath, [System.IO.Path]::GetFullPath($currentIterationLogPath)))) -Detail 'CurrentIterationLogPath must point to the retained godot.log.current-iteration file'
-            $resultLogScanOffsetBytes = [long](Get-JsonValue -Object $iterationResult -Name 'LogScanOffsetBytes' -DefaultValue -1)
+            $resultLogScanOffsetBytes = Get-JsonLongValue -Object $iterationResult -Name 'LogScanOffsetBytes' -DefaultValue -1
             $logScanOffsetRecorded = $resultLogScanOffsetBytes -ge 0
             Add-Check -Name "${iterationName}_log_scan_offset_recorded" -Passed $logScanOffsetRecorded -Detail 'LogScanOffsetBytes must be retained and non-negative'
             $logScanOffsetWithinFullLog = $false
@@ -1578,7 +1763,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_current_iteration_log_matches_scan_offset" -Passed ([string]::Equals($normalizedActualSlice, $normalizedExpectedSlice, [System.StringComparison]::Ordinal)) -Detail 'godot.log.current-iteration must match godot.log.after-launch from LogScanOffsetBytes, ignoring only trailing newline differences'
             }
 
-            $resultCommandAckRequiredForLog = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
+            $resultCommandAckRequiredForLog = (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
             $resultCommandAckPatternForLog = [string](Get-JsonValue -Object $iterationResult -Name 'CommandAckPattern' -DefaultValue '')
             $resultCommandAckPatternRetainedForLog = -not [string]::IsNullOrWhiteSpace($resultCommandAckPatternForLog)
             $resultCommandForAck = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
@@ -1619,28 +1804,28 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 }
             }
 
-            Add-Check -Name "${iterationName}_result_audit_clean" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'AuditClean' -DefaultValue $false)) -Detail 'AuditClean must be true'
-            Add-Check -Name "${iterationName}_result_expectation_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'ExpectationPassed' -DefaultValue $false)) -Detail 'ExpectationPassed must be true'
-            Add-Check -Name "${iterationName}_result_sts1_mode_verifier_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Sts1ModeVerifierPassed' -DefaultValue $false)) -Detail 'Sts1ModeVerifierPassed must be true'
-            Add-Check -Name "${iterationName}_restore_succeeded" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'RestoreSucceeded' -DefaultValue $false)) -Detail 'RestoreSucceeded must be true'
-            Add-Check -Name "${iterationName}_iteration_passed" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)) -Detail 'Passed must be true'
+            Add-Check -Name "${iterationName}_result_audit_clean" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'AuditClean' -DefaultValue $false)) -Detail 'AuditClean must be true'
+            Add-Check -Name "${iterationName}_result_expectation_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'ExpectationPassed' -DefaultValue $false)) -Detail 'ExpectationPassed must be true'
+            Add-Check -Name "${iterationName}_result_sts1_mode_verifier_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'Sts1ModeVerifierPassed' -DefaultValue $false)) -Detail 'Sts1ModeVerifierPassed must be true'
+            Add-Check -Name "${iterationName}_restore_succeeded" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'RestoreSucceeded' -DefaultValue $false)) -Detail 'RestoreSucceeded must be true'
+            Add-Check -Name "${iterationName}_iteration_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)) -Detail 'Passed must be true'
 
             if ($null -ne $restoreState) {
                 $restoreStateEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $restoreState -Name 'EvidenceDir' -DefaultValue ''))
                 $restoreStateRestoredAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $restoreState -Name 'RestoredAt' -DefaultValue $null)
-                $restoreStateSchemaVersion = [int](Get-JsonValue -Object $restoreState -Name 'RestoreSchemaVersion' -DefaultValue 0)
-                $restoreStateStoppedSelectedGameProcess = [bool](Get-JsonValue -Object $restoreState -Name 'StoppedSelectedGameProcess' -DefaultValue $false)
-                $restoreStateRestoredModCount = [int](Get-JsonValue -Object $restoreState -Name 'RestoredModCount' -DefaultValue -1)
-                $restoreStateRestoredCurrentRunCount = [int](Get-JsonValue -Object $restoreState -Name 'RestoredCurrentRunCount' -DefaultValue -1)
-                $restoreStatePreservedNewCurrentRunCount = [int](Get-JsonValue -Object $restoreState -Name 'PreservedNewCurrentRunCount' -DefaultValue -1)
+            $restoreStateSchemaVersion = Get-JsonIntValue -Object $restoreState -Name 'RestoreSchemaVersion' -DefaultValue 0
+                $restoreStateStoppedSelectedGameProcess = (Get-JsonBoolValue -Object $restoreState -Name 'StoppedSelectedGameProcess' -DefaultValue $false)
+            $restoreStateRestoredModCount = Get-JsonIntValue -Object $restoreState -Name 'RestoredModCount' -DefaultValue -1
+            $restoreStateRestoredCurrentRunCount = Get-JsonIntValue -Object $restoreState -Name 'RestoredCurrentRunCount' -DefaultValue -1
+            $restoreStatePreservedNewCurrentRunCount = Get-JsonIntValue -Object $restoreState -Name 'PreservedNewCurrentRunCount' -DefaultValue -1
                 $restoreStatePreservedManifestPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $restoreState -Name 'PreservedNewCurrentRunsManifestPath' -DefaultValue ''))
                 $restoreStatePreservedManifestSha256 = [string](Get-JsonValue -Object $restoreState -Name 'PreservedNewCurrentRunsManifestSha256' -DefaultValue '')
-                $restoreStatePostRestoreSlayProcessCount = [int](Get-JsonValue -Object $restoreState -Name 'PostRestoreSlayProcessCount' -DefaultValue -1)
-                $restoreStatePostRestoreGodotProcessCount = [int](Get-JsonValue -Object $restoreState -Name 'PostRestoreGodotProcessCount' -DefaultValue -1)
+            $restoreStatePostRestoreSlayProcessCount = Get-JsonIntValue -Object $restoreState -Name 'PostRestoreSlayProcessCount' -DefaultValue -1
+            $restoreStatePostRestoreGodotProcessCount = Get-JsonIntValue -Object $restoreState -Name 'PostRestoreGodotProcessCount' -DefaultValue -1
                 $restoreStateSettingsHash = [string](Get-JsonValue -Object $restoreState -Name 'SettingsHashAfterRestore' -DefaultValue '')
                 $restoreStateSettingsBackupHash = [string](Get-JsonValue -Object $restoreState -Name 'SettingsBackupHashAfterRestore' -DefaultValue '')
                 $restoreStateSettingsBackupExistsAfterRecorded = Test-JsonProperty -Object $restoreState -Name 'SettingsBackupExistsAfterRestore'
-                $restoreStateSettingsBackupExistsAfter = [bool](Get-JsonValue -Object $restoreState -Name 'SettingsBackupExistsAfterRestore' -DefaultValue $false)
+                $restoreStateSettingsBackupExistsAfter = (Get-JsonBoolValue -Object $restoreState -Name 'SettingsBackupExistsAfterRestore' -DefaultValue $false)
                 $restoreStateStoppedProcessesProperty = @($restoreState.PSObject.Properties | Where-Object { [string]::Equals($_.Name, 'StoppedProcesses', [System.StringComparison]::Ordinal) } | Select-Object -First 1)
                 $restoreStateStoppedProcessesIsArray = $restoreStateStoppedProcessesProperty.Count -eq 1 -and $restoreStateStoppedProcessesProperty[0].Value -is [System.Array]
                 $restoreStatePostRestoreSlayProcessIds = Get-JsonArrayProperty -Object $restoreState -Name 'PostRestoreSlayProcessIds'
@@ -1653,8 +1838,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 Add-Check -Name "${iterationName}_restore_state_restored_current_run_count_recorded" -Passed ($restoreStateRestoredCurrentRunCount -ge 0) -Detail 'restore-state.json RestoredCurrentRunCount must be retained and non-negative'
                 Add-Check -Name "${iterationName}_restore_state_restored_current_run_count_matches_session" -Passed ($sessionMovedCurrentRunCount -ge 0 -and $restoreStateRestoredCurrentRunCount -eq $sessionMovedCurrentRunCount) -Detail 'restore-state.json RestoredCurrentRunCount must match session-state.json MovedCurrentRuns count'
                 $restoreItemCountsMatch = $sessionMovedModCount -ge 0 -and $sessionMovedCurrentRunCount -ge 0 -and $restoreStateRestoredModCount -eq $sessionMovedModCount -and $restoreStateRestoredCurrentRunCount -eq $sessionMovedCurrentRunCount
-                Add-Check -Name "${iterationName}_result_restore_item_counts_match_flag_true" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreItemCountsMatch' -DefaultValue $false)) -Detail 'iteration-result.json LiveSessionRestoreItemCountsMatch must be true for a clean packet'
-                Add-Check -Name "${iterationName}_result_restore_item_counts_match_flag_matches_restore_state" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreItemCountsMatch' -DefaultValue $false) -eq $restoreItemCountsMatch) -Detail 'iteration-result.json LiveSessionRestoreItemCountsMatch must match restore/session count parity'
+                Add-Check -Name "${iterationName}_result_restore_item_counts_match_flag_true" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionRestoreItemCountsMatch' -DefaultValue $false)) -Detail 'iteration-result.json LiveSessionRestoreItemCountsMatch must be true for a clean packet'
+                Add-Check -Name "${iterationName}_result_restore_item_counts_match_flag_matches_restore_state" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionRestoreItemCountsMatch' -DefaultValue $false) -eq $restoreItemCountsMatch) -Detail 'iteration-result.json LiveSessionRestoreItemCountsMatch must match restore/session count parity'
                 Add-Check -Name "${iterationName}_restore_state_stopped_processes_field_present" -Passed (Test-JsonProperty -Object $restoreState -Name 'StoppedProcesses') -Detail 'restore-state.json must retain StoppedProcesses from -StopGameOnRestore'
                 Add-Check -Name "${iterationName}_restore_state_stopped_processes_array" -Passed $restoreStateStoppedProcessesIsArray -Detail 'restore-state.json StoppedProcesses must be an array, even when empty'
                 Add-Check -Name "${iterationName}_restore_state_stopped_selected_game_process" -Passed $restoreStateStoppedSelectedGameProcess -Detail 'restore-state.json StoppedSelectedGameProcess must be true for a passed launched iteration'
@@ -1691,22 +1876,22 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     if ($restoreStatePreservedManifestPath -and (Test-Path -LiteralPath $restoreStatePreservedManifestPath -PathType Leaf)) {
                         Add-Check -Name "${iterationName}_restore_state_preserved_current_runs_manifest_sha256_matches" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($restoreStatePreservedManifestSha256, (Get-FileSha256OrEmpty -Path $restoreStatePreservedManifestPath))) -Detail 'PreservedNewCurrentRunsManifestSha256 must match the retained manifest'
                     }
-                    Add-Check -Name "${iterationName}_result_preserved_current_runs_manifest_bound" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPreservedNewCurrentRunsManifestBound' -DefaultValue $false)) -Detail 'iteration-result.json LiveSessionPreservedNewCurrentRunsManifestBound must be true when preserved current-run count is positive'
+                    Add-Check -Name "${iterationName}_result_preserved_current_runs_manifest_bound" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionPreservedNewCurrentRunsManifestBound' -DefaultValue $false)) -Detail 'iteration-result.json LiveSessionPreservedNewCurrentRunsManifestBound must be true when preserved current-run count is positive'
                 }
-                Add-Check -Name "${iterationName}_result_restore_schema_matches_restore_state" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionRestoreSchemaVersion' -DefaultValue 0) -eq $restoreStateSchemaVersion) -Detail 'iteration-result.json LiveSessionRestoreSchemaVersion must match restore-state.json'
-                Add-Check -Name "${iterationName}_result_restore_stopped_selected_matches_restore_state" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionStoppedSelectedGameProcess' -DefaultValue $false) -eq $restoreStateStoppedSelectedGameProcess) -Detail 'iteration-result.json LiveSessionStoppedSelectedGameProcess must match restore-state.json'
-                Add-Check -Name "${iterationName}_result_post_restore_process_counts_match_restore_state" -Passed ([int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPostRestoreSlayProcessCount' -DefaultValue -1) -eq $restoreStatePostRestoreSlayProcessCount -and [int](Get-JsonValue -Object $iterationResult -Name 'LiveSessionPostRestoreGodotProcessCount' -DefaultValue -1) -eq $restoreStatePostRestoreGodotProcessCount) -Detail 'iteration-result.json post-restore process counts must match restore-state.json'
+            Add-Check -Name "${iterationName}_result_restore_schema_matches_restore_state" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionRestoreSchemaVersion' -DefaultValue 0) -eq $restoreStateSchemaVersion) -Detail 'iteration-result.json LiveSessionRestoreSchemaVersion must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_restore_stopped_selected_matches_restore_state" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionStoppedSelectedGameProcess' -DefaultValue $false) -eq $restoreStateStoppedSelectedGameProcess) -Detail 'iteration-result.json LiveSessionStoppedSelectedGameProcess must match restore-state.json'
+            Add-Check -Name "${iterationName}_result_post_restore_process_counts_match_restore_state" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionPostRestoreSlayProcessCount' -DefaultValue -1) -eq $restoreStatePostRestoreSlayProcessCount -and (Get-JsonIntValue -Object $iterationResult -Name 'LiveSessionPostRestoreGodotProcessCount' -DefaultValue -1) -eq $restoreStatePostRestoreGodotProcessCount) -Detail 'iteration-result.json post-restore process counts must match restore-state.json'
                 Add-Check -Name "${iterationName}_result_restore_settings_hashes_match_restore_state" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsHashAfterRestore' -DefaultValue ''), $restoreStateSettingsHash) -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupHashAfterRestore' -DefaultValue ''), $restoreStateSettingsBackupHash)) -Detail 'iteration-result.json restore settings hashes must match restore-state.json'
-                Add-Check -Name "${iterationName}_result_restore_settings_backup_existence_matches_restore_state" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupExistsAfterRestore' -DefaultValue $false) -eq $restoreStateSettingsBackupExistsAfter) -Detail 'iteration-result.json LiveSessionSettingsBackupExistsAfterRestore must match restore-state.json'
-                Add-Check -Name "${iterationName}_result_restore_settings_restored_flags_true" -Passed ([bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsRestoredFromBackup' -DefaultValue $false) -and [bool](Get-JsonValue -Object $iterationResult -Name 'LiveSessionSettingsBackupRestoredFromBackup' -DefaultValue $false)) -Detail 'iteration-result.json restore settings restored flags must be true'
+                Add-Check -Name "${iterationName}_result_restore_settings_backup_existence_matches_restore_state" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionSettingsBackupExistsAfterRestore' -DefaultValue $false) -eq $restoreStateSettingsBackupExistsAfter) -Detail 'iteration-result.json LiveSessionSettingsBackupExistsAfterRestore must match restore-state.json'
+                Add-Check -Name "${iterationName}_result_restore_settings_restored_flags_true" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionSettingsRestoredFromBackup' -DefaultValue $false) -and (Get-JsonBoolValue -Object $iterationResult -Name 'LiveSessionSettingsBackupRestoredFromBackup' -DefaultValue $false)) -Detail 'iteration-result.json restore settings restored flags must be true'
             }
 
             if ($null -ne $plannedForIteration) {
                 $resultScenario = [string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue '')
                 $resultCommand = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
                 $plannedCommand = [string](Get-JsonValue -Object $plannedForIteration -Name 'Command' -DefaultValue '')
-                $resultCommandIndex = [int](Get-JsonValue -Object $iterationResult -Name 'CommandIndex' -DefaultValue -1)
-                $plannedCommandIndex = [int](Get-JsonValue -Object $plannedForIteration -Name 'CommandIndex' -DefaultValue -2)
+            $resultCommandIndex = Get-JsonIntValue -Object $iterationResult -Name 'CommandIndex' -DefaultValue -1
+            $plannedCommandIndex = Get-JsonIntValue -Object $plannedForIteration -Name 'CommandIndex' -DefaultValue -2
                 $resultCommandSelectionMode = [string](Get-JsonValue -Object $iterationResult -Name 'CommandSelectionMode' -DefaultValue '')
                 $plannedCommandSelectionMode = [string](Get-JsonValue -Object $plannedForIteration -Name 'CommandSelectionMode' -DefaultValue '')
                 $resultScenarioTag = [string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue '')
@@ -1751,12 +1936,12 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 $summaryOwnerArea = [string](Get-JsonValue -Object $summaryForIteration -Name 'OwnerArea' -DefaultValue '')
                 $resultCommandAckPattern = [string](Get-JsonValue -Object $iterationResult -Name 'CommandAckPattern' -DefaultValue '')
                 $summaryCommandAckPattern = [string](Get-JsonValue -Object $summaryForIteration -Name 'CommandAckPattern' -DefaultValue '')
-                $resultCommandAckRequired = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
-                $summaryCommandAckRequired = [bool](Get-JsonValue -Object $summaryForIteration -Name 'CommandAckRequired' -DefaultValue $false)
-                $resultPassed = [bool](Get-JsonValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)
-                $summaryPassed = [bool](Get-JsonValue -Object $summaryForIteration -Name 'Passed' -DefaultValue $false)
-                $resultCommandAckObserved = [bool](Get-JsonValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)
-                $summaryCommandAckObserved = [bool](Get-JsonValue -Object $summaryForIteration -Name 'CommandAckObserved' -DefaultValue $false)
+                $resultCommandAckRequired = (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckRequired' -DefaultValue $false)
+                $summaryCommandAckRequired = (Get-JsonBoolValue -Object $summaryForIteration -Name 'CommandAckRequired' -DefaultValue $false)
+                $resultPassed = (Get-JsonBoolValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)
+                $summaryPassed = (Get-JsonBoolValue -Object $summaryForIteration -Name 'Passed' -DefaultValue $false)
+                $resultCommandAckObserved = (Get-JsonBoolValue -Object $iterationResult -Name 'CommandAckObserved' -DefaultValue $false)
+                $summaryCommandAckObserved = (Get-JsonBoolValue -Object $summaryForIteration -Name 'CommandAckObserved' -DefaultValue $false)
                 $resultFailureReasonCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $iterationResult -Name 'FailureReasonCodes' -DefaultValue @()))
                 $summaryFailureReasonCodes = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $summaryForIteration -Name 'FailureReasonCodes' -DefaultValue @()))
                 $resultHangSignals = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $iterationResult -Name 'HangSignals' -DefaultValue @()))
@@ -1820,8 +2005,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     })
                     $mainMenuObservationForProbeSamples = Get-JsonValue -Object $iterationResult -Name 'MainMenuObservation' -DefaultValue $null
                     $runtimeObservationForProbeSamples = Get-JsonValue -Object $iterationResult -Name 'RuntimeObservation' -DefaultValue $null
-                    $mainMenuObservationSampleCount = if ($null -ne $mainMenuObservationForProbeSamples) { [int](Get-JsonValue -Object $mainMenuObservationForProbeSamples -Name 'Samples' -DefaultValue -1) } else { -1 }
-                    $runtimeObservationSampleCount = if ($null -ne $runtimeObservationForProbeSamples) { [int](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'Samples' -DefaultValue -1) } else { -1 }
+                    $mainMenuObservationSampleCount = if ($null -ne $mainMenuObservationForProbeSamples) { Get-JsonIntValue -Object $mainMenuObservationForProbeSamples -Name 'Samples' -DefaultValue -1 } else { -1 }
+                    $runtimeObservationSampleCount = if ($null -ne $runtimeObservationForProbeSamples) { Get-JsonIntValue -Object $runtimeObservationForProbeSamples -Name 'Samples' -DefaultValue -1 } else { -1 }
                     Add-Check -Name "${iterationName}_runtime_probe_samples_allowed_phase_values" -Passed ($unknownRuntimeProbePhaseSamples.Count -eq 0) -Detail "runtime-probe-samples.json phases must be StartupMainMenu or PostCommandRuntime; unknownCount=$($unknownRuntimeProbePhaseSamples.Count)"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_startup_main_menu_phase_observed" -Passed ($startupMainMenuProbeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must retain at least one StartupMainMenu sample'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_post_command_runtime_phase_observed" -Passed ($postCommandRuntimeProbeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must retain at least one PostCommandRuntime sample'
@@ -1835,11 +2020,11 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                         $null -eq (ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue $null))
                     })
                     $invalidLogLastWriteProbeSamples = @($probeSamples | Where-Object {
-                        [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                        (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
                             $null -eq (ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue $null))
                     })
                     $futureLogLastWriteProbeSamples = @($probeSamples | Where-Object {
-                        $logExists = [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false)
+                        $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
                         $sampledAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue $null)
                         $logLastWriteUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'LogLastWriteTimeUtc' -DefaultValue $null)
                         $logExists -and $null -ne $sampledAtUtc -and $null -ne $logLastWriteUtc -and $logLastWriteUtc -gt $sampledAtUtc
@@ -1851,8 +2036,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     $phaseOrderDefectCount = 0
                     $logLengthRegressionCount = 0
                     $negativeLogLengthProbeSamples = @($probeSamples | Where-Object {
-                        [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
-                            [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) -lt 0
+                        (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                            (Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) -lt 0
                     })
                     $previousSampledAtUtc = $null
                     $previousLogLengthBytes = $null
@@ -1874,8 +2059,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                             $phaseOrderDefectCount++
                         }
 
-                        if ([bool](Get-JsonValue -Object $probeSample -Name 'LogExists' -DefaultValue $false)) {
-                            $logLengthBytes = [long](Get-JsonValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1)
+                        if ((Get-JsonBoolValue -Object $probeSample -Name 'LogExists' -DefaultValue $false)) {
+                            $logLengthBytes = Get-JsonLongValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1
                             if ($logLengthBytes -ge 0) {
                                 if ($null -ne $previousLogLengthBytes -and $logLengthBytes -lt $previousLogLengthBytes) {
                                     $logLengthRegressionCount++
@@ -1890,15 +2075,15 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_phase_ordered" -Passed ($phaseOrderDefectCount -eq 0) -Detail "StartupMainMenu samples must not appear after PostCommandRuntime samples; defectCount=$phaseOrderDefectCount"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_nonnegative_when_log_exists" -Passed ($negativeLogLengthProbeSamples.Count -eq 0) -Detail "LogLengthBytes must be non-negative when LogExists=true; invalidCount=$($negativeLogLengthProbeSamples.Count)"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_nondecreasing_when_log_exists" -Passed ($logLengthRegressionCount -eq 0) -Detail "LogLengthBytes must not regress across retained LogExists=true samples; regressionCount=$logLengthRegressionCount"
-                    $runtimeObservationInitialLogLengthForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { [long](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'LogInitialLengthBytes' -DefaultValue -1) } else { -1L }
-                    $runtimeObservationLogGrewForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { [bool](Get-JsonValue -Object $runtimeObservationForProbeSamples -Name 'LogGrew' -DefaultValue $false) } else { $false }
+                    $runtimeObservationInitialLogLengthForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { Get-JsonLongValue -Object $runtimeObservationForProbeSamples -Name 'LogInitialLengthBytes' -DefaultValue -1 } else { -1L }
+                    $runtimeObservationLogGrewForProbeSamples = if ($null -ne $runtimeObservationForProbeSamples) { (Get-JsonBoolValue -Object $runtimeObservationForProbeSamples -Name 'LogGrew' -DefaultValue $false) } else { $false }
                     $postCommandRuntimeProbeLogLengths = @($postCommandRuntimeProbeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
-                        ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        ForEach-Object { Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1 } |
                         Where-Object { $_ -ge 0 })
                     $probeSampleLogLengths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
-                        ForEach-Object { [long](Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) } |
+                        ForEach-Object { Get-JsonLongValue -Object $_ -Name 'LogLengthBytes' -DefaultValue -1 } |
                         Where-Object { $_ -ge 0 })
                     $postCommandRuntimeProbeMaxLogLength = if ($postCommandRuntimeProbeLogLengths.Count -gt 0) {
                         [long](@($postCommandRuntimeProbeLogLengths | Sort-Object -Descending)[0])
@@ -1942,54 +2127,54 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_main_window_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved') -Detail 'at least one probe sample must observe the main game window'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow') -Detail 'probe samples must not report hung windows'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
-                    $staleProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
+                    $staleProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
-                    $unknownStartTimeSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'UnknownStartTimeProcessCount' -DefaultValue -1) -ne 0 })
+                    $unknownStartTimeSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'UnknownStartTimeProcessCount' -DefaultValue -1) -ne 0 })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_unknown_start_times" -Passed ($unknownStartTimeSamples.Count -eq 0) -Detail 'probe samples must record UnknownStartTimeProcessCount=0 so unreadable process start times cannot be treated as current'
-                    $ambiguousProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'AmbiguousCurrentProcessCount' -DefaultValue -1) -ne 0 })
+                    $ambiguousProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'AmbiguousCurrentProcessCount' -DefaultValue -1) -ne 0 })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_ambiguous_current_processes" -Passed ($ambiguousProcessSamples.Count -eq 0) -Detail 'probe samples must record AmbiguousCurrentProcessCount=0 so evidence binds to one launched process'
-                    $nonSingleCurrentProcessSamples = @($probeSamples | Where-Object { [int](Get-JsonValue -Object $_ -Name 'CurrentProcessCount' -DefaultValue -1) -ne 1 })
+                    $nonSingleCurrentProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'CurrentProcessCount' -DefaultValue -1) -ne 1 })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_single_current_process" -Passed ($nonSingleCurrentProcessSamples.Count -eq 0) -Detail 'probe samples must record CurrentProcessCount=1 so evidence binds to the launched process'
                     $observedRuntimeProbeProcessIds = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
-                        ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ProcessId' -DefaultValue 0) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ProcessId' -DefaultValue 0 } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
                     Add-Check -Name "${iterationName}_runtime_probe_samples_single_positive_process_id" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1) -Detail "observed probe samples must bind to one positive process id; count=$($observedRuntimeProbeProcessIds.Count) values=$($observedRuntimeProbeProcessIds -join ',')"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_id_matches_result" -Passed ($observedRuntimeProbeProcessIds.Count -eq 1 -and $observedRuntimeProbeProcessIds[0] -eq $iterationGameProcessId) -Detail "runtime-probe-samples.json ProcessId must match iteration-result.json GameProcessId; result=$iterationGameProcessId observed=$($observedRuntimeProbeProcessIds -join ',')"
                     $observedProbeStartTimes = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'ProcessStartTimeUtc' -DefaultValue $null) } |
                         Where-Object { $null -ne $_ } |
                         ForEach-Object { $_.ToString('o') } |
                         Sort-Object -Unique)
                     $observedProbePaths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ProcessPath' -DefaultValue '')) } |
                         Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
                         Sort-Object -Unique)
                     $observedProbeExpectedProcessIds = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
-                        ForEach-Object { [int](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        ForEach-Object { Get-JsonIntValue -Object $_ -Name 'ExpectedGameProcessId' -DefaultValue 0 } |
                         Where-Object { $_ -gt 0 } |
                         Sort-Object -Unique)
                     $observedProbeExpectedStartTimes = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'ExpectedGameProcessStartTimeUtc' -DefaultValue $null) } |
                         Where-Object { $null -ne $_ } |
                         ForEach-Object { $_.ToString('o') } |
                         Sort-Object -Unique)
                     $observedProbeExpectedPaths = @($probeSamples |
-                        Where-Object { [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
+                        Where-Object { (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) } |
                         ForEach-Object { ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $_ -Name 'ExpectedGameProcessPath' -DefaultValue '')) } |
                         Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
                         Sort-Object -Unique)
                     $identityMismatchProbeSamples = @($probeSamples | Where-Object {
-                        [bool](Get-JsonValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
-                        (-not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
-                            -not [bool](Get-JsonValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
+                        (Get-JsonBoolValue -Object $_ -Name 'ProcessObserved' -DefaultValue $false) -and
+                        (-not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessStartTimeMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessPathMatchesExpected' -DefaultValue $false) -or
+                            -not (Get-JsonBoolValue -Object $_ -Name 'ProcessIdentityMatchesExpected' -DefaultValue $false))
                     })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_single_process_start_time" -Passed ($observedProbeStartTimes.Count -eq 1) -Detail "observed probe samples must bind to one process start time; count=$($observedProbeStartTimes.Count) values=$($observedProbeStartTimes -join ',')"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_start_time_matches_result" -Passed ($observedProbeStartTimes.Count -eq 1 -and $null -ne $resultGameProcessStartTimeUtc -and [string]::Equals($observedProbeStartTimes[0], $resultGameProcessStartTimeText, [System.StringComparison]::Ordinal)) -Detail "observed probe samples must retain the same ProcessStartTimeUtc as iteration-result.json; result=$resultGameProcessStartTimeText observed=$($observedProbeStartTimes -join ',')"
@@ -2007,39 +2192,39 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $mainMenuObservation = Get-JsonValue -Object $iterationResult -Name 'MainMenuObservation' -DefaultValue $null
             Add-Check -Name "${iterationName}_main_menu_observation_exists" -Passed ($null -ne $mainMenuObservation) -Detail 'requires MainMenuObservation telemetry'
             if ($null -ne $mainMenuObservation) {
-                Add-Check -Name "${iterationName}_main_menu_observation_main_menu_reached" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuObservation.MainMenuReached must be true'
-                Add-Check -Name "${iterationName}_main_menu_observation_process_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
-                Add-Check -Name "${iterationName}_main_menu_observation_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
-                Add-Check -Name "${iterationName}_main_menu_observation_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung before main menu'
-                Add-Check -Name "${iterationName}_main_menu_observation_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
-                Add-Check -Name "${iterationName}_main_menu_observation_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $mainMenuObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'main-menu observation MaxStaleProcessCount must be 0'
-                Add-Check -Name "${iterationName}_main_menu_observation_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $mainMenuObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'godot.log must not stall before main menu'
-                Add-Check -Name "${iterationName}_main_menu_observation_log_observed" -Passed ([bool](Get-JsonValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
+                Add-Check -Name "${iterationName}_main_menu_observation_main_menu_reached" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuObservation.MainMenuReached must be true'
+                Add-Check -Name "${iterationName}_main_menu_observation_process_observed" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
+                Add-Check -Name "${iterationName}_main_menu_observation_no_process_exit" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
+                Add-Check -Name "${iterationName}_main_menu_observation_no_hung_window" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung before main menu'
+                Add-Check -Name "${iterationName}_main_menu_observation_no_stale_process" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'main-menu observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${iterationName}_main_menu_observation_stale_process_count_zero" -Passed ((Get-JsonIntValue -Object $mainMenuObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'main-menu observation MaxStaleProcessCount must be 0'
+                Add-Check -Name "${iterationName}_main_menu_observation_no_log_growth_timeout" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'godot.log must not stall before main menu'
+                Add-Check -Name "${iterationName}_main_menu_observation_log_observed" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.LogObserved must be true'
             }
 
             $runtimeObservation = Get-JsonValue -Object $iterationResult -Name 'RuntimeObservation' -DefaultValue $null
             Add-Check -Name "${iterationName}_runtime_observation_exists" -Passed ($null -ne $runtimeObservation) -Detail 'requires RuntimeObservation telemetry'
             if ($null -ne $runtimeObservation) {
-                Add-Check -Name "${iterationName}_runtime_observation_passed_detail" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'Passed' -DefaultValue $false)) -Detail 'RuntimeObservation.Passed must be true'
-                Add-Check -Name "${iterationName}_runtime_observation_process_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
-                Add-Check -Name "${iterationName}_runtime_observation_no_process_exit" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
-                Add-Check -Name "${iterationName}_runtime_observation_no_hung_window" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung during runtime observation'
-                Add-Check -Name "${iterationName}_runtime_observation_no_stale_process" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
-                Add-Check -Name "${iterationName}_runtime_observation_stale_process_count_zero" -Passed ([int](Get-JsonValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'runtime observation MaxStaleProcessCount must be 0'
-                Add-Check -Name "${iterationName}_runtime_observation_log_observed" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
-                $runtimeObservationLogGrowthRequired = [bool](Get-JsonValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue $runtimeLogGrowthRequiredForIteration)
-                $runtimeObservationInitialLogLength = [long](Get-JsonValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1)
-                $runtimeObservationFinalLogLength = [long](Get-JsonValue -Object $runtimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1)
+                Add-Check -Name "${iterationName}_runtime_observation_passed_detail" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'Passed' -DefaultValue $false)) -Detail 'RuntimeObservation.Passed must be true'
+                Add-Check -Name "${iterationName}_runtime_observation_process_observed" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
+                Add-Check -Name "${iterationName}_runtime_observation_no_process_exit" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
+                Add-Check -Name "${iterationName}_runtime_observation_no_hung_window" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true)) -Detail 'window must not be reported hung during runtime observation'
+                Add-Check -Name "${iterationName}_runtime_observation_no_stale_process" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'StaleProcessObserved' -DefaultValue $true)) -Detail 'runtime observation must not see stale pre-existing SlayTheSpire2 processes'
+                Add-Check -Name "${iterationName}_runtime_observation_stale_process_count_zero" -Passed ((Get-JsonIntValue -Object $runtimeObservation -Name 'MaxStaleProcessCount' -DefaultValue -1) -eq 0) -Detail 'runtime observation MaxStaleProcessCount must be 0'
+                Add-Check -Name "${iterationName}_runtime_observation_log_observed" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'LogObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.LogObserved must be true'
+                $runtimeObservationLogGrowthRequired = Get-JsonBoolValue -Object $runtimeObservation -Name 'RuntimeLogGrowthRequired' -DefaultValue (-not $runtimeLogGrowthRequiredForIteration)
+                $runtimeObservationInitialLogLength = Get-JsonLongValue -Object $runtimeObservation -Name 'LogInitialLengthBytes' -DefaultValue -1
+                $runtimeObservationFinalLogLength = Get-JsonLongValue -Object $runtimeObservation -Name 'LogFinalLengthBytes' -DefaultValue -1
                 Add-Check -Name "${iterationName}_runtime_observation_log_growth_requirement_matches_command" -Passed ($runtimeObservationLogGrowthRequired -eq $runtimeLogGrowthRequiredForIteration) -Detail 'RuntimeObservation.RuntimeLogGrowthRequired must match whether the iteration sent a runtime command'
                 Add-Check -Name "${iterationName}_runtime_observation_log_initial_length_present" -Passed (Test-JsonProperty -Object $runtimeObservation -Name 'LogInitialLengthBytes') -Detail 'RuntimeObservation must retain LogInitialLengthBytes'
                 Add-Check -Name "${iterationName}_runtime_observation_log_final_length_present" -Passed (Test-JsonProperty -Object $runtimeObservation -Name 'LogFinalLengthBytes') -Detail 'RuntimeObservation must retain LogFinalLengthBytes'
                 if ($runtimeLogGrowthRequiredForIteration) {
-                    Add-Check -Name "${iterationName}_runtime_observation_log_grew" -Passed ([bool](Get-JsonValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)) -Detail 'command-bearing RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
+                    Add-Check -Name "${iterationName}_runtime_observation_log_grew" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'LogGrew' -DefaultValue $false)) -Detail 'command-bearing RuntimeObservation.LogGrew must be true so a retained static godot.log cannot satisfy runtime health'
                     Add-Check -Name "${iterationName}_runtime_observation_log_length_growth_matches_log_grew" -Passed ($runtimeObservationInitialLogLength -ge 0 -and $runtimeObservationFinalLogLength -gt $runtimeObservationInitialLogLength) -Detail "RuntimeObservation LogFinalLengthBytes must exceed LogInitialLengthBytes when LogGrew is required; initial=$runtimeObservationInitialLogLength final=$runtimeObservationFinalLogLength"
-                    Add-Check -Name "${iterationName}_runtime_observation_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'godot.log must keep growing during command-bearing runtime observation'
+                    Add-Check -Name "${iterationName}_runtime_observation_no_log_growth_timeout" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'godot.log must keep growing during command-bearing runtime observation'
                 } else {
                     Add-Check -Name "${iterationName}_runtime_observation_log_growth_not_required" -Passed (-not $runtimeObservationLogGrowthRequired) -Detail 'StartupOnly/no-command observations do not require idle main-menu log growth'
-                    Add-Check -Name "${iterationName}_runtime_observation_no_log_growth_timeout" -Passed (-not [bool](Get-JsonValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'no-command runtime observation must not report a log-growth timeout'
+                    Add-Check -Name "${iterationName}_runtime_observation_no_log_growth_timeout" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'NoLogGrowthTimeoutExceeded' -DefaultValue $true)) -Detail 'no-command runtime observation must not report a log-growth timeout'
                 }
             }
         }
@@ -2121,7 +2306,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $sts1Mismatches = @((Get-JsonValue -Object $sts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
             $sts1Checks = @((Get-JsonValue -Object $sts1ModeCheck -Name 'Checks' -DefaultValue @()))
             $sts1FailedChecks = @($sts1Checks | Where-Object {
-                -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
             })
             $sts1CheckSignatures = @(Get-CheckSignatureArray -Items $sts1Checks)
             $expectedSts1Mode = [string](Get-JsonValue -Object $plan -Name 'Sts1EventMode' -DefaultValue '')
@@ -2141,7 +2326,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_sts1_mode_log_check_mode_matches_plan" -Passed (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode) -and $sts1Mode -eq $expectedSts1Mode) -Detail "sts1-mode-log-check.json Mode must match monkey-plan Sts1EventMode '$expectedSts1Mode'; found '$sts1Mode'"
             $normalizedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path $sts1LogPath
             Add-Check -Name "${iterationName}_sts1_mode_log_check_log_path_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($normalizedSts1LogPath) -and -not [string]::IsNullOrWhiteSpace($expectedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($normalizedSts1LogPath, $expectedSts1LogPath)) -Detail 'sts1-mode-log-check.json LogPath must match the retained godot.log.current-iteration slice'
-            Add-Check -Name "${iterationName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and [long]$sts1LogLength -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
+            $sts1LogLengthValue = ConvertTo-LongOrDefault -Value $sts1LogLength -DefaultValue -1
+            Add-Check -Name "${iterationName}_sts1_mode_log_check_log_length_matches_current_iteration_log" -Passed ($null -ne $sts1LogLength -and $sts1LogLengthValue -eq $expectedSts1LogLength) -Detail 'sts1-mode-log-check.json LogLength must match the retained godot.log.current-iteration bytes'
             Add-Check -Name "${iterationName}_sts1_mode_log_check_log_sha256_matches_current_iteration_log" -Passed (-not [string]::IsNullOrWhiteSpace($sts1LogSha256) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($sts1LogSha256, $expectedSts1LogSha256)) -Detail 'sts1-mode-log-check.json LogSha256 must match the retained godot.log.current-iteration bytes'
 
             if (-not $currentIterationLogExists) {
@@ -2168,11 +2354,12 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     $recomputedSts1Mismatches = @((Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Mismatches' -DefaultValue @()))
                     $recomputedSts1Checks = @((Get-JsonValue -Object $recomputedSts1ModeCheck -Name 'Checks' -DefaultValue @()))
                     $recomputedSts1FailedChecks = @($recomputedSts1Checks | Where-Object {
-                        -not [bool](Get-JsonValue -Object $_ -Name 'Passed' -DefaultValue $false)
+                        -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false)
                     })
                     $recomputedSts1CheckSignatures = @(Get-CheckSignatureArray -Items $recomputedSts1Checks)
 
-                    Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed ($recomputedSts1Mode -eq $expectedSts1Mode -and -not [string]::IsNullOrWhiteSpace($recomputedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogPath, $expectedSts1LogPath) -and $null -ne $recomputedSts1LogLength -and [long]$recomputedSts1LogLength -eq $expectedSts1LogLength -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogSha256, $expectedSts1LogSha256)) -Detail 'packet checker must recompute sts1-mode-log-check.json from the retained current-iteration log'
+                    $recomputedSts1LogLengthValue = ConvertTo-LongOrDefault -Value $recomputedSts1LogLength -DefaultValue -1
+                    Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_from_current_iteration_log" -Passed ($recomputedSts1Mode -eq $expectedSts1Mode -and -not [string]::IsNullOrWhiteSpace($recomputedSts1LogPath) -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogPath, $expectedSts1LogPath) -and $null -ne $recomputedSts1LogLength -and $recomputedSts1LogLengthValue -eq $expectedSts1LogLength -and [System.StringComparer]::OrdinalIgnoreCase.Equals($recomputedSts1LogSha256, $expectedSts1LogSha256)) -Detail 'packet checker must recompute sts1-mode-log-check.json from the retained current-iteration log'
                     Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_mismatches_empty" -Passed ($recomputedSts1Mismatches.Count -eq 0) -Detail "recomputed StS1 mode log check mismatches must be empty; found $($recomputedSts1Mismatches.Count)"
                     Add-Check -Name "${iterationName}_sts1_mode_log_check_recomputed_all_checks_passed" -Passed ($recomputedSts1FailedChecks.Count -eq 0) -Detail "recomputed StS1 mode log check contains $($recomputedSts1FailedChecks.Count) failed checks"
                     Add-Check -Name "${iterationName}_sts1_mode_log_check_mismatches_match_recomputed" -Passed (Test-StringArrayEquals -Actual $sts1Mismatches -Expected $recomputedSts1Mismatches) -Detail 'retained sts1-mode-log-check.json Mismatches must match the recomputed verifier report'

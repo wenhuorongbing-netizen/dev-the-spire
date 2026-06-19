@@ -128,7 +128,12 @@ The first implementation layer is deliberately conservative:
    retained after runtime samples, and `LogLengthBytes` must be non-negative and
    nondecreasing whenever `LogExists` is true. `iteration-result.json` must also
    retain `RuntimeProbeSamplesSha256`, and the packet checker recomputes it from
-   the retained `runtime-probe-samples.json`.
+   the retained `runtime-probe-samples.json`. Malformed numeric or boolean
+   values in nested observation or probe fields, including sample counts,
+   stale-process counts, log lengths, expected process ids, pass flags, process
+   health flags, and window responsiveness flags, are packet mismatches rather
+   than verifier crashes, string-to-true coercions, or `null`-to-zero/false
+   passes.
    Startup also fails if the current process disappears, the window reports
    hung/not responding for
    `-UnresponsiveSampleThreshold` consecutive samples, or the log stops growing
@@ -152,7 +157,9 @@ The first implementation layer is deliberately conservative:
 11. Run `scripts\check-sts1-enabled-mode-runtime-log.ps1` for the requested
    Off/CanaryOnly/AdditiveBatch1 mode and retain `sts1-mode-log-check.json`.
    This uses `godot.log.current-iteration` as truth, not the evidence folder
-   name or older log content.
+   name or older log content. Malformed numeric length/count values and boolean
+   pass/clean flags in retained audit or StS1 verifier JSON must fail the packet
+   check without aborting it.
 12. Restore the live session with `-StopGameOnRestore` and
    `-PreserveNewCurrentRunsOnRestore`, retaining `session-state.json` and
    `restore-state.json` inside the same `iteration-####` directory. A clean
@@ -239,9 +246,15 @@ can close a game-native monkey proof row:
 - top-level `autoslay-plan.json` and `autoslay-summary.json` with
   `SchemaVersion: 1`, `RunnerKind: GameNativeAutoSlay`, and retained batch
   metadata before any per-run artifacts can be trusted. `autoslay-summary.json`
-  `Passed` and `FailedRuns` must match the aggregation of `Runs[]` `Passed`,
+  top-level `RunnerKind`, `Sts1EventMode`, package/game/Ritsu targets,
+  `ExpectedPatchCount`, and `ExpectedAncientIds` must match `autoslay-plan.json`.
+  `autoslay-summary.json` `Passed` and `FailedRuns` must match the aggregation of `Runs[]` `Passed`,
   `FailureReasonCodes`, and `HangSignals`; top-level green fields are not
-  accepted as proof unless the rows are also clean;
+  accepted as proof unless the rows are also clean. All retained AutoSlay JSON
+  boolean fields, including pass flags, source-workspace policy flags,
+  observation health fields, runtime-probe process/window flags, audit `Clean`,
+  and StS1 verifier flags, must be native JSON booleans. String, null, blank, or
+  otherwise malformed boolean values are packet mismatches, not proof;
 - top-level `autoslay-summary.json` `AncientIdCounts` keyed by normalized
   Ancient id, with non-negative integer counts that exactly match the
   aggregation of per-run `Runs[].AncientId` values and give every requested
@@ -337,7 +350,8 @@ case-insensitively after normalizing them to uppercase, while per-run
 match each other exactly.
 In `-FailOnMismatch` proof mode, `-ExpectedAncientIds` is required. A proof packet
 must also retain the same target set in `autoslay-plan.json`
-`ExpectedAncientIds`; summary-only target coverage is not sufficient.
+`ExpectedAncientIds` and `autoslay-summary.json` `ExpectedAncientIds`;
+summary-only target coverage is not sufficient.
 It must also retain a positive `autoslay-plan.json` `ExpectedPatchCount` that
 matches `-ExpectedPatchCount`; the current-log patch marker check uses the
 retained plan count, so a stale plan cannot be hidden by the verifier command.
@@ -434,9 +448,10 @@ before run-result fields can drive owner routing. It also requires retained summ
 It refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes and the run-result before/after/current Godot log byte-length/SHA256
-metadata matches the retained files. Malformed numeric evidence fields are
-treated as failed harness evidence checks with sentinel values rather than
-analyzer crashes or gameplay-owner signals. It rejects GameNativeAutoSlay
+metadata matches the retained files. Malformed numeric or boolean evidence
+fields are treated as failed harness evidence checks with sentinel values rather
+than analyzer crashes, string-to-true coercions, null-to-false passes, or
+gameplay-owner signals. It rejects GameNativeAutoSlay
 `RunResultPath` escapes and root/shared GameNativeAutoSlay Godot logs, runtime
 probe samples, audit JSON, and StS1 reports with
 `RuntimeHarness` blockers before using those files for source routing. It
@@ -702,6 +717,18 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   `ScenarioTagCounts`,
   `OwnerAreaCounts`, `VakuuFightIterationCount`, `MaxMainMenuElapsedSeconds`,
   `MaxSecondsWithoutLogGrowth`, and `MaxConsecutiveUnresponsiveSamples`.
+  Top-level `monkey-summary.json` batch metadata for `Scenario`,
+  `CommandSelectionMode`, `Sts1EventMode`, expected package/game/Ritsu targets,
+  and `ExpectedPatchCount` must match the retained `monkey-plan.json`.
+  `FailedIterationIds` entries must be positive integers; malformed, null,
+  non-positive, or overflow entries fail closed as `RuntimeHarness` evidence
+  defects before summary-directed owner routing is trusted.
+  Top-level failed-iteration ids, failure-reason maps, process-exit,
+  main-window, live-session-binding, log-missing, unresponsive, stale-process,
+  log-stall, and command-ack counters must match the aggregation recomputed
+  from `Results[]` before a summary can be trusted. Malformed or overflow
+  `FailureReasonCounts` values and malformed boolean pass fields are
+  runtime-harness evidence defects, not analyzer crashes or owner-routing proof.
   Summary max telemetry must match the maximum values recomputed from
   `Results[]`; stale or hand-edited max values fail packet verification.
   Each `Results[]` runtime-probe path/SHA256 field must match the corresponding
@@ -729,6 +756,20 @@ The triage analyzer maps retained signals to owner areas. It records the planned
 Runtime monkey analysis also records `RuntimeMonkeyRunArtifactsTrustedForOwner`,
 `RuntimeMonkeyProbeArtifactTrustedForOwner`, and `LogTextTrustedForOwner` so
 retained reports show which evidence layer was allowed to support owner routing.
+It treats `monkey-summary.json` summary counter mismatch versus `Results[]`
+aggregation as a `RuntimeHarness` blocker and clears runtime-monkey run/log
+trust before owner routing.
+It also treats `monkey-summary.json` `Results[]` row mismatch versus canonical
+`iteration-result.json` fields as a `RuntimeHarness` blocker before owner
+routing.
+It also treats top-level `monkey-summary.json` batch metadata drift versus
+`monkey-plan.json` as a `RuntimeHarness` blocker before owner routing.
+When `monkey-plan.json` is retained, the analyzer also treats
+`PlannedCommands` row mismatch versus canonical `iteration-result.json` fields
+as a `RuntimeHarness` blocker before owner routing.
+Runtime monkey batch analysis with `monkey-summary.json` requires a parseable
+`monkey-plan.json` with `PlannedCommands`; a missing or malformed batch plan
+is a `RuntimeHarness` blocker before owner routing.
 For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
 missing or hash-mismatched `RuntimeProbeSamplesSha256`,
 missing/invalid `runtime-probe-samples.json`, invalid probe timestamps, missing
