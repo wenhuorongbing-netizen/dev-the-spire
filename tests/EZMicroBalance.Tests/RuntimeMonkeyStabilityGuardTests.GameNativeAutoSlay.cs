@@ -465,6 +465,35 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsMalformedSignalArrayEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["FailureReasonCodes"] = "process_unresponsive";
+        summaryRunJson["HangSignals"] = "process_unresponsive";
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["FailureReasonCodes"] = "process_unresponsive";
+        runResultJson["HangSignals"] = "process_unresponsive";
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("summary_runs_array status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_summary_run_failure_reason_codes_array status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_summary_run_hang_signals_array status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_failure_reason_codes_array status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_hang_signals_array status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_failure_reason_codes_match_summary status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_hang_signals_match_summary status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlayBooleanEvidence()
     {
         using var fixture = CreateGameNativeAutoSlayFixture();
@@ -532,6 +561,43 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_unhealthy");
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_observation_unhealthy");
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_process_identity_unstable");
+        Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlaySignalArrays()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["Passed"] = false;
+        summaryRunJson["FailureReasonCodes"] = "process_unresponsive";
+        summaryRunJson["HangSignals"] = "process_unresponsive";
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["Passed"] = false;
+        runResultJson["FailureReasonCodes"] = "process_unresponsive";
+        runResultJson["HangSignals"] = "process_unresponsive";
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-malformed-autoslay-signal-arrays.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_signal_array_malformed");
         Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
     }
 

@@ -254,7 +254,10 @@ can close a game-native monkey proof row:
   boolean fields, including pass flags, source-workspace policy flags,
   observation health fields, runtime-probe process/window flags, audit `Clean`,
   and StS1 verifier flags, must be native JSON booleans. String, null, blank, or
-  otherwise malformed boolean values are packet mismatches, not proof;
+  otherwise malformed boolean values are packet mismatches, not proof.
+  `Seeds`, `ExpectedAncientIds`, `Runs`, `FailureReasonCodes`, and
+  `HangSignals` must be native JSON arrays; scalar strings or nulls are
+  malformed retained evidence, not empty signal sets;
 - top-level `autoslay-summary.json` `AncientIdCounts` keyed by normalized
   Ancient id, with non-negative integer counts that exactly match the
   aggregation of per-run `Runs[].AncientId` values and give every requested
@@ -444,11 +447,13 @@ requires `autoslay-summary.json` `Runs[].RunResultPath` to resolve under the
 evidence root, and requires `autoslay-summary.json` `Runs[].RunResultSha256` to match the retained per-seed `run-result.json`. The AutoSlay summary target and
 per-seed `run-result.json` must also agree on `RunnerKind: GameNativeAutoSlay`
 before run-result fields can drive owner routing. It also requires retained summary row `Passed`, `FailureReasonCodes`, and
-`HangSignals` to match the retained `run-result.json` before owner routing.
+`HangSignals` to match the retained `run-result.json` before owner routing, and
+requires retained signal fields to be native JSON arrays rather than scalar
+strings.
 It refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes and the run-result before/after/current Godot log byte-length/SHA256
-metadata matches the retained files. Malformed numeric or boolean evidence
+metadata matches the retained files. Malformed numeric, boolean, or array-shape evidence
 fields are treated as failed harness evidence checks with sentinel values rather
 than analyzer crashes, string-to-true coercions, null-to-false passes, or
 gameplay-owner signals. It rejects GameNativeAutoSlay
