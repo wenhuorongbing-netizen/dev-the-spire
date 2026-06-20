@@ -133,7 +133,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $hits = git grep -n "BaseLib" -- EZMicroBalanceCode EZMicroBalance.csproj EZMicroBalance.json; if ($LASTEXITCODE -eq 0) { $hits; exit 1 } elseif ($LASTEXITCODE -eq 1) { 'No BaseLib references in active code/project/manifest.'; exit 0 } else { exit $LASTEXITCODE }
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedRitsuLibVersion '0.4.28' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.91' -ExpectedRitsuLibVersion '0.4.28' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~ReleaseSafetyExpandedGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
