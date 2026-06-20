@@ -25,7 +25,7 @@ The project may use `GO: Release Candidate can be published` only when all appli
 
 | Gate | Required evidence |
 | --- | --- |
-| Loader | Current package loader smoke with current SavedSpireField count and clean `godot.log`. |
+| Loader | Current package loader smoke with current RitsuLib saved-state registration shape and clean `godot.log`. |
 | UI | Clicked Ancient UI screenshots/logs with readable hover and marker relic visibility. |
 | Gameplay | Manual feature matrix for Ancient rewards, A11-A20, Rootblight, and gated Vakuu. |
 | Save/load | Live save/quit/load rows for every stateful feature. |

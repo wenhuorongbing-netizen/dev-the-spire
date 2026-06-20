@@ -385,6 +385,6 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`. The old `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` variable remains a compatibility alias, not the preferred command in new notes.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only STS2-RitsuLib and Spire Plus enabled.
-- [x] Inspect `godot.log` and record the current SavedSpireField count; the current package smoke reports `Found 30 SavedSpireFields` after Seedbed root-suppression markers.
+- [x] Inspect `godot.log` and record the current RitsuLib saved-state registration count/shape; current beta.91 RitsuLib-only Off/AdditiveBatch1 packets cover startup/log registration shape. Historical package smokes reported `Found 30 SavedSpireFields` before the RitsuLib-only migration.
 - [ ] Confirm the controlled smoke has no Spire Plus startup exception or error under technical id `EZMicroBalance`.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.

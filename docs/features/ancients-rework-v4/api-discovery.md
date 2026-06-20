@@ -102,7 +102,7 @@ Historical limits after batch 2, superseded by later finish evidence below:
 
 Timestamp: 2026-05-05 17:14:30 +02:00.
 
-Additional local APIs inspected:
+Additional local APIs inspected in the May BaseLib pass. Current beta.91 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `SavedSpireField` notes are retained only to explain the historical implementation and migration risk:
 
 - `SereTalon` now uses a scoped Spire Plus pickup patch because the rebalance requires a four-Curse choice screen. Use `CardSelectCmd.FromSimpleGrid` because the three-card choose screen cannot show four Curses.
 - Add-to-deck feedback should not rely on `CardPileCmd.Add(...)` alone. Local Core reward/shop flows animate existing UI cards separately, so Spire Plus direct-gain paths use `SpirePlusFeedback.PreviewDeckAdds(...)`: it keeps `CardCmd.PreviewCardPileAdd(...)`, adds the vanilla deck-movement SFX, and uses a very weak short screen shake as a small confirmation cue.
@@ -153,10 +153,10 @@ Additional local APIs inspected:
 
 Implemented after blocker finish:
 
-- `PrismaticGem`: save-backed standard card reward counter using `SavedSpireField<PrismaticGem,int>`; Every second standard card reward contains only off-color cards, preserving each slot's original type and rarity when available. Fallbacks relax rarity first, then type, then both before failing. If no replacement set can be built, the saved counter is restored to its pre-trigger value. The vanilla pool broadening is skipped.
+- `PrismaticGem`: save-backed standard card reward counter using the then-active `SavedSpireField<PrismaticGem,int>` implementation, now migrated to RitsuLib `SavedAttachedState<PrismaticGem,int>`; Every second standard card reward contains only off-color cards, preserving each slot's original type and rarity when available. Fallbacks relax rarity first, then type, then both before failing. If no replacement set can be built, the saved counter is restored to its pre-trigger value. The vanilla pool broadening is skipped.
 - `VelvetChoker`: no hard six-card cap; every player turn counts non-autoplay first manual card-play series from hand, and the seventh and later from-hand plays cost +1 after other cost changes. X-cost cards require the extra energy without increasing captured X.
 - `DistinguishedCape`: pickup uses `lose 30% of current Max HP, at least 18`; current max HP must be greater than the calculated cost before the trade can be selected. When the player cannot pay, an otherwise rolled Cape is replaced by a payable Vakuu Pool 2 option, with a locked localized Cape fallback if replacement ever fails. It then loses max HP and adds three `Apparition` cards. The current-HP clamp is not implemented as damage.
-- `PaelsTooth`: save-backed non-boss combat counter using `SavedSpireField<PaelsTooth,int>`; pickup still uses the vanilla saved removed-card list. Every second non-boss combat offers the stored removed cards, returns the chosen card upgraded through command APIs, and removes that saved entry. Boss combat and act transition clear remaining saved cards.
+- `PaelsTooth`: save-backed non-boss combat counter using the then-active `SavedSpireField<PaelsTooth,int>` implementation, now migrated to RitsuLib `SavedAttachedState<PaelsTooth,int>`; pickup still uses the vanilla saved removed-card list. Every second non-boss combat offers the stored removed cards, returns the chosen card upgraded through command APIs, and removes that saved entry. Boss combat and act transition clear remaining saved cards.
 - `Quality Blade` / name-TBD: resolved locally as generated `SovereignBlade` from `ForgeCmd.Forge(...)`, not permanent `RefineBlade`. Forged temporary `SovereignBlade` cards with `CreatedThroughForge` now gain `Exhaust`; permanent `RefineBlade` and non-forged copies are not altered.
 - Chinese localization: Simplified Chinese `zhs` flat-table overrides were added for changed relics, cards, Prismatic Gem count/reward hints, and rest-site Cleaver / 切肉 UI. English relic text was also updated for `PrismaticGem`, `PaelsTooth`, `BloodSoakedRose`, `DistinguishedCape`, and `VelvetChoker`. v4.3 zhs player-facing text removes spaces between Chinese text, numbers, and units.
 
@@ -174,7 +174,7 @@ Additional local APIs inspected:
 
 Chosen state strategy:
 
-- Keep `SavedSpireField<PrismaticGem,int>` as the long-lived normal reward counter.
+- Keep the long-lived normal reward counter; historical May code used `SavedSpireField<PrismaticGem,int>`, while current beta.91 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
 - Add a per-screen state keyed by the active `CardReward` instance with `ConditionalWeakTable<CardReward, RewardScreenState>`.
 - Patch `CardReward.Populate()` only to expose the active reward screen through a thread-local stack while `CardFactory.CreateForReward(...)` and `Hook.TryModifyCardRewardOptions(...)` run.
 - The first Prismatic Gem evaluation for a `CardReward` decides the screen: eligible normal rewards increment the saved counter once and store whether this screen should replace all slots; ineligible rewards store a non-trigger decision and do not increment.
@@ -183,7 +183,7 @@ Chosen state strategy:
 
 Runtime-risk notes:
 
-- `JeweledMaskFreePower` is compile-verified and uses BaseLib's custom model registration path, but it still needs manual runtime verification that BaseLib prefixes and registers the custom enchantment before a Jeweled Mask pickup save/load cycle.
+- `JeweledMaskFreePower` was compile-verified in the historical BaseLib pass; current beta.91 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
 - `Crossbow`, `ToastyMittens`, and `ChoicesParadox` use generated combat cards and selection screens; manual testing should verify skipped generated cards do not linger in combat state.
 - `MeatCleaver` patches the built-in `CookRestSiteOption`; manual testing should verify no other source creates the rest-site Cleaver option without Meat Cleaver.
 - `PrismaticGem` should be manually tested across two normal monster card rewards and a non-normal reward (elite, boss, event, or colorless-only) to confirm the saved counter only affects the intended reward type.
@@ -199,7 +199,7 @@ No new public API surface was added beyond the hover/banner hooks documented abo
 
 - `VelvetChoker.ShouldPlay`, `CardEnergyCost.GetWithModifiers`, `PlayerCombatState.HasEnoughResourcesFor`, `CardModel.SpendResources`, and the relic turn/combat hooks for the no-hard-cap soft-limit implementation.
 - `Vakuu.GenerateInitialOptions`, same-pool replacement plus a locked `EventOption` fallback for unaffordable Cape choices, `DistinguishedCape.AfterObtained`, `CreatureCmd.SetCurrentHp`, and `CreatureCmd.LoseMaxHp` for pay-gated proportional max-HP loss without routing the cost through damage.
-- `CardReward.Populate`, `CardReward.Reroll`, `Hook.TryModifyCardRewardOptions`, `CardCreationResult.ModifyCard`, and `SavedSpireField<PrismaticGem,int>` for screen-scoped Prismatic Gem all-slot replacement.
+- `CardReward.Populate`, `CardReward.Reroll`, `Hook.TryModifyCardRewardOptions`, `CardCreationResult.ModifyCard`, and current RitsuLib `SavedAttachedState<PrismaticGem,int>` for screen-scoped Prismatic Gem all-slot replacement.
 - `RelicModel.HoverTips`, `RelicModel.HoverTipsExcludingRelic`, and `NCardRewardSelectionScreen.RefreshOptions` for the Prismatic Gem count hover and reward-screen banner hint. The `_banner` contract is guarded by source and installed-API tests; runtime rejects missing, wrong-typed, null, detached, or throwing private-banner paths, falls back to the public `UI/Banner` node lookup plus log diagnostics, and treats visible all-off-color cards plus the relic hover count as fallback evidence if no banner can be updated. Runtime visual placement still requires manual gameplay verification.
 
 The archived v4.2 next-plan file at `../../archive/feature-inputs/ancients-rework-v4/sts2_ancients_rework_v4_2_next_plan.md` is byte-for-byte identical to `C:\Users\Jack\Downloads\sts2_ancients_rework_v4_2_next_plan.md` as of that preservation pass.

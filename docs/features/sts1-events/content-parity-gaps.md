@@ -162,7 +162,7 @@ Static reproduction:
 
 **Impact:** High. The entire event mechanic (sacrifice a relic for a new one) cannot function.
 
-**Resolution path:** Blocked until StS2/BaseLib exposes a relic selection command, or a custom relic selection screen is implemented.
+**Resolution path:** Blocked until StS2/RitsuLib exposes a relic selection command, or a custom relic selection screen is implemented.
 
 ---
 

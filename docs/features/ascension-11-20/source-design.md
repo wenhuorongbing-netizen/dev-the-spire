@@ -337,10 +337,10 @@ Research must answer before coding each system:
 | How card enter-hand/play/combat-end hooks work | Root Bud tracking |
 | How rest-site actions are represented | Root cleanup, Forge Token |
 | How reward generation and card options are represented | Fission, A19 reward option increase |
-| How card enchantments/modifiers are represented by BaseLib | Fission |
+| How card enchantments/modifiers are represented by RitsuLib/template APIs | Fission |
 | How boss order and double boss flow are represented | A20 |
 | How multiplayer player targeting and team state are exposed | multiplayer safety |
-| Whether BaseLib exposes safer APIs for any of the above | minimize Harmony |
+| Whether RitsuLib/template or game-native APIs expose safer paths for any of the above | minimize Harmony |
 | Which Harmony patch points are unavoidable | only after evidence |
 
 ## 11. Prototype Order

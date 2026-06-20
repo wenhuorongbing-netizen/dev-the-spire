@@ -175,7 +175,7 @@ Encoded fields:
 - Root-Sight eye count, first-potion latch, and marked coordinates;
 - Seed Bank stored card ids and settlement latch.
 
-The parser accepts the prior eight-field shape for migration. `SavedSpireField<Player,string>` persistence is still not source-proven by this pass, and the card-backed mirror is a mitigation rather than release proof. State must survive live save/load before this design can be marked release-ready.
+The parser accepts the prior eight-field shape for migration. Historical May evidence did not prove BaseLib `SavedSpireField<Player,string>` persistence for player-owned Urda state; the current RitsuLib-only implementation uses `SavedAttachedState<Player,string>` plus the retained card-backed mirror. State must survive live save/load before this design can be marked release-ready.
 
 ## 5. Localization and terms
 

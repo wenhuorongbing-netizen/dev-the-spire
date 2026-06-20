@@ -84,7 +84,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - A20 multiplayer selection is not full A20 co-op support. A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification.
-- Normal Steam-client Mod Settings has historical RC1 UI evidence that predates the current display-name refresh. Current startup/log evidence confirms a 30-field package loaded as Spire Plus with only BaseLib plus the technical `EZMicroBalance` mod enabled. Startup/log checks are not the same as live co-op or gameplay verification.
+- Normal Steam-client Mod Settings has historical RC1 UI evidence that predates the current display-name refresh. Current beta.91 startup/log evidence confirms Spire Plus loads as technical id `EZMicroBalance` with only STS2-RitsuLib as the required runtime dependency. Startup/log checks are not the same as live co-op or gameplay verification.
 
 ## 2026-05-07
 

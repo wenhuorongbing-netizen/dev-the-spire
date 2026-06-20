@@ -22,7 +22,7 @@ Update note, 2026-06-20 RitsuLib-only package hash refresh: after the final Base
 
 Update note, 2026-05-14 historical package smoke/log/resource pass:
 
-- `.tools/runtime-evidence/current-package-smoke-20260514-015901` verified hash parity for the earlier 22-field package, headless installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a normal Steam helper startup with BaseLib plus Spire Plus under technical id `EZMicroBalance`.
+- `.tools/runtime-evidence/current-package-smoke-20260514-015901` verified hash parity for the earlier 22-field package, headless installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a normal Steam helper startup for the then-current BaseLib-backed Spire Plus package under technical id `EZMicroBalance`.
 - The historical log records BaseLib `177 patches successfully, 0 failed`, `Loaded 2 mods (2 total)`, `Found 22 SavedSpireFields`, and `Time to main menu: 14,045ms`; audit/manual scans found 0 Spire Plus error signatures for technical id `EZMicroBalance` and 0 release-blocking hits.
 - Loader parity for the current beta.91 ZIP is covered by Off and AdditiveBatch1 RitsuLib-only smokes. The beta.88 loader proof under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937` remains previous-package startup context; no loader log is live gameplay/save-load/co-op/UI screenshot proof.
 

@@ -104,12 +104,12 @@ After changing User env vars, fully restart Steam and the game on the affected m
 ### Mod Settings / Load Checks
 
 - Launch through the normal Steam client on host and client.
-- Confirm BaseLib appears in Mod Settings on both machines.
-- Confirm BaseLib is enabled on both machines.
+- Confirm STS2-RitsuLib appears in Mod Settings on both machines.
+- Confirm STS2-RitsuLib is enabled on both machines.
 - Confirm Spire Plus appears with manifest id `EZMicroBalance` on both machines.
 - Confirm Spire Plus is enabled on both machines.
 - Confirm legacy `EzDailyContent` is disabled or absent on both machines.
-- Confirm both machines use the same package hash and same BaseLib version.
+- Confirm both machines use the same Spire Plus package hash and same STS2-RitsuLib version/hash.
 - Inspect both `godot.log` files for startup errors, missing localization keys, `CanonicalModelException`, and Spire Plus exceptions under technical id `EZMicroBalance`.
 
 ### Default Fail-Closed Checks
@@ -211,7 +211,7 @@ Run this section only after default fail-closed behavior passes.
   - `Version mismatch. Host: ... Ours: ...` means the handshake version strings differ.
   - `Our version ... matches the host's, but our Model ID hash does not` or `ModelDb hash mismatch` means the visible version string matched, but the multiplayer model serialization table differed.
   - Record both `Got initial game info message. Version: ... Hash: ...` and local `ModelIdSerializationCache initialized... Hash: ...` lines.
-  - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, BaseLib/Spire Plus versions, and installed package hashes.
+  - Compare both machines' `release_info.json`, `Loaded X mods (Y total)`, STS2-RitsuLib/Spire Plus versions, and installed package hashes.
 - Confirm no Spire Plus error or exception lines under technical id `EZMicroBalance`.
 - Confirm no ownership warning for Rootblight, Blight Sprout, Forge Token, Firemark, Banner, dedicated ability, or Branded Form state.
 - Confirm no checksum, desync, disconnect, lobby clamp, or save/load exception lines.
@@ -222,20 +222,20 @@ Run this section only after default fail-closed behavior passes.
 
 **⚠️ Dependency Compatibility Gate — must pass BEFORE any A11-A20 testing:**
 
-1. Disable ALL mods except BaseLib + Spire Plus. The Spire Plus technical folder/id is `EZMicroBalance`. Explicitly disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
+1. Disable ALL mods except STS2-RitsuLib + Spire Plus. The Spire Plus technical folder/id is `EZMicroBalance`. Explicitly disable/remove BaseLib unless another row intentionally tests previous-package compatibility; also disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
 2. Start singleplayer A0 with Defect (or any character that starts with an active relic like Cracked Core). Enter first combat.
 3. Expected: draw cards normally, energy not stuck at 0, no `Creature.get_ShowsInfiniteHp` in `godot.log`.
 4. Start singleplayer A10. Same expectations.
 5. Start singleplayer A20. Same expectations.
-6. `godot.log` must have 0 BaseLib patch failures and 0 `Creature.get_ShowsInfiniteHp` lines.
-7. If any of 2-6 fails, stop here. The environment is not ready for EZMB A11-A20 testing. Update BaseLib or roll back game version.
+6. `godot.log` must have 0 RitsuLib loader/compat failures, 0 Spire Plus patch failures, and 0 `Creature.get_ShowsInfiniteHp` lines.
+7. If any of 2-6 fails, stop here. The environment is not ready for Spire Plus A11-A20 testing. Update STS2-RitsuLib to the current required version/hash or roll back the game version to the validated target.
 8. Only after passing steps 1-7, proceed to the triage rows below.
 
 Execute these rows to isolate the root cause of the reported 0/80 HP, Neow blocked, save-quit not propagating, and black screen issues. Each row is a separate co-op run with the specified environment variables on both host and client.
 
 **Prerequisites for all rows:**
 - Host and client both launch through Steam client.
-- Only BaseLib + Spire Plus enabled.
+- Only STS2-RitsuLib + Spire Plus enabled.
 - Restart Steam and game fully after changing env vars.
 - Collect `godot.log` from both machines after each run.
 - Use `SPIREPLUS_ASCENSION_MULTIPLAYER_DIAGNOSTICS=1` combined with each row to capture lobby state, player HP at run start, Neow HP, and save/quit diagnostics.
@@ -336,7 +336,7 @@ Game version/date:
 Package hash:
 Host machine/account:
 Client machine/account:
-BaseLib version/hash:
+STS2-RitsuLib version/hash:
 Env vars:
 Test row(s):
 Result:
