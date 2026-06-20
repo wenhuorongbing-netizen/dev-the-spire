@@ -10,7 +10,7 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 | `MainFile.cs` | Mod entry point for Harmony patching, config registration, and feature-registry bootstrap. |
 | `Config/` | Mod configuration (SpirePlusModConfig). |
 | `Core/Features/` | Small module registry that keeps startup order and feature ownership out of `MainFile.cs`. |
-| `Core/Integrations/RitsuLib/` | Reserved for future RitsuLib bootstrap module (blocked on version mismatch). |
+| `Core/Integrations/RitsuLib/` | Active RitsuLib bootstrap, patcher, content registration, and migration notes. |
 | `Diagnostics/` | Release evidence log and live test console command. |
 | `Map/` | Spire Plus map point hover composer. |
 | `Modding/` | Mod info localization patches. |

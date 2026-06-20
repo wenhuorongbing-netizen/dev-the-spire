@@ -18,8 +18,8 @@ Best release test setup:
 - Both own and can launch Slay the Spire 2.
 - Same game branch and game version/date.
 - Same Spire Plus package hash. The technical package folder/id remains `EZMicroBalance`.
-- Same BaseLib runtime version and files under `<GameRoot>\mods\BaseLib`.
-- Same enabled mod set: BaseLib plus Spire Plus only unless a row explicitly tests compatibility.
+- Same STS2-RitsuLib runtime version and files under `<GameRoot>\mods\STS2-RitsuLib`, including the selected `lib\0.107.1` variant for the current game.
+- Same enabled mod set: STS2-RitsuLib plus Spire Plus only unless a row explicitly tests compatibility.
 
 Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test. It can be useful for rough local investigation only if Steam permits it, but it does not replace the two-PC matrix.
 

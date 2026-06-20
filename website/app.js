@@ -761,7 +761,7 @@
               <h3 class="download-group-title">${labels.requiredFilesTitle || "第一步：下载必要文件 (Required Files)"}</h3>
               <div class="download-actions">
                 <a id="primaryDownloadLink" href="${primaryDownloadUrl}" class="button primary" download data-hover="spireplus">${labels.download}</a>
-                <a href="${data.package.baseLibRelease}" class="button" target="_blank" rel="noopener" data-hover="baselib">${labels.openBaseLib}</a>
+                <a href="${data.package.dependencyRelease}" class="button" target="_blank" rel="noopener" data-hover="dependency">${labels.openDependency}</a>
               </div>
             </div>
             <div class="download-group">

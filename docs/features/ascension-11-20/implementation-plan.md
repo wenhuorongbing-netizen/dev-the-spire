@@ -143,7 +143,7 @@ Scope:
 - Use Rootblight I/II/III display cards, with costs 2/3/4.
 - Playing Rootblight exhausts the combat copy, removes its master-deck card, and queues the downgrade card after combat when applicable.
 - Combat end upgrades only Rootblight cards that were present at combat start; newly added Rootblight cards do not grow until the next combat. Ignored Rootblight III has no IV path.
-- Rootblight start seeding uses `SavedSpireField<Player,bool>`, `SavedSpireField<Player,int>`, and a Rootblight deck scan to avoid re-adding after clearance and to migrate prototype Root/Deep Root saves.
+- Rootblight start seeding uses `SavedAttachedState<Player,bool>`, `SavedAttachedState<Player,int>`, and a Rootblight deck scan to avoid re-adding after clearance and to migrate prototype Root/Deep Root saves.
 - Rest heal removes exactly one highest-stage Rootblight, oldest first when tied; smith does not remove Rootblight.
 - Shop/card-removal APIs remove the selected Rootblight through `BeforeCardRemoved` without clearing other Rootblight cards.
 - Non-play exhaust does not lower Rootblight level.
@@ -163,7 +163,7 @@ Required exact APIs:
 | Current Ascension | `RunState.AscensionLevel` |
 | Run hook | `ModHelper.SubscribeForRunStateHooks(...)` plus `RootRunHook.AfterActEntered()`; hook model also has a parameterless constructor for StS2 model database startup |
 | Add master-deck card | `RunState.CreateCard<Root>(player)` / `CreateCard<DeepRoot>(player)` / `CreateCard<RootblightIII>(player)` then `CardPileCmd.Add(card, PileType.Deck, ...)` |
-| Level state | `SavedSpireField<Player,int>` diagnostic Rootblight level, `SavedSpireField<Player,bool>` one-time starter marker, and per-card saved fields for combat-start presence, one-time split state, and Blight Sprout round |
+| Level state | `SavedAttachedState<Player,int>` diagnostic Rootblight level, `SavedAttachedState<Player,bool>` one-time starter marker, and per-card attached states for combat-start presence, one-time split state, and Blight Sprout round |
 | Play downgrade | In combat card play, remove the matching master-deck Rootblight card and queue the downgraded replacement; do not listen to non-play exhaust |
 | Combat-end sync | `RootBudCombatHook.BeforeCombatStart(...)` retries the starter Rootblight before combat-start marking, then `AfterCombatEnd(...)` calls `RootDeckService.ResolveCombatEndRootblight(...)` before adding Rootblight I from unplayed Blight Sprout cards, capped at four Rootblight cards |
 | Removal/clear | `AfterRestSiteHeal` clears on real rest; `BeforeCardRemoved` clears for normal deck-removal APIs; sync-owned removals suppress the clear hook |

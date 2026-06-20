@@ -51,7 +51,7 @@ EZMicroBalanceCode/
   Core/
     Features/
     Integrations/
-      RitsuLib/                (NEW -- future RitsuLib bootstrap module)
+      RitsuLib/                (current RitsuLib bootstrap, patcher, and content registration)
     Logging/                   (NEW -- if logging helpers are extracted)
     Multiplayer/               (NEW -- if multiplayer code is consolidated)
   Diagnostics/                 (keep at root -- no move needed)
@@ -104,7 +104,6 @@ EZMicroBalanceCode/
 
 | Action | Path | Risk | Notes |
 | --- | --- | --- | --- |
-| NEW directory | `Core/Integrations/RitsuLib/` | Low | Future RitsuLib bootstrap; no behavior change |
 | NEW directory | `Ancients/Rebalance/` | Low | Shared rebalance helpers extracted from Common |
 | NEW directory | `Ascension/Ui/` | Low | UI-related Ascension patches (if separated) |
 | NEW directory | `Ascension/Save/` | Medium | Save/load-related Ascension code (if separated) |
@@ -118,6 +117,7 @@ EZMicroBalanceCode/
   refactor, no behavior changes).
 - High-risk patches (run, room, save, lobby, multiplayer, lifecycle) must not be
   moved in the same PR as behavior changes.
-- RitsuLib patcher migration (PR6+) must not be mixed with large folder moves.
+- RitsuLib patcher migration is already active; future large folder moves must not
+  be mixed with behavior changes in that integration layer.
 - The `EZMicroBalance` manifest id, project name, resource folder, code folder,
   DLL, PCK, and install folder must not be renamed.
