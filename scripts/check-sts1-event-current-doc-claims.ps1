@@ -726,7 +726,7 @@ Add-ContainsCheck -Name 'goal_event_validation_matrix_v20_overlay_29' -Text $goa
 Add-ContainsCheck -Name 'goal_event_validation_matrix_runtime_preflight_27' -Text $goalEventDoc -Needle 'runtime-preflight: 27 checks / 0 mismatches (local v0.107.1 / beta.91 target; read-only source/prereq only)'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_subagent_70' -Text $goalEventDoc -Needle 'v19 subagent coverage: 70 checks / 0 mismatches'
 Add-ContainsCheck -Name 'goal_event_validation_matrix_diff_check_generic_crlf' -Text $goalEventDoc -Needle 'git diff --check: exit 0 with CRLF normalization warnings only; no whitespace errors'
-Add-ContainsCheck -Name 'goal_event_source_workspace_checkpoint_beta91' -Text $goalEventDoc -Needle 'source workspace: 58 checks / 0 mismatches against installed v0.107.1 and STS2-RitsuLib 0.4.28 / compat 0.107.1'
+Add-ContainsCheck -Name 'goal_event_source_workspace_checkpoint_beta91' -Text $goalEventDoc -Needle 'source workspace: 60 checks / 0 mismatches against installed v0.107.1 and STS2-RitsuLib 0.4.28 / compat 0.107.1'
 Add-ContainsCheck -Name 'goal_event_autoslay_batch_still_open' -Text $goalEventDoc -Needle 'does not itself close gameplay, save/load, replacement, multiplayer, QA, game-native AutoSlay batch proof, release, or handoff gates'
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_followup' -Text $goalEventDoc -Needle 'Latest pause-safe AutoSlay target-coverage follow-up'
 Add-ContainsCheck -Name 'goal_event_autoslay_expected_ancient_ids_nonclaim' -Text $goalEventDoc -Needle 'This improves future game-native monkey proof quality but remains static/verifier evidence only'
