@@ -4,9 +4,10 @@
 
 Current dependency and architecture baseline:
 
-- Base game source refresh target: `v0.106.1`.
-- BaseLib package target: `v3.1.4`.
-- nctive private-beta project: `EZMicroBalance`.
+- Base game source refresh target: `v0.107.1`.
+- Runtime/API dependency target: STS2-RitsuLib `v0.4.28` with `lib/0.107.1`.
+- Active private-beta project: `EZMicroBalance`.
+- Historical BaseLib `v3.1.4` notes in this Urda folder are previous-package context only.
 
 Urda work remains independently disableable and independent from other ancient families.
 
@@ -22,7 +23,7 @@ Goal:
 nctions:
 
 1. Read local `source code/src/Core` for `Ancient`, `AncientModel`, `AncientEvent`, and reward flow.
-2. Confirm BaseLib command nPIs for card/relic/add/remove and save fields.
+2. Confirm local game command APIs plus RitsuLib-supported APIs for card/relic/add/remove and save fields.
 3. Reconfirm current `EZMB_...` manifest and `docs/issues.md` Urda issue list.
 4. Record findings in `api-research.md`.
 
@@ -120,4 +121,3 @@ No milestone in this branch should claim release-ready Urda behavior if:
 - any of the eleven Urda blessing rows is incomplete or undocumented.
 - save/load behavior is broken.
 - live manual checks are still unexecuted.
-

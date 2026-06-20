@@ -2,17 +2,16 @@
 
 ## Task Goal
 
-- M5 Revision M runtime-drift truth packet for `implement debug.md`.
+- M5 Revision P RitsuLib-only migration truth packet for `migration.md`.
 
 ## Actual Result
 
-- The old missing-runtime-folder hard blocker remains closed locally: BaseLib, official STS2-RitsuLib `v0.4.16`, and Spire Plus are installed on the E-drive game root; the RitsuLib install includes `lib\0.107.0`.
-- The red beta.84 runtime packet is documented as root-cause evidence: beta.84 reached main menu on game `v0.107.0`, but only 17/25 ModPatcher patches applied and `EctoplasmGoldGatePatch` threw a stale-target initializer exception.
-- Current source drift fixes are documented and have beta.85 Off-loader proof: getter ModPatcher targets use `MethodType.Getter`, Ectoplasm targets `ModifyGoldGained`, and beta.85 applies 25/25 patches.
-- Beta.85 package parity is recorded in `PROJECT_STATE.md`, and beta.85 Off smoke is recorded under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`.
-- StS1 Big Fish Box and Divine Fountain eligibility changes are documented as default-Off/staged and unvalidated in this paused lane.
-- Debug scaffold governance progressed: the unused `SpirePlusDebug.LogPreview` helper was removed, and static guard coverage now records that general info diagnostics are internal-only behind `SPIREPLUS_ENABLE_DEBUG_LOGS=1` / `EZMB_ENABLE_DEBUG_LOGS=1`, trim false-like values, preview diagnostics require the localized `ShowPreviewDebugLogs` setting, and warnings remain available for degraded runtime paths.
-- No commit, push, stash, checkout, reset, or restore was performed in this Revision M documentation pass. Active repo-local `dotnet` / `testhost` processes were observed, so no new validation lane was started here.
+- The current local game is Slay the Spire 2 `v0.107.1` with installed STS2-RitsuLib `v0.4.28` and `lib\0.107.1`.
+- Spire Plus beta.91 is RitsuLib-only: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.28`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.28`, and current package/runtime proof loads exactly STS2-RitsuLib plus Spire Plus.
+- The refreshed ignored `source code/` snapshot matches installed game `v0.107.1` release info, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`; the source-workspace checker passes 57 / 0 with two retained GDRE warnings.
+- Current beta.91 Off and AdditiveBatch1 proof is clean for loader/registration only under `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/` and `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`.
+- Previous beta.85/beta.87 `v0.107.0`, beta.88 BaseLib-backed, and beta.90 RitsuLib-only logs are retained as history only. They do not define current dependency truth.
+- Gameplay, clicked UI, save-load, replacement, co-op, independent QA, and tester handoff remain pending.
 
 ## Changed Files
 
@@ -43,7 +42,5 @@
 
 ## Remaining Items
 
-- Reconcile the active validation lane when it reports.
-- Run beta.85 CanaryOnly/AdditiveBatch1 smokes only after process coordination is clear and only if StS1 staging proof is needed.
-- Keep Sts1Events, Batch 4c, high-risk migration, live-ready, and release-ready claims blocked until runtime/gameplay proof exists.
-- Get owner approval before committing or pushing any Revision M slices.
+- Keep StS1Events, high-risk migration, live-ready, and release-ready claims blocked until runtime/gameplay proof exists.
+- Recapture exact HEAD and worktree status before future tester handoff or release-evidence promotion.

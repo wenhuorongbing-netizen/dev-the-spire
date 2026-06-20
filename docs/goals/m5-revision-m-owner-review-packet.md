@@ -3,12 +3,14 @@
 Date: 2026-06-11
 Status: owner review prepared; Off loader drift closed; not live-ready or release-ready.
 
+2026-06-20 supersession: Revision M is historical. Current package/runtime truth is beta.91 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.28` / `lib/0.107.1` and no Spire Plus BaseLib dependency.
+
 ## Scope Reviewed
 
 - Runtime drift closure for Slay the Spire 2 `v0.107.0` with installed official `STS2-RitsuLib` `v0.4.16`.
 - Current dirty source changes that replace ModPatcher compiler getter names with property-name + `MethodType.Getter` targets.
 - Current dirty source `EctoplasmGoldGatePatch` targeting `ModifyGoldGained`.
-- Concurrent beta.85 manifest/package/hash documentation and StS1 event source/localization updates already present in the worktree.
+- Then-current beta.85 manifest/package/hash documentation and StS1 event source/localization updates already present in the worktree.
 
 ## Decisions For Owner
 

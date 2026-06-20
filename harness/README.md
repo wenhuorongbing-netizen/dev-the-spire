@@ -59,5 +59,5 @@ harness/                     <- live task-scoped state (project root)
 - Do not put long-term project facts here.
 - Do not commit chat history, accounts, keys, or private paths.
 - Do not copy the codex-harness AGENTS.md over the root AGENTS.md. The root
-  AGENTS.md already contains StS2, BaseLib, manifest, source evidence, and
+  AGENTS.md already contains StS2, RitsuLib, manifest, source evidence, and
   release validation hard rules.

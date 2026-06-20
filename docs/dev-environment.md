@@ -27,17 +27,17 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Godot/MegaDot version: `4.5.1.stable.mono.official.f62fdbde1`
 
 ## Game
-- Game root: `D:\Steam\steamapps\common\Slay the Spire 2`
-- Mod folder: `D:\Steam\steamapps\common\Slay the Spire 2\mods`
+- Game root: `E:\Steam\steamapps\common\Slay the Spire 2`
+- Mod folder: `E:\Steam\steamapps\common\Slay the Spire 2\mods`
 - Current branch target: public beta
-- Observed installed game version: `v0.106.1` from `D:\Steam\steamapps\common\Slay the Spire 2\release_info.json` on 2026-05-22.
-- Observed installed game metadata: commit `cb2fbf47`, branch `v0.106.1`, build date `2026-05-21T16:17:40-07:00`, and `main_assembly_hash` `1001788235`.
-- Steam appmanifest evidence: public-beta `BetaKey`, build id `23353684`, installed locally on 2026-05-22.
-- Local source snapshot: `source code/` was cleaned and recovered from the installed `SlayTheSpire2.pck` plus `data_sts2_windows_x86_64\sts2.dll` on 2026-05-22 using GDRE Tools `v2.5.0-beta.5`.
+- Observed installed game version: `v0.107.1` from `E:\Steam\steamapps\common\Slay the Spire 2\release_info.json` on 2026-06-20.
+- Observed installed game metadata: commit `59260271`, branch `v0.107.1`, build date `2026-06-18T15:43:56-07:00`, and `main_assembly_hash` `-1555940892`.
+- Historical Steam appmanifest evidence: public-beta `BetaKey`, build id `23353684`, installed locally on 2026-05-22 for the older `v0.106.1` setup.
+- Local source snapshot: `source code/` was refreshed from the installed `SlayTheSpire2.pck` plus `data_sts2_windows_x86_64\sts2.dll` on 2026-06-20 using GDRE Tools `v2.5.0`.
 - Source recovery evidence: the retained ignored `source code/` recovery is current for the installed `v0.107.1` local game. It includes `source code\release_info.json` matching installed commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`; `source code\gdre_export.log` records GDRE Tools `v2.5.0` recovery from `E:\Steam\steamapps\common\Slay the Spire 2\SlayTheSpire2.pck` plus `data_sts2_windows_x86_64\sts2.dll`.
 - Source recovery log: `source code/gdre_export.log` extracted 15,658 files, decompiled 3,473 scripts, reported 18 failed scripts, converted 3,949 resources, and logged one debug-scene parse warning for `scenes/debug/back_confirm_example.tscn`; `source code/sts2.sln` built with 0 warnings and 0 errors during recovery.
-- API-diff artifacts live under `.tools\source-refresh-v0.106.1-20260522\`; the canonical Core signature diff found 1,712 removed signatures and 1,835 added signatures compared with the previous snapshot.
-- Do not use pre-2026-05-22 `v0.105.x` source notes as the sole basis for current `v0.106.1` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
+- Historical API-diff artifacts live under `.tools\source-refresh-v0.106.1-20260522\`; the canonical Core signature diff found 1,712 removed signatures and 1,835 added signatures compared with the previous snapshot.
+- Do not use pre-2026-06-20 `v0.106.1` or older source notes as the sole basis for current `v0.107.1` conclusions. Reinspect the refreshed source and confirm runtime behavior before making release claims.
 - Test environment must be ONLY STS2-RitsuLib + Spire Plus for current RitsuLib-only validation. The Spire Plus technical folder/id is `EZMicroBalance`. Earlier multi-mod logs including DamageMeter, RouteSuggest, AnimeWaifuSilent, and similar local mods are invalid release evidence.
 
 ## Project mission
@@ -70,15 +70,15 @@ Historical environment rows below are retained for setup history. Prefer this ov
 
 ## Runtime evidence summary
 - BaseLib `v3.2.1` compatibility with `v0.106.1` is the historical validated target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only BaseLib plus Spire Plus, registered config, reported `Found 22 SavedSpireFields`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
-- Current source defines 30 SavedAttachedState fields. Historical 22-field and 16-field startup rows remain useful records only; beta.85/beta.86 Off/CanaryOnly loader parity remains previous-package context, beta.87 AdditiveBatch1 loader parity has fresh live evidence, and gameplay proof still needs manual verification.
+- Current source defines 30 SavedAttachedState fields. Historical 22-field and 16-field startup rows remain useful records only. Beta.85/beta.86/beta.87 `v0.107.0`, beta.88 BaseLib-backed `v0.107.1`, and beta.90 RitsuLib-only loader rows are previous-context evidence; beta.91 Off and AdditiveBatch1 loader/registration proof is current RitsuLib-only evidence, and gameplay proof still needs manual verification.
 - Historical beta.19 loader evidence: `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` loaded only BaseLib plus Spire Plus, registered `EZMicroBalance`, reported `v0.1.0-private-beta.19` and `Found 30 SavedSpireFields`, reached startup completion, matched its beta.19 package hash, audited clean, stopped the game, and restored the isolated mod setup.
-- Current display-name list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh.
+- Historical display-name list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh. Fresh beta.91 Mod Settings page proof remains pending.
 - Historical package resource evidence under `.tools\runtime-evidence\current-package-smoke-20260514-015901` verified an earlier 22-field package and headless installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures. This is resource-load evidence, not clicked live Ancient UI proof.
-- Helper evidence: `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` loaded BaseLib plus Spire Plus, copied/audited `godot.log`, and restored settings plus moved mods. This is loader/helper evidence only; gameplay/manual gates remain pending.
-- Plug-off loader evidence: `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` loaded `Loaded 1 mods (1 total)` with BaseLib only after temporarily isolating `EZMicroBalance`; the earlier settings-only disabled attempt remains invalid. This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.
+- Historical helper evidence: `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` loaded BaseLib plus Spire Plus, copied/audited `godot.log`, and restored settings plus moved mods. This is loader/helper evidence only; gameplay/manual gates remain pending.
+- Historical BaseLib-only plug-off loader evidence: `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` loaded `Loaded 1 mods (1 total)` with BaseLib only after temporarily isolating `EZMicroBalance`; the earlier settings-only disabled attempt remains invalid. This is plug-off loader evidence only; disable-mod gameplay in an actual run remains pending.
 - `scripts/spire-plus-live-session.ps1` preserves test-created `current_run*` files before restoring the user's original current-run files; `live-helper-preserve-current-run-smoke-20260513-133431` and `window-preflight-smoke-20260513-135402` cover helper restore and foreground preflight behavior.
 - Detailed 2026-05-05 through 2026-05-14 runtime attempt history was archived to `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`; historical RC1 live notes remain in `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`.
-- Historical RitsuLib diagnostic Off, CanaryOnly, and AdditiveBatch1 loader gates have clean `v0.106.1` evidence with BaseLib, RitsuLib, and Spire Plus loaded and 25/25 Spire Plus ModPatcher patches applied. Retained beta.85/beta.86/beta.87 `v0.107.0` proof remains previous-package/game-version context, and beta.88 `v0.107.1` AdditiveBatch1 proof covers 10 event types / 14 registration calls with exact tuple parity after the BaseLib `v3.3.0` update. Live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
+- Historical RitsuLib diagnostic Off, CanaryOnly, and AdditiveBatch1 loader gates have clean `v0.106.1` evidence with BaseLib, RitsuLib, and Spire Plus loaded and 25/25 Spire Plus ModPatcher patches applied. Retained beta.85/beta.86/beta.87 `v0.107.0` proof remains previous-package/game-version context, beta.88 `v0.107.1` AdditiveBatch1 proof is previous BaseLib-backed context, and beta.90 is previous RitsuLib-only context. Current beta.91 RitsuLib-only Off/AdditiveBatch1 proof is clean for loader/registration only. Live gameplay, save-load, failure/death-path, clicked Ancient UI, preview-tools, and co-op verification remain pending.
 
 ## Last known commands
 - Last attempted build: `dotnet build EZMicroBalance.sln -m:1 --no-incremental` on 2026-06-18 during the beta.87 dependency-floor pass. Result: succeeded with 0 warnings and 0 errors.
@@ -124,12 +124,12 @@ Historical environment rows below are retained for setup history. Prefer this ov
 ## Manual game verification
 - Manual game verification succeeded: legacy baseline only.
 - Current verification surface: Slay the Spire 2 Settings -> Mod Settings.
-- Current target Mod Settings verification: list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus` in the Mods list with only BaseLib and `EZMicroBalance` enabled.
+- Current target Mod Settings verification: pending fresh beta.91 screenshot/page proof with only STS2-RitsuLib and `EZMicroBalance` enabled. Historical list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` showed `Spire Plus` with BaseLib plus `EZMicroBalance` in an older package context.
 - Historical startup/log evidence under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` logged `v0.1.0-private-beta.19`, `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`, `Loaded 2 mods (2 total)`, `Found 30 SavedSpireFields`, startup completion, beta.19 package hash parity, and 0 release-blocking hits.
 - Earlier package startup/log evidence under `.tools\runtime-evidence\current-package-smoke-20260514-015901` is historical 22-field loader/resource evidence.
 - Historical page-level UI evidence remains under `.tools\runtime-evidence\rc1-modsettings-page-20260508-095137-*` with the old display name.
 - Legacy `EzDailyContent` Mod Settings evidence on `v0.104.0` is historical scaffold evidence and not current Spire Plus readiness proof.
-- Beta.43 loader and live gameplay verification remain pending.
+- Beta.91 live gameplay verification remains pending.
 
 ## Phase progress
 - Completed setup baseline: build, publish, and legacy Mod Settings verification.

@@ -518,7 +518,7 @@ Dry-run focused Vakuu forced fight-option plan, no game launch:
   -CommandSelectionMode RoundRobin
 ```
 
-Small controlled smoke, with only BaseLib, RitsuLib, and Spire Plus enabled:
+Small controlled smoke, with only STS2-RitsuLib and Spire Plus enabled:
 
 ```powershell
 .\scripts\run-spire-plus-monkey-stability.ps1 `

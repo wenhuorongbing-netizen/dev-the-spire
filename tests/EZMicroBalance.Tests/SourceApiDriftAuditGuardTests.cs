@@ -41,8 +41,10 @@ public sealed class SourceApiDriftAuditGuardTests
             "`source code/src/Core/Multiplayer/Game/Lobby/StartRunLobby.cs`",
             "`SyncAscensionChange`",
             "`source code/src/Core/Debug/ReleaseInfoManager.cs`",
-            "`ModConfigRegistry.Register",
-            "`Alchyr.Sts2.BaseLib` `3.1.4`",
+            "BaseLib `ModConfigRegistry`",
+            "`Alchyr.Sts2.BaseLib` `v3.1.4`",
+            "current code registers Spire Plus settings through `RitsuLibFramework.RegisterModSettings(...)`",
+            "with no `Alchyr.Sts2.BaseLib` package reference",
             "no-black-screen victory return remains live-only",
             "two-client proof");
 

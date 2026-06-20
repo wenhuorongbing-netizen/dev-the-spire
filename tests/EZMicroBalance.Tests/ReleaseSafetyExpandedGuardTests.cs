@@ -377,8 +377,9 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Full live Ascension verification is pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package/runtime migration validation baseline", projectState, StringComparison.Ordinal);
-        Assert.Contains("This closes the current clean-loader blocker only", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest committed migration baseline", projectState, StringComparison.Ordinal);
+        Assert.Contains("Active M5 Revision P truth", projectState, StringComparison.Ordinal);
+        Assert.Contains("current beta.91 RitsuLib-only loader proof supersedes it", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

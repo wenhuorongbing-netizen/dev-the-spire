@@ -15,7 +15,7 @@ Close a row only when the manual evidence includes the requested screenshots, `g
 | ROOTBLIGHT-DIAGNOSTICS | Rootblight diagnostics | partial live proof | Combat-end notice and co-op/desync checks. |
 | MP-A11-A20-HP0-NEOW | multiplayer A11-A20 | diagnostics patched | Host/client co-op run-start logs proving whether HP0/Neow blocker is gone. |
 | MP-SAVE-QUIT | multiplayer save/quit | source-investigated | Host/client save-quit propagation proof. |
-| MP-RUN-START-BLACK-SCREEN | multiplayer startup | live-pending | Fresh BaseLib+Spire Plus host/client logs for run-start black screen. |
+| MP-RUN-START-BLACK-SCREEN | multiplayer startup | live-pending | Fresh STS2-RitsuLib+Spire Plus host/client logs for run-start black screen. |
 | MP-A20-BLACK-SCREEN | A20 multiplayer | source-patched | Co-op A20 retest, optional-boss load path, and logs. |
 | ASCENSION-PUBLIC-SELECTION | A11-A20 selection | source-patched | Steam-client selection and co-op selection proof. |
 | A11-MAP-LENGTH | A11 map | partial live proof | Natural traversal, boss reachability beyond spot checks, and save-load coverage. |
@@ -26,15 +26,15 @@ Close a row only when the manual evidence includes the requested screenshots, `g
 | MP-A11-A20-SELECTION | multiplayer Ascension | source-patched | Live co-op A11-A20 selection proof. |
 | A20-MP-WARNING | A20 multiplayer warning | source-patched | Co-op warning log proof. |
 | LIVE-COOP-A11-A20-MATRIX | co-op matrix | pending | Full live co-op traversal matrix. |
-| RUNTIME-ENV-POLLUTION | test environment | source-complete | Clean BaseLib+Spire Plus runtime evidence and package hash clarity. |
+| RUNTIME-ENV-POLLUTION | test environment | source-complete | Clean STS2-RitsuLib+Spire Plus runtime evidence and package hash clarity. |
 | A12-A16-MARKER-VARIETY | map markers | source-patched | Multi-seed and save/load marker variety proof. |
 | A12-A16-A19-MAP-PREVIEW | map hover previews | source-patched | Firemark, Banner, dedicated ability, and Branded Form hover rendering proof. |
 | A13-FISSION-SAMPLING | Fission diagnostics | source-patched | 20 normal, 10 Banner, 10 Firemarked Elite, and boss reward samples. |
-| MP-MAC-MODELDB-HASH | cross-platform co-op | investigated | Host/Mac logs, release info, loaded-mod list, ModelDb hashes, and BaseLib/Spire Plus hash parity. |
+| MP-MAC-MODELDB-HASH | cross-platform co-op | investigated | Host/Mac logs, release info, loaded-mod list, ModelDb hashes, and STS2-RitsuLib/Spire Plus hash parity. |
 
 ## Execution Notes
 
-- Test with only BaseLib and Spire Plus unless a row explicitly asks for polluted-environment comparison.
+- Test with only STS2-RitsuLib and Spire Plus unless a row explicitly asks for polluted-environment comparison.
 - Record package hash or installed DLL/PCK/manifest hashes with every evidence folder.
 - For multiplayer rows, capture logs from host and client from the same attempt.
 - For hover/UI rows, capture screenshots in English and Simplified Chinese when possible.
