@@ -367,18 +367,20 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
-    public void HistoricalRefactorQaReviewsStayCompactAndArchivedOutOfActivePath()
+    public void HistoricalSts1ReviewsStayCompactAndArchivedOutOfActivePath()
     {
         var archiveReadme = ReadRepoText("docs", "archive", "README.md");
         var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
         var docInventory = ReadRepoText("docs", "doc-inventory.md");
         var activeFiles = new[]
         {
+            "overnight-run-20260529.md",
             "refactor-qa-20260602.md",
             "refactor-qa-20260602-round2.md"
         };
         var archivedFiles = new[]
         {
+            "overnight-run-20260529.md",
             "refactor-qa-20260602.md",
             "refactor-qa-20260602-round2.md"
         };
@@ -390,12 +392,13 @@ public sealed partial class DocumentationCompactnessGuardTests
             Assert.True(lineCount <= 20, $"{activeFile} should stay a compact historical QA stub; current line count is {lineCount}.");
             AssertSourceContains(
                 activeBoundary,
-                "Status: historical loader-gate QA stub",
+                "Status: historical",
                 "Full archived record:",
                 "Current StS1 event work routes through `docs/goals/event.md`",
-                "Do not use its `CONDITIONAL PASS`");
+                "Do not use its");
             Assert.DoesNotContain("## Claim-by-Claim Verification", activeBoundary, StringComparison.Ordinal);
             Assert.DoesNotContain("## Independent Verification Results", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("## Pack Completion Status", activeBoundary, StringComparison.Ordinal);
             Assert.DoesNotContain("### 2.3 Runtime Smoke Evidence", activeBoundary, StringComparison.Ordinal);
             Assert.DoesNotContain("### 1.6 CanaryOnly Runtime Smoke", activeBoundary, StringComparison.Ordinal);
         }
@@ -407,6 +410,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
         }
 
+        Assert.Contains("docs/archive/feature-audits/overnight-run-20260529.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/reviews/overnight-run-20260529.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("docs/archive/feature-audits/refactor-qa-20260602*.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("docs/reviews/refactor-qa-20260602*.md", projectMap, StringComparison.Ordinal);
     }
