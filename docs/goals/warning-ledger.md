@@ -79,9 +79,9 @@ The CanaryOnly files and the current AdditiveBatch1 files are warning-clean afte
 ## Governance Decision
 
 - Sts1Events recommendation: staging-only until current-runtime and gameplay evidence exists.
-- Runtime loader proof: Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration calls exist in historical diagnostic evidence only. Current source now expects AdditiveBatch1=10 event types / 14 registration calls; retained `v0.107.0` beta.87 proof covers loader/registration only, and fresh current `v0.107.1` enabled-mode proof is still needed.
+- Runtime loader proof: historical Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration-call evidence remains diagnostic only. Current beta.91 RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration proof is clean; current source expects AdditiveBatch1=10 event types / 14 registration calls, and beta.91 verifier evidence matches that shape. Retained beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence only.
 - Nullable warning blocker: closed for the beta.85 runtime-fix validation lane recorded in `PROJECT_STATE.md`.
-- Remaining formalization blockers: prove current `v0.107.0` CanaryOnly and AdditiveBatch1 enabled-mode loader smoke, gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, and multiplayer fail-closed behavior.
+- Remaining formalization blockers: recapture any needed current-version CanaryOnly loader proof before Canary gameplay claims, then prove gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, multiplayer fail-closed behavior, independent QA, and handoff.
 - Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.
 
 ## History
