@@ -27,6 +27,21 @@ References:
 - RitsuLib GitHub: `https://github.com/BAKAOLC/STS2-RitsuLib`
 - RitsuLib Framework Design: `https://sts2-ritsulib.ritsukage.com/guide/framework-design`
 
+## External Version Recheck
+
+2026-06-20 web recheck:
+
+- RitsuLib GitHub releases currently show a newer `dev-build` pre-release, but
+  that same entry states the current stable line is `0.4.28`. Do not use the dev
+  build for a tester package unless the owner explicitly approves a dev-runtime
+  validation lane.
+- Nexus lists RitsuLib file version `0.4.28`, matching the repo package and the
+  installed local runtime.
+- The current public Slay the Spire 2 update target remains Major Update #2
+  `v0.107.1`. Its Workshop and RNG-system changes are dependency-sensitive, so
+  any future game update must rerun the source-workspace checker and RitsuLib
+  variant check before claiming compatibility.
+
 ## Runtime Installation
 
 The variant pack should be extracted to the game mods directory, not the repo:

@@ -76,7 +76,7 @@ handoff.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Upstream RitsuLib target | Pass | Rechecked on 2026-06-20: the official GitHub releases page marks `0.4.28` as Latest and its dev-build entry says the current stable line is `0.4.28`; `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
+| Upstream RitsuLib target | Pass | Rechecked on 2026-06-20: the official GitHub releases page has a newer dev build, but that dev-build entry says the current stable line is `0.4.28`; Nexus also lists RitsuLib file version `0.4.28`. Keep Spire Plus on stable `0.4.28`, not the dev build. `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
 | Current game update target | Pass | Rechecked on 2026-06-20: the official Steam news page for Slay the Spire 2 still names Major Update #2 as `v0.107.1`; local `release_info.json` matches `v0.107.1`, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`. |
 | RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.28` is installed with `lib/0.107.1`; previous `v0.4.24` install was backed up before replacement. |
 | Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 58 checks / 0 mismatches against installed version/commit/branch/main assembly hash and RitsuLib `0.4.28` / compat `0.107.1`. |

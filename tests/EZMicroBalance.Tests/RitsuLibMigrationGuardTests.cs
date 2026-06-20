@@ -355,6 +355,33 @@ public sealed class RitsuLibMigrationGuardTests
         }
     }
 
+    [Fact]
+    public void UpstreamVersionResearchKeepsStableRitsuLibTarget()
+    {
+        var migrationGoal = ReadRepoText("docs", "goals", "migration.md");
+        var integrationDoc = ReadRepoText("docs", "integrations", "ritsulib.md");
+
+        AssertSourceContains(
+            migrationGoal,
+            "the official GitHub releases page has a newer dev build",
+            "the current stable line is `0.4.28`",
+            "Nexus also lists RitsuLib file version `0.4.28`",
+            "Keep Spire Plus on stable `0.4.28`, not the dev build");
+        Assert.DoesNotContain("marks `0.4.28` as Latest", migrationGoal, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            integrationDoc,
+            "## External Version Recheck",
+            "RitsuLib GitHub releases currently show a newer `dev-build` pre-release",
+            "current stable line is `0.4.28`",
+            "Nexus lists RitsuLib file version `0.4.28`",
+            "Major Update #2",
+            "`v0.107.1`",
+            "Workshop and RNG-system changes are dependency-sensitive",
+            "rerun the source-workspace checker",
+            "variant check before claiming compatibility");
+    }
+
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
     /// state the correct total migrated count (25).
