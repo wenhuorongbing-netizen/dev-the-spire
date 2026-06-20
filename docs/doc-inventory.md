@@ -35,6 +35,7 @@ Current support docs, not default reading path:
 - `docs/architecture/bounded-contexts.md`
 - `docs/architecture/patch-boundaries.md`
 - `docs/architecture/save-state-contracts.md`
+- `docs/goals/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md` (compact historical-boundary stub; current StS1 event work routes through `docs/goals/event.md`)
 - `.github/workflows/spire-plus-site.yml`
 
 ## B. Feature docs
@@ -85,6 +86,7 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`
+- `docs/archive/feature-inputs/sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md`
 
 ## E. Clutter candidates handled
 
@@ -115,6 +117,7 @@ Current support docs, not default reading path:
 - Root `BUGFIX_NOTES.md` and `BUGFIX_REPORT.md` -> `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md` and `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`; current package/runtime state now lives in `PROJECT_STATE.md` and current release docs.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 - `docs/goals/debug.md` mojibake prompt dump -> `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`; active `docs/goals/debug.md` is now a compact debug-governance note.
+- `docs/goals/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md` long StS1 v5 overnight/subagent prompt dump -> `docs/archive/feature-inputs/sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md`; active file is now a compact historical-boundary stub.
 
 ## F. Archive entrypoints
 

@@ -105,6 +105,45 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void Sts1V5MonthlySpecStaysCompactAndArchivedPromptDumpStaysOutOfActivePath()
+    {
+        const string archivedFileName = "sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md";
+        var activeBoundary = ReadRepoText("docs", "goals", "sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "feature-inputs", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var lineCount = activeBoundary.Split('\n').Length;
+
+        Assert.True(lineCount <= 35, $"StS1 v5 monthly spec boundary should stay compact; current line count is {lineCount}.");
+        AssertRepoFileExists("docs", "archive", "feature-inputs", archivedFileName);
+        AssertSourceContains(
+            activeBoundary,
+            "# StS1 Event Port v5 Historical Boundary",
+            archivedFileName,
+            "This v5 audit/spec is historical planning context only.",
+            "Do not use its O0-O12 overnight gates, old registration assumptions, or old task",
+            "Current StS1 event work routes through `docs/goals/event.md`",
+            "current beta.91 proves `v0.107.1` RitsuLib-only Off plus",
+            "AdditiveBatch1 loader/registration with STS2-RitsuLib `0.4.28`",
+            "This loader evidence is not gameplay, save-load, replacement, multiplayer, QA");
+        Assert.Contains(archivedFileName, archiveReadme, StringComparison.Ordinal);
+        Assert.Contains(archivedFileName, projectMap, StringComparison.Ordinal);
+        Assert.Contains(archivedFileName, docInventory, StringComparison.Ordinal);
+
+        foreach (var stalePromptMarker in new[]
+                 {
+                     "必须启动 subagents",
+                     "Overnight Exit Gates O0-O12 必须全绿",
+                     "current `v0.107.1` loader proof needs recapture",
+                     "他现在声称",
+                     "Big Fish 必须严格实现"
+                 })
+        {
+            Assert.DoesNotContain(stalePromptMarker, activeBoundary, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void UrdaSupportSourceDesignStaysReadableAndCurrent()
     {
         var urdaSourceDesign = ReadRepoText("docs", "features", "ancient-expansion-urda", "source-design.md");
