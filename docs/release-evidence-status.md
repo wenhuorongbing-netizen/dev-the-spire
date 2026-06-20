@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D` |
-| DLL | `7CEAD97D55991C4ACE71A521E140B4DCA3EB814613B496E94943F137B6CFE37A` |
-| PCK | `069180E97CEFCABA586CB5D0893AEC96BEC90602006A99EC305E4D2B8E124C62` |
-| Manifest | `7A0E554EBE5F5E0F2BC739E61591A8E312433EA4BE82B90CB8151EC05DA02A09` |
-| README_INSTALL | `75C5E426A4A2269FA5D45A1ABE29427F7BA94FC39B139799FEB434395622E28A` |
+| ZIP | `ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1` |
+| DLL | `986EE9880B7B17C90AA5D557370D309A3D3BC2775227B5C12C7508910C55E5B7` |
+| PCK | `AD81B76F088375E5064494C0A34F85E1370F6FB7236BE4646C38B53089A8232C` |
+| Manifest | `42561D8E67A3C904A6D75F47639FF918DAF9220B3FF75FDA9FE436B055746A14` |
+| README_INSTALL | `0943B86C13B4035B7BC5E615D662D0ED226D422D7A4132192EED8282EB53CD76` |
 
 ## Automation Summary
 
@@ -48,7 +48,7 @@ These are the exact row IDs required by `scripts/verify-spire-plus-release-evide
 | a11-natural-route-traversal | gameplay | Pending | User | A11 natural map traversal, route clicks, width/row layout, and logs behave correctly. |
 | ascension-selector-localization | clicked-ui | Pending | User | Character-select A11-A20 Ascension panels show localized titles/descriptions. A20 must show `烙印形态` / `Branded Form`, not raw keys like `ascension.LEVEL_20.title`. |
 | a19-a20-dedicated-boss-abilities | gameplay | Pending | User | Every A19/A20 v4.1 Boss ability is tested on its matching Boss, attack-changing effects show final intent, Branded Form applies only to the second Act 3 Boss, and `boss-ability-checklist.md` has every Boss row filled with live result and evidence files. |
-| disable-mod-gameplay | gameplay | Pending | User | A run with Spire Plus disabled and BaseLib enabled behaves as expected beyond startup. |
+| disable-mod-gameplay | gameplay | Pending | User | A run with Spire Plus disabled and STS2-RitsuLib enabled behaves as expected beyond startup. |
 | preview-tools-live-proof | preview-tools | Pending | User | Crystal Sphere, transform preview, Prismatic Gem preview, save/reopen, and co-op local UI-only proof match live behavior; `preview-tools-checklist.md` has every scenario row filled. |
 | coop-disposition | coop | Pending | User | Two-client runbook evidence or explicit unsupported/unverified release-note deferral; `coop-disposition-checklist.md` has every scenario row filled. |
 
