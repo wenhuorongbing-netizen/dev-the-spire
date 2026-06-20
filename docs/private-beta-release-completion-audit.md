@@ -1,6 +1,6 @@
 # Spire Plus Private Beta Release Completion Audit
 
-Date: 2026-05-15
+Original audit date: 2026-05-15; latest beta.92 RitsuLib-only evidence refresh: 2026-06-21.
 
 This audit maps the previous broad finish-project goal to concrete private-beta release deliverables. It is not the current Codex target after the 2026-05-15 reset to user-run manual testing. It is stricter than `docs/test-ready-completion-audit.md`: test-ready means source-complete and packaged for manual testing; private-beta release-ready requires live gameplay, save/load, and multiplayer evidence or an explicit release decision to defer each missing gate.
 

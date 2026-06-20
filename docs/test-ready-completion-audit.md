@@ -1,6 +1,6 @@
 # Spire Plus Test-Ready Completion Audit
 
-Date: 2026-05-14
+Original audit date: 2026-05-14; latest beta.92 RitsuLib-only evidence refresh: 2026-06-21.
 
 Current note: this audit started from the earlier packaged candidate where Lotha and Vakuu were explicitly outside the implementation target. It now records Urda eleven-blessing source implementation, Morvi source implementation, Lotha source implementation, and the hidden-by-default dedicated Vakuu fight slice as present in source.
 
