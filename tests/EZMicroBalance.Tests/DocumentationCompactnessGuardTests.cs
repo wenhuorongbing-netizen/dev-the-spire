@@ -413,4 +413,54 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.Contains("docs/goals/m5-revision-n-*.md", projectMap, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void M5RevisionMDocsStayCompactAndArchivedOutOfActivePath()
+    {
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var activeFiles = new[]
+        {
+            "m5-revision-m-final-report.md",
+            "m5-revision-m-owner-review-packet.md",
+            "m5-revision-m-runtime-drift-report.md",
+            "m5-revision-m-patch-failure-ledger.md",
+            "m5-revision-m-version-decision.md",
+            "m5-revision-m-commit-slices.md"
+        };
+        var archivedFiles = new[]
+        {
+            "m5-revision-m-final-report-20260611.md",
+            "m5-revision-m-owner-review-packet-20260611.md",
+            "m5-revision-m-runtime-drift-report-20260618.md",
+            "m5-revision-m-patch-failure-ledger-20260611.md",
+            "m5-revision-m-version-decision-20260611.md",
+            "m5-revision-m-commit-slices-20260611.md"
+        };
+
+        foreach (var activeFile in activeFiles)
+        {
+            var activeBoundary = ReadRepoText("docs", "goals", activeFile);
+            var lineCount = activeBoundary.Split('\n').Length;
+            Assert.True(lineCount <= 25, $"{activeFile} should stay a compact historical-boundary stub; current line count is {lineCount}.");
+            AssertSourceContains(
+                activeBoundary,
+                "Status:",
+                "archived");
+            Assert.DoesNotContain("## Slice 1", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("## Required Next Lane", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("## Red beta.84 Off Smoke Failures", activeBoundary, StringComparison.Ordinal);
+        }
+
+        foreach (var archivedFile in archivedFiles)
+        {
+            AssertRepoFileExists("docs", "archive", "legacy-planning", archivedFile);
+            Assert.Contains(archivedFile, archiveReadme, StringComparison.Ordinal);
+            Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("docs/archive/legacy-planning/m5-revision-m-*-20260611.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/goals/m5-revision-m-*.md", projectMap, StringComparison.Ordinal);
+    }
+
 }

@@ -87,6 +87,12 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`
 - `docs/archive/feature-inputs/sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md`
+- `docs/archive/legacy-planning/m5-revision-m-final-report-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-owner-review-packet-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-runtime-drift-report-20260618.md`
+- `docs/archive/legacy-planning/m5-revision-m-patch-failure-ledger-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-version-decision-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-commit-slices-20260611.md`
 - `docs/archive/legacy-planning/m5-revision-n-final-report-20260619.md`
 - `docs/archive/legacy-planning/m5-revision-n-owner-commit-packet-20260619.md`
 - `docs/archive/legacy-planning/m5-revision-n-validation-replay-20260619.md`
@@ -122,6 +128,7 @@ Current support docs, not default reading path:
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 - `docs/goals/debug.md` mojibake prompt dump -> `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`; active `docs/goals/debug.md` is now a compact debug-governance note.
 - `docs/goals/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md` long StS1 v5 overnight/subagent prompt dump -> `docs/archive/feature-inputs/sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md`; active file is now a compact historical-boundary stub.
+- `docs/goals/m5-revision-m-final-report.md`, `docs/goals/m5-revision-m-owner-review-packet.md`, `docs/goals/m5-revision-m-runtime-drift-report.md`, `docs/goals/m5-revision-m-patch-failure-ledger.md`, `docs/goals/m5-revision-m-version-decision.md`, and `docs/goals/m5-revision-m-commit-slices.md` full beta.85/beta.87 planning records -> `docs/archive/legacy-planning/m5-revision-m-*.md`; active files are now compact historical-boundary stubs.
 - `docs/goals/m5-revision-n-final-report.md`, `docs/goals/m5-revision-n-owner-commit-packet.md`, `docs/goals/m5-revision-n-validation-replay.md`, and `docs/goals/m5-revision-n-runtime-evidence-plan.md` full beta.88/BaseLib-backed planning records -> `docs/archive/legacy-planning/m5-revision-n-*-20260619.md`; active files are now compact historical-boundary stubs.
 
 ## F. Archive entrypoints
@@ -146,6 +153,12 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`
+- `docs/archive/legacy-planning/m5-revision-m-final-report-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-owner-review-packet-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-runtime-drift-report-20260618.md`
+- `docs/archive/legacy-planning/m5-revision-m-patch-failure-ledger-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-version-decision-20260611.md`
+- `docs/archive/legacy-planning/m5-revision-m-commit-slices-20260611.md`
 - `docs/archive/legacy-planning/m5-revision-n-final-report-20260619.md`
 - `docs/archive/legacy-planning/m5-revision-n-owner-commit-packet-20260619.md`
 - `docs/archive/legacy-planning/m5-revision-n-validation-replay-20260619.md`
