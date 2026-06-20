@@ -72,4 +72,4 @@ Latest local screenshot attempts remain invalid: `.tools/runtime-evidence/live-u
 
 ## Conclusion
 
-Not achieved. The current tree has the latest Urda/Morvi/Lotha/Vakuu source hardening build/publish/package-refreshed, beta.88 AdditiveBatch1 loader registration proof, historical loader/resource smoke for context, and the restore-safe live-session helper is ready for the next manual pass. It is not private-beta release-ready. The current Codex target is test-ready handoff; this release audit stays open until the live/manual blockers above are executed or explicitly release-noted as deferred by the project owner.
+Not achieved. The current tree has beta.91 RitsuLib-only source/build/publish/package refresh, current Off and AdditiveBatch1 loader/registration proof, historical loader/resource smoke for context, and the restore-safe live-session helper ready for the next manual pass. It is not private-beta release-ready. The current Codex target is test-ready handoff; this release audit stays open until the live/manual blockers above are executed or explicitly release-noted as deferred by the project owner.
