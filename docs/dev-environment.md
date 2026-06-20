@@ -1,6 +1,6 @@
 # Development Environment
 
-## 2026-06-20 Current Override
+## 2026-06-21 Current Override
 
 - Local `Directory.Build.props` points `Sts2Path` at `E:\Steam\steamapps\common\Slay the Spire 2`.
 - The installed game `release_info.json` currently reports Slay the Spire 2 `v0.107.1`, commit `59260271`, date `2026-06-18T15:43:56-07:00`.

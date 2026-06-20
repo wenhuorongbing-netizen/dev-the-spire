@@ -1,6 +1,6 @@
 # Current Validation
 
-Date: 2026-06-11; latest addendum: 2026-06-20
+Date: 2026-06-11; latest addendum: 2026-06-21
 
 ## June 21 RitsuLib-Only Migration Addendum
 

@@ -2,7 +2,7 @@
 
 Date: 2026-06-10
 Static review recaptured: 2026-06-18
-Dependency gate refreshed: 2026-06-20
+Dependency gate refreshed: 2026-06-21
 Status: proposal only. Do not migrate these patches without explicit owner approval.
 
 ## Gate
@@ -21,7 +21,7 @@ This list is not a migration approval. It excludes run lifecycle, save/load, map
 ## Proposal Self-Check
 
 Checked: 2026-06-18.
-Dependency gate checked: 2026-06-20.
+Dependency gate checked: 2026-06-21.
 
 - Candidate count is 10, within the required 5-10 range.
 - All candidates are currently classified as low risk in `docs/patch-inventory.md`.

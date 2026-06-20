@@ -317,9 +317,9 @@ public sealed class RitsuLibMigrationGuardTests
         var goal = ReadRepoText("docs", "goals", "migration.md");
 
         Assert.Contains("Static review recaptured: 2026-06-18", proposal, StringComparison.Ordinal);
-        Assert.Contains("Dependency gate refreshed: 2026-06-20", proposal, StringComparison.Ordinal);
+        Assert.Contains("Dependency gate refreshed: 2026-06-21", proposal, StringComparison.Ordinal);
         Assert.Contains("Checked: 2026-06-18.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Dependency gate checked: 2026-06-20.", proposal, StringComparison.Ordinal);
+        Assert.Contains("Dependency gate checked: 2026-06-21.", proposal, StringComparison.Ordinal);
         Assert.Contains(
             "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,

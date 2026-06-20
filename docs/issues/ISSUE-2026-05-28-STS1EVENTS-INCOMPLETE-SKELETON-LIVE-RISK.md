@@ -10,7 +10,7 @@
 
 StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire Plus assembly. The feature module (`Sts1EventsFeatureModule`) is registered in `SpirePlusFeatureRegistry` and gated to Off by default via environment variable `SPIREPLUS_STS1_EVENT_MODE`.
 
-## Current State (updated 2026-06-20 from beta.92 RitsuLib-only loader-gate evidence)
+## Current State (updated 2026-06-21 from beta.92 RitsuLib-only loader-gate evidence)
 
 ### Compile status
 

@@ -1,7 +1,7 @@
 # Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
-Updated: 2026-06-20
+Updated: 2026-06-21
 
 Status: automated gates passed for the current RitsuLib-only beta.92 package shape; current Off/AdditiveBatch1 loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.92.
 

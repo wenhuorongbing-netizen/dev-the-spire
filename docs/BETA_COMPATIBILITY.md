@@ -1,6 +1,6 @@
 # Beta Compatibility
 
-## 2026-06-20 Current Compatibility Boundary
+## 2026-06-21 Current Compatibility Boundary
 
 The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.1` with Spire Plus depending on RitsuLib `v0.4.29` / `lib\0.107.1` only; BaseLib remains installed locally only as previous-package/other-mod context. Beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`, beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`, beta.87 AdditiveBatch1 proof at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`, beta.88 BaseLib-backed proof, and beta.90 RitsuLib-only proof are previous-package contexts. Current beta.92 Off proof exists at `.tools/runtime-evidence/v01071-beta92-ritsulib0429-off-direct-20260621/`, and current beta.92 AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/` for `v0.107.1` with 25/25 Spire Plus patches, clean audits, 10 event types, and 14 registration calls. Treat these as loader proof only: gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, and release-ready compatibility proof remain pending or blocked.
 

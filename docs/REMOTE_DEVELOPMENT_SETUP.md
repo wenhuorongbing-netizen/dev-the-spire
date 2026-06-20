@@ -2,7 +2,7 @@
 
 This guide explains how to clone this private repository on another Windows machine and recreate the local-only development environment.
 
-## 2026-06-20 Current Boundary
+## 2026-06-21 Current Boundary
 
 Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on STS2-RitsuLib `v0.4.29` / `lib\0.107.1` only. Current beta.92 Off proof is `.tools/runtime-evidence/v01071-beta92-ritsulib0429-off-direct-20260621/`, and current beta.92 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/`. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
