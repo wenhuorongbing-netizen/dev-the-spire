@@ -1547,15 +1547,16 @@ Add-ContainsCheck -Name 'v20_overlay_checker_o82_static_pass' -Text $v20FinalGat
 Add-ContainsCheck -Name 'v20_overlay_checker_o83_static_pass' -Text $v20FinalGateOverlayCheckerScript -Needle "O83 = 'static-pass'"
 Add-ContainsCheck -Name 'v20_overlay_checker_o84_static_pass' -Text $v20FinalGateOverlayCheckerScript -Needle "O84 = 'static-pass'"
 Add-ContainsCheck -Name 'gate_map_canary_expected_4_6' -Text $gateMap -Needle 'beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` reached main menu, audited clean, and retained log/packet verifiers passed 4 event types / 6 registration calls.'
-Add-ContainsCheck -Name 'gate_ledger_checker_o0_beta86_baseline_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline at eaaeb5a1 and requires exact HEAD/worktree recapture for later governance/test follow-up commits'"
-Add-ContainsCheck -Name 'gate_ledger_checker_o1_rerun_build_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after coordination pause'"
-Add-ContainsCheck -Name 'gate_ledger_checker_o2_split_lanes_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records split lanes 489 / 0 / 39 / 528'"
-Add-ContainsCheck -Name 'gate_ledger_checker_o3_skipped_tests_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output'"
-Add-ContainsCheck -Name 'gate_ledger_checker_o4_zero_warning_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 zero-warning validation'"
-Add-ContainsCheck -Name 'gate_ledger_checker_o5_format_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O5'; Field = 'next_action'; Needle = 'Rerun dotnet format after coordination pause'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o0_beta91_baseline_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.91 RitsuLib-only package/runtime baseline and requires exact HEAD/worktree recapture for later governance/test follow-up commits'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o1_rerun_build_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after any code/config change or before handoff'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o2_split_lanes_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records current trusted split/focused lanes plus retained split coverage 475 / 0 / 21 / 496'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o3_skipped_tests_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output before handoff'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o4_zero_warning_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.91 zero-warning validation'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o5_format_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O5'; Field = 'next_action'; Needle = 'Rerun dotnet format after edits or before handoff'"
 Add-ContainsCheck -Name 'gate_ledger_checker_o6_diff_static_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O6'; Field = 'evidence'; Needle = 'git diff --check is static and rerun during coordination pause'"
 Add-ContainsCheck -Name 'gate_ledger_checker_o7_patch_inventory_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O7'; Field = 'next_action'; Needle = 'Refresh patch inventory after coordination pause'"
 Add-ContainsCheck -Name 'gate_ledger_checker_o8_batch_classifier_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O8'; Field = 'next_action'; Needle = 'Refresh classifier after coordination pause'"
+Add-ContainsCheck -Name 'gate_ledger_checker_o9_beta91_zip_evidence' -Text $gateLedgerCheckerScript -Needle "GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1'"
 Add-ContainsCheck -Name 'gate_ledger_checker_o10_dirty_worktree_scope_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O10'; Field = 'next_action'; Needle = 'Owner/agent must classify exact scope before commit or handoff'"
 Add-ContainsCheck -Name 'gate_ledger_checker_o11_status_board_no_done_requirement' -Text $gateLedgerCheckerScript -Needle "GateId = 'O11'; Field = 'requirement'; Needle = 'Status board current and no generic Done'"
 Add-ContainsCheck -Name 'gate_ledger_checker_o13_off_not_enabled_action' -Text $gateLedgerCheckerScript -Needle "GateId = 'O13'; Field = 'next_action'; Needle = 'Do not extend Off proof to enabled modes'"
@@ -1665,7 +1666,7 @@ Add-ContainsCheck -Name 'gate_ledger_checker_o76_hard_stop_non_completion_requir
 Add-ContainsCheck -Name 'gate_ledger_o33_blocked' -Text $gateLedger -Needle 'O33,O30-O41,Current v0.107.1 AdditiveBatch1 enabled-mode smoke exact 10 types / 14 calls,current-pass'
 Add-ContainsCheck -Name 'gate_ledger_o75_blocked' -Text $gateLedger -Needle 'O75,O65-O76,all O0-O76 gates passing before completion,blocked'
 Add-ContainsCheck -Name 'gate_ledger_act_mapping' -Text $gateLedger -Needle 'Act 1 maps to Overgrowth + Underdocks'
-Add-ContainsCheck -Name 'gate_ledger_package_sha' -Text $gateLedger -Needle 'ZIP SHA 97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1'
+Add-ContainsCheck -Name 'gate_ledger_package_sha' -Text $gateLedger -Needle 'ZIP SHA ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1'
 Add-ContainsCheck -Name 'gate_ledger_off_default_only' -Text $gateLedger -Needle 'loader-registration only'
 Add-ContainsCheck -Name 'gate_ledger_canary_packet_v01070' -Text $gateLedger -Needle '.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/godot.log.after-launch'
 Add-ContainsCheck -Name 'gate_ledger_batch1_failed_packet_v01070' -Text $gateLedger -Needle 'exact act/shared tuple parity including Sts1TheCleric in Overgrowth and Underdocks'

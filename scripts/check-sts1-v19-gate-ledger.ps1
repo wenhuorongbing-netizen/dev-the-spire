@@ -185,16 +185,16 @@ $unknownStatuses = @($rows | Where-Object { $allowedStatuses -notcontains $_.cur
 Add-Check -Name 'all_statuses_allowed' -Passed ($unknownStatuses.Count -eq 0) -Detail "unknown statuses: $((@($unknownStatuses | Select-Object -ExpandProperty current_status -Unique)) -join ',')"
 
 $rowContentNeedles = @(
-    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 package/runtime baseline at eaaeb5a1 and requires exact HEAD/worktree recapture for later governance/test follow-up commits' },
-    [pscustomobject]@{ GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after coordination pause' },
-    [pscustomobject]@{ GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records split lanes 489 / 0 / 39 / 528' },
-    [pscustomobject]@{ GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output' },
-    [pscustomobject]@{ GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.86 zero-warning validation' },
-    [pscustomobject]@{ GateId = 'O5'; Field = 'next_action'; Needle = 'Rerun dotnet format after coordination pause' },
+    [pscustomobject]@{ GateId = 'O0'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.91 RitsuLib-only package/runtime baseline and requires exact HEAD/worktree recapture for later governance/test follow-up commits' },
+    [pscustomobject]@{ GateId = 'O1'; Field = 'next_action'; Needle = 'Rerun build after any code/config change or before handoff' },
+    [pscustomobject]@{ GateId = 'O2'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records current trusted split/focused lanes plus retained split coverage 475 / 0 / 21 / 496' },
+    [pscustomobject]@{ GateId = 'O3'; Field = 'next_action'; Needle = 'Refresh skipped-test explanation with current test output before handoff' },
+    [pscustomobject]@{ GateId = 'O4'; Field = 'evidence'; Needle = 'PROJECT_STATE.md records beta.91 zero-warning validation' },
+    [pscustomobject]@{ GateId = 'O5'; Field = 'next_action'; Needle = 'Rerun dotnet format after edits or before handoff' },
     [pscustomobject]@{ GateId = 'O6'; Field = 'evidence'; Needle = 'git diff --check is static and rerun during coordination pause' },
     [pscustomobject]@{ GateId = 'O7'; Field = 'next_action'; Needle = 'Refresh patch inventory after coordination pause' },
     [pscustomobject]@{ GateId = 'O8'; Field = 'next_action'; Needle = 'Refresh classifier after coordination pause' },
-    [pscustomobject]@{ GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA 97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1' },
+    [pscustomobject]@{ GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1' },
     [pscustomobject]@{ GateId = 'O10'; Field = 'next_action'; Needle = 'Owner/agent must classify exact scope before commit or handoff' },
     [pscustomobject]@{ GateId = 'O11'; Field = 'requirement'; Needle = 'Status board current and no generic Done' },
     [pscustomobject]@{ GateId = 'O12'; Field = 'requirement'; Needle = 'Act mapping' },
