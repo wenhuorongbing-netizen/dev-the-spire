@@ -31,14 +31,14 @@ References:
 
 2026-06-21 web recheck:
 
-- RitsuLib GitHub release `v0.4.29` is marked Latest, and the NuGet package
-  index includes `0.4.29`; these are the current beta.92 dependency authorities.
-- Nexus currently still shows the variant-pack main file as `0.4.28`, so do not
-  use Nexus as the authority for the beta.92 `0.4.29` target.
+- RitsuLib GitHub release `v0.4.29` is marked Latest, the NuGet package index
+  includes `0.4.29`, and the Nexus files page now lists the variant-pack main
+  file as `0.4.29`; the earlier Nexus `0.4.28` lag is historical only.
 - Do not use a dev build for a tester package unless the owner explicitly
   approves a dev-runtime validation lane.
 - GitHub release: `https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.4.29`.
 - NuGet flat-container index: `https://api.nuget.org/v3-flatcontainer/sts2.ritsulib/index.json`.
+- Nexus files page: `https://www.nexusmods.com/slaythespire2/mods/137?tab=files`.
 - GitHub manifest: `https://github.com/BAKAOLC/STS2-RitsuLib/blob/main/mod_manifest.json`.
 - The current public Slay the Spire 2 update target remains Major Update #2
   `v0.107.1` per SteamDB `https://steamdb.info/patchnotes/23811903/`.

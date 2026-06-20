@@ -365,7 +365,8 @@ public sealed class RitsuLibMigrationGuardTests
             migrationGoal,
             "GitHub release `v0.4.29` is marked Latest",
             "NuGet flat-container includes `0.4.29`",
-            "Nexus currently still shows the variant-pack main file as `0.4.28`",
+            "Nexus files now list the variant-pack main file as `0.4.29`",
+            "the earlier Nexus `0.4.28` lag is historical only",
             "Keep Spire Plus on stable `0.4.29`, not a dev build");
 
         AssertSourceContains(
@@ -373,7 +374,8 @@ public sealed class RitsuLibMigrationGuardTests
             "## External Version Recheck",
             "RitsuLib GitHub release `v0.4.29` is marked Latest",
             "NuGet package",
-            "Nexus currently still shows the variant-pack main file as `0.4.28`",
+            "Nexus files page now lists the variant-pack main",
+            "the earlier Nexus `0.4.28` lag is historical only",
             "Major Update #2",
             "`v0.107.1`",
             "Workshop and RNG-system changes are dependency-sensitive",

@@ -76,7 +76,7 @@ handoff.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Upstream RitsuLib target | Pass | Rechecked on 2026-06-21: GitHub release `v0.4.29` is marked Latest and NuGet flat-container includes `0.4.29`; Nexus currently still shows the variant-pack main file as `0.4.28`, so Nexus is not the authority for this beta.92 dependency target. Keep Spire Plus on stable `0.4.29`, not a dev build. `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
+| Upstream RitsuLib target | Pass | Rechecked on 2026-06-21: GitHub release `v0.4.29` is marked Latest, NuGet flat-container includes `0.4.29`, and Nexus files now list the variant-pack main file as `0.4.29`; the earlier Nexus `0.4.28` lag is historical only. Keep Spire Plus on stable `0.4.29`, not a dev build. `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
 | Current game update target | Pass | Rechecked on 2026-06-21: SteamDB still names Major Update #2 as `v0.107.1`; local `release_info.json` matches `v0.107.1`, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`. |
 | RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.29` is installed with `lib/0.107.1`; previous `v0.4.24` install was backed up before replacement. |
 | Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 60 checks / 0 mismatches against installed version/commit/branch/main assembly hash and RitsuLib `0.4.29` / compat `0.107.1`. |
