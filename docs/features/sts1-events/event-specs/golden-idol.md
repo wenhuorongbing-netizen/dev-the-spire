@@ -103,5 +103,5 @@ STS1_GOLDEN_IDOL.pages.HIDE.description
 ## Non-Claims
 
 - This spec does not claim current Golden Idol relic parity.
-- This spec does not prove current `v0.107.0` CanaryOnly enabled-mode spawn behavior.
+- This spec does not prove current `v0.107.1` CanaryOnly enabled-mode spawn behavior; beta.91 AdditiveBatch1 loader proof covers registration shape only.
 - This spec does not prove gameplay, save/load, EN/ZHS render, image/license, or multiplayer behavior.

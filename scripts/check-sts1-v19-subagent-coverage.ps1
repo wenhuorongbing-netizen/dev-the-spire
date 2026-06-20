@@ -105,7 +105,7 @@ Add-ContainsCheck -Name 'coverage_copied_log_class_only_boundary' -Text $coverag
 Add-ContainsCheck -Name 'coverage_canary_expected_runtime_shape' -Text $coverageText -Needle 'CanaryOnly 4 event types / 6 registration calls'
 Add-ContainsCheck -Name 'coverage_additive_expected_runtime_shape' -Text $coverageText -Needle 'AdditiveBatch1 10 event types / 14 registration calls'
 Add-ContainsCheck -Name 'coverage_canary_gameplay_packet' -Text $coverageText -Needle 'Big Fish, Golden Idol, The Lab, and Divine Fountain screenshots, result logs, pre/post state notes, save-load proof, EN/ZHS render screenshots, and image/license disposition after CanaryOnly proof exists.'
-Add-ContainsCheck -Name 'coverage_additive_retained_loader_packet' -Text $coverageText -Needle 'Retained AdditiveBatch1 packet at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`'
+Add-ContainsCheck -Name 'coverage_additive_retained_loader_packet' -Text $coverageText -Needle 'Current beta.91 AdditiveBatch1 packet at `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`'
 Add-ContainsCheck -Name 'coverage_additive_loader_only_boundary' -Text $coverageText -Needle 'This closes O33 as loader/registration proof only; O51 still requires gameplay packet proof.'
 Add-ContainsCheck -Name 'coverage_simple_batch_gameplay_packet' -Text $coverageText -Needle 'Purifier, Upgrade Shrine, Golden Shrine, The Cleric, Old Beggar, and Shining Light screenshots, result logs, save-load proof, EN/ZHS render screenshots, image/license disposition, and independent QA with AdditiveBatch1 loader proof already retained.'
 Add-ContainsCheck -Name 'coverage_direct_key_not_enabled_mode_proof' -Text $coverageText -Needle 'Closing only the direct Golden Idol key is not O33 AdditiveBatch1 proof or gameplay proof.'
@@ -127,7 +127,7 @@ $additiveLoaderRow = @($ledgerRows | Where-Object { $_.gate_id -eq 'O33' })
 $runtimeProofRows = @($ledgerRows | Where-Object { $_.gate_id -in @('O41', 'O52', 'O58', 'O65', 'O75') })
 $runtimeProofRowsStillOpen = @($runtimeProofRows | Where-Object { $_.current_status -ne 'current-pass' -and $_.current_status -ne 'static-pass' })
 
-Add-Check -Name 'additive_loader_gate_current_pass' -Passed ($additiveLoaderRow.Count -eq 1 -and $additiveLoaderRow[0].current_status -eq 'current-pass') -Detail 'O33 must remain current-pass for beta.86 loader/registration proof'
+Add-Check -Name 'additive_loader_gate_current_pass' -Passed ($additiveLoaderRow.Count -eq 1 -and $additiveLoaderRow[0].current_status -eq 'current-pass') -Detail 'O33 must remain current-pass for beta.91 loader/registration proof'
 Add-Check -Name 'runtime_subagent_gates_still_open' -Passed ($runtimeProofRowsStillOpen.Count -eq $runtimeProofRows.Count) -Detail 'gameplay/QA/handoff runtime gates must remain open until evidence exists'
 Add-Check -Name 'ledger_has_open_subagent_related_rows' -Passed ($blockedOrPendingRows.Count -gt 0) -Detail 'ledger must still expose blocked/current-pending rows'
 

@@ -121,7 +121,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             Environment.NewLine,
             docsToCheck.Select(path => ReadRepoText(path.Split('/'))));
         Assert.Contains("475 passed / 21 skipped", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("67 passed / 2 skipped", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("2026-06-20 beta.91 RitsuLib-only package pass", currentDocs, StringComparison.Ordinal);
     }
 
     [Fact]

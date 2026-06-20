@@ -152,7 +152,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "OnlySpirePlusIsAnActiveRootModSurface");
         AssertSourceContains(
             docsByPath["docs/features/ancients-rework-v4/completion-audit.md"],
-            "avoid copying stale historical commit labels into beta.86 handoff notes");
+            "avoid copying stale historical commit labels into handoff notes");
 
         foreach (var staleFragment in new[]
                  {
