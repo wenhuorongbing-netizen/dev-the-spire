@@ -275,7 +275,7 @@ Tasks:
 1. Re-read docs/features/ancients-rework-v4/source-design.md and docs/features/ancients-rework-v4/implementation-plan.md.
 2. Use or extend no-op logging only as needed to identify the Pael's Horn Ancient option/reward id, text key, runtime type, and reward application hook.
 3. Create or update docs/features/ancients-rework-v4/api-discovery.md with the actual API findings and chosen patch point.
-4. Implement only the Pael's Horn phase 1 behavior through supported game/BaseLib/template APIs; prefer command APIs over direct state mutation.
+4. Historical scaffold-era wording referenced supported game/BaseLib/template APIs. Current release work must instead use native game command APIs, RitsuLib APIs, and template-supported APIs; do not reintroduce BaseLib without owner-approved dependency documentation.
 5. Historical instruction from the scaffold phase: keep manifest id EzDailyContent and do not add unrelated cards, relics, assets, or other Ancient reward changes. Current release work instead keeps manifest id EZMicroBalance.
 6. Run dotnet build. Do not continue to publish if build fails.
 7. Run dotnet publish only if packaging/resource/manifest changes are made or if manual game verification needs refreshed installed artifacts.

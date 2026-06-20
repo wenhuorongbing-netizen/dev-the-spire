@@ -136,6 +136,7 @@ function Get-WorktreeBatch {
         $p.StartsWith('docs/archive/sts1-events-feature-module-draft/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/codex-harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/integrations/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/skills/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/ritsulib-migration/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -in @('BUGFIX_NOTES.md', 'BUGFIX_REPORT.md', 'docs/README.md', 'docs/PROJECT_MAP.md', 'docs/archive/README.md', 'docs/doc-inventory.md', 'docs/doc-restructure-spec.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md', 'docs/restructure.md', 'docs/migration.md', 'docs/refactor-map.md')) {

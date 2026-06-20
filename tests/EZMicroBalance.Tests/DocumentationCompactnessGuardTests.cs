@@ -290,6 +290,7 @@ public sealed partial class DocumentationCompactnessGuardTests
     public void AncientV4DocsUseCurrentRuntimeTargetAndArchiveOldBaseline()
     {
         var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
+        var implementationPlan = ReadRepoText("docs", "features", "ancients-rework-v4", "implementation-plan.md");
         var manualChecklist = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-test-checklist.md");
 
         AssertSourceContains(
@@ -303,12 +304,18 @@ public sealed partial class DocumentationCompactnessGuardTests
             "historical context only",
             "revalidate against the current `v0.107.1` source snapshot");
         AssertSourceContains(
+            implementationPlan,
+            "Historical scaffold-era wording referenced supported game/BaseLib/template APIs.",
+            "Current release work must instead use native game command APIs, RitsuLib APIs, and template-supported APIs",
+            "do not reintroduce BaseLib without owner-approved dependency documentation.");
+        AssertSourceContains(
             manualChecklist,
             "- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`",
             "- Runtime framework: `STS2-RitsuLib` `v0.4.28` with `lib\\0.107.1`",
             "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / BaseLib validation lane are historical only and are not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
+        Assert.DoesNotContain("through supported game/BaseLib/template APIs", implementationPlan, StringComparison.Ordinal);
         Assert.DoesNotContain("Verified baseline target: `v0.104.0`, `2026.04.23`", manualChecklist, StringComparison.Ordinal);
     }
 
@@ -364,6 +371,62 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.DoesNotContain("## P0:", goal, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("## P1:", goal, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("## P2:", goal, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void RestructureDocStaysCurrentReadableAndRitsuLibOnly()
+    {
+        var restructure = ReadRepoText("docs", "restructure.md");
+        var lineCount = restructure.Split('\n').Length;
+
+        Assert.True(lineCount <= 90, $"docs/restructure.md should stay a compact current boundary; current line count is {lineCount}.");
+        AssertSourceContains(
+            restructure,
+            "# Restructure Boundary",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.91`",
+            "`STS2-RitsuLib` `0.4.28`",
+            "`lib\\0.107.1`",
+            "BaseLib is previous-package or other-mod local context only",
+            "`scripts\\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot`",
+            "Use `docs/goals/event.md`",
+            "Do not combine behavior changes, package version bumps, broad file moves, and",
+            "runtime dependency changes in one slice.");
+
+        foreach (var staleCurrentTarget in new[]
+                 {
+                     "Slay the Spire 2 v0.106.1 + BaseLib v3.1.4",
+                     "STS2-RitsuLib >= 0.3.2",
+                     "RitsuLib `v0.3.10` variant pack",
+                     "PackageReference Include=\"STS2.RitsuLib\" Version=\"0.3.2\"",
+                     "register BaseLib config",
+                     "BaseLib config"
+                 })
+        {
+            Assert.DoesNotContain(staleCurrentTarget, restructure, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
+    public void RepoLocalSts2SkillKeepsRitsuLibOnlyCurrentGuidance()
+    {
+        var skill = ReadRepoText("docs", "skills", "sts2-godot-mod-development.md");
+
+        AssertSourceContains(
+            skill,
+            "Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before Harmony patches.",
+            "BaseLib is historical or other-mod context only for current Spire Plus work",
+            "Inspect local RitsuLib/template APIs or package references when available",
+            "Prefer command APIs and RitsuLib/template hooks over direct state mutation.");
+
+        foreach (var staleInstruction in new[]
+                 {
+                     "Prefer local BaseLib, RitsuLib, template APIs",
+                     "Inspect local BaseLib/RitsuLib/template APIs",
+                     "Prefer command APIs and BaseLib/template hooks"
+                 })
+        {
+            Assert.DoesNotContain(staleInstruction, skill, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
