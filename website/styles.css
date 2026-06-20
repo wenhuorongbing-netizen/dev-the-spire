@@ -1464,9 +1464,9 @@ main {
   margin: 0;
 }
 
-.issue[data-level="楂樹紭鍏堢骇"]::after,
-.issue[data-level="Blocker"]::after {
-  content: "CRITICAL";
+.issue[data-level="待修复"]::after,
+.issue[data-level="Needs fix"]::after {
+  content: "FIX";
   position: absolute;
   top: 14px; right: 14px;
   font-family: var(--font-ui);
@@ -1478,18 +1478,18 @@ main {
   border-radius: 4px;
 }
 
-.issue[data-level="楂樹紭鍏堢骇"],
-.issue[data-level="Blocker"] {
+.issue[data-level="待修复"],
+.issue[data-level="Needs fix"] {
   border-color: var(--sts-red);
 }
 
-.issue[data-level="楂樹紭鍏堢骇"] strong,
-.issue[data-level="Blocker"] strong {
+.issue[data-level="待修复"] strong,
+.issue[data-level="Needs fix"] strong {
   color: hsl(12, 100%, 75%);
 }
 
-.issue[data-level="寰呴獙璇?]::after,
-.issue[data-level="Needs verification"]::after {
+.issue[data-level="待测试"]::after,
+.issue[data-level="Needs testing"]::after {
   content: "TESTING";
   position: absolute;
   top: 14px; right: 14px;
@@ -1502,13 +1502,13 @@ main {
   border-radius: 4px;
 }
 
-.issue[data-level="寰呴獙璇?],
-.issue[data-level="Needs verification"] {
+.issue[data-level="待测试"],
+.issue[data-level="Needs testing"] {
   border-color: var(--sts-gold);
 }
 
-.issue[data-level="寰呴獙璇?] strong,
-.issue[data-level="Needs verification"] strong {
+.issue[data-level="待测试"] strong,
+.issue[data-level="Needs testing"] strong {
   color: hsl(45, 100%, 75%);
 }
 

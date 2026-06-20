@@ -224,4 +224,38 @@ public sealed class WebsiteContentGuardTests
             Assert.DoesNotContain(staleManualMechanicEntry, websiteData, StringComparison.Ordinal);
         }
     }
+
+    [Fact]
+    public void WebsiteKnownIssueLevelsHaveMatchingCssSelectors()
+    {
+        var websiteData = ReadRepoText("website", "content-data.js");
+        var styles = ReadRepoText("website", "styles.css");
+
+        AssertSourceContains(
+            websiteData,
+            "[\"\u5f85\u6d4b\u8bd5\", \"\u5148\u53e4\u4e4b\u6c11\u9057\u7269\"",
+            "[\"\u5f85\u4fee\u590d\", \"Mac \u6587\u672c\u663e\u793a\"",
+            "[\"Needs testing\", \"Ancient relics\"",
+            "[\"Needs fix\", \"Mac text rendering\"");
+
+        AssertSourceContains(
+            styles,
+            ".issue[data-level=\"\u5f85\u6d4b\u8bd5\"]::after",
+            ".issue[data-level=\"Needs testing\"]::after",
+            ".issue[data-level=\"\u5f85\u4fee\u590d\"]::after",
+            ".issue[data-level=\"Needs fix\"]::after",
+            "content: \"TESTING\";",
+            "content: \"FIX\";");
+
+        foreach (var staleSelector in new[]
+                 {
+                     "楂樹紭鍏堢骇",
+                     "寰呴獙璇?",
+                     "Needs verification",
+                     "Blocker"
+                 })
+        {
+            Assert.DoesNotContain(staleSelector, styles, StringComparison.Ordinal);
+        }
+    }
 }
