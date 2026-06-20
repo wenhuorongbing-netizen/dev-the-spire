@@ -11,6 +11,6 @@ Revision M supersession note, 2026-06-11: this packet's beta.84 package/runtime 
 
 Retained pending-proof boundary: current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, and release-ready proof remain pending.
 
-Current beta.91 truth is in `PROJECT_STATE.md` and
+Current beta.92 truth is in `PROJECT_STATE.md` and
 `docs/test-ready-development-goal.md`; gameplay, UI, save-load, replacement,
 co-op, QA, and release-ready proof remain pending there too.

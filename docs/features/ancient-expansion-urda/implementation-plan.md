@@ -5,7 +5,7 @@
 Current dependency and architecture baseline:
 
 - Base game source refresh target: `v0.107.1`.
-- Runtime/API dependency target: STS2-RitsuLib `v0.4.28` with `lib/0.107.1`.
+- Runtime/API dependency target: STS2-RitsuLib `v0.4.29` with `lib/0.107.1`.
 - Active private-beta project: `EZMicroBalance`.
 - Historical BaseLib `v3.1.4` notes in this Urda folder are previous-package context only.
 

@@ -90,14 +90,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         AssertSourceContains(
             docs,
-            "- Current runtime dependency: `STS2-RitsuLib v0.4.28` with `lib\\0.107.1`.",
+            "- Current runtime dependency: `STS2-RitsuLib v0.4.29` with `lib\\0.107.1`.",
             "Current source snapshot: `source code\\release_info.json` matches the installed",
             "`v0.107.1` game identity after the 2026-06-20 GDRE refresh",
             "commit `59260271`",
             "branch `v0.107.1`",
             "main assembly hash `-1555940892`",
             "current-source parity",
-            "The current beta.91 local state is expected to pass",
+            "The current beta.92 local state is expected to pass",
             "`source_release_identity_matches_installed_game`",
             "18 failed scripts and one parse warning",
             "recovery-quality warnings, not source version, commit, branch, hash, or origin",
@@ -153,7 +153,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "`run-result.json` and `autoslay-summary.json` `AncientId` values must still",
             "-ExpectedPatchCount 25");
 
-        Assert.DoesNotContain("Current runtime dependency: `STS2-RitsuLib v0.4.28` with `lib\\0.107.0`", docs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Current runtime dependency: `STS2-RitsuLib v0.4.29` with `lib\\0.107.0`", docs, StringComparison.Ordinal);
         Assert.DoesNotContain("currently reports `v0.106.0`", docs, StringComparison.Ordinal);
         Assert.DoesNotContain("as warnings until `source code/`", docs, StringComparison.Ordinal);
 

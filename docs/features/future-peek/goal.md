@@ -1,4 +1,4 @@
-﻿# Future Peek Compatibility Goal
+# Future Peek Compatibility Goal
 
 This file is a compatibility pointer for old task links that still refer to
 `docs/features/future-peek/goal.md`.
@@ -14,7 +14,7 @@ is folded into the single gameplay-affecting Spire Plus mod:
 ## Current Verified Package
 
 The current manual-test package line is
-`publish/SpirePlus-v0.1.0-private-beta.91.zip`.
+`publish/SpirePlus-v0.1.0-private-beta.92.zip`.
 
 Static guards for this compatibility goal live in
 `tests/EZMicroBalance.Tests/PreviewToolsGuardTests.cs`. They verify the single

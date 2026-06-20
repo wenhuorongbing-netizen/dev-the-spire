@@ -1,4 +1,4 @@
-﻿# Urda Issues
+# Urda Issues
 
 Last updated: 2026-05-13
 
@@ -52,7 +52,7 @@ Source-safe deviations:
 | URDA-BL-03 | P0 | open | Keep `Urda, Loamweaver` out of user-facing release-ready claims until the manual matrix passes or the feature is explicitly postponed.
 | URDA-BL-04 | P1 | source-mitigated / live-pending | Humus Pact no longer uses `CardReward.OnSkipped`; third payoff pending state is kept until resolver success; verify the explicit `Compost Reward` flow does not reenter reward UI, duplicate/lost payoff, or fire from room-exit cleanup.
 | URDA-BL-05 | P1 | source-mitigated / live-pending | Seedbed now counts accepted choices only and uses no-heal max HP gain; verify reroll, low max HP, and fourth-accept behavior live.
-| URDA-BL-06 | P1 | source/package/resource-load mitigated / live-pending | Current Urda derives from RitsuLib `ModAncientEventTemplate`, is registered through `SharedAncient<EzmbUrda>()`, declares custom map/run-history/background-scene paths, packages `ezmb_urda.tscn`, and the retained headless installed-PCK check at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` resolves the custom scene/icon with 0 `ERROR` / `WARNING` lines. That retained check is previous-package resource-load evidence only; rerun live Urda selection and Rootblight visual/gameplay checks on beta.91 to confirm the pre-fix missing asset errors are gone in-game.
+| URDA-BL-06 | P1 | source/package/resource-load mitigated / live-pending | Current Urda derives from RitsuLib `ModAncientEventTemplate`, is registered through `SharedAncient<EzmbUrda>()`, declares custom map/run-history/background-scene paths, packages `ezmb_urda.tscn`, and the retained headless installed-PCK check at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` resolves the custom scene/icon with 0 `ERROR` / `WARNING` lines. That retained check is previous-package resource-load evidence only; rerun live Urda selection and Rootblight visual/gameplay checks on beta.92 to confirm the pre-fix missing asset errors are gone in-game.
 
 ## Issue links
 

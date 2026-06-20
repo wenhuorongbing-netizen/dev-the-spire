@@ -273,7 +273,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("Candidate count is 10", proposal, StringComparison.Ordinal);
         Assert.Contains("Before any Batch 4c source migration:", proposal, StringComparison.Ordinal);
         Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Current `v0.107.1` beta.91 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
+        Assert.Contains("Current `v0.107.1` beta.92 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
         Assert.Contains("retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence", proposal, StringComparison.Ordinal);
         Assert.Contains("Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c", migrationDoc, StringComparison.Ordinal);
 
@@ -324,7 +324,7 @@ public sealed class RitsuLibMigrationGuardTests
             "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.91 package parity passes", proposal, StringComparison.Ordinal);
+        Assert.Contains("installed beta.92 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);
@@ -363,18 +363,17 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             migrationGoal,
-            "the official GitHub releases page has a newer dev build",
-            "the current stable line is `0.4.28`",
-            "Nexus also lists RitsuLib file version `0.4.28`",
-            "Keep Spire Plus on stable `0.4.28`, not the dev build");
-        Assert.DoesNotContain("marks `0.4.28` as Latest", migrationGoal, StringComparison.Ordinal);
+            "GitHub release `v0.4.29` is marked Latest",
+            "NuGet flat-container includes `0.4.29`",
+            "Nexus currently still shows the variant-pack main file as `0.4.28`",
+            "Keep Spire Plus on stable `0.4.29`, not a dev build");
 
         AssertSourceContains(
             integrationDoc,
             "## External Version Recheck",
-            "RitsuLib GitHub releases currently show a newer `dev-build` pre-release",
-            "current stable line is `0.4.28`",
-            "Nexus lists RitsuLib file version `0.4.28`",
+            "RitsuLib GitHub release `v0.4.29` is marked Latest",
+            "NuGet package",
+            "Nexus currently still shows the variant-pack main file as `0.4.28`",
             "Major Update #2",
             "`v0.107.1`",
             "Workshop and RNG-system changes are dependency-sensitive",

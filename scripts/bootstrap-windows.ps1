@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
     [string]$GameRoot,
@@ -77,7 +77,7 @@ foreach ($file in $ritsuLibFiles) {
 
 if ($missingRitsuLib.Count -gt 0) {
     Write-Warning "STS2-RitsuLib appears incomplete. Missing: $($missingRitsuLib -join ', ')"
-    Write-Warning 'Install STS2-RitsuLib v0.4.28 or newer under <GameRoot>\mods\STS2-RitsuLib before game verification.'
+    Write-Warning 'Install STS2-RitsuLib v0.4.29 or newer under <GameRoot>\mods\STS2-RitsuLib before game verification.'
 } else {
     Write-Host 'STS2-RitsuLib runtime files found.'
 }

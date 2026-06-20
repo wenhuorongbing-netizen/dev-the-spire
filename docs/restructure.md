@@ -6,8 +6,8 @@ not a release-readiness claim and must not override `PROJECT_STATE.md`,
 
 ## Current Target
 
-Current package/runtime target is Spire Plus `v0.1.0-private-beta.91` on Slay
-the Spire 2 `v0.107.1` with `STS2-RitsuLib` `0.4.28` and the `lib\0.107.1`
+Current package/runtime target is Spire Plus `v0.1.0-private-beta.92` on Slay
+the Spire 2 `v0.107.1` with `STS2-RitsuLib` `0.4.29` and the `lib\0.107.1`
 runtime variant. `EZMicroBalance.csproj`, `EZMicroBalance.json`, package
 contents, and current runtime proof must remain RitsuLib-only unless the owner
 explicitly approves a new dependency decision. BaseLib is previous-package or other-mod local context only, not a current Spire Plus dependency.
@@ -31,10 +31,10 @@ the current public evidence to recheck is:
   passes with the current package, game, RitsuLib, and compat-branch targets.
 - Do not use historical `v0.106.1`, `v0.107.0`, BaseLib-backed beta.88, or
   beta.90 rows as current runtime proof.
-- Current beta.91 Off/AdditiveBatch1 logs prove loader, patch application, and
+- Current beta.92 Off/AdditiveBatch1 logs prove loader, patch application, and
   registration shape only. Gameplay, clicked UI, save-load, replacement,
   multiplayer, QA, and tester handoff still require their own evidence.
-- Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; current beta.91 proves only RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration behavior, beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence, and CanaryOnly gameplay/runtime, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending or blocked.
+- Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; current beta.92 proves only RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration behavior, beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence, and CanaryOnly gameplay/runtime, save-load, replacement, multiplayer, QA, handoff, and release-ready proof remain pending or blocked.
 
 ## Cleanup Boundaries
 

@@ -20,7 +20,7 @@ Notes:
 
 Notes:
 
-- Historical May 2026 work referenced `Alchyr.Sts2.BaseLib` `3.1.4`; the current repo references `STS2.RitsuLib` `0.4.28` and has no Spire Plus BaseLib dependency.
+- Historical May 2026 work referenced `Alchyr.Sts2.BaseLib` `3.1.4`; the current repo references `STS2.RitsuLib` `0.4.29` and has no Spire Plus BaseLib dependency.
 - The BaseLib page shows `CustomAncientModel`, `IsValidForAct(ActModel act)`, `CustomScenePath`, map/run-history icon paths, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()`.
 - Prefer current local compile-time API evidence over tutorial assumptions when they conflict. Do not reintroduce BaseLib as a Spire Plus dependency without an explicit owner decision, migration document, build, package, and runtime proof.
 

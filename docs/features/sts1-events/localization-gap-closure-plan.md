@@ -118,7 +118,7 @@ Required changes in that validated resource pass:
 After resource validation succeeds, localization still needs runtime evidence before it can be called gameplay-complete:
 
 1. Fresh current-version CanaryOnly enabled-mode smoke with 4 event types / 6 source registration calls if CanaryOnly-specific localization claims are made.
-2. Current beta.91 `v0.107.1` AdditiveBatch1 enabled-mode smoke with 10 event types / 14 source registration calls, or a fresher package-matched recapture if the worktree/package changes.
+2. Current beta.92 `v0.107.1` AdditiveBatch1 enabled-mode smoke with 10 event types / 14 source registration calls, or a fresher package-matched recapture if the worktree/package changes.
 3. EN and ZHS screenshots for options and result pages.
 4. Evidence that placeholders render as values, not raw tokens.
 5. Clean `godot.log` and `godot-log-audit.json` for the same sessions.

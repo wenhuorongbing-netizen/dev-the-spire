@@ -1,9 +1,9 @@
 param(
     [string]$GameRoot = 'E:\Steam\steamapps\common\Slay the Spire 2',
     [string]$ExpectedGameVersion = 'v0.107.1',
-    [string]$ExpectedRitsuLibVersion = '0.4.28',
+    [string]$ExpectedRitsuLibVersion = '0.4.29',
     [string]$ExpectedRitsuCompatBranch = '0.107.1',
-    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.91',
+    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.92',
     [string]$ExpectedModId = 'EZMicroBalance',
     [string]$ExpectedRitsuModId = 'STS2-RitsuLib',
     [string]$OutFile,

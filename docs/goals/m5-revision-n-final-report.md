@@ -12,9 +12,9 @@ Revision N covered beta.88 loader/registration planning on Slay the Spire 2
 `v0.1.0-private-beta.88`. It is no longer the current dependency or package
 line.
 
-Current migration truth is beta.91 RitsuLib-only: Spire Plus has no project,
+Current migration truth is beta.92 RitsuLib-only: Spire Plus has no project,
 manifest, package, or current runtime dependency on BaseLib; the current
-dependency is official `STS2-RitsuLib` `v0.4.28` with `lib/0.107.1`.
+dependency is official `STS2-RitsuLib` `v0.4.29` with `lib/0.107.1`.
 
 Use `PROJECT_STATE.md`, `docs/goals/migration.md`, and
 `docs/test-ready-development-goal.md` for current validation and handoff

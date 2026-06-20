@@ -5,7 +5,7 @@ Scope: Mandatory Overnight Run v14 continuation for `docs/goals/event.md`
 
 Superseded note, 2026-06-11: this report is historical hard-stop evidence only. Current beta.85 `v0.107.0` proof covers default-Off loader startup and patch application only; it does not prove CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Current source registration shape is 57 RegisterAll calls and AdditiveBatch1 10 event types / 14 registration calls; older 10/11 and red-loader wording below must stay historical.
 
-Current supersession, 2026-06-20: beta.91 `v0.107.1` proof now covers RitsuLib-only Off and AdditiveBatch1 loader/registration only; it still does not prove gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Treat any BaseLib dependency wording below as historical, not current instruction.
+Current supersession, 2026-06-21: beta.92 `v0.107.1` proof now covers RitsuLib-only Off and AdditiveBatch1 loader/registration only; it still does not prove gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Treat any BaseLib dependency wording below as historical, not current instruction.
 
 ## Evidence Paths
 
@@ -48,7 +48,7 @@ Continuation cannot make O0-O50 all green in the current environment. STS2-Ritsu
 
 ## Next Owner Actions
 
-1. Historical action at capture time: rerun loader smoke with the then-required BaseLib + STS2-RitsuLib + Spire Plus stack. Current beta.91 action: use the RitsuLib-only runtime commands from `PROJECT_STATE.md` and `docs/features/sts1-events/README.md`.
+1. Historical action at capture time: rerun loader smoke with the then-required BaseLib + STS2-RitsuLib + Spire Plus stack. Current beta.92 action: use the RitsuLib-only runtime commands from `PROJECT_STATE.md` and `docs/features/sts1-events/README.md`.
 2. Capture Off and CanaryOnly `godot.log` evidence before attempting AdditiveBatch1 or replacement-pool proof.
 3. Provide an art/license strategy for StS1 event images.
 4. Rerun independent QA only after runtime evidence exists.

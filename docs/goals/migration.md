@@ -2,15 +2,15 @@
 
 ## Current Target
 
-Date: 2026-06-20
+Date: 2026-06-21
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.91`
+Current package target: Spire Plus `v0.1.0-private-beta.92`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
-Runtime dependency target: official `STS2-RitsuLib` `v0.4.28` with `lib/0.107.1`
+Runtime dependency target: official `STS2-RitsuLib` `v0.4.29` with `lib/0.107.1`
 
 Owner update, 2026-06-20: the owner approved the final dependency migration. The
 active implementation target is no remaining Spire Plus code, project, manifest,
@@ -33,7 +33,7 @@ package, and validation claims must not require BaseLib.
 - Mod Settings are registered through RitsuLib settings APIs and preserve the
   existing preview-tool settings defaults.
 - Current release/setup docs and automated guards describe RitsuLib-only runtime
-  dependency requirements for the new beta.91 package; old BaseLib evidence is
+  dependency requirements for the new beta.92 package; old BaseLib evidence is
   clearly historical.
 - Validation after the migration includes at least build, focused guard tests,
   format, diff-check, patch inventory, batch classifier, publish, package
@@ -54,16 +54,16 @@ current, and action-oriented.
 ## Current Conclusion
 
 Current code, manifest, package, current setup docs, local game-source snapshot, and controlled loader
-proof have moved to the beta.91 RitsuLib-only target: `EZMicroBalance.csproj`
+proof have moved to the beta.92 RitsuLib-only target: `EZMicroBalance.csproj`
 has no `Alchyr.Sts2.BaseLib` reference, `EZMicroBalance.json` declares only
 `STS2-RitsuLib`, the current package artifacts/hash docs are refreshed for
-`v0.1.0-private-beta.91`, the local ignored `source code/` snapshot matches
+`v0.1.0-private-beta.92`, the local ignored `source code/` snapshot matches
 the installed `v0.107.1` game after GDRE recovery, and the local runtime uses
-official `STS2-RitsuLib` `v0.4.28` / `lib/0.107.1`. Off proof under
-`.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/`
+official `STS2-RitsuLib` `v0.4.29` / `lib/0.107.1`. Off proof under
+`.tools/runtime-evidence/v01071-beta92-ritsulib0429-off-direct-20260621/`
 reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded,
 clean audit, and Off packet verifier 43 / 0. AdditiveBatch1 proof under
-`.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`
+`.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/`
 reached main menu, registered 10 event types through 14 calls, audited clean,
 passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. The
 migration is not release-ready. Gameplay, Mod Settings UI page refresh, event
@@ -76,10 +76,10 @@ handoff.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Upstream RitsuLib target | Pass | Rechecked on 2026-06-20: the official GitHub releases page has a newer dev build, but that dev-build entry says the current stable line is `0.4.28`; Nexus also lists RitsuLib file version `0.4.28`. Keep Spire Plus on stable `0.4.28`, not the dev build. `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
-| Current game update target | Pass | Rechecked on 2026-06-20: the official Steam news page for Slay the Spire 2 still names Major Update #2 as `v0.107.1`; local `release_info.json` matches `v0.107.1`, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`. |
-| RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.28` is installed with `lib/0.107.1`; previous `v0.4.24` install was backed up before replacement. |
-| Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 60 checks / 0 mismatches against installed version/commit/branch/main assembly hash and RitsuLib `0.4.28` / compat `0.107.1`. |
+| Upstream RitsuLib target | Pass | Rechecked on 2026-06-21: GitHub release `v0.4.29` is marked Latest and NuGet flat-container includes `0.4.29`; Nexus currently still shows the variant-pack main file as `0.4.28`, so Nexus is not the authority for this beta.92 dependency target. Keep Spire Plus on stable `0.4.29`, not a dev build. `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
+| Current game update target | Pass | Rechecked on 2026-06-21: SteamDB still names Major Update #2 as `v0.107.1`; local `release_info.json` matches `v0.107.1`, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`. |
+| RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.29` is installed with `lib/0.107.1`; previous `v0.4.24` install was backed up before replacement. |
+| Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 60 checks / 0 mismatches against installed version/commit/branch/main assembly hash and RitsuLib `0.4.29` / compat `0.107.1`. |
 | Root cause history | Resolved for loader | The beta.84 Off failure was Spire Plus API drift, including `EctoplasmGoldGatePatch` and getter-target drift, not missing BaseLib/RitsuLib. |
 | beta.85 Off loader proof | Historical pass | `v0.107.0` beta.85 package runtime proof reached main menu with 25/25 Spire Plus patches and clean audit. Treat it as previous-package/game-version loader context. |
 | beta.85 CanaryOnly proof | Historical pass | Previous-package loader proof only: 4 event types / 6 registration calls. |
@@ -87,20 +87,20 @@ handoff.
 | beta.87 build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.87`. |
 | beta.87 AdditiveBatch1 proof | Retained loader/registration pass | `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` reached main menu on `v0.107.0` with BaseLib, RitsuLib, and Spire Plus loaded; 25/25 patches; 30 SavedSpireFields; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0 and packet verifier 52/0. Recapture before treating it as current `v0.107.1` runtime evidence. |
 | v0.107.1 AdditiveBatch1 recapture | Failed clean-loader gate | `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` reached main menu in 33.81s, loaded Spire Plus `v0.1.0-private-beta.87`, selected RitsuLib `0.4.24` compat branch `0.107.0`, applied 25/25 Spire Plus patches, and matched AdditiveBatch1 10 event types / 14 calls with exact act/shared tuple parity. It is not passing proof: BaseLib `v3.2.1` logged `Applied 241 patches successfully, 2 failed`, audit found 3 BaseLib patch-failure hits and 2 Godot ERROR lines, enabled-mode verifier mismatches=2, packet verifier mismatches=1. |
-| beta.91 RitsuLib-only build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.91`; the package declares only `STS2-RitsuLib >= 0.4.28` as its shared runtime framework dependency. |
-| beta.91 RitsuLib-only Off loader proof | Pass | `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/` reached main menu on `v0.107.1`, loaded exactly `RitsuLib [STS2-RitsuLib] (0.4.28)` and `Spire Plus [EZMicroBalance] (v0.1.0-private-beta.91)`, applied 25/25 Spire Plus patches, audited clean, and passed Off log verifier 21 / 0 plus packet verifier 43 / 0. |
-| beta.91 RitsuLib-only AdditiveBatch1 proof | Pass | `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/` reached main menu on `v0.107.1`, loaded exactly RitsuLib and Spire Plus, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. |
-| beta.88 AdditiveBatch1 proof | Historical loader/registration pass | `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu on `v0.107.1` with BaseLib `v3.3.0`, RitsuLib `0.4.24`, and Spire Plus loaded; 25/25 patches; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0; packet verifier 0 mismatches. This is previous BaseLib-backed package context only, not beta.91 proof. |
+| beta.92 RitsuLib-only build/publish/package | Pass | `dotnet build`, `dotnet publish`, package creation, and installed package parity passed for `v0.1.0-private-beta.92`; the package declares only `STS2-RitsuLib >= 0.4.29` as its shared runtime framework dependency. |
+| beta.92 RitsuLib-only Off loader proof | Pass | `.tools/runtime-evidence/v01071-beta92-ritsulib0429-off-direct-20260621/` reached main menu on `v0.107.1`, loaded exactly `RitsuLib [STS2-RitsuLib] (0.4.29)` and `Spire Plus [EZMicroBalance] (v0.1.0-private-beta.92)`, applied 25/25 Spire Plus patches, audited clean, and passed Off log verifier 21 / 0 plus packet verifier 43 / 0. |
+| beta.92 RitsuLib-only AdditiveBatch1 proof | Pass | `.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/` reached main menu on `v0.107.1`, loaded exactly RitsuLib and Spire Plus, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. |
+| beta.88 AdditiveBatch1 proof | Historical loader/registration pass | `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu on `v0.107.1` with BaseLib `v3.3.0`, RitsuLib `0.4.24`, and Spire Plus loaded; 25/25 patches; 10 event types / 14 registration calls; clean audit; retained log verifier 31/0; packet verifier 0 mismatches. This is previous BaseLib-backed package context only, not beta.92 proof. |
 | Tests | Current no-game pass | Recapture `git log -1 --oneline --decorate` and `git status --short --branch` at the start of each continuation and immediately before handoff; older run-start hashes are historical notes, not current status. The beta.90 follow-up passed build 0 warnings / 0 errors, release/package artifact guards, Ancient/Ascension/save-state guards, ReleaseEvidenceGateTests, migration/docs/governance guards, format, diff-check, patch inventory, and batch classifier. RuntimeMonkey analyzer/packet checker subsets timed out in this continuation and were not counted as pass evidence. |
-| Opt-in artifact subset | Current pass | Release/package/source opt-in checks passed with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` and the local `STS2_PATH`; current installed/staging/versioned/zip hashes match beta.91. |
-| StS1 static/governance lanes | Current pass | Current-doc claims 1324/0 after beta.91 RitsuLib-only doc cleanup, gate-ledger/current-doc alignment, beta.88 doc alignment, AutoSlay proof-mode command scan-scope/presence/quoted-path recognizer, `-ExpectedAncientIds` target coverage, AutoSlay summary/analyzer binding hardening, runtime-monkey plan/result/summary binding hardening, runtime-monkey packet native-array-shape hardening including `CommandCorpus`, runtime-monkey analyzer summary array-shape, launcher-provenance, artifact-trust log-owner closure, AutoSlay/runtime-monkey proof-mode current-target parameter hardening, current source-workspace command package-target hardening, and current BaseLib/RitsuLib dependency residue hardening; runtime preflight 27/0 for local `v0.107.1`; retained AdditiveBatch1 packet verifier 62/0; static suite 15/0; static-file hygiene 12/0; v19 gate ledger 535/0; source workspace 60/0 with two retained GDRE warnings. |
+| Opt-in artifact subset | Current pass | Release/package/source opt-in checks passed with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` and the local `STS2_PATH`; current installed/staging/versioned/zip hashes match beta.92. |
+| StS1 static/governance lanes | Current pass | Current-doc claims 1324/0 after beta.92 RitsuLib-only doc cleanup, gate-ledger/current-doc alignment, beta.88 doc alignment, AutoSlay proof-mode command scan-scope/presence/quoted-path recognizer, `-ExpectedAncientIds` target coverage, AutoSlay summary/analyzer binding hardening, runtime-monkey plan/result/summary binding hardening, runtime-monkey packet native-array-shape hardening including `CommandCorpus`, runtime-monkey analyzer summary array-shape, launcher-provenance, artifact-trust log-owner closure, AutoSlay/runtime-monkey proof-mode current-target parameter hardening, current source-workspace command package-target hardening, and current BaseLib/RitsuLib dependency residue hardening; runtime preflight 27/0 for local `v0.107.1`; retained AdditiveBatch1 packet verifier 62/0; static suite 15/0; static-file hygiene 12/0; v19 gate ledger 535/0; source workspace 60/0 with two retained GDRE warnings. |
 | Batch 4a/4b migration | Source-level complete | Current patch inventory records 25 migrated `IPatchMethod` patch classes, 146 remaining raw `HarmonyPatch` declarations, and 171 tracked patch units total. |
 | Batch 4c migration | Proposal only / static review recaptured | 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration work. |
-| Mod Settings UI scaffold | Historical template / live pending | No-launch scaffold at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` was captured for package `v0.1.0-private-beta.87`; treat it as a template only and refresh it for beta.91 before using it as current UI evidence. This is not screenshot, log/audit, or gameplay proof. |
-| Manual-test handoff scaffold | Historical template / live pending | No-launch handoff scaffold refreshed at `.tools/runtime-evidence/manual-test-handoff-20260619-120202/` on pushed HEAD `2400ec4b`; generated `handoff-summary.json` recorded 21 required live rows, 21 expected pending failures, 0 warnings, package ZIP `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D`, and git handoff metadata with `GitHeadMatchesUpstream=true`. This is a beta.88-era template scaffold only; current beta.91 handoff must use the package hashes in `docs/private-beta-verification-handoff.md` / `docs/release-evidence-status.md` and recapture HEAD/worktree status. No game was launched. |
+| Mod Settings UI scaffold | Historical template / live pending | No-launch scaffold at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` was captured for package `v0.1.0-private-beta.87`; treat it as a template only and refresh it for beta.92 before using it as current UI evidence. This is not screenshot, log/audit, or gameplay proof. |
+| Manual-test handoff scaffold | Historical template / live pending | No-launch handoff scaffold refreshed at `.tools/runtime-evidence/manual-test-handoff-20260619-120202/` on pushed HEAD `2400ec4b`; generated `handoff-summary.json` recorded 21 required live rows, 21 expected pending failures, 0 warnings, package ZIP `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D`, and git handoff metadata with `GitHeadMatchesUpstream=true`. This is a beta.88-era template scaffold only; current beta.92 handoff must use the package hashes in `docs/private-beta-verification-handoff.md` / `docs/release-evidence-status.md` and recapture HEAD/worktree status. No game was launched. |
 | Manual proof | Pending | Gameplay, clicked UI, save-load, image rendering, replacement behavior, co-op/fail-closed behavior, independent QA, and tester handoff are still open. |
 
-Historical beta.85/beta.86 loader proof remains previous-package/game-version context, retained beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`, beta.88 `v0.107.1` clean-loader proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` as previous BaseLib-backed package context, and beta.90 RitsuLib-only proof is previous package context. Current beta.91 RitsuLib-only AdditiveBatch1 proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`. The BaseLib `v3.2.1` patch failures in `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` are root-cause history.
+Historical beta.85/beta.86 loader proof remains previous-package/game-version context, retained beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`, beta.88 `v0.107.1` clean-loader proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` as previous BaseLib-backed package context, and beta.90 RitsuLib-only proof is previous package context. Current beta.92 RitsuLib-only AdditiveBatch1 proof is `.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/`. The BaseLib `v3.2.1` patch failures in `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` are root-cause history.
 
 ## Boundaries
 
@@ -115,9 +115,9 @@ Historical beta.85/beta.86 loader proof remains previous-package/game-version co
 ## Next Actions
 
 1. Refresh Mod Settings UI proof for the current Spire Plus display-name package; the current no-launch scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/`, and it must be rerun with `-Capture List` / `-Capture Page` only after manually opening the relevant UI.
-2. Use `.tools/runtime-evidence/manual-test-handoff-20260619-120202/TESTER_START_HERE.md` only as a historical live-row template, or regenerate a beta.91 no-launch scaffold before filling rows with live files for any pass claim.
+2. Use `.tools/runtime-evidence/manual-test-handoff-20260619-120202/TESTER_START_HERE.md` only as a historical live-row template, or regenerate a beta.92 no-launch scaffold before filling rows with live files for any pass claim.
 3. Capture Canary gameplay proof for Big Fish, Golden Idol, The Lab, and Divine Fountain only after recapturing any required current-version CanaryOnly loader packet or explicitly accepting the retained previous-package context for that narrow purpose.
-4. Capture AdditiveBatch1 gameplay proof; beta.91 loader/registration proof is clean and package-matched, but event gameplay is still unproven.
+4. Capture AdditiveBatch1 gameplay proof; beta.92 loader/registration proof is clean and package-matched, but event gameplay is still unproven.
 5. Capture save-load and image/render proof for event and replacement surfaces.
 6. Verify multiplayer fail-closed behavior and any owner-approved two-client diagnostics.
 7. Record an owner decision for Batch 4c. The candidate list has static-review coverage; do not migrate unless the owner approves the scope.
@@ -125,7 +125,7 @@ Historical beta.85/beta.86 loader proof remains previous-package/game-version co
 
 ## Validation Snapshot
 
-Current beta.91 RitsuLib-only validation commands and dependency/source checks:
+Current beta.92 RitsuLib-only validation commands and dependency/source checks:
 
 ```text
 git log -1 --oneline --decorate
@@ -133,7 +133,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $hits = git grep -n "BaseLib" -- EZMicroBalanceCode EZMicroBalance.csproj EZMicroBalance.json; if ($LASTEXITCODE -eq 0) { $hits; exit 1 } elseif ($LASTEXITCODE -eq 1) { 'No BaseLib references in active code/project/manifest.'; exit 0 } else { exit $LASTEXITCODE }
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.91' -ExpectedRitsuLibVersion '0.4.28' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.92' -ExpectedRitsuLibVersion '0.4.29' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~ReleaseSafetyExpandedGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
@@ -141,15 +141,15 @@ dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
 git diff --check
 ```
 
-Current beta.91 package/runtime refresh commands retained from the versioned package pass:
+Current beta.92 package/runtime refresh commands retained from the versioned package pass:
 
 ```text
 dotnet publish EZMicroBalance.sln -m:1
 scripts/package-spire-plus.ps1 -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2'
 scripts/check-installed-spire-plus-package.ps1 -ModDirectory 'E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance'
 scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
-scripts/check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/godot.log.current-iteration -AuditPath .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/godot-log-audit.json -ExpectedPackageVersion v0.1.0-private-beta.91 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.28 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/sts1-enabled-mode-report.json -FailOnMismatch
-scripts/check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620 -LogFileName godot.log.current-iteration -ExpectedPackageVersion v0.1.0-private-beta.91 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.28 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/runtime-evidence-packet-check.json -FailOnMismatch
+scripts/check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath .tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/godot.log.current-iteration -AuditPath .tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/godot-log-audit.json -ExpectedPackageVersion v0.1.0-private-beta.92 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.29 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/sts1-enabled-mode-report.json -FailOnMismatch
+scripts/check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir .tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621 -LogFileName godot.log.current-iteration -ExpectedPackageVersion v0.1.0-private-beta.92 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.29 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/runtime-evidence-packet-check.json -FailOnMismatch
 ```
 
 Historical beta.87 migration pass and follow-up no-game recapture commands:

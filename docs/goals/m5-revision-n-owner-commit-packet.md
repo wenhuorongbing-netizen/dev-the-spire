@@ -9,7 +9,7 @@ Full archived record:
 
 This packet belonged to the beta.88 BaseLib-backed loader/registration lane.
 It did not authorize commit, push, release, or tester handoff, and it is
-superseded by beta.91 RitsuLib-only migration evidence.
+superseded by beta.92 RitsuLib-only migration evidence.
 
 Current owner-facing decisions should start from `PROJECT_STATE.md`,
 `docs/issues.md`, `docs/goals/migration.md`, and

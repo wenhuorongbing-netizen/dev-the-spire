@@ -115,7 +115,7 @@ public sealed class Sts1BigFish : EventModel
 
 ## Manual Evidence Checklist
 
-- [ ] Current beta.91 `v0.107.1` AdditiveBatch1 loader proof exists; recapture CanaryOnly if the claim depends on CanaryOnly specifically.
+- [ ] Current beta.92 `v0.107.1` AdditiveBatch1 loader proof exists; recapture CanaryOnly if the claim depends on CanaryOnly specifically.
 - [ ] Debug-spawn or naturally encounter Big Fish from the current Act 1 buckets.
 - [ ] Select "Banana" and verify HP heals by `MaxHp / 3`.
 - [ ] Select "Donut" and verify max HP increases by 5.

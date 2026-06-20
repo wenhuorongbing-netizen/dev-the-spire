@@ -1,4 +1,4 @@
-﻿# Spire Plus Architecture Decision
+# Spire Plus Architecture Decision
 
 Decision date: 2026-05-05
 
@@ -32,7 +32,7 @@ Manifest:
   "dependencies": [
     {
       "id": "STS2-RitsuLib",
-      "min_version": "0.4.28"
+      "min_version": "0.4.29"
     }
   ],
   "affects_gameplay": true

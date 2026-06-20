@@ -10,7 +10,7 @@ Full archived record:
 The archived plan was written for the paused beta.88 BaseLib-backed lane. It is
 not the current validation recipe.
 
-For current beta.91 RitsuLib-only validation, use `docs/goals/migration.md`,
+For current beta.92 RitsuLib-only validation, use `docs/goals/migration.md`,
 `docs/reviews/current-validation.md`, and `docs/test-ready-development-goal.md`.
 Recapture `git status --short --branch` and `git log -1 --oneline --decorate`
 before any handoff decision, then run the validation commands required by the

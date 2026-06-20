@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-20
 
-2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.28`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.28`, and BaseLib is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
+2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.29`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.29`, and BaseLib is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
 
 ## Reference Check
 
@@ -14,7 +14,7 @@ Live pages rechecked on 2026-05-05:
 Tutorial mismatch:
 
 - RitsuLib guidance uses `ModAncientEventTemplate`, registration attributes such as `RegisterActAncient` / `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `Alchyr.Sts2.BaseLib` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.28` and no BaseLib package.
+- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `Alchyr.Sts2.BaseLib` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.29` and no BaseLib package.
 - The BaseLib tutorial aligned with the historical May project dependency and remains useful only as legacy API context. Current implementation work should prefer local game source plus RitsuLib APIs when they cover the needed hook or registration shape.
 - Phase 1 does not add a custom Ancient. It patches an existing game Ancient relic reward, so the tutorial pages are context for Ancient option structure rather than the direct implementation API.
 
@@ -24,7 +24,7 @@ Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
 - Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`
-- Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.28`
+- Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.29`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:
@@ -102,7 +102,7 @@ Historical limits after batch 2, superseded by later finish evidence below:
 
 Timestamp: 2026-05-05 17:14:30 +02:00.
 
-Additional local APIs inspected in the May BaseLib pass. Current beta.91 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `SavedSpireField` notes are retained only to explain the historical implementation and migration risk:
+Additional local APIs inspected in the May BaseLib pass. Current beta.92 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `SavedSpireField` notes are retained only to explain the historical implementation and migration risk:
 
 - `SereTalon` now uses a scoped Spire Plus pickup patch because the rebalance requires a four-Curse choice screen. Use `CardSelectCmd.FromSimpleGrid` because the three-card choose screen cannot show four Curses.
 - Add-to-deck feedback should not rely on `CardPileCmd.Add(...)` alone. Local Core reward/shop flows animate existing UI cards separately, so Spire Plus direct-gain paths use `SpirePlusFeedback.PreviewDeckAdds(...)`: it keeps `CardCmd.PreviewCardPileAdd(...)`, adds the vanilla deck-movement SFX, and uses a very weak short screen shake as a small confirmation cue.
@@ -174,7 +174,7 @@ Additional local APIs inspected:
 
 Chosen state strategy:
 
-- Keep the long-lived normal reward counter; historical May code used `SavedSpireField<PrismaticGem,int>`, while current beta.91 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
+- Keep the long-lived normal reward counter; historical May code used `SavedSpireField<PrismaticGem,int>`, while current beta.92 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
 - Add a per-screen state keyed by the active `CardReward` instance with `ConditionalWeakTable<CardReward, RewardScreenState>`.
 - Patch `CardReward.Populate()` only to expose the active reward screen through a thread-local stack while `CardFactory.CreateForReward(...)` and `Hook.TryModifyCardRewardOptions(...)` run.
 - The first Prismatic Gem evaluation for a `CardReward` decides the screen: eligible normal rewards increment the saved counter once and store whether this screen should replace all slots; ineligible rewards store a non-trigger decision and do not increment.
@@ -183,7 +183,7 @@ Chosen state strategy:
 
 Runtime-risk notes:
 
-- `JeweledMaskFreePower` was compile-verified in the historical BaseLib pass; current beta.91 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
+- `JeweledMaskFreePower` was compile-verified in the historical BaseLib pass; current beta.92 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
 - `Crossbow`, `ToastyMittens`, and `ChoicesParadox` use generated combat cards and selection screens; manual testing should verify skipped generated cards do not linger in combat state.
 - `MeatCleaver` patches the built-in `CookRestSiteOption`; manual testing should verify no other source creates the rest-site Cleaver option without Meat Cleaver.
 - `PrismaticGem` should be manually tested across two normal monster card rewards and a non-normal reward (elite, boss, event, or colorless-only) to confirm the saved counter only affects the intended reward type.

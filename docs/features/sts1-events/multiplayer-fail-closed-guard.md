@@ -58,7 +58,7 @@ Static reproduction:
 
 ## Runtime Verification Status
 
-Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for older package lines. Current beta.91 RitsuLib-only Off and AdditiveBatch1 loader/registration proof is clean on `v0.107.1`; retained beta.85 CanaryOnly proof remains previous-package/game-version loader context only. Current multiplayer evidence remains pending until co-op is directly proven or explicitly blocked.
+Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate evidence exists for older package lines. Current beta.92 RitsuLib-only Off and AdditiveBatch1 loader/registration proof is clean on `v0.107.1`; retained beta.85 CanaryOnly proof remains previous-package/game-version loader context only. Current multiplayer evidence remains pending until co-op is directly proven or explicitly blocked.
 
 **UNVERIFIED** — requires game launch with:
 1. `SPIREPLUS_STS1_EVENT_MODE=Off` (default) — verify no StS1 events appear
@@ -70,4 +70,4 @@ Current status split: historical Off, CanaryOnly, and AdditiveBatch1 loader-gate
 
 **Source-level fail-closed: VERIFIED by guard tests.**
 **Historical loader-level fail-closed: VERIFIED only for the recorded `v0.106.1` diagnostic smokes.**
-**Current runtime/co-op fail-closed: PENDING for multiplayer and gameplay proof; current beta.91 `v0.107.1` Off and AdditiveBatch1 loader proof is clean, but it is not co-op or gameplay evidence, and CanaryOnly-specific claims require fresh current-version proof.**
+**Current runtime/co-op fail-closed: PENDING for multiplayer and gameplay proof; current beta.92 `v0.107.1` Off and AdditiveBatch1 loader proof is clean, but it is not co-op or gameplay evidence, and CanaryOnly-specific claims require fresh current-version proof.**

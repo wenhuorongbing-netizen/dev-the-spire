@@ -2,13 +2,13 @@
 
 ## Current Task
 
-- M5 Revision P: keep beta.91 RitsuLib-only current-loader truth accurate, prepare owner-ready validation/runtime plans, and avoid overlapping validation or runtime processes.
-- The previous beta.85 `v0.107.0` Revision M target and beta.88 BaseLib-backed Revision N target are historical. Current local truth is beta.91 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.28` / `lib/0.107.1` and no Spire Plus BaseLib dependency.
-- Current beta.91 Off and AdditiveBatch1 proof is clean for loader/registration only. Broader gameplay/live/release proof is still pending.
+- M5 Revision P: keep beta.92 RitsuLib-only current-loader truth accurate, prepare owner-ready validation/runtime plans, and avoid overlapping validation or runtime processes.
+- The previous beta.85 `v0.107.0` Revision M target and beta.88 BaseLib-backed Revision N target are historical. Current local truth is beta.92 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.29` / `lib/0.107.1` and no Spire Plus BaseLib dependency.
+- Current beta.92 Off and AdditiveBatch1 proof is clean for loader/registration only. Broader gameplay/live/release proof is still pending.
 
 ## Acceptance Criteria
 
-- Current docs point at beta.91/RitsuLib-only as current truth through `PROJECT_STATE.md`, `docs/test-ready-development-goal.md`, `docs/dev-environment.md`, and `docs/features/ritsulib-migration/next-overnight-run.md`.
+- Current docs point at beta.92/RitsuLib-only as current truth through `PROJECT_STATE.md`, `docs/test-ready-development-goal.md`, `docs/dev-environment.md`, and `docs/features/ritsulib-migration/next-overnight-run.md`.
 - Harness state no longer routes current work through stale beta.85, beta.88, BaseLib, or RitsuLib `v0.4.16` language.
 - Owner decisions remain explicit: no commit, push, Batch 4c migration, debug expansion, StS1 formalization, release-ready claim, or live-ready claim without the required evidence.
 - Validation commands are planned but not run until coordination allows one clean lane.
@@ -40,7 +40,7 @@
 
 ## Risks
 
-- Stale beta.85/beta.87/beta.88 language can cause overclaims if it is not read through the beta.91 RitsuLib-only override.
+- Stale beta.85/beta.87/beta.88 language can cause overclaims if it is not read through the beta.92 RitsuLib-only override.
 - Existing validation records were produced by other lanes and must not be represented as commands run in this paused pass.
 - Dirty worktree scope can change while same-repo threads are active; recapture status before owner or handoff decisions.
-- Current beta.91 loader proof still does not cover gameplay, UI, save-load, co-op, independent QA, or release handoff.
+- Current beta.92 loader proof still does not cover gameplay, UI, save-load, co-op, independent QA, or release handoff.

@@ -1,4 +1,4 @@
-﻿# Documentation Index
+# Documentation Index
 
 This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). Keep the active reading path small: current development should start from the files below, not from archived prompts or old audit matrices.
 
@@ -10,7 +10,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Human overview | `../README.md` | Short project overview, build commands, and release policy. |
 | Agent rules | `../AGENTS.md` | Hard rules for manifest ids, source evidence, release claims, and validation. |
 | Current development goal | `test-ready-development-goal.md` | Single active long-scope directive for the next implementation pass. |
-| Current migration/review state | `../PROJECT_STATE.md` and `reviews/current-validation.md` | Current beta.91 RitsuLib-only validation state, with older owner packets retained as history. |
+| Current migration/review state | `../PROJECT_STATE.md` and `reviews/current-validation.md` | Current beta.92 RitsuLib-only validation state, with older owner packets retained as history. |
 | Open issues and TODO | `issues.md` | Compact active blocker and next-development issue index. |
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
@@ -36,7 +36,7 @@ Use `features/README.md` as the compact feature index.
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current Urda, Morvi, Lotha, and Vakuu roadmap/status. |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active Spire Plus core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for single-player testing; co-op gameplay fails closed by default after crash logs and is not release-verified. |
-| StS1 event prototype | `features/sts1-events/README.md` | Default-Off event prototype. Use `features/sts1-events/v19-gate-evidence-map.md`, `features/sts1-events/v19-gate-ledger.csv`, `features/sts1-events/v20-final-gate-overlay.csv`, `features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `features/sts1-events/v19-subagent-coverage.md` for current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent status; current beta.91 RitsuLib-only AdditiveBatch1 proof covers loader/registration only with 10 event types / 14 registration calls, while gameplay, save-load, replacement, multiplayer, QA, and handoff proof remain unproven. Beta.85/beta.87/beta.88/beta.90 rows are previous-package or previous-dependency context. |
+| StS1 event prototype | `features/sts1-events/README.md` | Default-Off event prototype. Use `features/sts1-events/v19-gate-evidence-map.md`, `features/sts1-events/v19-gate-ledger.csv`, `features/sts1-events/v20-final-gate-overlay.csv`, `features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `features/sts1-events/v19-subagent-coverage.md` for current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent status; current beta.92 RitsuLib-only AdditiveBatch1 proof covers loader/registration only with 10 event types / 14 registration calls, while gameplay, save-load, replacement, multiplayer, QA, and handoff proof remain unproven. Beta.85/beta.87/beta.88/beta.90 rows are previous-package or previous-dependency context. |
 | Urda ancient expansion support | `features/ancient-expansion-urda/README.md` | Support evidence for the current default-on Urda slice with eleven source-backed blessings; active goal/issues/v2.2/v3.3 docs override older behavior if they conflict. |
 | Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
 | Public forum | `features/forum/technical-spec.md` | GitHub Pages + Supabase anonymous text forum; go-live steps are in `features/forum/go-live-checklist.md`. |

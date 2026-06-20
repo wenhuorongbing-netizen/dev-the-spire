@@ -7,7 +7,7 @@ Full archived record:
 
 - `docs/archive/legacy-planning/m5-revision-l-runtime-smoke-plan-20260610.md`
 
-Revision L is superseded by beta.91 RitsuLib-only Off and AdditiveBatch1 packet
+Revision L is superseded by beta.92 RitsuLib-only Off and AdditiveBatch1 packet
 checks in `PROJECT_STATE.md` and `docs/goals/migration.md`.
 
 Retained registration-shape boundary: current source expects 10 event types / 14 calls.
