@@ -110,7 +110,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "This is not live evidence.",
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
-            "Fresh current-package loader smoke | Current beta.85 `v0.107.0` Off loader smoke audited clean; live gameplay/manual runs are still pending",
+            "Fresh current-package loader smoke | Historical beta.85 `v0.107.0` Off loader smoke was clean for startup only; current beta.91 RitsuLib-only Off/AdditiveBatch1 proof supersedes it for startup/registration, while live gameplay/manual runs are still pending",
             "README_INSTALL | `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04`");
 
         AssertSourceContains(

@@ -131,7 +131,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "Current beta.86 evidence should be read from the latest validated HEAD");
+            "Current beta.91 RitsuLib-only evidence should be read from the latest validated HEAD");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");

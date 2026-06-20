@@ -130,7 +130,7 @@ No `CardCmd.UpgradeCard` method exists anywhere in the codebase.
 | Operation | API | Notes |
 | --- | --- | --- |
 | Event state persistence | `EventModel` serialization | Event state (current page, choices made) is serialized with the room. |
-| Custom saved fields | `SavedSpireFields` | Spire Plus uses `SavedSpireFields` for custom persistence. StS1 events can use the same mechanism. |
+| Custom saved fields | `SavedAttachedState` | Current Spire Plus beta.91 uses RitsuLib `SavedAttachedState` for custom persistence. Historical `SavedSpireFields` rows are BaseLib-era evidence only. |
 | Event bag state | Not yet implemented | StS1 event bag (no-repeat, per-act pools) requires custom `Sts1EventPoolService` — **blocked on Week 4**. |
 
 ## Missing APIs / Blockers

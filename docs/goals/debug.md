@@ -43,7 +43,7 @@ Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status
 
 ## 1. 当前真实状态
 
-最新 `PROJECT_STATE.md` 已经明确：M5 Revision M 的 root cause 是 Spire Plus runtime API drift，不是 BaseLib/RitsuLib 缺失；随后 beta.87 在 `v0.107.1` 暴露 BaseLib `v3.2.1` patch drift；当前 beta.88 已安装 BaseLib `v3.3.0`，保持 STS2-RitsuLib `v0.4.24`，并在 `v0.107.1` AdditiveBatch1 direct smoke 中达到 clean loader/registration proof。这个证据只是 loader/registration proof，不是 live gameplay 或 release readiness。
+当前 `PROJECT_STATE.md` 已经明确：M5 Revision M 的 root cause 是 Spire Plus runtime API drift，不是 BaseLib/RitsuLib 缺失；随后 beta.87 在 `v0.107.1` 暴露 BaseLib `v3.2.1` patch drift；beta.88 的 BaseLib `v3.3.0` / STS2-RitsuLib `v0.4.24` AdditiveBatch1 direct smoke 现在只是历史 BaseLib-backed loader/registration proof。当前 loader truth 是 beta.91 / `v0.107.1` / STS2-RitsuLib `v0.4.28` / RitsuLib-only；这些证据都不是 live gameplay 或 release readiness。
 
 当前 build/test/package 记录也比之前强：beta.88 记录有 build 0 warnings / 0 errors、publish/package refresh、installed package parity、runtime preflight、retained beta.88 AdditiveBatch1 packet verification、current-doc claims、static suite、static-file hygiene 和 split no-build runtime-harness coverage。它们仍然不是 gameplay、clicked UI、save-load、route traversal、preview-tools、Vakuu、co-op、independent QA、clean-worktree proof。
 
@@ -247,7 +247,7 @@ longhaul audit
 M5 Revision N: beta.88 Evidence Governance + Owner Commit Authorization
 ```
 
-本节内容就是当前 M5 Revision N spec；不要依赖 sandbox-only 下载链接作为当前证据。beta.85/beta.87 证据现在只是 previous-package/game-version context；当前 clean-loader truth 是 beta.88 / `v0.107.1` / BaseLib `v3.3.0` / RitsuLib `v0.4.24` 的 AdditiveBatch1 loader/registration proof。
+本节内容是历史 M5 Revision N spec；不要依赖 sandbox-only 下载链接作为当前证据。beta.85/beta.87 证据现在只是 previous-package/game-version context；beta.88 / `v0.107.1` / BaseLib `v3.3.0` / RitsuLib `v0.4.24` 的 AdditiveBatch1 loader/registration proof 也是 previous-dependency context。当前 clean-loader truth 是 beta.91 / `v0.107.1` / STS2-RitsuLib `v0.4.28` / RitsuLib-only Off 和 AdditiveBatch1 loader/registration proof。
 
 ### Week 1：Owner Commit Authorization + Validation Replay
 
