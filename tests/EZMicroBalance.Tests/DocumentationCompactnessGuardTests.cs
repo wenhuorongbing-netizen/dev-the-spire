@@ -209,15 +209,19 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             apiDiscovery,
-            "Runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
-            "Current authoritative source is the refreshed local public beta `v0.106.1` assembly/source noted above.",
+            "2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape.",
+            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.28`",
+            "Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
+            "Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.28`",
+            "Current authoritative source is the refreshed local public beta `v0.107.1` assembly/source recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.",
             "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
             "historical context only",
-            "revalidate against `v0.106.1`");
+            "revalidate against the current `v0.107.1` source snapshot");
         AssertSourceContains(
             manualChecklist,
-            "- Target game version: public beta `v0.106.1`, refreshed locally on `2026-05-22` per `docs/dev-environment.md`",
-            "- Legacy baseline: `v0.104.0` (`2026.04.23`) is historical only and is not the target for this checklist.");
+            "- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`",
+            "- Runtime framework: `STS2-RitsuLib` `v0.4.28` with `lib\\0.107.1`",
+            "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / BaseLib validation lane are historical only and are not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
         Assert.DoesNotContain("Verified baseline target: `v0.104.0`, `2026.04.23`", manualChecklist, StringComparison.Ordinal);

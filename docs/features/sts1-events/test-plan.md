@@ -208,7 +208,7 @@ For each smoke, keep `session-state.json`, `settings.save.before`, `game-release
 
 For enabled-mode evidence, the packet verifier requires explicit `-ExpectedPackageVersion`, `-ExpectedRitsuCompatBranch`, `-ExpectedRitsuLibVersion`, and `-ExpectedGameVersion` checks for enabled-mode evidence.
 
-Older RitsuLib logs were class-only, so Act-bucket tuple proof for those historical packets remains source-derived. Current beta.88 AdditiveBatch1 direct evidence includes tuple-aware verifier parity, but gameplay evidence is still required before claiming event-pool behavior.
+Older RitsuLib logs were class-only, so Act-bucket tuple proof for those historical packets remains source-derived. Current beta.91 AdditiveBatch1 direct evidence includes tuple-aware verifier parity, but gameplay evidence is still required before claiming event-pool behavior.
 
 ### Debug Spawn Test (Canary Events)
 

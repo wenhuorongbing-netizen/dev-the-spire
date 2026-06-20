@@ -3,6 +3,8 @@
 Date: 2026-06-11
 Source evidence: `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/godot.log.after-launch`
 
+2026-06-20 supersession: this ledger is retained as beta.84/beta.87 API-drift history. Current Spire Plus beta.91 no longer depends on BaseLib and uses `STS2-RitsuLib` `v0.4.28` with `lib\0.107.1`; use `PROJECT_STATE.md` or `docs/goals/migration.md` for current dependency truth.
+
 ## Red beta.84 Off Smoke Failures
 
 | Patch id | Runtime log failure | Current source disposition |
@@ -26,6 +28,6 @@ Source evidence: `.tools/runtime-evidence/v01070-off-package-parity-20260610-092
 
 - Installed game DLL audit found the `v0.107.0` API includes the property accessors and `Ectoplasm.ModifyGoldGained(Player, decimal)`.
 - `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/godot.log.after-launch` later applied 25/25 patches with a clean audit, but that log still identifies Spire Plus as beta.84.
-- `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/godot.log.after-launch` is the current package proof: Spire Plus `v0.1.0-private-beta.87`, RitsuLib compat branch `0.107.0`, 25/25 patches, clean audit, and 10 event types / 14 registration calls. Retained beta.85/beta.86 loader proof remains previous-package context.
+- `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/godot.log.after-launch` was the then-current beta.87 package proof for `v0.107.0`: Spire Plus `v0.1.0-private-beta.87`, RitsuLib compat branch `0.107.0`, 25/25 patches, clean audit, and 10 event types / 14 registration calls. It is now previous-game-version context after the beta.91 RitsuLib-only migration.
 - The red beta.84 smoke reached main menu at lines 350-351, so this was an API/patch-cleanliness failure, not a startup crash.
 - Required next proof is no longer loader smoke; run gameplay, save-load, render, replacement, multiplayer, and QA checks only if process coordination is clear.

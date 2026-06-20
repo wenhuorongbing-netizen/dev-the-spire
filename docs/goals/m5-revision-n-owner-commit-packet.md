@@ -3,24 +3,26 @@
 Date: 2026-06-19
 Status: Prepared for owner review at documentation level only. No commit or push is authorized from the current paused lane.
 
-## Current Baseline
+2026-06-20 supersession: this Revision N packet is previous BaseLib-backed context. Current dependency/package truth is beta.91 on Slay the Spire 2 `v0.107.1` with `STS2-RitsuLib` `v0.4.28`, `lib/0.107.1`, and no Spire Plus BaseLib dependency.
+
+## Revision N Baseline
 
 - Package line: `v0.1.0-private-beta.88`
 - Game target: Slay the Spire 2 `v0.107.1`
 - BaseLib: `v3.3.0`
 - STS2-RitsuLib: `v0.4.24`, selected runtime branch `lib/0.107.0`
-- Current loader evidence: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`
-- Current proof scope: AdditiveBatch1 loader/registration only
+- Then-current loader evidence: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`
+- Proof scope: AdditiveBatch1 loader/registration only
 
-The beta.85, beta.86, and beta.87 loader packets remain previous-package or previous-game-version context unless a specific document names the beta.88 evidence path.
+The beta.85, beta.86, beta.87, beta.88, and beta.90 loader packets now remain previous-package, previous-game-version, or previous-dependency context unless a specific document names beta.91 evidence.
 
 ## Owner Decisions
 
 | Area | Recommendation | Reason |
 | --- | --- | --- |
-| BaseLib `v3.3.0` / beta.88 package line | Accept as current clean-loader package context only | The beta.87 `v0.107.1` attempt failed on BaseLib `v3.2.1` patch drift; beta.88 with BaseLib `v3.3.0` has clean current loader/registration proof. |
-| STS2-RitsuLib `v0.4.24` | Keep | Compile package, manifest floor, and installed runtime are aligned on `0.4.24`; the selected compatibility branch remains `lib/0.107.0`. |
-| StS1 events | Keep staging-only | Current beta.88 AdditiveBatch1 evidence proves registration only. Event gameplay, render, save-load, replacement, multiplayer, QA, and handoff proof remain pending. |
+| BaseLib `v3.3.0` / beta.88 package line | Retain as previous BaseLib-backed loader context only | The beta.87 `v0.107.1` attempt failed on BaseLib `v3.2.1` patch drift; beta.88 with BaseLib `v3.3.0` has clean loader/registration proof but is superseded by beta.91 RitsuLib-only proof. |
+| STS2-RitsuLib `v0.4.24` | Superseded by `v0.4.28` for current work | Revision N compile package, manifest floor, and installed runtime were aligned on `0.4.24`; current beta.91 uses `0.4.28` and selected compatibility branch `lib/0.107.1`. |
+| StS1 events | Keep staging-only | Current beta.91 AdditiveBatch1 evidence proves registration only. Event gameplay, render, save-load, replacement, multiplayer, QA, and handoff proof remain pending. |
 | Debug scaffold | Accept scaffold, do not expand | General diagnostics remain internal-only behind `SPIREPLUS_ENABLE_DEBUG_LOGS=1` or legacy `EZMB_ENABLE_DEBUG_LOGS=1`; preview diagnostics remain behind the localized preview setting. `debug.md` explicitly blocks debug expansion. |
 | Runtime monkey / AutoSlay hardening | Accept as guard/harness hardening only after validation replay | Pause-safe verifier/analyzer hardening improves future evidence quality but does not create game-native monkey batch proof. |
 | Batch 4c migration | Defer | Candidate review remains proposal-only. No migration should occur without owner approval and fresh validation. |

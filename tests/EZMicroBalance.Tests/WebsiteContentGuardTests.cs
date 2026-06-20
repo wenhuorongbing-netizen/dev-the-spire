@@ -27,6 +27,8 @@ public sealed class WebsiteContentGuardTests
     {
         var websiteData = ReadRepoText("website", "content-data.js");
         var websiteReadme = ReadRepoText("website", "README.md");
+        var forumGoLiveChecklist = ReadRepoText("docs", "features", "forum", "go-live-checklist.md");
+        var futurePeekGoal = ReadRepoText("docs", "features", "future-peek", "goal.md");
         var packagePath = CurrentPackageZipPath();
         var packageName = CurrentPackageName();
         var packageRelativePath = CurrentPackageZipRelativePath().Replace('\\', '/');
@@ -34,8 +36,13 @@ public sealed class WebsiteContentGuardTests
         Assert.Contains($"../{packageRelativePath}", websiteReadme, StringComparison.Ordinal);
         Assert.Contains($"releases/download/{ManifestVersion()}/{packageName}.zip", websiteReadme, StringComparison.Ordinal);
         Assert.Contains($"releases/tag/{ManifestVersion()}", websiteReadme, StringComparison.Ordinal);
+        Assert.Contains($"releases/download/{ManifestVersion()}/{packageName}.zip", forumGoLiveChecklist, StringComparison.Ordinal);
+        Assert.Contains(packageName, forumGoLiveChecklist, StringComparison.Ordinal);
+        Assert.Contains(packageRelativePath, futurePeekGoal, StringComparison.Ordinal);
         Assert.DoesNotContain("2D86E610141E5FD7500ABDC8973F924E21442EBFBC7F2025B60F982F0D712605", websiteData, StringComparison.Ordinal);
         Assert.DoesNotContain("v0.1.0-private-beta.87", websiteReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("v0.1.0-private-beta.84", forumGoLiveChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("v0.1.0-private-beta.84", futurePeekGoal, StringComparison.Ordinal);
 
         if (File.Exists(packagePath))
         {

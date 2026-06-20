@@ -123,7 +123,7 @@ $env:GODOT_PATH='D:\Game\FOTN\dev-the-spire\.tools\godot-4.5.1-mono\Godot_v4.5.1
 
 This lane does not launch the game and does not satisfy live/manual rows. It only proves the local source, package, and artifact checks on a runner that has the required game dependencies.
 
-Current beta.88 test strategy: `ci-full-validation.ps1` defaults to
+Current test strategy: `ci-full-validation.ps1` defaults to
 `-TestStrategy SplitReleaseEvidence`, which runs isolated
 `ReleaseEvidenceGateTests` and then the complementary test-project lane
 excluding that class. Use `-TestStrategy Solution` only when deliberately

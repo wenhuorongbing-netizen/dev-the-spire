@@ -18,7 +18,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "## Prompt-To-Artifact Checklist",
             "## Missing Or Weakly Verified Items",
             "## Conclusion",
-            "current beta.88 pass",
+            "earlier beta.88 pass",
             "runtime preflight 27 / 0",
         "current-doc claims 1314 / 0",
             "static suite 15 / 0",

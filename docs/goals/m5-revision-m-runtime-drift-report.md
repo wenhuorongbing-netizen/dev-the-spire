@@ -3,6 +3,8 @@
 Date: 2026-06-18
 Status: Loader/runtime drift remains closed and dependency-floor proof was refreshed through beta.87 AdditiveBatch1 registration proof; live gameplay/release proof still pending.
 
+2026-06-20 supersession: beta.91 is now the current RitsuLib-only loader/registration truth for `v0.107.1` with `STS2-RitsuLib` `v0.4.28`. This Revision M report is retained as the beta.87 `v0.107.0` package/source-shape and BaseLib-drift history only.
+
 ## Current Truth
 
 - The old missing-`STS2-RitsuLib` blocker is closed locally. Official `STS2-RitsuLib` `v0.4.24` is installed under `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and includes `lib\0.107.0`; BaseLib `v3.2.1` is installed under `mods\BaseLib`.
@@ -13,7 +15,7 @@ Status: Loader/runtime drift remains closed and dependency-floor proof was refre
 - Local RitsuLib XML documentation for compile package `STS2.RitsuLib` `0.3.2` documents `ModPatchTarget(..., HarmonyLib.MethodType)` and says non-normal `MethodType` values resolve through Harmony `AccessTools` helpers.
 - `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/` is useful source-fix smoke context: it reached main menu on game `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and has a clean audit. It still logs Spire Plus as beta.84, so it is source-direction evidence rather than current package proof.
 - Current manifest is dirty at `v0.1.0-private-beta.87`. `PROJECT_STATE.md` records the beta.87 package/hash target and the current dependency-floor pass.
-- Current beta.87 AdditiveBatch1 proof is `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`: the log reports Spire Plus `v0.1.0-private-beta.87`, RitsuLib `0.4.24` with compat branch `0.107.0`, 25/25 Spire Plus ModPatcher patches applied, 10 event types / 14 registration calls, main menu reached, clean `godot-log-audit.json`, retained enabled-mode log verifier 31 / 0, and retained runtime packet verifier 52 / 0. Beta.85/beta.86 loader proof remains previous-package context.
+- Retained beta.87 AdditiveBatch1 proof is `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`: the log reports Spire Plus `v0.1.0-private-beta.87`, RitsuLib `0.4.24` with compat branch `0.107.0`, 25/25 Spire Plus ModPatcher patches applied, 10 event types / 14 registration calls, main menu reached, clean `godot-log-audit.json`, retained enabled-mode log verifier 31 / 0, and retained runtime packet verifier 52 / 0. Beta.85/beta.86/beta.87 loader proof is now previous-package or previous-game-version context.
 - The checked-in local `source code/` snapshot is not authoritative for `v0.107.0` API drift; installed DLL/API inspection is the deciding source for `Ectoplasm.ModifyGoldGained`, `Vakuu.GenerateInitialOptions`, and canonical getter availability.
 
 ## What This Closes

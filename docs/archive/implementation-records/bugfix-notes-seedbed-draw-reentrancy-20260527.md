@@ -1,5 +1,7 @@
 # BUGFIX_NOTES.md
 
+Archived 2026-06-20: historical Seedbed draw re-entrancy bugfix notes for the beta.83/beta.84 package line. Current Spire Plus package/runtime state is tracked in `PROJECT_STATE.md` and current release docs.
+
 ## Bug Summary
 System.NullReferenceException in CardPileCmd.Draw was caused by Urda Seedbed planting while draw processing was still active.
 

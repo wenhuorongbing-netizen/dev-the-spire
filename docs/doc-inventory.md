@@ -82,6 +82,8 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/website-localization-qa-20260522.md`
 - `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`
 - `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
+- `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md`
+- `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
 
 ## E. Clutter candidates handled
 
@@ -109,6 +111,7 @@ Current support docs, not default reading path:
 - root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`; current forum follow-up remains in `website/web_issue.md` and `docs/features/forum/`.
 - `website/localization_qa.md` -> `docs/archive/implementation-records/website-localization-qa-20260522.md`; current website package/download state is guarded by `website/content-data.js`, `website/README.md`, and website tests.
 - Detailed 2026-05-26 source/package fixed-finding list from `docs/review.md` -> `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`; current review now keeps only the latest conclusions, rollups, and manual-proof focus.
+- Root `BUGFIX_NOTES.md` and `BUGFIX_REPORT.md` -> `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md` and `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`; current package/runtime state now lives in `PROJECT_STATE.md` and current release docs.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 
 ## F. Archive entrypoints
@@ -130,6 +133,8 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`
 - `docs/archive/implementation-records/website-localization-qa-20260522.md`
 - `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
+- `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md`
+- `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/legacy-planning/legacy-project-files/README.md`
 - `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`

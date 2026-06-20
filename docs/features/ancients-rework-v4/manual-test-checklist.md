@@ -9,10 +9,10 @@ Do not treat the feature as private-beta ready until these checks are complete o
 ## Environment
 
 - Game branch: public beta
-- Target game version: public beta `v0.106.1`, refreshed locally on `2026-05-22` per `docs/dev-environment.md`
-- Legacy baseline: `v0.104.0` (`2026.04.23`) is historical only and is not the target for this checklist.
-- BaseLib runtime: `v3.1.4`
-- Expected BaseLib folder: `<GameRoot>\mods\BaseLib`
+- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`
+- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / BaseLib validation lane are historical only and are not the target for this checklist.
+- Runtime framework: `STS2-RitsuLib` `v0.4.28` with `lib\0.107.1`
+- Expected RitsuLib folder: `<GameRoot>\mods\STS2-RitsuLib`
 - Expected mod folder: `<GameRoot>\mods\EZMicroBalance`
 
 ## Pre-flight
@@ -22,12 +22,12 @@ Do not treat the feature as private-beta ready until these checks are complete o
 - Run `dotnet publish`.
 - Launch the game.
 - Open Settings -> Mod Settings.
-- Confirm BaseLib appears.
-- Confirm BaseLib is enabled.
+- Confirm RitsuLib appears.
+- Confirm RitsuLib is enabled.
 - Confirm `Spire Plus` appears with manifest id `EZMicroBalance`.
 - Confirm `Spire Plus` is enabled.
 - Confirm legacy Easy Content / EzDailyContent is disabled or absent.
-- Check `godot.log` for `EZMicroBalance`, `BaseLib`, `EzDailyContent`, `error`, and `exception`.
+- Check `godot.log` for `EZMicroBalance`, `STS2-RitsuLib`, `BaseLib`, `EzDailyContent`, `error`, and `exception`. BaseLib may appear only as unrelated previous-package/other-mod context; it must not be required by the current Spire Plus package.
 
 ## High-priority Ancient reward checks
 

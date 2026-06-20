@@ -190,8 +190,8 @@ EZMicroBalanceCode/Preview/TransformPreviewPatch.cs	cs-high-risk	high	queued
 .gitattributes	config	low	queued
 .gitignore	config	low	queued
 AGENTS.md	config	low	queued
-BUGFIX_NOTES.md	config	low	queued
-BUGFIX_REPORT.md	config	low	queued
+docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md	docs	low	queued
+docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md	docs	low	queued
 Directory.Build.props.example	config	low	queued
 export_presets.cfg	config	low	queued
 EZMicroBalance.csproj	config	low	queued

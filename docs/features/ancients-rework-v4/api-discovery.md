@@ -1,6 +1,8 @@
 # Spire Plus API Discovery
 
-Last updated: 2026-05-26 19:30:00 +02:00
+Last updated: 2026-06-20
+
+2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.28`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.28`, and BaseLib is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
 
 ## Reference Check
 
@@ -12,8 +14,8 @@ Live pages rechecked on 2026-05-05:
 Tutorial mismatch:
 
 - RitsuLib guidance uses `ModAncientEventTemplate`, registration attributes such as `RegisterActAncient` / `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- The active `EZMicroBalance.csproj` references `Alchyr.Sts2.BaseLib` `3.1.4`; no RitsuLib package is referenced. Earlier discovery work started from the legacy `EzDailyContent.csproj`, which is now archived outside the active solution.
-- The BaseLib tutorial aligns with the current project dependency and shows `CustomAncientModel`, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()` for custom Ancients.
+- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `Alchyr.Sts2.BaseLib` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.28` and no BaseLib package.
+- The BaseLib tutorial aligned with the historical May project dependency and remains useful only as legacy API context. Current implementation work should prefer local game source plus RitsuLib APIs when they cover the needed hook or registration shape.
 - Phase 1 does not add a custom Ancient. It patches an existing game Ancient relic reward, so the tutorial pages are context for Ancient option structure rather than the direct implementation API.
 
 ## Local Compile-time Evidence
@@ -21,8 +23,8 @@ Tutorial mismatch:
 Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
-- Runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`
-- Local project package: `Alchyr.Sts2.BaseLib` `3.1.4`
+- Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`
+- Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.28`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:
@@ -64,7 +66,7 @@ Historical phase-1 limits from before the finish batches:
 
 ## Batch 2 API Evidence
 
-Current authoritative source is the refreshed local public beta `v0.106.1` assembly/source noted above. The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`) plus the live RitsuLib/BaseLib tutorial references; keep those older notes as historical context only and revalidate against `v0.106.1` before treating an old Batch 2 detail as current API authority.
+Current authoritative source is the refreshed local public beta `v0.107.1` assembly/source recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`. The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`) and the later May source refresh used `v0.106.1`; keep those older notes as historical context only and revalidate against the current `v0.107.1` source snapshot before treating an old Batch 2 detail as current API authority.
 
 Implemented with narrow Harmony patches. The original batch was developed in the legacy `EzDailyContentCode/Ancients/AncientRewardBalancePatches.cs`; the active release implementation now lives in grouped files under `EZMicroBalanceCode/Ancients/Patches/`:
 

@@ -110,7 +110,6 @@ function Get-WorktreeBatch {
          $p.StartsWith('tests/EZMicroBalance.Tests/Stubs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'docs/patch-inventory.md' -or
         $p -eq 'docs/platform-testing.md' -or
-        $p -in @('BUGFIX_NOTES.md', 'BUGFIX_REPORT.md') -or
         $p -match '^tests/EZMicroBalance\.Tests/(Release|Engineering|TestInfrastructure|CrossPlatform|SourceApiDrift|ActiveSourceManifest|Documentation|MultiplayerPolicy|CoopCombatSafety|PreviewTools|SaveStateContracts|ModInfoLocalization|GoalCompletion|RuntimeCrash|RuntimeMonkey|Audit|RitsuLib|Sts1Event|Architecture|LocalSource).*\.cs(\.uid)?$') {
         return 5
     }
@@ -127,6 +126,7 @@ function Get-WorktreeBatch {
     if ($p.StartsWith('docs/architecture/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/specs/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/month-plan/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/longhaul-audit/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/source-research/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -eq 'docs/architecture-ez-micro-balance.md' -or
         $p -eq 'docs/REMOTE_DEVELOPMENT_SETUP.md' -or
@@ -138,7 +138,7 @@ function Get-WorktreeBatch {
         $p.StartsWith('docs/integrations/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/ritsulib-migration/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('harness/', [System.StringComparison]::OrdinalIgnoreCase) -or
-        $p -in @('docs/README.md', 'docs/PROJECT_MAP.md', 'docs/archive/README.md', 'docs/doc-inventory.md', 'docs/doc-restructure-spec.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md', 'docs/restructure.md', 'docs/migration.md', 'docs/refactor-map.md')) {
+        $p -in @('BUGFIX_NOTES.md', 'BUGFIX_REPORT.md', 'docs/README.md', 'docs/PROJECT_MAP.md', 'docs/archive/README.md', 'docs/doc-inventory.md', 'docs/doc-restructure-spec.md', 'docs/goal.md', 'docs/git-commit-push-policy.md', 'docs/worktree-cleanup-audit.md', 'docs/codex-workflow.md', 'docs/features/README.md', 'docs/restructure.md', 'docs/migration.md', 'docs/refactor-map.md')) {
         return 2
     }
 

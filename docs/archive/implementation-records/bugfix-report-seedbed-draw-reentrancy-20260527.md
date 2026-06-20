@@ -1,5 +1,7 @@
 # BUGFIX_REPORT.md
 
+Archived 2026-06-20: historical Seedbed draw re-entrancy bugfix report for the beta.83/beta.84 package line. Current Spire Plus package/runtime state is tracked in `PROJECT_STATE.md` and current release docs.
+
 ## Root Cause
 The historic crash in the provided log is a draw-state re-entrancy issue.
 
