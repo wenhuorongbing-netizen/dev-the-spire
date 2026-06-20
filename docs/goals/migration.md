@@ -77,7 +77,7 @@ handoff.
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
 | RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.28` is installed with `lib/0.107.1`; previous `v0.4.24` install was backed up before replacement. |
-| Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 57 / 0 against installed version/commit/branch/main assembly hash and RitsuLib `0.4.28` / compat `0.107.1`. |
+| Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 58 checks / 0 mismatches against installed version/commit/branch/main assembly hash and RitsuLib `0.4.28` / compat `0.107.1`. |
 | Root cause history | Resolved for loader | The beta.84 Off failure was Spire Plus API drift, including `EctoplasmGoldGatePatch` and getter-target drift, not missing BaseLib/RitsuLib. |
 | beta.85 Off loader proof | Historical pass | `v0.107.0` beta.85 package runtime proof reached main menu with 25/25 Spire Plus patches and clean audit. Treat it as previous-package/game-version loader context. |
 | beta.85 CanaryOnly proof | Historical pass | Previous-package loader proof only: 4 event types / 6 registration calls. |

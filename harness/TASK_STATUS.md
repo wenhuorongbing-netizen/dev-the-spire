@@ -21,7 +21,7 @@
 
 ## Verification Result
 
-- Latest recorded beta.91 validation is in `PROJECT_STATE.md`, `docs/test-ready-development-goal.md`, and `docs/dev-environment.md`: build 0 warnings / 0 errors, publish/package refresh, installed beta.91 package parity, runtime preflight 27 / 0, current source-workspace check 57 / 0 with two GDRE warnings, RitsuLib-only Off packet verification 43 / 0, AdditiveBatch1 enabled-mode verifier 31 / 0, and AdditiveBatch1 packet verification 61 / 0.
+- Latest recorded beta.91 validation is in `PROJECT_STATE.md`, `docs/test-ready-development-goal.md`, and `docs/dev-environment.md`: build 0 warnings / 0 errors, publish/package refresh, installed beta.91 package parity, runtime preflight 27 / 0, current source-workspace check 58 checks / 0 mismatches with two GDRE warnings, RitsuLib-only Off packet verification 43 / 0, AdditiveBatch1 enabled-mode verifier 31 / 0, and AdditiveBatch1 packet verification 61 / 0.
 - Those recorded results are loader/registration and no-game guard validation only.
 
 ## Remaining Work
