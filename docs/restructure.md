@@ -102,22 +102,18 @@ docs/PROJECT_MAP.md 更新一行
 docs/codex-workflow.md 更新一行
 ```
 
-当前 manifest 已保留 BaseLib 和 RitsuLib runtime dependency；不要改 manifest id，也不要仅因为本机 runtime pack 更新就提高 minimum version：
+当前 manifest 必须保留稳定 id `EZMicroBalance`，并且当前 runtime dependency 只允许 `STS2-RitsuLib`；不要重新加入 BaseLib，也不要仅因为本机 runtime pack 更新就提高 minimum version：
 
 ```json
 "dependencies": [
   {
-    "id": "BaseLib",
-    "min_version": "v3.1.4"
-  },
-  {
     "id": "STS2-RitsuLib",
-    "min_version": "0.3.2"
+    "min_version": "0.4.28"
   }
 ]
 ```
 
-除非后续 RitsuLib API 使用确实需要更高版本并完成 build/test/runtime smoke。当前 manifest 版本是 `v0.1.0-private-beta.84`。
+除非后续 RitsuLib API 使用确实需要更高版本并完成 build/test/publish/package/runtime smoke。当前 manifest/package 版本是 `v0.1.0-private-beta.91`。
 
 ### 4. 文件夹重构：先 move-only，再行为迁移
 
