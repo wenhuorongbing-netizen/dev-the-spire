@@ -14,7 +14,7 @@ need their own evidence rows.
 ## Current Source And Tooling State
 
 - Current installed game: `E:\Steam\steamapps\common\Slay the Spire 2`.
-- Current runtime dependency: `STS2-RitsuLib v0.4.28` with `lib\0.107.0`.
+- Current runtime dependency: `STS2-RitsuLib v0.4.28` with `lib\0.107.1`.
 - Local Godot editor: `.tools\godot-4.5.1-mono\Godot_v4.5.1-stable_mono_win64`.
 - Local recovered game project: `source code\project.godot`.
 - Installed RitsuLib includes a local log viewer under
@@ -28,11 +28,12 @@ version metadata, and conclusions in docs/tests.
 Use only the owner-authorized local install as the recovery source; third-party
 dumps or redistributed source/resource bundles are not valid evidence.
 
-Current caution: `source code\release_info.json` currently reports `v0.106.0`
-on this machine, while the installed game is `v0.107.1`. Check that file before
-using the recovered project as current-source evidence. If it does not match the
-installed game version, refresh the local source snapshot first or treat it as
-historical.
+Current source snapshot: `source code\release_info.json` matches the installed
+`v0.107.1` game identity after the 2026-06-20 GDRE refresh: commit `59260271`,
+branch `v0.107.1`, and main assembly hash `-1555940892`. Re-run the source
+workspace checker before using it as current-source evidence. If the source and
+installed game identity diverge, refresh the local source snapshot first or
+treat the recovered project as historical.
 
 Audit the local source workspace without launching Godot or the game:
 
@@ -53,21 +54,23 @@ handling, event-option selection logging, and event-combat logging. These are
 source-contract checks only; game-native monkey proof still requires a launched
 AutoSlay-backed packet.
 
-Use `-RequireCurrentSourceSnapshot -FailOnMismatch` only when a task requires
-current-source parity. The current local state is expected to report
+Use `-RequireCurrentSourceSnapshot -FailOnMismatch` when a task requires
+current-source parity. The current beta.91 local state is expected to pass
 `source_version_matches_installed_game`, `source_commit_matches_installed_game`,
 `source_branch_matches_installed_game`,
 `source_main_assembly_hash_matches_installed_game`, and
-`source_release_identity_matches_installed_game` as warnings until `source code/`
-is refreshed from the installed `v0.107.1` package. The checker also compares the
-GDRE `Opening file` line to the installed `SlayTheSpire2.pck` path and reports
+`source_release_identity_matches_installed_game`. If any of those checks warn or
+fail, the recovered project is stale for current-source claims. The checker also
+compares the GDRE `Opening file` line to the installed `SlayTheSpire2.pck` path
+and reports
 `GdreExport.OpeningFileMatchesInstalledGame` plus
 `RecoveredSource.OriginMatchesInstalledGamePck`. The report also retains
 RitsuLib manifest, variants, selected variant DLL, and compat-target paths and
-hashes so runtime packets can bind the local Ritsu state they used. GDRE origin
-mismatch and the current GDRE export's failed-script / parse-error counts are
-warnings by default; use `-RequireCurrentSourceSnapshot` or
-`-RequireCleanGdreExport` only when those must be release-blocking for the task.
+hashes so runtime packets can bind the local Ritsu state they used. The current
+retained GDRE warnings are 18 failed scripts and one parse warning; they are
+recovery-quality warnings, not source version, commit, branch, hash, or origin
+mismatches. Use `-RequireCleanGdreExport` only when GDRE recovery warnings must
+be release-blocking for the task.
 
 ## Godot Project Opening
 

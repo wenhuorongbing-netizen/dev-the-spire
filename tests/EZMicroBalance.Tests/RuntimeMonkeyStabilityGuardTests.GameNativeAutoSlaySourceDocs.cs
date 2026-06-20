@@ -90,6 +90,17 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         AssertSourceContains(
             docs,
+            "- Current runtime dependency: `STS2-RitsuLib v0.4.28` with `lib\\0.107.1`.",
+            "Current source snapshot: `source code\\release_info.json` matches the installed",
+            "`v0.107.1` game identity after the 2026-06-20 GDRE refresh",
+            "commit `59260271`",
+            "branch `v0.107.1`",
+            "main assembly hash `-1555940892`",
+            "current-source parity",
+            "The current beta.91 local state is expected to pass",
+            "`source_release_identity_matches_installed_game`",
+            "18 failed scripts and one parse warning",
+            "recovery-quality warnings, not source version, commit, branch, hash, or origin",
             "## Game-Native AutoSlay Batch Lane",
             "`source code\\src\\Core\\AutoSlay\\AutoSlayer.cs`",
             "`AutoSlayer.Start(seed, logFile)`",
@@ -125,10 +136,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "`ExpectedGameProcessPath`",
             "`ProcessIdentityMatchesExpected`",
             "`MainWindowObserved`",
-            "same per-seed `run-####`",
+            "top-level per-seed path",
+            "top-level `run-####/<standard-file>` path",
             "Ancient id, ordered",
             "start/event/Ancient-dialogue/event-option/completion markers",
-            "every per-seed artifact retained in",
+            "place any per-seed artifact outside",
             "sidecar text to",
             "observed ordered event-room lines in both",
             "check-spire-plus-autoslay-packet.ps1",
@@ -140,6 +152,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "case-insensitively after normalizing them to uppercase",
             "`run-result.json` and `autoslay-summary.json` `AncientId` values must still",
             "-ExpectedPatchCount 25");
+
+        Assert.DoesNotContain("Current runtime dependency: `STS2-RitsuLib v0.4.28` with `lib\\0.107.0`", docs, StringComparison.Ordinal);
+        Assert.DoesNotContain("currently reports `v0.106.0`", docs, StringComparison.Ordinal);
+        Assert.DoesNotContain("as warnings until `source code/`", docs, StringComparison.Ordinal);
 
         Assert.DoesNotContain("AutoSlayer", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("AutoSlayLog", runner, StringComparison.Ordinal);
