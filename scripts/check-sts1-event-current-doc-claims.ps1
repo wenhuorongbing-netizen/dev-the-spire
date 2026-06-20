@@ -638,6 +638,7 @@ Add-Check -Name 'current_claim_scan_includes_sts1_goal' -Passed ($currentClaimFi
 Add-Check -Name 'current_claim_scan_includes_sts1_implementation_plan' -Passed ($currentClaimFiles -contains 'docs\features\sts1-events\implementation-plan.md') -Detail 'StS1 implementation plan must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_sts1_event_spec' -Passed ($currentClaimFiles -contains 'docs\features\sts1-events\event-specs\golden-idol.md') -Detail 'StS1 event specs must be in stale claim scan scope'
 
+Add-ContainsCheck -Name 'active_review_latest_addendum_beta92' -Text $activeReview -Needle 'Date: 2026-05-26; latest addendum: 2026-06-21'
 Add-ContainsCheck -Name 'agents_current_beta92_additive_path' -Text $agents -Needle 'current beta.92 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/`'
 Add-ContainsCheck -Name 'agents_current_dependency_ritsulib_only' -Text $agents -Needle 'BaseLib may remain installed locally for previous-package or other-mod context, but it is no longer a Spire Plus project, manifest, package, or current runtime dependency.'
 Add-ContainsCheck -Name 'agents_current_off_not_live_ready' -Text $agents -Needle 'Do not claim live-ready or release-ready because gameplay, clicked UI, save-load, replacement functional proof, multiplayer fail-closed, independent QA rerun, and versioned tester-package handoff remain pending; recapture current HEAD/worktree before any later tester handoff.'

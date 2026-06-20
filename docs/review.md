@@ -1,6 +1,6 @@
 # Current Source Review
 
-Date: 2026-05-26
+Date: 2026-05-26; latest addendum: 2026-06-21
 Scope: compact no-game source/resource review notes for taking `Spire Plus` to a user-test-ready build. Full historical review details are archived at `docs/archive/feature-audits/review-pre-slim-20260518.md`, `docs/archive/feature-audits/review-2026-05-23-pre-compact.md`, `docs/archive/feature-audits/review-2026-05-24-sere-talon-pre-compact.md`, and `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`.
 
 ## Current Conclusion
