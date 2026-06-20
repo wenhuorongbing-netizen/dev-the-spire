@@ -31,6 +31,7 @@
 | `.github/workflows/spire-plus-site.yml` | Current | Publishes `website/` to GitHub Pages. |
 | `docs/archive/` | Current | Historical planning, prompt material, release archaeology, archived audits, and implementation records. |
 | `docs/archive/feature-inputs/` | Archive | Historical feature prompts, superseded implementation specs, and old source-design inputs moved out of active feature folders. |
+| `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md` | Archive | Historical corrupted `docs/goals/debug.md` prompt dump; current debug governance remains in the compact active `docs/goals/debug.md`. |
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
 | `docs/archive/feature-audits/review-pre-slim-20260518.md` | Archive | Full historical source-review log before the compact current `docs/review.md`. |
 | `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Archive | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the compact current review. |
@@ -167,6 +168,7 @@ Start at `docs/README.md`.
 | RitsuLib migration | `docs/features/ritsulib-migration/monthly-dev-spec.md` |
 | RitsuLib migration runtime smoke | `docs/features/ritsulib-migration/runtime-smoke-checklist.md` |
 | RitsuLib migration next run | `docs/features/ritsulib-migration/next-overnight-run.md` |
+| Debug governance | `docs/goals/debug.md` |
 | Ancient expansion v2.2 source audit archive | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md` |
 | Urda support evidence | `docs/features/ancient-expansion-urda/README.md` |
 | Ascension 11-20 | `docs/features/ascension-11-20/README.md` |

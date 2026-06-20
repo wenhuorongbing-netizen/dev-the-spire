@@ -167,7 +167,7 @@ docs/
 | File | Reason |
 | --- | --- |
 | `docs/goals/sts1_event_port_master_plan_summary.md` | StS1 port plan, out of scope this cycle |
-| `docs/goals/debug.md` | Chinese prompt dump, not a doc |
+| `docs/goals/debug.md` | Replaced by compact debug governance on 2026-06-20; old prompt dump archived to `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md` |
 | `docs/goals/event.md` | ChatGPT dump, not a doc |
 | `docs/goals/devspire_longhaul_file_audit_prompts.md` | Prompt dump for longhaul audit (archived process) |
 

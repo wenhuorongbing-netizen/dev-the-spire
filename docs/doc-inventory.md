@@ -84,6 +84,7 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
 - `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
+- `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`
 
 ## E. Clutter candidates handled
 
@@ -113,6 +114,7 @@ Current support docs, not default reading path:
 - Detailed 2026-05-26 source/package fixed-finding list from `docs/review.md` -> `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`; current review now keeps only the latest conclusions, rollups, and manual-proof focus.
 - Root `BUGFIX_NOTES.md` and `BUGFIX_REPORT.md` -> `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md` and `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`; current package/runtime state now lives in `PROJECT_STATE.md` and current release docs.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
+- `docs/goals/debug.md` mojibake prompt dump -> `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`; active `docs/goals/debug.md` is now a compact debug-governance note.
 
 ## F. Archive entrypoints
 
@@ -135,6 +137,7 @@ Current support docs, not default reading path:
 - `docs/archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md`
 - `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md`
 - `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`
+- `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`
 - `docs/archive/legacy-planning/legacy-project-files/README.md`
 - `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`

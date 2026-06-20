@@ -59,6 +59,52 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void DebugGoalStaysCompactAndArchivedPromptDumpStaysOutOfActivePath()
+    {
+        var debug = ReadRepoText("docs", "goals", "debug.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "feature-inputs", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var lineCount = debug.Split('\n').Length;
+
+        Assert.True(lineCount <= 45, $"docs/goals/debug.md should stay a compact governance note; current line count is {lineCount}.");
+        AssertRepoFileExists(
+            "docs",
+            "archive",
+            "feature-inputs",
+            "debug-goal-mojibake-intake-20260620.md");
+        AssertSourceContains(
+            debug,
+            "# Debug Governance",
+            "Current beta.91 loader truth is RitsuLib-only",
+            "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
+            "Debug scaffold status: accept scaffold, do not expand.",
+            "Keep StS1Events staging-only");
+        AssertSourceContains(
+            archiveReadme,
+            "debug-goal-mojibake-intake-20260620.md",
+            "Current debug governance is the compact active `docs/goals/debug.md`.");
+        Assert.Contains("debug-goal-mojibake-intake-20260620.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("debug-goal-mojibake-intake-20260620.md", docInventory, StringComparison.Ordinal);
+
+        foreach (var stalePromptMarker in new[]
+                 {
+                     "OwnerCommitAgent",
+                     "M5 Revision N: beta.88 Evidence Governance",
+                     "One-Shot Prompt",
+                     "涓",
+                     "锛",
+                     "銆",
+                     "歚",
+                     "鐨",
+                     "乧"
+                 })
+        {
+            Assert.DoesNotContain(stalePromptMarker, debug, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void UrdaSupportSourceDesignStaysReadableAndCurrent()
     {
         var urdaSourceDesign = ReadRepoText("docs", "features", "ancient-expansion-urda", "source-design.md");
