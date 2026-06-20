@@ -1,4 +1,4 @@
-# RitsuLib Integration - Staging Record
+# RitsuLib Integration - Current Record
 
 ## Status
 
@@ -29,18 +29,19 @@ References:
 
 ## External Version Recheck
 
-2026-06-20 web recheck:
+2026-06-21 web recheck:
 
 - RitsuLib GitHub releases currently show a newer `dev-build` pre-release, but
   that same entry states the current stable line is `0.4.28`. Do not use the dev
   build for a tester package unless the owner explicitly approves a dev-runtime
   validation lane.
-- Nexus lists RitsuLib file version `0.4.28`, matching the repo package and the
-  installed local runtime.
+- GitHub releases: `https://github.com/BAKAOLC/STS2-RitsuLib/releases`.
+- GitHub manifest: `https://github.com/BAKAOLC/STS2-RitsuLib/blob/main/mod_manifest.json`.
 - The current public Slay the Spire 2 update target remains Major Update #2
-  `v0.107.1`. Its Workshop and RNG-system changes are dependency-sensitive, so
-  any future game update must rerun the source-workspace checker and RitsuLib
-  variant check before claiming compatibility.
+  `v0.107.1` per SteamDB `https://steamdb.info/patchnotes/23811903/`.
+  Its Workshop and RNG-system changes are dependency-sensitive, so any future
+  game update must rerun the source-workspace checker and RitsuLib variant
+  check before claiming compatibility.
 
 ## Runtime Installation
 
@@ -94,18 +95,6 @@ Current compile dependency:
 ```
 
 Current manifest dependency:
-
-```json
-{ "id": "STS2-RitsuLib", "min_version": "0.4.28" }
-```
-
-Historical upgrade path, now superseded by beta.91:
-
-```xml
-<PackageReference Include="STS2.RitsuLib" Version="0.4.28" PrivateAssets="All" />
-```
-
-Current-highest runtime manifest dependency:
 
 ```json
 { "id": "STS2-RitsuLib", "min_version": "0.4.28" }

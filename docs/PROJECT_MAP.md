@@ -57,7 +57,7 @@
 | `docs/specs/` | Current support | Release scope, website claim audit, and release traceability matrix. |
 | `docs/source-research/` | Current support | Compact source evidence for high-risk run, room, reward, save, RNG, and multiplayer surfaces. |
 | `docs/codex-harness/` | Current support | Thin Codex workflow templates adapted from codex-app-better-token harness. |
-| `docs/integrations/` | Current support | Runtime integration staging records (e.g., RitsuLib). |
+| `docs/integrations/` | Current support | Runtime integration records for active dependencies such as RitsuLib. |
 | `docs/refactor-map.md` | Current support | Move-only folder refactor map for EZMicroBalanceCode (planning only). |
 | `docs/migration.md` | Current support | Restructure migration plan and PR sequencing. |
 | `harness/` | Current support | Live task-scoped state files for Codex workflow (project root). |

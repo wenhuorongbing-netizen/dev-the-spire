@@ -430,6 +430,57 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void RitsuLibIntegrationDocsReflectCurrentActiveDependency()
+    {
+        var docsReadme = ReadRepoText("docs", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docRestructureSpec = ReadRepoText("docs", "doc-restructure-spec.md");
+        var integration = ReadRepoText("docs", "integrations", "ritsulib.md");
+
+        AssertSourceContains(
+            docsReadme,
+            "`integrations/ritsulib.md`",
+            "Current RitsuLib integration record: compile package, manifest dependency, installed runtime variant, loader evidence, and remaining proof gates.");
+        AssertSourceContains(
+            projectMap,
+            "`docs/integrations/`",
+            "Runtime integration records for active dependencies such as RitsuLib.");
+        AssertSourceContains(
+            docRestructureSpec,
+            "**RitsuLib integration** (PR5/PR6+)",
+            "Current beta.91 RitsuLib-only compile/manifest/loader target active; later patch migrations gated");
+        AssertSourceContains(
+            integration,
+            "# RitsuLib Integration - Current Record",
+            "Compile and manifest dependency are active.",
+            "`EZMicroBalance.csproj` references `STS2.RitsuLib` only",
+            "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
+            "Current BaseLib target: none for Spire Plus",
+            "2026-06-21 web recheck",
+            "The current public Slay the Spire 2 update target remains Major Update #2",
+            "Current compile dependency:",
+            "Current manifest dependency:");
+
+        foreach (var staleInstruction in new[]
+                 {
+                     "RitsuLib runtime staging record",
+                     "version mismatch blocker",
+                     "future migration plan",
+                     "RitsuLib Integration - Staging Record",
+                     "Historical upgrade path, now superseded by beta.91",
+                     "Current-highest runtime manifest dependency",
+                     "Nexus lists RitsuLib file version",
+                     "| Just started |"
+                 })
+        {
+            Assert.DoesNotContain(staleInstruction, docsReadme, StringComparison.Ordinal);
+            Assert.DoesNotContain(staleInstruction, projectMap, StringComparison.Ordinal);
+            Assert.DoesNotContain(staleInstruction, docRestructureSpec, StringComparison.Ordinal);
+            Assert.DoesNotContain(staleInstruction, integration, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
     public void HistoricalSts1ReviewsStayCompactAndArchivedOutOfActivePath()
     {
         var archiveReadme = ReadRepoText("docs", "archive", "README.md");
