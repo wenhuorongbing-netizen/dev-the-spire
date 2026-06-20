@@ -76,6 +76,8 @@ handoff.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
+| Upstream RitsuLib target | Pass | Rechecked on 2026-06-20: the official GitHub releases page marks `0.4.28` as Latest and its dev-build entry says the current stable line is `0.4.28`; `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` reported no `STS2.RitsuLib` update, only transitive `System.IO.Hashing` 10.0.9. |
+| Current game update target | Pass | Rechecked on 2026-06-20: the official Steam news page for Slay the Spire 2 still names Major Update #2 as `v0.107.1`; local `release_info.json` matches `v0.107.1`, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`. |
 | RitsuLib install | Pass | `STS2-RitsuLib` `v0.4.28` is installed with `lib/0.107.1`; previous `v0.4.24` install was backed up before replacement. |
 | Current game source snapshot | Pass | `source code/` was recovered from installed `v0.107.1` with GDRE Tools `v2.5.0`; checker passed 58 checks / 0 mismatches against installed version/commit/branch/main assembly hash and RitsuLib `0.4.28` / compat `0.107.1`. |
 | Root cause history | Resolved for loader | The beta.84 Off failure was Spire Plus API drift, including `EctoplasmGoldGatePatch` and getter-target drift, not missing BaseLib/RitsuLib. |
@@ -123,21 +125,40 @@ Current beta.85/beta.86 loader proof remains previous-package/game-version conte
 
 ## Validation Snapshot
 
-Current validated commands for the beta.87 migration pass and follow-up no-game recapture:
+Current beta.91 RitsuLib-only validation commands and dependency/source checks:
 
 ```text
-dotnet build EZMicroBalance.sln -m:1 --no-incremental
+git log -1 --oneline --decorate
+git status --short --branch
+dotnet list EZMicroBalance.csproj package --include-transitive
+dotnet list EZMicroBalance.csproj package --outdated --include-transitive
+$hits = git grep -n "BaseLib" -- EZMicroBalanceCode EZMicroBalance.csproj EZMicroBalance.json; if ($LASTEXITCODE -eq 0) { $hits; exit 1 } elseif ($LASTEXITCODE -eq 1) { 'No BaseLib references in active code/project/manifest.'; exit 0 } else { exit $LASTEXITCODE }
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedRitsuLibVersion '0.4.28' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
+scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
+dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~ReleaseSafetyExpandedGuardTests" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
+dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
+git diff --check
+```
+
+Current beta.91 package/runtime refresh commands retained from the versioned package pass:
+
+```text
 dotnet publish EZMicroBalance.sln -m:1
 scripts/package-spire-plus.ps1 -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2'
 scripts/check-installed-spire-plus-package.ps1 -ModDirectory 'E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance'
-scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
-scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch
 scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
+scripts/check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/godot.log.current-iteration -AuditPath .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/godot-log-audit.json -ExpectedPackageVersion v0.1.0-private-beta.91 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.28 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/sts1-enabled-mode-report.json -FailOnMismatch
+scripts/check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620 -LogFileName godot.log.current-iteration -ExpectedPackageVersion v0.1.0-private-beta.91 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.28 -ExpectedGameVersion 0.107.1 -OutFile .tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/runtime-evidence-packet-check.json -FailOnMismatch
+```
+
+Historical beta.87 migration pass and follow-up no-game recapture commands:
+
+```text
+scripts/check-sts1-v19-gate-ledger.ps1 -FailOnMismatch
 scripts/check-sts1-event-static-suite.ps1
 dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~RuntimeFailureAnalyzer|FullyQualifiedName~RuntimeMonkeyPacketChecker|FullyQualifiedName~GameNativeAutoSlayPacketVerifier|FullyQualifiedName~RuntimeMonkeyDocs" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
 dotnet test tests\EZMicroBalance.Tests\EZMicroBalance.Tests.csproj --no-build --filter "FullyQualifiedName~LothaLocalizationHoverAndRichTextAreReadable" --logger "console;verbosity=minimal" -- RunConfiguration.MaxCpuCount=1
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-git diff --check
 scripts/generate-patch-inventory.ps1 -Check
 scripts/report-worktree-batches.ps1 -FailOnUnclassified
 ```
