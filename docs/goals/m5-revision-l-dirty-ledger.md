@@ -5,6 +5,8 @@ Baseline HEAD: `f32c6767`
 
 Revision M supersession note, 2026-06-11: this dirty-ledger scope is historical owner-review context. Current beta.85 has clean `v0.107.0` default-Off loader proof only; current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, clean-worktree, and release-ready proof remain pending. Use `PROJECT_STATE.md` and the Revision M docs for current proof claims.
 
+Current supersession, 2026-06-20: beta.91 has RitsuLib-only Off and AdditiveBatch1 loader/registration proof on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.28`; gameplay, UI, save-load, replacement, co-op, QA, clean-worktree handoff, and release-ready proof remain pending. Use `PROJECT_STATE.md` and `docs/test-ready-development-goal.md` for current proof claims.
+
 ## Scope
 
 This ledger classifies the dirty worktree for owner review. It does not authorize commit, rollback, package refresh, or push.

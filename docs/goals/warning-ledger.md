@@ -6,6 +6,8 @@ Worktree: dirty, owner-review pending.
 
 Revision M note, 2026-06-11: beta.85 validation keeps the nullable warning blocker closed, but this ledger remains a no-game warning ledger only. Do not use 0 warnings as current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, or release-ready proof.
 
+Current supersession, 2026-06-20: beta.91 has RitsuLib-only Off and AdditiveBatch1 loader/registration proof on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.28`; gameplay, UI, save-load, replacement, co-op, QA, and release-ready proof remain pending. Use `PROJECT_STATE.md` and `docs/test-ready-development-goal.md` for current proof claims.
+
 ## Summary
 
 | Metric | Value |

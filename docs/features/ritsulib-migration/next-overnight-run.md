@@ -18,7 +18,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
 - Latest beta.91 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, source-workspace check, and RitsuLib-only Off/AdditiveBatch1 packet verification passed for the current dependency target. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
 - New no-launch evidence folders should retain the generated `environment.json` git handoff fields (`GitPushedHead`, `GitHeadMatchesUpstream`, branch status, and latest commit) as supporting provenance. Still run `git status --short --branch` and `git log -1 --oneline --decorate` directly at handoff time; collector metadata is not a substitute for final recapture.
-- Patch state remains 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, 167 tracked patch units total.
+- Patch state remains 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, 171 tracked patch units total.
 - Historical `v0.106.1` loader-gate runtime proof exists:
   - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
   - CanaryOnly: `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104`, exactly 4 canary registrations in the old source shape, clean audit. Current source expects 4 event types through 6 registration calls.

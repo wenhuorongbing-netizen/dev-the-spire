@@ -16,8 +16,8 @@ Complete the RitsuLib migration safely by separating four different claims:
 - Spire Plus now compiles against NuGet `STS2.RitsuLib` `0.4.28`; the manifest dependency floor is `STS2-RitsuLib >= 0.4.28`, and no BaseLib or separate `STS2.RitsuLib.Compat.*` package is used.
 - Dependency decision for this pass: the owner-approved final dependency migration intentionally bumped compile package, manifest minimum, and package version together, then refreshed build, publish, package, installed-package parity, and Off/AdditiveBatch1 loader evidence.
 - 25 patch classes are migrated to RitsuLib `IPatchMethod`.
-- 142 raw `[HarmonyPatch]` declarations remain.
-- 167 patch units are tracked by `docs/patch-inventory.md`.
+- 146 raw `[HarmonyPatch]` declarations remain.
+- 171 patch units are tracked by `docs/patch-inventory.md`.
 - Hybrid bootstrap is active: migrated patches use RitsuLib `ModPatcher`, remaining raw patches use Harmony.
 - Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes have historical `v0.106.1` loader-gate evidence with 25/25 migrated patches applied and 30 SavedSpireFields observed.
 - Sts1Events defaults Off. CanaryOnly and AdditiveBatch1 are controlled prototype/test modes. AdditiveAllDraft and ReplaceUnknownEventsPrototype remain unsafe/dev-only.

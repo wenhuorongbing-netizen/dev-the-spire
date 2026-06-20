@@ -6,6 +6,8 @@ Status: owner-review packet prepared; not release-ready; not live-ready.
 
 Revision M supersession note, 2026-06-11: this packet's beta.84 package/runtime boundary is historical. Current beta.85 has clean `v0.107.0` default-Off loader proof only; current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, and release-ready proof remain pending. Use `PROJECT_STATE.md` and the Revision M docs for current proof claims.
 
+Current supersession, 2026-06-20: beta.91 has RitsuLib-only Off and AdditiveBatch1 loader/registration proof on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.28`; gameplay, UI, save-load, replacement, co-op, QA, and release-ready proof remain pending. Use `PROJECT_STATE.md` and `docs/test-ready-development-goal.md` for current claims.
+
 ## Current Truth
 
 - Worktree is dirty and must not be treated as the beta.84 package source without owner approval, version bump, publish/package refresh, and handoff docs.
