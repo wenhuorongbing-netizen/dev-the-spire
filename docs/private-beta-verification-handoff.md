@@ -1,6 +1,6 @@
 # Spire Plus Private Beta Verification Handoff
 
-Date: 2026-05-15
+Date: 2026-06-21 current beta.92 handoff summary; older May notes below are retained only as historical context.
 
 **Environment warning (2026-05-08):** The earlier `godot2026-05-08T05.06.30.log` came from v0.105.0 with 17 mods loaded and BaseLib `v3.1.0`, so it is not the required STS2-RitsuLib + Spire Plus-only setup.
 
