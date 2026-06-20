@@ -57,7 +57,7 @@
 | `docs/architecture/` | Current support | Bounded context, patch boundary, and save-state contract maps. |
 | `docs/month-plan/` | Current support | 30-day plan outputs such as baseline freeze and commit boundaries. |
 | `docs/features/ancient-expansion-v2.2/` | Current planning/prototype | Current Urda stabilization, default-on Morvi and Lotha source slices, and the hidden-by-default dedicated Vakuu fight slice; live verification remains pending. |
-| `docs/features/sts1-events/` | Current planning | StS1 events migration: public 52-event baseline tracked; 54 canonical rows, 50 registry identities, 48 model files, and 47 compiling models reconciled. RegisterAll is now 57 calls; AdditiveBatch1 is 10 event types / 14 calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to Act 1 bucket registration. Historical `v0.106.1` loader proof exists, and current `v0.107.0` beta.85 Off loader proof audits clean. Use `v19-gate-evidence-map.md`, `v19-gate-ledger.csv`, `v20-final-gate-overlay.csv`, `hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `v19-subagent-coverage.md` for the current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent split. |
+| `docs/features/sts1-events/` | Current planning | StS1 events migration: public 52-event baseline tracked; 54 canonical rows, 50 registry identities, 48 model files, and 47 compiling models reconciled. RegisterAll is now 57 calls; AdditiveBatch1 is 10 event types / 14 calls after Big Fish, Golden Idol, The Cleric, and Shining Light moved to Act 1 bucket registration. Current beta.91 RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration proof is clean for startup shape only; older beta.85/beta.87/beta.88/beta.90 rows are previous-package or previous-dependency context. Use `v19-gate-evidence-map.md`, `v19-gate-ledger.csv`, `v20-final-gate-overlay.csv`, `hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `v19-subagent-coverage.md` for the current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent split. |
 | `EZMicroBalanceCode/Sts1Events/` | Current implementation | StS1 event code: Runtime registry, Shared/Act1/Act2/Act3 event models. |
 | `manifests/` | Current support | StS1 event manifest CSV/JSON and asset manifest for extraction scripts. |
 
@@ -76,7 +76,7 @@ EZMicroBalanceCode/
   Core/
     Features/
     Integrations/
-      RitsuLib/              (reserved for future RitsuLib bootstrap)
+      RitsuLib/              (current RitsuLib content registration bootstrap)
   Diagnostics/
   Map/
   Modding/
@@ -194,5 +194,5 @@ Authority note: `docs/features/ancient-expansion-urda/` and `docs/features/ancie
 | M0 | Local setup and baseline build/publish established. |
 | M1 | Ancient reward rebalance implemented from the original scaffold. |
 | M2 | Independent `Spire Plus` project created on the stable `EZMicroBalance` technical id and root build succeeds. |
-| M3 | Historical v0.106.1 source context remains available; current v0.107.0/BaseLib v3.2.1 build, publish, package, and beta.87 AdditiveBatch1 loader evidence refreshed; gameplay live smoke remains pending for this package. |
+| M3 | Historical v0.106.1 source context remains available; current `v0.107.1` / STS2-RitsuLib `v0.4.28` beta.91 build, publish, package, installed parity, source-workspace preflight, and RitsuLib-only Off/AdditiveBatch1 loader evidence are refreshed; gameplay live smoke remains pending for this package. |
 | M4 | Private beta release after normal Steam-client Mod Settings, live gameplay/manual matrix, clean handoff, validated commit, and pushed branch. |

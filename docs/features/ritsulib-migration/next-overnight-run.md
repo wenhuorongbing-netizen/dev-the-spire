@@ -29,7 +29,7 @@ Coordination boundary: do not run overlapping validation, package/release, runti
 - Current AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`: 10 event types / 14 registration lines, retained enabled-mode report 31 / 0 and runtime packet verifier 61 / 0. The earlier `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` failure is BaseLib `v3.2.1` root-cause history, and beta.88 is previous BaseLib-backed context.
 - Dependency decision is recorded: beta.91 intentionally aligns the compile package and manifest minimum on STS2-RitsuLib `v0.4.28`, uses `lib\0.107.1`, removes BaseLib from current Spire Plus requirements, and uses package version `v0.1.0-private-beta.91`.
 - Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Migration requires explicit owner approval and fresh validation.
-- A current no-launch Mod Settings UI scaffold is prepared at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` with `GitHead` `1cb58dbcbfcdb08defe50a4687023aa59d4a229d`, clean `GitStatusShort`, package `v0.1.0-private-beta.87`, `Capture=None`, and `NoLaunch=true`. Its preflight recorded Slay the Spire 2 not running. It is pending scaffold evidence only, not screenshot, log/audit, gameplay, or handoff proof.
+- A historical no-launch Mod Settings UI scaffold exists at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` with package `v0.1.0-private-beta.87`. Treat it as a template only; refresh or replace it for beta.91 before using it as current UI evidence. It is not screenshot, log/audit, gameplay, or handoff proof.
 - A no-launch manual-test handoff scaffold is prepared at `.tools/runtime-evidence/manual-test-handoff-20260619-120202/` on pushed HEAD `2400ec4b`, with 21 required live rows, 21 expected pending failures, 0 warnings, package ZIP `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D`, and `GitHeadMatchesUpstream=true`. Use `TESTER_START_HERE.md` there as the live-row template only; no game was launched.
 - Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, and tester-package handoff remain pending. Current-version clean loader proof is available for beta.91/RitsuLib-only; future handoff must recapture HEAD and worktree status after any later edits.
 - Release-ready and live-ready remain no.
@@ -118,20 +118,21 @@ If a gate cannot be completed, record:
 
 ## Success Criteria
 
-- [x] Current STS2-RitsuLib installed locally (`v0.4.24`, `lib\0.107.0`).
+- [x] Current STS2-RitsuLib installed locally (`v0.4.28`, `lib\0.107.1`).
 - [x] Historical `v0.106.1` Off loader gate proves 0 Sts1Events registrations.
 - [x] Historical `v0.106.1` CanaryOnly loader gate proves exactly 4 canary registrations in the old source shape.
 - [x] Historical `v0.106.1` AdditiveBatch1 loader gate proves 10 event types through the old 11 registration calls.
-- [x] Current `v0.107.1` game install has STS2-RitsuLib `v0.4.24`; the selected compatibility branch remains `lib\0.107.0`.
-- [x] Dependency bump decision recorded: beta.87 compile/manifest floor is `0.4.24`.
+- [x] Current `v0.107.1` game install has STS2-RitsuLib `v0.4.28`; the selected compatibility branch remains `lib\0.107.1`.
+- [x] Final dependency migration decision recorded: beta.91 compile/manifest floor is `0.4.28`, and BaseLib is no longer a Spire Plus project, manifest, package, or current runtime dependency.
 - [x] Installed beta.85 package parity verified after the 2026-06-11 package refresh.
 - [x] Installed beta.86 package parity verified after the 2026-06-18 package/source alignment pass.
-- [x] Installed beta.87 package parity verified after the 2026-06-18 dependency-floor package refresh.
+- [x] Installed beta.91 package parity verified after the 2026-06-20 RitsuLib-only package refresh.
 - [x] Clean `v0.107.0` beta.85 Off loader smoke captured after the prior `v0.4.16` install; retain as previous-package/game-version context.
-- [x] Current HEAD validation refreshed after the beta.87 dependency-floor pass and runtime packet-checker hardening; recheck again before handoff if any later edits appear.
+- [x] Current HEAD validation refreshed after the beta.91 RitsuLib-only dependency pass and runtime packet-checker hardening; recheck again before handoff if any later edits appear.
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
-- [x] Current `v0.107.1` clean loader proof recaptured for beta.88/BaseLib `v3.3.0` at `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`.
+- [x] Current `v0.107.1` clean Off proof recaptured for beta.91/RitsuLib-only at `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/`.
+- [x] Current `v0.107.1` clean AdditiveBatch1 proof recaptured for beta.91/RitsuLib-only at `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`.
 - [x] Batch 4c candidate list static review recaptured: 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.
 - [ ] Mod Settings UI evidence captured.
 - [ ] CanaryOnly gameplay matrix completed or blocked with evidence.

@@ -10,7 +10,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Human overview | `../README.md` | Short project overview, build commands, and release policy. |
 | Agent rules | `../AGENTS.md` | Hard rules for manifest ids, source evidence, release claims, and validation. |
 | Current development goal | `test-ready-development-goal.md` | Single active long-scope directive for the next implementation pass. |
-| Current owner-review packet | `goals/m5-revision-n-owner-commit-packet.md` | Revision N beta.88 owner decisions, commit gate, and paused validation handoff. |
+| Current migration/review state | `../PROJECT_STATE.md` and `reviews/current-validation.md` | Current beta.91 RitsuLib-only validation state, with older owner packets retained as history. |
 | Open issues and TODO | `issues.md` | Compact active blocker and next-development issue index. |
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
@@ -18,7 +18,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Architecture boundaries | `architecture/bounded-contexts.md` | Bounded contexts, dependency direction, extension rules, and refactor priorities. |
 | Patch inventory | `patch-inventory.md` | Generated Harmony patch owner/risk inventory; refresh with `scripts/generate-patch-inventory.ps1`. |
 | Release evidence dashboard | `release-evidence-status.md` | Compact live/manual evidence state for the current test package. |
-| v0.106 source/API audit | `audits/v0.106-source-api-drift.md` | Current local Core evidence for high-risk patch surfaces and API drift. |
+| Current source/API policy | `test-ready-development-goal.md` and `dev-environment.md` | Use current `source code/` plus source-workspace checks for new API claims; historical audits are support evidence only. |
 | Release scope | `specs/release-scope-v1.md` | Current release-candidate boundary and go/no-go rules from `goal.md`. |
 | Traceability matrix | `specs/release-traceability-matrix.md` | Player promise to source/guard/live evidence mapping. |
 | Baseline freeze | `month-plan/baseline-2026-05-20.md` | Current no-game baseline, package hashes, patch inventory, and blocker state. |
@@ -36,7 +36,7 @@ Use `features/README.md` as the compact feature index.
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current Urda, Morvi, Lotha, and Vakuu roadmap/status. |
 | Ancient reward rebalance v4 | `features/ancients-rework-v4/README.md` | Active Spire Plus core feature. v4.3 is current. |
 | Ascension 11-20 | `features/ascension-11-20/README.md` | Active development track, default-on for single-player testing; co-op gameplay fails closed by default after crash logs and is not release-verified. |
-| StS1 event prototype | `features/sts1-events/README.md` | Default-Off event prototype. Use `features/sts1-events/v19-gate-evidence-map.md`, `features/sts1-events/v19-gate-ledger.csv`, `features/sts1-events/v20-final-gate-overlay.csv`, `features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `features/sts1-events/v19-subagent-coverage.md` for current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent status; beta.87 direct AdditiveBatch1 proof covers loader/registration only with 10 event types / 14 registration calls, while gameplay, save-load, replacement, multiplayer, QA, and handoff proof remain unproven. Beta.85 Off/CanaryOnly remains previous-package loader context. |
+| StS1 event prototype | `features/sts1-events/README.md` | Default-Off event prototype. Use `features/sts1-events/v19-gate-evidence-map.md`, `features/sts1-events/v19-gate-ledger.csv`, `features/sts1-events/v20-final-gate-overlay.csv`, `features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, and `features/sts1-events/v19-subagent-coverage.md` for current O0-O76 gate split, O76-O84 final documentation/handoff overlay, current v20 hard-stop/next-run point, and subagent status; current beta.91 RitsuLib-only AdditiveBatch1 proof covers loader/registration only with 10 event types / 14 registration calls, while gameplay, save-load, replacement, multiplayer, QA, and handoff proof remain unproven. Beta.85/beta.87/beta.88/beta.90 rows are previous-package or previous-dependency context. |
 | Urda ancient expansion support | `features/ancient-expansion-urda/README.md` | Support evidence for the current default-on Urda slice with eleven source-backed blessings; active goal/issues/v2.2/v3.3 docs override older behavior if they conflict. |
 | Preview tools | `features/preview-tools/README.md` | Crystal Sphere peek and transform preview now ship inside the single Spire Plus mod. |
 | Public forum | `features/forum/technical-spec.md` | GitHub Pages + Supabase anonymous text forum; go-live steps are in `features/forum/go-live-checklist.md`. |
@@ -107,7 +107,7 @@ These files are current support records but are not part of the default next-dev
 | `architecture/bounded-contexts.md` | Feature/context ownership map. |
 | `architecture/patch-boundaries.md` | Harmony patch boundary rules. |
 | `architecture/save-state-contracts.md` | Stateful feature save/load contract map. |
-| `audits/v0.106-source-api-drift.md` | Source/API drift audit for the refreshed `v0.106.1` Core snapshot. |
+| `audits/v0.106-source-api-drift.md` | Historical source/API drift audit for the refreshed `v0.106.1` Core snapshot; not current API parity. |
 | `../scripts/ci-full-validation.ps1` | Full no-game validation entry point for self-hosted CI or a local release machine. |
 | `archive/legacy-planning/legacy-project-files/README.md` | Preserved migration artifact map. |
 

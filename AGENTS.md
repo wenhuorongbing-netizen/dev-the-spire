@@ -2,7 +2,7 @@
 
 ## Project
 
-This repository is a Slay the Spire 2 mod workspace using C#/.NET, the Alchyr Slay the Spire 2 template, and BaseLib.
+This repository is a Slay the Spire 2 mod workspace using C#/.NET, the Alchyr Slay the Spire 2 template lineage, and STS2-RitsuLib. The active Spire Plus package must remain RitsuLib-only unless the owner explicitly approves a new dependency change.
 
 The original scaffold project was `EzDailyContent`; its manifest id must not be renamed in-place. Legacy top-level scaffold files are not part of the active deliverable.
 
@@ -32,13 +32,13 @@ Baseline setup is complete on the local machine:
 
 - Build has succeeded.
 - Publish has succeeded.
-- Historical `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
+- Historical `EzDailyContent` Mod Settings verification succeeded on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`; that scaffold/runtime evidence is historical only.
 - `EZMicroBalance` build and publish have succeeded.
 - Automated release/source-guard tests currently pass after Ancient hardening, Ascension 11-20 selector/slice guards, diagnostics guards, release-art guards, package-drift guards, documentation freshness guards, and the current RitsuLib/Sts1Events governance guards.
-- Current dependency configurations are aligned on BaseLib `v3.2.1`, STS2-RitsuLib `v0.4.24`, and Slay the Spire 2 `v0.107.0`. Installed beta.87 package/hash parity is recorded on 2026-06-18, beta.85/beta.86 loader proof remains previous-package context, and fresh beta.87 AdditiveBatch1 direct proof is clean for loader/registration only.
+- Current dependency configurations are aligned on STS2-RitsuLib `v0.4.28` and Slay the Spire 2 `v0.107.1`. Installed beta.91 package/hash parity is recorded on 2026-06-20, and fresh beta.91 RitsuLib-only Off/AdditiveBatch1 direct proof is clean for loader/registration only.
 - Current no-game validation target at HEAD `f32c6767` plus dirty worktree code/docs changes is 0 build errors and 0 warnings after installed-game API compatibility fixes and expanded Sts1Events owner guards. The current migration validation lane uses split test-project lanes because exact solution-level `dotnet test EZMicroBalance.sln --no-build` repeatedly destabilized around `ReleaseEvidenceGateTests`: isolated `ReleaseEvidenceGateTests` passed 9 / 0 failed / 0 skipped / 9 total, and the complementary test-project lane excluding `ReleaseEvidenceGateTests` passed 466 / 0 failed / 21 skipped / 487 total, for split coverage of 475 passed / 0 failed / 21 skipped / 496 total. Format, diff-check, patch-inventory, and batch-classifier checks were green. Earlier cross-thread `testhost` crashes are runner-contamination evidence only, not the current validation truth.
 - Controlled `--force-steam off` smoke loading and normal Steam-client startup/log verification exist for earlier package states only.
-- Current runtime dependency setup has official `STS2-RitsuLib` `v0.4.24` installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` with `lib\0.107.0\STS2-RitsuLib.dll`; BaseLib `v3.2.1` is installed under `mods\BaseLib`, and the previous dependency install is backed up under `%TEMP%\codex-sts2-dep-backup-20260618-152028`. Clean diagnostic runtime evidence exists under `.tools/runtime-evidence/ritsulib-off-after-target-fix-20260531-2325/` (Off mode), `.tools/runtime-evidence/ritsulib-canary-after-target-fix-20260531-2327/` (CanaryOnly mode), and `.tools/runtime-evidence/additive-batch1-20260602-150445/` (AdditiveBatch1 mode): all logs reached main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits (0 Godot ERROR hits), and 25/25 Spire Plus ModPatcher patches applied. Off mode logged Sts1Events disabled with 0 StS1 registration lines; CanaryOnly logged exactly 4 canary content registrations; AdditiveBatch1 logged exactly 10 event types via 11 registration calls. Treat this as historical `v0.106.1` enabled-mode loader proof. Current `v0.107.0` beta.85/beta.86 loader proof remains previous-package context; current beta.87 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` and audited clean with 25/25 Spire Plus patches applied, 10 event types, and 14 registration lines. Do not claim live-ready or release-ready because event encounter screenshots, save-load, image rendering, replacement functional proof, multiplayer fail-closed, independent QA rerun, and versioned tester-package handoff remain pending; recapture current HEAD/worktree before any later tester handoff. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical from before the display-name refresh. Live gameplay feature verification remains pending.
+- Current runtime dependency setup has official `STS2-RitsuLib` `v0.4.28` installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` with `lib\0.107.1\STS2-RitsuLib.dll`. BaseLib may remain installed locally for previous-package or other-mod context, but it is no longer a Spire Plus project, manifest, package, or current runtime dependency. Current beta.91 Off proof exists under `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/`, and current beta.91 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`; both reached main menu with exactly STS2-RitsuLib and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. Off packet verification passed 43 / 0; AdditiveBatch1 logged 10 event types through 14 registration calls, enabled-mode verifier passed 31 / 0, and packet verification passed 61 / 0. Do not claim live-ready or release-ready because gameplay, clicked UI, save-load, replacement functional proof, multiplayer fail-closed, independent QA rerun, and versioned tester-package handoff remain pending; recapture current HEAD/worktree before any later tester handoff. Mod Settings UI screenshot evidence for `EZMicroBalance` is still partly historical from before the display-name refresh. Live gameplay feature verification remains pending.
 
 Revalidate build, publish, and game load before claiming private beta readiness.
 
@@ -53,10 +53,10 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - Keep experimental Ascension systems independently disableable or behind an explicit internal/debug gate unless release docs intentionally say otherwise.
 - Do not implement Ascension 21-30 this cycle.
 - Do not implement a custom character this cycle.
-- Prefer BaseLib and template-supported APIs.
+- Prefer RitsuLib, local game command APIs, and template-supported APIs.
 - Use Harmony only where no safer API exists.
 - Prefer game command APIs over direct state mutation.
-- Before changing Ascension map, UI, reward, combat, save/load, or hook behavior, inspect the relevant local game source under `source code/src/Core/`, inspect BaseLib/template APIs, and record the evidence in `docs/features/ascension-11-20/`. Keep the tutorial index `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html` and its BaseLib/RitsuLib sections as secondary references; local game source remains the primary implementation authority.
+- Before changing Ascension map, UI, reward, combat, save/load, or hook behavior, inspect the relevant local game source under `source code/src/Core/`, inspect RitsuLib/template APIs, and record the evidence in `docs/features/ascension-11-20/`. Keep the tutorial index `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html` and its RitsuLib sections as secondary references; local game source remains the primary implementation authority.
 - Any type inheriting `AbstractModel` must be obtained from `ModelDb` when used as a canonical marker/hook/model. Do not call constructors directly except where creating mutable/runtime card/relic/etc. instances is explicitly supported by game APIs.
 - Keep changes small and reviewable.
 - If a command fails, diagnose before editing.
@@ -95,7 +95,7 @@ Revalidate build, publish, and game load before claiming private beta readiness.
 - Clone the repository on the target machine.
 - Copy `Directory.Build.props.example` to `Directory.Build.props`.
 - Fill local `GodotPath` and `Sts2Path` values.
-- Install BaseLib `v3.2.1` under `<GameRoot>\mods\BaseLib`.
+- Install STS2-RitsuLib `v0.4.28` under `<GameRoot>\mods\STS2-RitsuLib` with the `lib\0.107.1` runtime variant.
 - Do not commit `Directory.Build.props`, `.tools/`, `.godot/`, `bin/`, `obj/`, downloaded archives, or local binaries.
 
 ## Documentation
@@ -125,12 +125,12 @@ Private beta target:
 
 - After code/config changes: run `dotnet build`.
 - After resource/localization/packaging changes: run `dotnet publish` after build succeeds.
-- Before release: verify BaseLib and Spire Plus load in-game, inspect `godot.log`, and complete the feature manual verification matrix.
+- Before release: verify STS2-RitsuLib and Spire Plus load in-game, inspect `godot.log`, and complete the feature manual verification matrix.
 
-## BaseLib Dependency Rule
+## RitsuLib Dependency Rule
 
-Document BaseLib dependency status and expected on-disk location. The expected runtime location is `<GameRoot>\mods\BaseLib`. Do not fabricate BaseLib files.
+Document RitsuLib dependency status and expected on-disk location. The expected runtime location is `<GameRoot>\mods\STS2-RitsuLib`. Do not fabricate dependency files, and do not reintroduce a Spire Plus BaseLib dependency without explicit owner approval and new migration documentation.
 
 ## Early Access Warning
 
-Slay the Spire 2 APIs, BaseLib, templates, and tooling may change during Early Access. Revalidate versions and paths each session.
+Slay the Spire 2 APIs, RitsuLib, templates, and tooling may change during Early Access. Revalidate versions and paths each session.

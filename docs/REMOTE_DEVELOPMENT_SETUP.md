@@ -4,16 +4,17 @@ This guide explains how to clone this private repository on another Windows mach
 
 ## 2026-06-20 Current Boundary
 
-The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on RitsuLib `v0.4.28` / `lib\0.107.1` only. Current beta.91 Off proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/`, and current beta.91 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
+Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on STS2-RitsuLib `v0.4.28` / `lib\0.107.1` only. Current beta.91 Off proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/`, and current beta.91 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
 ## Baseline
 
 - Active mod: `Spire Plus`
 - Technical project, manifest id, and install folder: `EZMicroBalance`
 - Legacy scaffold id: `EzDailyContent`
-- Game: Slay the Spire 2 public beta
-- Verified version: `v0.106.1`, installed/source-refreshed locally on `2026-05-22`
-- BaseLib runtime: `v3.1.4`
+- Game: Slay the Spire 2 public/main branch
+- Current local version: `v0.107.1`, installed/source-refreshed locally on `2026-06-20`
+- RitsuLib runtime: `STS2-RitsuLib` `v0.4.28` with `lib\0.107.1`
+- Spire Plus package: `v0.1.0-private-beta.91`
 - Build command: `dotnet build`
 - Publish command: `dotnet publish`
 

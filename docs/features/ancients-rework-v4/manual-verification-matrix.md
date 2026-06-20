@@ -1,11 +1,11 @@
 # Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
-Updated: 2026-05-18
+Updated: 2026-06-20
 
-Status: automated gates passed; latest normal Steam-client startup/log verification is historical for the earlier 22-field package; refreshed normal Steam-client Mod Settings UI list screenshot shows Spire Plus; historical page-level Mod Settings UI passed under the old display name; A0/A10/A20 single-player DevConsole combat smoke passed; A11 Act 1 map/save-load spot check and saved-map boss-reachability graph proof passed; A11 Act 2/3 map-surface observation passed; targeted A14 Rootblight English/ZHS hover/starter-notice spot checks passed.
+Status: automated gates passed for the current RitsuLib-only beta.91 package shape; current Off/AdditiveBatch1 loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.91.
 
-Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus normal tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
+Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
 ## Automated Prerequisites
 
@@ -18,17 +18,17 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.87.zip`, SHA256 `97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1`; focused opt-in artifact tests passed 67 / 0 / 2 / 69 on 2026-06-18 |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.91.zip`, SHA256 `ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1`; current beta.91 Off/AdditiveBatch1 loader proof is clean for startup/registration only |
 
 ## Runtime Load Checklist
 
 | Step | Expected Result | Result |
 | --- | --- | --- |
-| Confirm BaseLib and `EZMicroBalance` are installed in the game `mods` folder | `BaseLib.json`, `BaseLib.dll`, `BaseLib.pck`, `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
-| Launch Slay the Spire 2 public beta | Game reaches main menu | Pending fresh current-package proof |
-| Open Settings -> Mod Settings | BaseLib appears and Spire Plus appears with id `EZMicroBalance` | Pending fresh current-package proof |
+| Confirm STS2-RitsuLib and `EZMicroBalance` are installed in the game `mods` folder | `STS2-RitsuLib\mod_manifest.json`, `STS2-RitsuLib\lib\0.107.1\STS2-RitsuLib.dll`, `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
+| Launch Slay the Spire 2 public/main branch | Game reaches main menu | Current direct beta.91 loader proof passed; normal user-profile proof still pending |
+| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Pending fresh current-package screenshot proof |
 | Open Compendium -> Card Library | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
-| Start a run with Spire Plus enabled | No startup exception in `godot.log` for `EZMicroBalance`. Natural route-click first-node path remains pending. | Pending fresh current-package proof |
+| Start a run with Spire Plus enabled | No startup exception in `godot.log` for `EZMicroBalance`. Natural route-click first-node path remains pending. | Pending gameplay proof |
 | Disable Spire Plus and restart | Spire Plus patches do not apply while disabled or plugged off | Pending gameplay proof |
 | Keep legacy `EzDailyContent` disabled for private beta testing | No duplicate Ancient Harmony patches from legacy local artifacts | Pending normal user-profile check |
 
