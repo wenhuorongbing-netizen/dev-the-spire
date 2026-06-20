@@ -366,4 +366,51 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.DoesNotContain("## P2:", goal, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public void M5RevisionNDocsStayCompactAndArchivedOutOfActivePath()
+    {
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var activeFiles = new[]
+        {
+            "m5-revision-n-final-report.md",
+            "m5-revision-n-owner-commit-packet.md",
+            "m5-revision-n-validation-replay.md",
+            "m5-revision-n-runtime-evidence-plan.md"
+        };
+        var archivedFiles = new[]
+        {
+            "m5-revision-n-final-report-20260619.md",
+            "m5-revision-n-owner-commit-packet-20260619.md",
+            "m5-revision-n-validation-replay-20260619.md",
+            "m5-revision-n-runtime-evidence-plan-20260619.md"
+        };
+
+        foreach (var activeFile in activeFiles)
+        {
+            var activeBoundary = ReadRepoText("docs", "goals", activeFile);
+            var lineCount = activeBoundary.Split('\n').Length;
+            Assert.True(lineCount <= 25, $"{activeFile} should stay a compact historical-boundary stub; current line count is {lineCount}.");
+            AssertSourceContains(
+                activeBoundary,
+                "Status: archived",
+                "beta.91",
+                "RitsuLib-only");
+            Assert.DoesNotContain("## Replay Commands", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("## Commit Slice Sketch", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("## Next Runtime Rows", activeBoundary, StringComparison.Ordinal);
+        }
+
+        foreach (var archivedFile in archivedFiles)
+        {
+            AssertRepoFileExists("docs", "archive", "legacy-planning", archivedFile);
+            Assert.Contains(archivedFile, archiveReadme, StringComparison.Ordinal);
+            Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("docs/archive/legacy-planning/m5-revision-n-*-20260619.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/goals/m5-revision-n-*.md", projectMap, StringComparison.Ordinal);
+    }
+
 }

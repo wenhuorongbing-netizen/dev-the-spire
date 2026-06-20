@@ -20,6 +20,7 @@ Archived documents are useful for context, but they are not current implementati
 | `implementation-records/` | Compact records of completed implementation passes that should not stay in the active reading path. |
 | `issues-archive.md` | Closed issue records and release-cycle traceability for previously active blocker items. |
 | `project-state-history-20260516.md` | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation and package history. |
+| `legacy-planning/m5-revision-n-*-20260619.md` | Historical beta.88/BaseLib-backed owner packet, validation replay, runtime-evidence plan, and final report. Current migration truth is beta.91 RitsuLib-only. |
 
 ## Rules
 
@@ -34,5 +35,6 @@ Archived documents are useful for context, but they are not current implementati
 - `project-state-history-20260516.md`: historical `PROJECT_STATE.md` snapshot retained after the active file was reduced to current status, blockers, commands, and next action.
 - `implementation-records/2026-05-15-current-package-verification-note.md`: historical long-form package verification note archived from `docs/issues.md`; current blockers remain in `docs/issues.md` and `docs/issues/waiting-tests.md`.
 - `legacy-planning/legacy-project-files/`: preserved old `EzDailyContent.csproj` metadata and migration note moved out of the repository root during cleanup.
+- `legacy-planning/m5-revision-n-final-report-20260619.md`, `legacy-planning/m5-revision-n-owner-commit-packet-20260619.md`, `legacy-planning/m5-revision-n-validation-replay-20260619.md`, and `legacy-planning/m5-revision-n-runtime-evidence-plan-20260619.md`: previous beta.88/BaseLib-backed planning records; active stubs under `docs/goals/` point to current beta.91 RitsuLib-only migration truth.
 - `implementation-records/rc1-live-validation-log-20260508-20260513.md`: historical live-validation log for older package states. Current package evidence is tracked in `docs/release-evidence-status.md` and `docs/dev-environment.md`.
 - `implementation-records/website-localization-qa-20260522.md`: historical website localization/render QA journal moved out of the public website source; current website metadata is in `website/content-data.js` and `website/README.md`.
