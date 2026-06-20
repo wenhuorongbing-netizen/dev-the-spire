@@ -14,6 +14,8 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         var urdaChecklist = ReadRepoText("docs", "features", "ancient-expansion-urda", "manual-test-checklist.md");
         var v22Readme = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "README.md");
         var v22Api = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "api-research.md");
+        var v22Plan = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "implementation-plan.md");
+        var v22SourceDesign = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "source-design.md");
         var v22Risk = ReadRepoText("docs", "features", "ancient-expansion-v2.2", "risk-register.md");
 
         var currentUrdaDocs = string.Join(
@@ -25,6 +27,8 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             urdaChecklist,
             v22Readme,
             v22Api,
+            v22Plan,
+            v22SourceDesign,
             v22Risk);
 
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issueIndex, StringComparison.Ordinal);
@@ -39,9 +43,17 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         Assert.Contains("live-urda-postfix-20260513-131752", urdaChecklist, StringComparison.Ordinal);
         Assert.Contains("live-urda-continue-postfix-20260513-134337", urdaChecklist, StringComparison.Ordinal);
         Assert.Contains("do not satisfy any gameplay row", urdaChecklist, StringComparison.Ordinal);
+        Assert.Contains("RitsuLib `ModAncientEventTemplate`", urdaIssue, StringComparison.Ordinal);
+        Assert.Contains("SharedAncient<EzmbUrda>()", urdaIssue, StringComparison.Ordinal);
+        Assert.Contains("Prefer native game command APIs, RitsuLib APIs, and template-supported APIs before Harmony", v22Api, StringComparison.Ordinal);
+        Assert.Contains("BaseLib references as historical", v22Plan, StringComparison.Ordinal);
+        Assert.Contains("BaseLib notes are historical migration context only", v22SourceDesign, StringComparison.Ordinal);
         Assert.DoesNotContain("Urda live gameplay verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Urda save/load verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("URDA-PROTOTYPE | Closed", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("Urda now derives from BaseLib", currentUrdaDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("BaseLib/template Ancient-pool API", currentUrdaDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Inspect BaseLib/template APIs", currentUrdaDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x]", urdaChecklist, StringComparison.Ordinal);
     }
 }

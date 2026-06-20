@@ -9,7 +9,7 @@ For every future implementation slice:
 1. Open or update a compact issue row with acceptance criteria and the manual proof needed.
 2. Read `PROJECT_STATE.md`, `AGENTS.md`, and this feature folder.
 3. Inspect local `source code/src/Core/` for the exact game flow.
-4. Inspect BaseLib/template APIs and prefer supported APIs over Harmony patches.
+4. Inspect native game source plus RitsuLib/template APIs and prefer supported APIs over Harmony patches; treat BaseLib references as historical unless the owner explicitly approves a dependency change.
 5. Record source evidence in `api-research.md`.
 6. Add focused source guard tests before or with implementation.
 7. Implement the smallest feature slice that satisfies the issue row.
