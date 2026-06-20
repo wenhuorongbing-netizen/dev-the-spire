@@ -1,4 +1,4 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18: superseded; current 2026-06-20 beta.91 hashes:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-20 beta.91:
 | Artifact | SHA256 |
 | --- | --- |
 | ZIP | `ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1` |
@@ -33,7 +33,7 @@
 - `DOC-CONFLICT-GOVERNANCE` P2 source-fixed: active release audit no longer pins a stale dirty-worktree snapshot; final release handoff must still recapture current status.
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
-- `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
+- `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.91 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
 - `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: beta.91 Off and AdditiveBatch1 proof is clean on `v0.107.1` with RitsuLib `v0.4.28` / `lib\0.107.1` and no BaseLib dependency; earlier smokes are previous-version or previous-package context.
   current RitsuLib-only AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`.
   Fresh beta.91 direct proof: Off packet verifier 43 / 0; AdditiveBatch1 reached main menu, audited clean, enabled-mode verifier 31 / 0, packet verifier 61 / 0.
