@@ -32,11 +32,11 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Equal("EZMicroBalance", manifest.RootElement.GetProperty("id").GetString());
         Assert.Contains(
             manifest.RootElement.GetProperty("dependencies").EnumerateArray(),
-            dependency => dependency.ValueKind == JsonValueKind.Object &&
+                dependency => dependency.ValueKind == JsonValueKind.Object &&
                 dependency.TryGetProperty("id", out var id) &&
-                id.GetString() == "BaseLib" &&
+                id.GetString() == "STS2-RitsuLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "v3.3.0");
+                minVersion.GetString() == "0.4.28");
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);
@@ -45,7 +45,7 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Contains("Technical compatibility id: EZMicroBalance", readme, StringComparison.Ordinal);
         Assert.Contains("Extract this archive into the Slay the Spire 2 mods folder exactly as packaged.", readme, StringComparison.Ordinal);
         Assert.Contains("If the game's Mods list shows EZMicroBalance as the mod name, the package is stale or the display-name route regressed.", readme, StringComparison.Ordinal);
-        Assert.Contains("BaseLib", readme, StringComparison.Ordinal);
+        Assert.Contains("STS2-RitsuLib", readme, StringComparison.Ordinal);
         Assert.Contains("EzDailyContent disabled or absent", readme, StringComparison.Ordinal);
         Assert.Contains("EZMicroBalance is a technical folder/id only; player-facing screens should say Spire Plus.", readme, StringComparison.Ordinal);
         Assert.Contains("Ancient selections now grant visible marker relics", readme, StringComparison.Ordinal);

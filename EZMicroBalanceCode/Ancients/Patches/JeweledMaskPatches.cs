@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]
 internal static class JeweledMaskCombatStartPatch

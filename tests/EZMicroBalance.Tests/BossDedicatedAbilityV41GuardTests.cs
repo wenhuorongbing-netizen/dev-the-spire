@@ -220,11 +220,11 @@ public sealed partial class BossDedicatedAbilityV41GuardTests
             "recovered Royal Decree tracker from visible card marker");
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<CardModel, bool> StruggleBaitGeneratedEscape",
+            "SavedAttachedState<CardModel, bool> StruggleBaitGeneratedEscape",
             "EZMicroBalanceAscensionStruggleBaitGeneratedEscape",
-            "SavedSpireField<CardModel, bool> RoyalDecreeMarkedCard",
-            "SavedSpireField<CardModel, bool> RoyalDecreePlayedCard",
-            "SavedSpireField<CardModel, bool> RoyalDecreePlayedBoundCard");
+            "SavedAttachedState<CardModel, bool> RoyalDecreeMarkedCard",
+            "SavedAttachedState<CardModel, bool> RoyalDecreePlayedCard",
+            "SavedAttachedState<CardModel, bool> RoyalDecreePlayedBoundCard");
         AssertSourceContains(
             struggleBait,
             "AscensionSavedStateFields.StruggleBaitGeneratedEscape[escape] = true",

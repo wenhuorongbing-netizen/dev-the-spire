@@ -46,6 +46,7 @@ function Get-OwnerFromPath {
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Rewards/*') { return 'Ascension rewards' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Patches/*') { return 'Ascension patches' }
     if ($RelativePath -like 'EZMicroBalanceCode/Ascension/Events/*') { return 'Ascension events' }
+    if ($RelativePath -like 'EZMicroBalanceCode/Core/Localization/*') { return 'Core localization' }
     if ($RelativePath -like 'EZMicroBalanceCode/Map/*') { return 'Map hover composition' }
     if ($RelativePath -like 'EZMicroBalanceCode/Modding/*') { return 'Mod info localization' }
     if ($RelativePath -like 'EZMicroBalanceCode/Preview/*') { return 'Preview tools' }

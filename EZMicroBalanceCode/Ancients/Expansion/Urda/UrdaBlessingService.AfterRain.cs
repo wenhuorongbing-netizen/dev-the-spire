@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
 internal static partial class UrdaBlessingService
 {

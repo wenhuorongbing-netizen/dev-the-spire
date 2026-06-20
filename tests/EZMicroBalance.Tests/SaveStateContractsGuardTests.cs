@@ -14,7 +14,7 @@ public sealed class SaveStateContractsGuardTests
             "docs/issues.md",
             "docs/specs/release-traceability-matrix.md");
 
-        AssertAny(source, contract.SaveFieldOrDeckMirror, $"{contract.Feature} must have a SavedSpireField-backed state key or deck mirror in source.");
+        AssertAny(source, contract.SaveFieldOrDeckMirror, $"{contract.Feature} must have a SavedAttachedState-backed state key or deck mirror in source.");
         AssertAny(source, contract.HydrateOrRestorePath, $"{contract.Feature} must have a hydrate/restore path in source.");
         AssertAny(source, contract.ClearOrResetPath, $"{contract.Feature} must have a clear/reset path in source.");
         AssertAny(source, contract.ReleaseEvidenceMarker, $"{contract.Feature} must have a source log/evidence marker. A future centralized ReleaseEvidenceLog should satisfy this contract explicitly.");
@@ -27,7 +27,7 @@ public sealed class SaveStateContractsGuardTests
         var testSource = ReadRepoText("tests", "EZMicroBalance.Tests", "SaveStateContractsGuardTests.cs");
 
         Assert.Contains("[\"EZMicroBalanceCode\"", testSource, StringComparison.Ordinal);
-        Assert.Contains("SavedSpireField", ReadSourceTree("EZMicroBalanceCode"), StringComparison.Ordinal);
+        Assert.Contains("SavedAttachedState", ReadSourceTree("EZMicroBalanceCode"), StringComparison.Ordinal);
         Assert.DoesNotContain("AssertRepoFileExists(\"docs\"", testSource, StringComparison.Ordinal);
     }
 
@@ -89,7 +89,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RootSightMarkers.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.RunLifecycle.cs"]
             ],
-            ["SavedSpireField<Player, string> UrdaStateKey", "SavedSpireField<CardModel, string> UrdaDeckStateKey", "RootSightPreviewRecords"],
+            ["SavedAttachedState<Player, string> UrdaStateKey", "SavedAttachedState<CardModel, string> UrdaDeckStateKey", "RootSightPreviewRecords"],
             ["RestoreRootSightPreviewMarkers", "AfterMapGenerated", "restored one eye"],
             ["ClearStaleRootSightPreview", "ClearUnreachableRootSightPreviews", "ResetRootSightTransientState"],
             ["MainFile.Logger", "[Spire Plus] Urda Root Eyes"],
@@ -106,7 +106,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankExtractionState.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaBlessingService.SeedBankStatus.cs"]
             ],
-            ["SavedSpireField<Player, string> UrdaStateKey", "SavedSpireField<CardModel, string> UrdaDeckStateKey", "SeedBankCardIds"],
+            ["SavedAttachedState<Player, string> UrdaStateKey", "SavedAttachedState<CardModel, string> UrdaDeckStateKey", "SeedBankCardIds"],
             ["GetSeedBankCardIds", "TryExtractSeedBankFromRelicClick", "TryGetStoredCard"],
             ["SeedBankCardIds = string.Empty", "SeedBankSettled = true", "RefreshSeedBankRelicStatus"],
             ["MainFile.Logger", "[Spire Plus] Urda Seed Bank"],
@@ -125,7 +125,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviBlessingService.CombatLifecycle.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Morvi", "MorviRunHook.cs"]
             ],
-            ["SavedSpireField<Player, string> MorviStateKey", "SavedSpireField<CardModel, string> MorviDeckStateKey", "MorviOpenBookSealedCard"],
+            ["SavedAttachedState<Player, string> MorviStateKey", "SavedAttachedState<CardModel, string> MorviDeckStateKey", "MorviOpenBookSealedCard"],
             ["SyncPersistentState", "AfterCardChangedPiles", "BeforeCombatStart"],
             ["ClearState", "ClearBorrowedAncientCards", "ResetCombatState"],
             ["MainFile.Logger", "[Spire Plus] Morvi"],
@@ -142,7 +142,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatStart.cs"],
                 ["EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaBlessingService.CombatStateReset.cs"]
             ],
-            ["SavedSpireField<Player, string> LothaStateKey", "SavedSpireField<CardModel, string> LothaDeckStateKey", "DeathReprievePhase"],
+            ["SavedAttachedState<Player, string> LothaStateKey", "SavedAttachedState<CardModel, string> LothaDeckStateKey", "DeathReprievePhase"],
             ["HydrateDeathReprieveState", "BeforeCombatStart", "deck-mirrored blessing progress"],
             ["ResolveDeathReprieveProgress", "ResetCombatState", "DeathReprievePhase.Resolved"],
             ["MainFile.Logger", "[Spire Plus] Lotha Death Reprieve"],
@@ -175,7 +175,7 @@ public sealed class SaveStateContractsGuardTests
                 ["EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.Lifecycle.cs"],
                 ["EZMicroBalanceCode", "Ascension", "Combat", "RootBudCombatHook.RoomRules.cs"]
             ],
-            ["SavedSpireField<Player, int> RootblightLevel", "SavedSpireField<RootFamilyCard, bool> RootblightWasPresentAtCombatStart", "DeckVersion is RootFamilyCard"],
+            ["SavedAttachedState<Player, int> RootblightLevel", "SavedAttachedState<RootFamilyCard, bool> RootblightWasPresentAtCombatStart", "DeckVersion is RootFamilyCard"],
             ["SetDiagnosticLevelFromDeck", "MarkCombatStartRootblight", "ReadPendingCombatDowngrades"],
             ["ClearPendingCombatDowngrades", "WasPresentAtCombatStart = false", "PlantedInSeedbed = false"],
             ["MainFile.Logger", "[Spire Plus] Ascension Rootblight"],

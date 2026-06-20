@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static class AncientCardHelpers
 {

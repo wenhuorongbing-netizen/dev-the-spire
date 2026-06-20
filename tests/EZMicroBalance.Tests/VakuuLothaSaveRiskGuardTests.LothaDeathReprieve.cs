@@ -21,8 +21,8 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
 
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<Player, string> LothaStateKey",
-            "SavedSpireField<CardModel, string> LothaDeckStateKey");
+            "SavedAttachedState<Player, string> LothaStateKey",
+            "SavedAttachedState<CardModel, string> LothaDeckStateKey");
         AssertSourceContains(
             combatState,
             "private sealed partial class LothaCombatState",

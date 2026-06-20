@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-internal abstract class BannerPower : CustomPowerModel, ILocalizationProvider
+internal abstract class BannerPower : ModPowerTemplate, ILocalizationProvider
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -12,9 +12,9 @@ internal abstract class BannerPower : CustomPowerModel, ILocalizationProvider
 
     protected virtual string BannerIconPath => AscensionAssetPaths.BannerRoomIndicator;
 
-    public override string CustomPackedIconPath => BannerIconPath;
+    public override string CustomIconPath => BannerIconPath;
 
     public override string CustomBigIconPath => BannerIconPath;
 
-    public override abstract List<(string, string)>? Localization { get; }
+    public abstract List<(string, string)>? Localization { get; }
 }

@@ -13,9 +13,9 @@ public sealed partial class AscensionFeatureGuardTests
 
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<Player, bool> RootBeginsApplied",
+            "SavedAttachedState<Player, bool> RootBeginsApplied",
             "EZMicroBalanceAscensionRootBeginsApplied",
-            "SavedSpireField<Player, string> RootblightPendingCombatDowngrades",
+            "SavedAttachedState<Player, string> RootblightPendingCombatDowngrades",
             "EZMicroBalanceAscensionRootblightPendingCombatDowngrades");
 
         AssertSourceContains(
@@ -150,10 +150,10 @@ public sealed partial class AscensionFeatureGuardTests
 
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<RootBud, bool> RootBudEnteredHand",
-            "SavedSpireField<RootBud, bool> RootBudPlayed",
-            "SavedSpireField<RootBud, bool> RootBudSprouted",
-            "SavedSpireField<RootBud, int> RootBudSproutRound");
+            "SavedAttachedState<RootBud, bool> RootBudEnteredHand",
+            "SavedAttachedState<RootBud, bool> RootBudPlayed",
+            "SavedAttachedState<RootBud, bool> RootBudSprouted",
+            "SavedAttachedState<RootBud, int> RootBudSproutRound");
 
         AssertSourceContains(
             combatHook,
@@ -331,6 +331,7 @@ public sealed partial class AscensionFeatureGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootBudCard.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootFamilyCard.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootPortraitPaths.cs"));
+        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var simplifiedChineseCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");
@@ -375,14 +376,20 @@ public sealed partial class AscensionFeatureGuardTests
             Assert.True(simplifiedChineseCards.ContainsKey(key), $"Missing zhs card key: {key}");
         }
 
-        Assert.Equal(4, CountOccurrences(rootCards, "[Pool(typeof(CurseCardPool))]"));
+        AssertSourceContains(
+            ritsuRegistration,
+            "content.Card<CurseCardPool, RootBud>(FullEntry(RootBud.CardId));",
+            "content.Card<CurseCardPool, Root>(FullEntry(Root.CardId));",
+            "content.Card<CurseCardPool, DeepRoot>(FullEntry(DeepRoot.CardId));",
+            "content.Card<CurseCardPool, RootblightIII>(FullEntry(RootblightIII.CardId));");
+        Assert.DoesNotContain("[Pool(typeof(CurseCardPool))]", rootCards, StringComparison.Ordinal);
         AssertSourceContains(
             rootCards,
             "using Godot;",
             "using MegaCrit.Sts2.Core.HoverTips;",
             "internal static class RootPortraitPaths",
-            "public sealed class RootBud : CustomCardModel",
-            "public abstract class RootFamilyCard : CustomCardModel",
+            "public sealed class RootBud : ModCardTemplate",
+            "public abstract class RootFamilyCard : ModCardTemplate",
             "ResourceLoader.Exists(candidate) ? candidate : fallback",
             "rootblight_i",
             "rootblight_ii",

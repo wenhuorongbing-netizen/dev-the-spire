@@ -1,21 +1,18 @@
-using BaseLib.Abstracts;
-using BaseLib.Utils.Attributes;
 using MegaCrit.Sts2.Core.Entities.Relics;
 using MegaCrit.Sts2.Core.Models.RelicPools;
 using MegaCrit.Sts2.Core.Runs;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-[Pool(typeof(SharedRelicPool))]
-internal sealed class VakuuFightOptionRelic : CustomRelicModel
+internal sealed class VakuuFightOptionRelic : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
-    public override string PackedIconPath => VakuuFightAssetPaths.OptionIcon;
+    public override string CustomIconPath => VakuuFightAssetPaths.OptionIcon;
 
-    protected override string BigIconPath => VakuuFightAssetPaths.OptionIcon;
+    public override string CustomBigIconPath => VakuuFightAssetPaths.OptionIcon;
 
-    protected override string PackedIconOutlinePath => VakuuFightAssetPaths.OptionIcon;
+    public override string CustomIconOutlinePath => VakuuFightAssetPaths.OptionIcon;
 
     public override bool IsAllowed(IRunState runState) => false;
 

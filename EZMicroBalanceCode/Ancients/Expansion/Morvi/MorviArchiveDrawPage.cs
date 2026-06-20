@@ -1,9 +1,6 @@
-using BaseLib.Utils.Attributes;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
 internal sealed class MorviArchiveDrawPage : MorviArchivePageCard
 {
     public const string CardId = "EZMB_MORVI_ARCHIVE_DRAW_PAGE";

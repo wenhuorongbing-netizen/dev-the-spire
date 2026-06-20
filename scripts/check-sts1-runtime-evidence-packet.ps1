@@ -283,6 +283,25 @@ function Test-BytePrefix {
     return $true
 }
 
+function Test-ByteSequenceEquals {
+    param(
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Expected,
+        [Parameter(Mandatory = $true)][AllowEmptyCollection()][byte[]]$Actual
+    )
+
+    if ($Expected.Length -ne $Actual.Length) {
+        return $false
+    }
+
+    for ($i = 0; $i -lt $Expected.Length; $i++) {
+        if ($Expected[$i] -ne $Actual[$i]) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
 function Write-CurrentSliceFromBeforeAfter {
     param(
         [Parameter(Mandatory = $true)][string]$BeforePath,
@@ -333,7 +352,13 @@ function Test-CurrentSliceBinding {
         $currentBytes = [System.IO.File]::ReadAllBytes($CurrentPath)
         $result.PrefixMatches = Test-BytePrefix -Prefix $beforeBytes -Content $afterBytes
         if (-not $result.PrefixMatches) {
-            $result.Detail = 'godot.log.after-launch does not have godot.log.before as a byte prefix'
+            if (-not (Test-ByteSequenceEquals -Expected $afterBytes -Actual $currentBytes)) {
+                $result.Detail = 'godot.log.after-launch does not have godot.log.before as a byte prefix, and godot.log.current-iteration does not match the rewritten after-launch log'
+                return [pscustomobject]$result
+            }
+
+            $result.SliceMatches = $true
+            $result.Detail = 'godot.log.current-iteration matches godot.log.after-launch after Godot rewrote the log instead of appending to godot.log.before'
             return [pscustomobject]$result
         }
 
@@ -613,7 +638,7 @@ $movedCurrentRuns = @()
 if ($sessionExists) {
     $sessionState = Read-JsonFile $sessionStatePath
     $allowedModIds = @(Get-JsonArrayOrEmpty -Object $sessionState -Name 'AllowedModIds' | ForEach-Object { [string]$_ })
-    $expectedAllowedModIds = @('BaseLib', 'STS2-RitsuLib', 'EZMicroBalance')
+    $expectedAllowedModIds = @('STS2-RitsuLib', 'EZMicroBalance')
     $allowedModSet = Format-SortedSet -Items $allowedModIds
     $expectedAllowedModSet = Format-SortedSet -Items $expectedAllowedModIds
     $recordedSts1EventMode = Get-JsonStringOrEmpty -Object $sessionState -Name 'Sts1EventModeEnvironment'
@@ -637,7 +662,6 @@ if ($sessionExists) {
     $expectedModsRoot = Resolve-ChildPathOrEmpty -BasePath $gameRoot -ChildName 'mods'
     $normalizedModsRoot = ConvertTo-NormalizedPathOrEmpty -Path $modsRoot
 
-    Add-Check -Name 'session_allows_baselib' -Passed ($allowedModIds -contains 'BaseLib') -Detail 'session-state AllowedModIds must include BaseLib'
     Add-Check -Name 'session_allows_ritsulib' -Passed ($allowedModIds -contains 'STS2-RitsuLib') -Detail 'session-state AllowedModIds must include STS2-RitsuLib'
     Add-Check -Name 'session_allows_spire_plus' -Passed ($allowedModIds -contains 'EZMicroBalance') -Detail 'session-state AllowedModIds must include EZMicroBalance'
     Add-Check -Name 'session_allowed_mod_ids_exact' -Passed ($allowedModSet -eq $expectedAllowedModSet) -Detail "session-state AllowedModIds expected exactly '$expectedAllowedModSet' but found '$allowedModSet'"

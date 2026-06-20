@@ -724,13 +724,13 @@ window.SPIRE_PLUS_DATA = {
     expandDetails: "\u5177\u4f53\u6548\u679c",
     sourceArtPlaceholder: "\u539f\u7248",
     installTitle: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
-    installLead: "\u4e0b\u8f7d\u6700\u65b0\u79c1\u6d4b\u5305\uff0c\u5e76\u6309\u4e0b\u65b9\u8def\u5f84\u5b89\u88c5 BaseLib \u4e0e Spire Plus\u3002",
+    installLead: "\u4e0b\u8f7d\u6700\u65b0\u79c1\u6d4b\u5305\uff0c\u5e76\u6309\u4e0b\u65b9\u8def\u5f84\u5b89\u88c5 STS2-RitsuLib \u4e0e Spire Plus\u3002",
     currentDownload: "\u5f53\u524d\u4e0b\u8f7d",
     requiredFilesTitle: "第一步：下载必要文件",
     optionalFilesTitle: "发布页与源码",
     directDownload: "直链下载",
     openRelease: "\u6253\u5f00\u53d1\u5e03\u9875",
-    openBaseLib: "下载 BaseLib 3.2.1",
+    openBaseLib: "下载 STS2-RitsuLib",
     openRepo: "\u6253\u5f00\u4ed3\u5e93",
     steps: "\u5b89\u88c5\u6b65\u9aa4",
     requirements: "\u8fd0\u884c\u8981\u6c42",
@@ -776,36 +776,36 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.87.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.91.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.87/SpirePlus-v0.1.0-private-beta.87.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.91/SpirePlus-v0.1.0-private-beta.91.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.87",
-    baseLibRelease: "https://github.com/Alchyr/BaseLib-StS2/releases/download/v3.2.1/BaseLib.3.2.1.zip",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.91",
+    baseLibRelease: "https://github.com/BAKAOLC/STS2-RitsuLib/releases",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.87.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.87"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.91.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.91"],
       ["\u663e\u793a\u540d", "Spire Plus"],
-      ["\u4f9d\u8d56", "BaseLib v3.2.1; STS2-RitsuLib v0.4.24"],
-      ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.107.0"],
-      ["\u4f53\u79ef", "19,015,885 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1"]
+      ["\u4f9d\u8d56", "STS2-RitsuLib v0.4.28"],
+      ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.107.1"],
+      ["\u4f53\u79ef", "19,023,377 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.87.zip\u3002",
-    "下载 BaseLib.3.2.1.zip，并解压到游戏的 mods\\BaseLib 目录。",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.91.zip\u3002",
+    "下载 STS2-RitsuLib v0.4.28 或更新版本，并解压到游戏的 mods\\STS2-RitsuLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
     "压缩包内保留技术兼容目录；玩家不需要手动改名。",
-    "BaseLib 最终位置：mods\\BaseLib\\BaseLib.json。",
+    "STS2-RitsuLib 最终位置：mods\\STS2-RitsuLib\\mod_manifest.json。",
     "\u542f\u52a8\u6e38\u620f\uff0c\u5728\u6a21\u7ec4\u5217\u8868\u91cc\u542f\u7528 Spire Plus\u3002",
     "此版本仍处于私测；如果遇到问题，论坛里直接发帖即可。"
   ],
   requirements: [
-    "Slay the Spire 2 public beta v0.107.0\u3002",
-    "BaseLib v3.2.1; STS2-RitsuLib v0.4.24；此版本按该依赖构建。",
+    "Slay the Spire 2 public beta v0.107.1\u3002",
+    "STS2-RitsuLib v0.4.28；此版本按该依赖构建。",
     "\u6a21\u7ec4\u5217\u8868\u4e2d\u7684\u663e\u793a\u540d\u5e94\u4e3a Spire Plus\u3002",
     "为兼容现有存档，压缩包内的技术目录名暂不手动修改；玩家看到的模组名应为 Spire Plus。"
   ],
@@ -827,7 +827,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.87"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.91"]
     ]
   },
   updateGroups: [
@@ -1003,7 +1003,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.87.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.91.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1226,18 +1226,18 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.87.zip。",
-      "下载 BaseLib.3.2.1.zip，并解压到游戏的 mods\\BaseLib 目录。",
+      "下载 SpirePlus-v0.1.0-private-beta.91.zip。",
+      "下载 STS2-RitsuLib v0.4.28 或更新版本，并解压到游戏的 mods\\STS2-RitsuLib 目录。",
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2。",
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
       "压缩包内保留技术兼容目录；玩家不需要手动改名。",
-      "BaseLib 最终位置：mods\\BaseLib\\BaseLib.json。",
+      "STS2-RitsuLib 最终位置：mods\\STS2-RitsuLib\\mod_manifest.json。",
       "启动游戏，在模组列表里启用 Spire Plus。",
       "这是私测构建。遇到问题请把截图和 godot.log 发到论坛。"
     ],
     requirements: [
-      "Slay the Spire 2 public beta v0.107.0。",
-      "BaseLib v3.2.1; STS2-RitsuLib v0.4.24。这个构建按该依赖版本测试。",
+      "Slay the Spire 2 public beta v0.107.1。",
+      "STS2-RitsuLib v0.4.28。这个构建按该依赖版本测试。",
       "模组列表应显示 Spire Plus。",
       "不要手动重命名压缩包内的技术目录；游戏内显示名应为 Spire Plus。"
     ],
@@ -1283,13 +1283,13 @@ window.SPIRE_PLUS_DATA.i18n = {
       expandDetails: "Exact effects",
       sourceArtPlaceholder: "Vanilla",
       installTitle: "Download & Install",
-      installLead: "Download the latest private test build, then install BaseLib and Spire Plus in the paths below.",
+      installLead: "Download the latest private test build, then install STS2-RitsuLib and Spire Plus in the paths below.",
       currentDownload: "Current Download",
       requiredFilesTitle: "Step 1: Required Files",
       optionalFilesTitle: "Release Page & Source",
       directDownload: "Direct Download",
       openRelease: "Open Releases",
-      openBaseLib: "Download BaseLib 3.2.1",
+      openBaseLib: "Download STS2-RitsuLib",
       openRepo: "Open Repository",
       steps: "Install Steps",
       requirements: "Requirements",
@@ -1344,28 +1344,28 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.87.zip"],
-        ["Version", "v0.1.0-private-beta.87"],
+        ["File", "SpirePlus-v0.1.0-private-beta.91.zip"],
+        ["Version", "v0.1.0-private-beta.91"],
         ["Display name", "Spire Plus"],
-        ["Dependency", "BaseLib v3.2.1; STS2-RitsuLib v0.4.24"],
-        ["Game version", "Slay the Spire 2 v0.107.0"],
-        ["Size", "19,015,885 bytes"],
-        ["Hash", "97C65F040F7269738778368878E7946D1563F622D0D8959644C54DBC6806A0B1"]
+        ["Dependency", "STS2-RitsuLib v0.4.28"],
+        ["Game version", "Slay the Spire 2 v0.107.1"],
+        ["Size", "19,023,377 bytes"],
+        ["Hash", "ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.87.zip.",
-      "Download BaseLib.3.2.1.zip and extract it to the game's mods\\BaseLib folder.",
+      "Download SpirePlus-v0.1.0-private-beta.91.zip.",
+      "Download STS2-RitsuLib v0.4.28 or newer and extract it to the game's mods\\STS2-RitsuLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
       "The archive keeps its technical compatibility folder; players should not rename it manually.",
-      "Final BaseLib path: mods\\BaseLib\\BaseLib.json.",
+      "Final STS2-RitsuLib path: mods\\STS2-RitsuLib\\mod_manifest.json.",
       "Start the game and enable Spire Plus in the mod list.",
       "This is a private test build. If something breaks, post it in the forum."
     ],
     requirements: [
-      "Slay the Spire 2 public beta v0.107.0.",
-      "BaseLib v3.2.1; STS2-RitsuLib v0.4.24. This build targets that dependency version.",
+      "Slay the Spire 2 public beta v0.107.1.",
+      "STS2-RitsuLib v0.4.28. This build targets that dependency version.",
       "The mod list should show Spire Plus.",
       "For save compatibility, do not manually rename the technical folder inside the zip. The in-game mod name should be Spire Plus."
     ],
@@ -1386,7 +1386,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.87"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.91"]
         ]
       },
     updateGroups: [
@@ -1748,7 +1748,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.87.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.91.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

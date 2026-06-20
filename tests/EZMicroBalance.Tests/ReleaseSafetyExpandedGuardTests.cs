@@ -15,8 +15,8 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         AssertSourceContains(
             bootstrap,
             "Spire Plus Windows bootstrap",
-            "Install BaseLib v3.3.0 under <GameRoot>\\mods\\BaseLib before game verification.",
-            "BaseLib plus Spire Plus appear and are enabled.");
+            "Install STS2-RitsuLib v0.4.28 or newer under <GameRoot>\\mods\\STS2-RitsuLib before game verification.",
+            "STS2-RitsuLib plus Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("BaseLib plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
@@ -50,7 +50,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
     }
 
     [Fact]
-    public void SavedSpireFieldsAcrossActiveSourceAreUniqueCoveredAndSmokeDocumented()
+    public void SavedAttachedStatesAcrossActiveSourceAreUniqueCoveredAndSmokeDocumented()
     {
         var allSource = ReadSourceTree("EZMicroBalanceCode");
         var sourceWithoutDefinitions = string.Join(
@@ -63,7 +63,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         var fields = Regex.Matches(
                 allSource,
-                @"SavedSpireField<(?<types>[^>]+)>\s+(?<name>[A-Za-z0-9_]+)\s*=\s*\r?\n\s*new\([^""]*""(?<key>EZMicroBalance[^""]+)""",
+                @"SavedAttachedState<(?<types>[^>]+)>\s+(?<name>[A-Za-z0-9_]+)\s*=\s*\r?\n\s*new\(""(?<key>EZMicroBalance[^""]+)""",
                 RegexOptions.CultureInvariant)
             .Cast<Match>()
             .Select(match => new
@@ -92,14 +92,14 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
-        Assert.Contains("Current source defines 30 SavedSpireFields", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 30 SavedAttachedState fields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
         Assert.Contains("Historical beta.19 loader evidence:", devEnvironment, StringComparison.Ordinal);
-        Assert.Contains("Current source defines 30 SavedSpireFields", devEnvironment, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 30 SavedAttachedState fields", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current normal Steam-client helper startup/log pass", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current-package startup/log verification", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: current normal Steam startup/log verification passed", devEnvironment, StringComparison.Ordinal);
@@ -140,7 +140,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         Assert.Contains("`EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("`Spire Plus`", audit, StringComparison.Ordinal);
-        Assert.Contains("Current source defines 30 SavedSpireFields", audit, StringComparison.Ordinal);
+        Assert.Contains("Current source defines 30 SavedAttachedState fields", audit, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("historical log records", audit, StringComparison.Ordinal);
         Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
@@ -183,10 +183,10 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "PrepareDefaultSettings = [bool]$PrepareDefaultSettings",
             "Set-SpirePlusSettings -SettingsPath $defaultSettingsPath",
             "live-spire-plus-disabled-session",
-            "$defaultAllowedModIds = @('BaseLib', 'STS2-RitsuLib', 'EZMicroBalance')",
+            "$defaultAllowedModIds = @('STS2-RitsuLib', 'EZMicroBalance')",
             "id = 'STS2-RitsuLib'",
             "DisableSpirePlus requires -MoveOtherMods",
-            "$allowedModIds = if ($DisableSpirePlus) { @('BaseLib') } else { $defaultAllowedModIds }",
+            "$allowedModIds = if ($DisableSpirePlus) { @('STS2-RitsuLib') } else { $defaultAllowedModIds }",
             "AllowedModIds = @($allowedModIds)",
             "DisableSpirePlus = [bool]$DisableSpirePlus",
             "Start-Process -FilePath $SteamExe",
@@ -357,17 +357,19 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
-        Assert.Contains("- [x] BaseLib appears in Mod Settings.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [ ] STS2-RitsuLib appears in Mod Settings for the beta.91 RitsuLib-only package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Current beta.88 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Current beta.91 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Fresh loader smoke for the current beta.88 package hash passed", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current beta.91 RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current beta.91 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("current beta.88 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("current beta.91 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);

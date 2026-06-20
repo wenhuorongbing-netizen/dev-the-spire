@@ -9,11 +9,12 @@ public sealed partial class VakuuTemptationGuardTests
     {
         var card = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTemptationCard.cs");
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPowers.cs");
+        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
         var exportPreset = ReadRepoText("export_presets.cfg");
 
         AssertSourceContains(
             card,
-            "internal abstract class VakuuContractCard : CustomCardModel",
+            "internal abstract class VakuuContractCard : ModCardTemplate",
             "base(0, CardType.Skill, CardRarity.Token, TargetType.None, showInCardLibrary: false)",
             "CardKeyword.Ethereal",
             "CardKeyword.Exhaust",
@@ -24,13 +25,20 @@ public sealed partial class VakuuTemptationGuardTests
             "images/card_portraits/big/vakuu_temptation.png",
             "HoverTipFactory.FromPower<VakuuStolenVaultPower>()",
             "HoverTipFactory.FromPower<VakuuBloodDebtPower>()",
-            "[CustomID(CardId)]",
-            "[Pool(typeof(ColorlessCardPool))]",
             "public const string CardId = \"EZMB_VAKUU_KNIFE_CONTRACT\"",
             "public const string CardId = \"EZMB_VAKUU_TEMPTATION\"",
             "public const string CardId = \"EZMB_VAKUU_SHELTER_CONTRACT\"",
             "public const string CardId = \"EZMB_VAKUU_TRICK_CONTRACT\"",
             "public const string CardId = \"EZMB_VAKUU_CASH_OUT_CONTRACT\"");
+        AssertSourceContains(
+            ritsuRegistration,
+            "content.Card<ColorlessCardPool, VakuuKnifeContract>(FullEntry(VakuuKnifeContract.CardId));",
+            "content.Card<ColorlessCardPool, VakuuTemptation>(FullEntry(VakuuTemptation.CardId));",
+            "content.Card<ColorlessCardPool, VakuuShelterContract>(FullEntry(VakuuShelterContract.CardId));",
+            "content.Card<ColorlessCardPool, VakuuTrickContract>(FullEntry(VakuuTrickContract.CardId));",
+            "content.Card<ColorlessCardPool, VakuuCashOutContract>(FullEntry(VakuuCashOutContract.CardId));");
+        Assert.DoesNotContain("[CustomID(CardId)]", card, StringComparison.Ordinal);
+        Assert.DoesNotContain("[Pool(typeof(ColorlessCardPool))]", card, StringComparison.Ordinal);
         AssertSourceContains(
             powers,
             "VakuuStolenVaultPower",
@@ -160,7 +168,7 @@ public sealed partial class VakuuTemptationGuardTests
             "combatState.Encounter is EzmbVakuuTrialEncounter");
         AssertSourceContains(
             encounter,
-            "base(RoomType.Monster, autoAdd: false)",
+            "public override RoomType RoomType => RoomType.Monster",
             "ShouldGiveRewards => false",
             "MaxLocks = 3",
             "DamageLockThreshold = 40",
@@ -171,7 +179,7 @@ public sealed partial class VakuuTemptationGuardTests
             "VictoryLootGold => BrokenLocks * GoldPerBrokenLock",
             "VictoryGold => Math.Max(0m, VictoryLootGold - BloodDebtGoldCost)",
             "BloodDebtShortfall => Math.Max(0m, BloodDebtGoldCost - VictoryLootGold)",
-            "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
+            "CustomEncounterScenePath => VakuuFightAssetPaths.EncounterScene",
             "HasScene => true",
             "Slots => [VakuuSlot]",
             "ModelDb.Monster<EzmbVakuuTrialMonster>()");

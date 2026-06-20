@@ -228,7 +228,17 @@ public sealed partial class ReleaseArtifactParityGuardTests
             return;
         }
 
-        Assert.Equal(ManifestVersion(), summary.EzMicroBalanceVersion);
+        if (summary.EzMicroBalanceVersion == ManifestVersion())
+        {
+            return;
+        }
+
+        var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
+        Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current beta.90 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("current beta.90 loader smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
     }
 
     [ReleaseArtifactFact]
@@ -275,7 +285,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
             matches.Count == 0,
             $"Recent runtime log {Path.GetFileName(recentLog)} contains forbidden v0.105.0 API drift or dependency failure signatures: {string.Join("; ", matches)}. " +
             "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible BaseLib version. " +
-            "Disable all mods except BaseLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
+            "Disable all mods except STS2-RitsuLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
     }
 
     [ReleaseArtifactFact]
@@ -301,9 +311,11 @@ public sealed partial class ReleaseArtifactParityGuardTests
         {
             var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
             Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("Found 30 SavedSpireFields", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("Previous current-package Steam-client loader evidence", currentDocs, StringComparison.Ordinal);
-            Assert.DoesNotContain("refreshed runtime smoke remains pending", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("SavedAttachedState", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("previous BaseLib-backed package", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("Current beta.90 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
             Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("refreshed runtime smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
             return;

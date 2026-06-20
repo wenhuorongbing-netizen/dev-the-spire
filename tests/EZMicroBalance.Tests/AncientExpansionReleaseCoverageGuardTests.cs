@@ -50,7 +50,7 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
             "ModelDb.GetById<MorviCombatHook>");
         AssertSourceContains(
             morviSource,
-            "CustomAncientModel",
+            "ModAncientEventTemplate",
             "HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
             "MorviFeatureGate.IsMorviEnabled(unlockState)",
             "MorviFeatureGate.ShouldForceMorvi",

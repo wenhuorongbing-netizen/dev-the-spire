@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]
 internal static class PreservedFogPatch

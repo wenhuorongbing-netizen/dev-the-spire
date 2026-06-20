@@ -64,7 +64,7 @@ public sealed partial class MorviV22GuardTests
 
         AssertSourceContains(
             ancient,
-            "CustomAncientModel",
+            "ModAncientEventTemplate",
             "HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
             "MorviFeatureGate.ShouldForceMorvi",
             "unlockedAncients = [morvi]",
@@ -83,10 +83,10 @@ public sealed partial class MorviV22GuardTests
             "default-on");
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<Player, string> MorviStateKey",
-            "SavedSpireField<CardModel, string> MorviDeckStateKey",
-            "SavedSpireField<CardModel, bool> MorviBorrowedAncientCard",
-            "SavedSpireField<CardModel, bool> MorviOpenBookSealedCard");
+            "SavedAttachedState<Player, string> MorviStateKey",
+            "SavedAttachedState<CardModel, string> MorviDeckStateKey",
+            "SavedAttachedState<CardModel, bool> MorviBorrowedAncientCard",
+            "SavedAttachedState<CardModel, bool> MorviOpenBookSealedCard");
 
         foreach (var id in BlessingIds)
         {
@@ -168,9 +168,9 @@ public sealed partial class MorviV22GuardTests
         Assert.DoesNotContain("new IntVar(\"Cards\"", cards, StringComparison.Ordinal);
         AssertSourceContains(
             powers,
-            "MorviBraveryPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveBraveryPage, StrengthPower>",
-            "MorviDexterityPagePower : CustomTemporaryPowerModelWrapper<MorviArchiveDexterityPage, DexterityPower>",
-            "CustomPackedIconPath => MorviAssetPaths.ArchivePagePowerIcon",
+            "MorviBraveryPagePower : ModTemporaryAppliedPowerTemplate<MorviArchiveBraveryPage, StrengthPower>",
+            "MorviDexterityPagePower : ModTemporaryAppliedPowerTemplate<MorviArchiveDexterityPage, DexterityPower>",
+            "CustomIconPath => MorviAssetPaths.ArchivePagePowerIcon",
             "CustomBigIconPath => MorviAssetPaths.ArchivePagePowerBigIcon");
         Assert.Contains("ArchivePagePowerIcon", ReadMorviSource(), StringComparison.Ordinal);
         Assert.Contains("{StrengthPower:diff()}", engCards["EZMB_MORVI_ARCHIVE_BRAVERY_PAGE.description"], StringComparison.Ordinal);

@@ -4,16 +4,9 @@ using MegaCrit.Sts2.Core.Models.Characters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
-internal sealed partial class EzmbMorvi : CustomAncientModel
+internal sealed partial class EzmbMorvi : ModAncientEventTemplate
 {
-    public EzmbMorvi()
-        : base(autoAdd: false)
-    {
-    }
-
-    protected override OptionPools MakeOptionPools => new(MakePool(Array.Empty<AncientOption>()));
-
-    public override string? CustomScenePath => MorviAssetPaths.BackgroundScene;
+    public override string? CustomBackgroundScenePath => MorviAssetPaths.BackgroundScene;
 
     public override string? CustomMapIconPath => MorviAssetPaths.MapIcon;
 

@@ -1,11 +1,10 @@
-using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.Rooms;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-internal sealed partial class EzmbVakuuTrialEncounter : CustomEncounterModel
+internal sealed partial class EzmbVakuuTrialEncounter : ModEncounterTemplate
 {
     public const string VakuuSlot = "Vakuu";
     public const int MaxLocks = 3;
@@ -22,12 +21,9 @@ internal sealed partial class EzmbVakuuTrialEncounter : CustomEncounterModel
     private int cashOutOfferedLock;
     private bool cashedOut;
 
-    public EzmbVakuuTrialEncounter()
-        : base(RoomType.Monster, autoAdd: false)
-    {
-    }
+    public override RoomType RoomType => RoomType.Monster;
 
-    public override string? CustomScenePath => VakuuFightAssetPaths.EncounterScene;
+    public override string? CustomEncounterScenePath => VakuuFightAssetPaths.EncounterScene;
 
     public override bool HasScene => true;
 

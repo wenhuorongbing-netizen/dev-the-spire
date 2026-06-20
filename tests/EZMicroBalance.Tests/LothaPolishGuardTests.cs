@@ -35,7 +35,7 @@ public sealed partial class LothaPolishGuardTests
             "HoverTipFactory.Static(StaticHoverTip.Energy)");
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard",
+            "SavedAttachedState<CardModel, bool> LothaMirrorRebuttalCard",
             "\"EZMicroBalanceLothaMirrorRebuttalCard\"");
         AssertSourceContains(
             runHook,

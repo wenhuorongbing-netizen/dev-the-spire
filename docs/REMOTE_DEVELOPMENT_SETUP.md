@@ -2,9 +2,9 @@
 
 This guide explains how to clone this private repository on another Windows machine and recreate the local-only development environment.
 
-## 2026-06-19 Current Boundary
+## 2026-06-20 Current Boundary
 
-The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.1` with BaseLib `v3.3.0`, RitsuLib `v0.4.24`, previous-package/game-version beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`, previous-package/game-version beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`, retained previous-game-version beta.87 AdditiveBatch1 proof at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`, and current beta.88 AdditiveBatch1 loader/registration proof at `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
+The `v0.106.1` verified version below is historical setup/source-refresh context. Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on RitsuLib `v0.4.28` / `lib\0.107.1` only. Current beta.91 Off proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/`, and current beta.91 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
 ## Baseline
 
@@ -49,23 +49,25 @@ Install Slay the Spire 2 through Steam and record the game root, for example:
 D:\Steam\steamapps\common\Slay the Spire 2
 ```
 
-## 5. Install BaseLib v3.2.1
+## 5. Install STS2-RitsuLib v0.4.28
 
-Install BaseLib `v3.2.1` runtime files into:
+Install STS2-RitsuLib `v0.4.28` runtime files into:
 
 ```text
-<GameRoot>\mods\BaseLib
+<GameRoot>\mods\STS2-RitsuLib
 ```
 
 Required files:
 
 ```text
-BaseLib.json
-BaseLib.dll
-BaseLib.pck
+mod_manifest.json
+STS2-RitsuLib.dll
+STS2-RitsuLib.pck
+ritsulib-variants.manifest
+lib\0.107.1\STS2-RitsuLib.dll
 ```
 
-Do not commit BaseLib runtime binaries into this repository.
+Do not commit STS2-RitsuLib runtime binaries into this repository.
 
 ## 6. Create local Directory.Build.props
 
@@ -110,11 +112,11 @@ Expected published mod output:
 1. Launch Slay the Spire 2.
 2. Open Settings.
 3. Open Mod Settings.
-4. Confirm BaseLib appears.
-5. Confirm BaseLib is enabled.
+4. Confirm STS2-RitsuLib appears.
+5. Confirm STS2-RitsuLib is enabled.
 6. Confirm Spire Plus appears with manifest id `EZMicroBalance`.
 7. Confirm Spire Plus is enabled.
-8. Test with only BaseLib and `Spire Plus` enabled; do not install or enable old scaffold packages.
+8. Test with only STS2-RitsuLib and `Spire Plus` enabled; do not install or enable old scaffold packages.
 
 ## Local-only files that must not be committed
 

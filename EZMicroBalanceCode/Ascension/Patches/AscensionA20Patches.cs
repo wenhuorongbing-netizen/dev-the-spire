@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Models;

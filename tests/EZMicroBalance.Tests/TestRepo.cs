@@ -151,10 +151,26 @@ internal static class TestRepo
         var root = Environment.GetEnvironmentVariable("STS2_PATH");
         if (string.IsNullOrWhiteSpace(root))
         {
-            root = @"D:\Steam\steamapps\common\Slay the Spire 2";
+            root = Sts2PathFromLocalProps() ?? @"D:\Steam\steamapps\common\Slay the Spire 2";
         }
 
         return Path.Combine(new[] { root }.Concat(parts).ToArray());
+    }
+
+    private static string? Sts2PathFromLocalProps()
+    {
+        var propsPath = RepoPath("Directory.Build.props");
+        if (!File.Exists(propsPath))
+        {
+            return null;
+        }
+
+        var propsText = File.ReadAllText(propsPath, Encoding.UTF8);
+        var match = Regex.Match(
+            propsText,
+            @"<Sts2Path>\s*(?<path>[^<]+?)\s*</Sts2Path>",
+            RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        return match.Success ? match.Groups["path"].Value.Replace('/', Path.DirectorySeparatorChar) : null;
     }
 
     internal static string ToRepoRelativePath(string path)

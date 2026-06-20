@@ -1,6 +1,3 @@
-using BaseLib.Abstracts;
-using BaseLib.Utils;
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -9,9 +6,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[CustomID(CardId)]
-[Pool(typeof(StatusCardPool))]
-public sealed class MarginalNote : CustomCardModel
+public sealed class MarginalNote : ModCardTemplate
 {
     public const string CardId = "EZMB_MARGINAL_NOTE";
 
@@ -26,7 +21,7 @@ public sealed class MarginalNote : CustomCardModel
     public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/morvi_archive_pages.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => MarginalNoteKeywords;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [AncientCardHelpers.TemporaryHoverTip()];
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips => [AncientCardHelpers.TemporaryHoverTip()];
     public override bool CanBeGeneratedInCombat => false;
     public override bool CanBeGeneratedByModifiers => false;
     public override int MaxUpgradeLevel => 0;

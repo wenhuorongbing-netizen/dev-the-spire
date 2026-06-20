@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.ValueProps;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-internal sealed class VakuuStolenVaultPower : CustomPowerModel
+internal sealed class VakuuStolenVaultPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -11,12 +11,12 @@ internal sealed class VakuuStolenVaultPower : CustomPowerModel
 
     public override int DisplayAmount => Amount;
 
-    public override string CustomPackedIconPath => VakuuFightAssetPaths.StolenVaultPowerIcon;
+    public override string CustomIconPath => VakuuFightAssetPaths.StolenVaultPowerIcon;
 
     public override string CustomBigIconPath => VakuuFightAssetPaths.StolenVaultPowerBigIcon;
 }
 
-internal sealed class VakuuBloodDebtPower : CustomPowerModel
+internal sealed class VakuuBloodDebtPower : ModPowerTemplate
 {
     private const int DamagePerDebt = 2;
 
@@ -26,7 +26,7 @@ internal sealed class VakuuBloodDebtPower : CustomPowerModel
 
     public override int DisplayAmount => Amount;
 
-    public override string CustomPackedIconPath => VakuuFightAssetPaths.BloodDebtPowerIcon;
+    public override string CustomIconPath => VakuuFightAssetPaths.BloodDebtPowerIcon;
 
     public override string CustomBigIconPath => VakuuFightAssetPaths.BloodDebtPowerBigIcon;
 
@@ -43,7 +43,7 @@ internal sealed class VakuuBloodDebtPower : CustomPowerModel
     }
 }
 
-internal sealed class VakuuBacklashPower : CustomPowerModel
+internal sealed class VakuuBacklashPower : ModPowerTemplate
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -51,7 +51,7 @@ internal sealed class VakuuBacklashPower : CustomPowerModel
 
     public override int DisplayAmount => Amount;
 
-    public override string CustomPackedIconPath => VakuuFightAssetPaths.BloodDebtPowerIcon;
+    public override string CustomIconPath => VakuuFightAssetPaths.BloodDebtPowerIcon;
 
     public override string CustomBigIconPath => VakuuFightAssetPaths.BloodDebtPowerBigIcon;
 

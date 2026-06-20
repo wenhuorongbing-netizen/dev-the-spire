@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Models.Acts;
+using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 

@@ -11,24 +11,22 @@ public sealed partial class ReleaseArtifactParityGuardTests
         var syntheticLog = string.Join(
             Environment.NewLine,
             "[ERROR] Mod manifest D:\\Steam\\mods\\OtherMod\\bad.json is missing the 'id' field! This is not allowed.",
-            "[INFO] Loading assembly DLL D:\\Steam\\mods\\BaseLib\\BaseLib.dll",
-            "[INFO] Finished mod initialization for 'BaseLib' (BaseLib).",
+            "[INFO] Loading assembly DLL D:\\Steam\\mods\\STS2-RitsuLib\\lib\\0.107.0\\STS2-RitsuLib.dll",
+            "[INFO] Finished mod initialization for 'STS2-RitsuLib' (STS2-RitsuLib).",
             "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
             "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
             "[INFO] Finished mod initialization for 'Spire Plus' (EZMicroBalance).",
-            "[INFO] [BaseLib] Found 13 SavedSpireFields.",
             "[INFO] [Spire Plus] Urda Trial Branch failed after missed combat 1/3; marked card removed from deck.",
             "[INFO] [Startup] Time to main menu: 12,648ms");
 
         var summary = SmokeLogParser.Parse(syntheticLog);
 
-        Assert.True(summary.LoadedBaseLibDll);
-        Assert.True(summary.InitializedBaseLib);
+        Assert.True(summary.LoadedRitsuLibDll);
+        Assert.True(summary.InitializedRitsuLib);
         Assert.True(summary.LoadedEzDll);
         Assert.True(summary.LoadedEzPck);
         Assert.True(summary.InitializedEzMicroBalance);
         Assert.True(summary.ReachedMainMenu);
-        Assert.Equal(13, summary.SavedSpireFieldCount);
         Assert.Empty(summary.EzMicroBalanceErrorLines);
         Assert.Single(summary.UnrelatedManifestErrorLines);
     }
@@ -50,16 +48,15 @@ public sealed partial class ReleaseArtifactParityGuardTests
     }
 
     [Fact]
-    public void ControlledSmokePassRequiresCurrentSourceSavedSpireFieldCount()
+    public void ControlledSmokePassRequiresCurrentRitsuLibShape()
     {
-        var expectedFieldCount = ExpectedCurrentSavedSpireFieldCount();
-        Assert.True(expectedFieldCount >= 26, $"Expected current source to define the refreshed 26-field package state or later, found {expectedFieldCount}.");
+        Assert.Equal(30, ExpectedCurrentSavedAttachedStateCount());
 
-        var currentLog = CreateControlledSmokeLog(expectedFieldCount);
-        var historicalLog = CreateControlledSmokeLog(22);
+        var currentLog = CreateControlledSmokeLog(includeRitsuLib: true);
+        var dependencyMissingLog = CreateControlledSmokeLog(includeRitsuLib: false);
 
         Assert.True(IsControlledSmokePass(SmokeLogParser.Parse(currentLog)));
-        Assert.False(IsControlledSmokePass(SmokeLogParser.Parse(historicalLog)));
+        Assert.False(IsControlledSmokePass(SmokeLogParser.Parse(dependencyMissingLog)));
     }
 
     [Fact]
@@ -67,7 +64,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
     {
         var syntheticLog = string.Join(
             Environment.NewLine,
-            "[INFO] [BaseLib] Finished init for BaseLib.",
+            "[INFO] [STS2-RitsuLib] Finished init for STS2-RitsuLib.",
             "[WARN] Mod EZMicroBalance declares version v0.1.0-private-beta.82 which is not a valid Semantic Version",
             "[INFO] Loaded some lines");
 
@@ -96,48 +93,53 @@ public sealed partial class ReleaseArtifactParityGuardTests
 
     private static bool IsControlledSmokePass(SmokeLogSummary summary)
     {
-        return summary.LoadedBaseLibDll &&
-            summary.InitializedBaseLib &&
+        return summary.LoadedRitsuLibDll &&
+            summary.InitializedRitsuLib &&
             summary.LoadedEzDll &&
             summary.LoadedEzPck &&
             summary.InitializedEzMicroBalance &&
             summary.ReachedMainMenu &&
-            summary.SavedSpireFieldCount == ExpectedCurrentSavedSpireFieldCount() &&
             summary.EzMicroBalanceErrorLines.Length == 0;
     }
 
-    private static int ExpectedCurrentSavedSpireFieldCount()
+    private static int ExpectedCurrentSavedAttachedStateCount()
     {
         var source = ReadSourceTree("EZMicroBalanceCode");
         var count = Regex.Matches(
             source,
-            @"\bpublic\s+static\s+readonly\s+SavedSpireField<",
+            @"\bpublic\s+static\s+readonly\s+SavedAttachedState<",
             RegexOptions.CultureInvariant).Count;
         Assert.Equal(30, count);
         return count;
     }
 
-    private static string CreateControlledSmokeLog(int savedSpireFieldCount)
+    private static string CreateControlledSmokeLog(bool includeRitsuLib)
     {
-        return string.Join(
-            Environment.NewLine,
-            "[INFO] Loading assembly DLL D:\\Steam\\mods\\BaseLib\\BaseLib.dll",
-            "[INFO] Finished mod initialization for 'BaseLib' (BaseLib).",
+        var lines = new List<string>();
+        if (includeRitsuLib)
+        {
+            lines.Add("[INFO] Loading assembly DLL D:\\Steam\\mods\\STS2-RitsuLib\\lib\\0.107.0\\STS2-RitsuLib.dll");
+            lines.Add("[INFO] Finished mod initialization for 'STS2-RitsuLib' (STS2-RitsuLib).");
+        }
+
+        lines.AddRange(
+        [
             "[INFO] Loading assembly DLL D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.dll",
             "[INFO] Loading Godot PCK D:\\Steam\\mods\\EZMicroBalance\\EZMicroBalance.pck",
             "[INFO] Finished mod initialization for 'Spire Plus' (EZMicroBalance).",
-            $"[INFO] [BaseLib] Found {savedSpireFieldCount} SavedSpireFields.",
-            "[INFO] [Startup] Time to main menu: 12,648ms");
+            "[INFO] [Startup] Time to main menu: 12,648ms"
+        ]);
+
+        return string.Join(Environment.NewLine, lines);
     }
 
     private sealed record SmokeLogSummary(
-        bool LoadedBaseLibDll,
-        bool InitializedBaseLib,
+        bool LoadedRitsuLibDll,
+        bool InitializedRitsuLib,
         bool LoadedEzDll,
         bool LoadedEzPck,
         bool InitializedEzMicroBalance,
         bool ReachedMainMenu,
-        int? SavedSpireFieldCount,
         string[] EzMicroBalanceErrorLines,
         string? EzMicroBalanceVersion,
         string[] UnrelatedManifestErrorLines);
@@ -147,15 +149,14 @@ public sealed partial class ReleaseArtifactParityGuardTests
         public static SmokeLogSummary Parse(string log)
         {
             var lines = log.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
-            var savedFieldCount = Regex.Match(log, @"Found (?<count>\d+) SavedSpireFields\.");
             var versionMatch = Regex.Match(
                 log,
                 @"Mod EZMicroBalance declares version (?<version>[^\s]+)");
 
             return new SmokeLogSummary(
-                LoadedBaseLibDll: lines.Any(line => line.Contains("Loading assembly DLL", StringComparison.Ordinal) &&
-                                                    line.Contains("BaseLib.dll", StringComparison.Ordinal)),
-                InitializedBaseLib: lines.Any(line => line.Contains("Finished mod initialization for 'BaseLib' (BaseLib)", StringComparison.Ordinal)),
+                LoadedRitsuLibDll: lines.Any(line => line.Contains("Loading assembly DLL", StringComparison.Ordinal) &&
+                                                     line.Contains("STS2-RitsuLib.dll", StringComparison.Ordinal)),
+                InitializedRitsuLib: lines.Any(line => line.Contains("Finished mod initialization for 'STS2-RitsuLib' (STS2-RitsuLib)", StringComparison.Ordinal)),
                 LoadedEzDll: lines.Any(line => line.Contains("Loading assembly DLL", StringComparison.Ordinal) &&
                                                line.Contains("EZMicroBalance.dll", StringComparison.Ordinal)),
                 LoadedEzPck: lines.Any(line => line.Contains("Loading Godot PCK", StringComparison.Ordinal) &&
@@ -163,7 +164,6 @@ public sealed partial class ReleaseArtifactParityGuardTests
                 InitializedEzMicroBalance: lines.Any(line =>
                     line.Contains("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", StringComparison.Ordinal)),
                 ReachedMainMenu: lines.Any(line => line.Contains("Time to main menu", StringComparison.Ordinal)),
-                SavedSpireFieldCount: savedFieldCount.Success ? int.Parse(savedFieldCount.Groups["count"].Value) : null,
                 EzMicroBalanceErrorLines: lines
                     .Where(line => (line.Contains("EZMicroBalance", StringComparison.Ordinal) ||
                                     line.Contains("Spire Plus", StringComparison.Ordinal)) &&
@@ -174,7 +174,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
                     .Where(line => line.Contains("Mod manifest", StringComparison.Ordinal) &&
                                    line.Contains("[ERROR]", StringComparison.Ordinal) &&
                                    !line.Contains("EZMicroBalance", StringComparison.Ordinal) &&
-                                   !line.Contains("BaseLib", StringComparison.Ordinal))
+                                   !line.Contains("STS2-RitsuLib", StringComparison.Ordinal))
                     .ToArray());
         }
 

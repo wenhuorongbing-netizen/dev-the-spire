@@ -4,16 +4,9 @@ using MegaCrit.Sts2.Core.Models.Characters;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
-internal sealed partial class EzmbLotha : CustomAncientModel
+internal sealed partial class EzmbLotha : ModAncientEventTemplate
 {
-    public EzmbLotha()
-        : base(autoAdd: false)
-    {
-    }
-
-    protected override OptionPools MakeOptionPools => new(MakePool(Array.Empty<AncientOption>()));
-
-    public override string? CustomScenePath => LothaAssetPaths.BackgroundScene;
+    public override string? CustomBackgroundScenePath => LothaAssetPaths.BackgroundScene;
 
     public override string? CustomMapIconPath => LothaAssetPaths.MapIcon;
 

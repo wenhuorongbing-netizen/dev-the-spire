@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(CookRestSiteOption), "get_IsEnabled")]
 internal static class MeatCleaverCookIsEnabledPatch

@@ -1,10 +1,7 @@
-using BaseLib.Utils.Attributes;
 using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[CustomID(CardId)]
-[Pool(typeof(CurseCardPool))]
 public sealed class Root : RootFamilyCard
 {
     public const string CardId = "EZMB_ROOT";
@@ -15,8 +12,6 @@ public sealed class Root : RootFamilyCard
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(CurseCardPool))]
 public sealed class DeepRoot : RootFamilyCard
 {
     public const string CardId = "EZMB_DEEP_ROOT";
@@ -27,8 +22,6 @@ public sealed class DeepRoot : RootFamilyCard
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(CurseCardPool))]
 public sealed class RootblightIII : RootFamilyCard
 {
     public const string CardId = "EZMB_ROOTBLIGHT_III";

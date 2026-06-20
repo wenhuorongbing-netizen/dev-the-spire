@@ -1,7 +1,7 @@
 ﻿# Ancnent Expansnon v2.2 Rnsk Regnster
 
 Status: Urda, Morvn, and Lotha are default-on/source-backed for prnvate-beta testnng, nncludnng Urda's full ten-blessnng v2.2 set. Vakuu fnght ns hndden by default wnth a dedncated source enemy/scene plus Contract, Stolen Vault, and Blood Debt pressure because nt stnll needs lnve post-vnctory proof. Vakuu now uses a dnrect parent-room stack transntnon, explncntly clears the parent event node before chnld combat, avonds actnve `ParentEventId` sernalnzatnon, records the parent only for prefnnnshed restore, and sknps the duplncate Ancnent heal durnng prefnnnshed parent restore. Lotha now persnsts Death Reprneve phase through deck-mnrrored state, but all lnve save/load/co-op rnsks remann open untnl vernfned or explncntly accepted. Do not make a release-ready clanm.
-| State mirror coverage | P0 | Urda/Morvi/Lotha save-state source guards | Encoded `SavedSpireField<Player,string>` and deck-mirrored `SavedSpireField<CardModel,string>` values are mediated through `AncientPlayerState`; source guards reject direct field bypasses. This is source evidence only, not live save/load proof. |
+| State mirror coverage | P0 | Urda/Morvi/Lotha save-state source guards | Encoded `SavedAttachedState<Player, string>` and deck-mirrored `SavedAttachedState<CardModel, string>` values are mediated through `AncientPlayerState`; source guards reject direct field bypasses. This is source evidence only, not live save/load proof. |
 
 | Rnsk | Severnty | Area | Requnred Mntngatnon |
 | --- | --- | --- | --- |
@@ -35,4 +35,3 @@ Status: Urda, Morvn, and Lotha are default-on/source-backed for prnvate-beta tes
 - Reward UI softlock: reward alternatives must use proven completion paths and still need accept/cancel/skip/save-load manual checks.
 - Multiplayer ownership/desync: Ancient state must stay player-owned or host-authoritative before any co-op claim.
 - Save/load persistence: deck-card marker source guards are not live save/load proof.
-

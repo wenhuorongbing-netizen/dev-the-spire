@@ -47,7 +47,7 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 
 - Add behavior beside the feature it belongs to; avoid cross-feature utility files unless there is real shared logic.
 - Put saved run fields in the feature's `*SavedStateFields.cs` file and update source guards.
-- Prefer BaseLib/template-supported APIs before adding Harmony patches.
+- Prefer RitsuLib/template-supported APIs before adding Harmony patches.
 - When Harmony is needed, keep patch targets narrow and source-guarded by tests.
 - For canonical `AbstractModel` markers/hooks/models, use `ModelDb`; do not construct canonical model instances directly.
 - Keep Early Access API references conservative. Avoid hard references to optional boss/power types when a stable `ModelId` check is enough.

@@ -246,7 +246,7 @@ function New-ManualRows {
             ExtraRequiredFiles = @('mod-settings-checklist.md')
             Checkpoints = @(
                 'Open Settings -> Mod Settings through the normal Steam-client path with the current package installed.',
-                'Capture a foreground Mods list screenshot showing BaseLib and Spire Plus, with EZMicroBalance only as the compatibility id/folder where visible.',
+                'Capture a foreground Mods list screenshot showing STS2-RitsuLib and Spire Plus, with EZMicroBalance only as the compatibility id/folder where visible.',
                 'Open the Spire Plus config page and capture a foreground page screenshot showing the current display name, not historical EZ Micro Balance page text.',
                 'Attach the same-session godot.log plus clean log audit, including config registration for mod EZMicroBalance.'
             )
@@ -364,7 +364,7 @@ function New-ManualRows {
                 'Multiplayer-sensitive values follow the v4.1 scaling rules or are explicitly deferred with owner approval.'
             )
         },
-        @{ Id = 'disable-mod-gameplay'; Kind = 'gameplay'; Label = 'BaseLib-only disabled Spire Plus gameplay comparison' },
+        @{ Id = 'disable-mod-gameplay'; Kind = 'gameplay'; Label = 'RitsuLib-only disabled Spire Plus gameplay comparison' },
         @{
             Id = 'preview-tools-live-proof'
             Kind = 'preview-tools'
@@ -440,7 +440,7 @@ $environment = [ordered]@{
     Git = $gitEvidence
     Sts2Path = [Environment]::GetEnvironmentVariable('STS2_PATH', 'Process')
     GodotPath = [Environment]::GetEnvironmentVariable('GODOT_PATH', 'Process')
-    BaseLibExpectedRuntimeLocation = '<GameRoot>\mods\BaseLib'
+    RitsuLibExpectedRuntimeLocation = '<GameRoot>\mods\STS2-RitsuLib'
     ReleaseEvidenceLogging = [ordered]@{
         EnvironmentVariable = 'SPIREPLUS_RELEASE_EVIDENCE_LOG'
         LegacyEnvironmentVariable = 'EZMB_RELEASE_EVIDENCE_LOG'
@@ -470,7 +470,7 @@ $enabledModsTemplate = @(
     'Status: pending',
     '',
     'Expected current-package loader proof:',
-    '- BaseLib',
+    '- STS2-RitsuLib',
     '- Spire Plus',
     '',
     'Paste the loaded-mods log excerpt here. Do not mark this file passed from historical 16/22-field logs or source review.'
@@ -636,7 +636,7 @@ foreach ($row in $manualRows) {
             '',
             '| Scenario ID | Expected behavior | Live result | Evidence file(s) |',
             '| --- | --- | --- | --- |',
-            '| base-lib-visible-enabled | BaseLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |',
+            '| ritsulib-visible-enabled | STS2-RitsuLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |',
             '| spire-plus-list-display-name | The Mods list shows the player-facing name Spire Plus for the current package. |  |  |',
             '| spire-plus-config-page-current-name | Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text. |  |  |',
             '| technical-id-compatibility | EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name. |  |  |',
@@ -883,7 +883,7 @@ foreach ($row in $manualRows) {
             '',
             '| Scenario ID | Expected behavior | Live result | Evidence file(s) |',
             '| --- | --- | --- | --- |',
-            '| coop-host-join-clean-logs | Host and client load exactly BaseLib plus Spire Plus with matching package hashes and clean logs. |  |  |',
+            '| coop-host-join-clean-logs | Host and client load exactly STS2-RitsuLib plus Spire Plus with matching package hashes and clean logs. |  |  |',
             '| coop-a11-a20-selection | A11-A20 selection/start-run behavior is recorded on host and client; selection visibility alone is not gameplay support. |  |  |',
             '| coop-ancients | Urda, Morvi, Lotha, and gated Vakuu have explicit host/client disposition notes for reward state and relic visibility. |  |  |',
             '| coop-root-eyes | Root Eyes map preview either stays gated in co-op or shows host/client-consistent map state with no desync. |  |  |',

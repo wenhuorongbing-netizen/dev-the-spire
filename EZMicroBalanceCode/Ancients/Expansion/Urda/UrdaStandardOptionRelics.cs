@@ -2,56 +2,47 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaSeedbedOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.SeedbedOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.SeedbedOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaHumusPactOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.HumusPactOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.HumusPactOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaMoltingOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.MoltingOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.MoltingOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaMossMapOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.MossMapOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.MossMapOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaTrialBranchOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.TrialBranchOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.TrialBranchOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaShallowRootRelicOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.ShallowRootRelicOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.ShallowRootRelicOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaEliteRootOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.EliteRootOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.EliteRootOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaRootedRouteOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.RootedRouteOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.RootedRouteOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaAfterRainOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.AfterRainOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.AfterRainOptionIcon;
 }

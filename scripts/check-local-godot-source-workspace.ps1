@@ -200,7 +200,15 @@ $gdreExportLogPath = Join-Path $sourceRootFull 'gdre_export.log'
 $autoSlayerPath = Join-Path $sourceRootFull 'src\Core\AutoSlay\AutoSlayer.cs'
 $autoSlayEventRoomHandlerPath = Join-Path $sourceRootFull 'src\Core\AutoSlay\Handlers\Rooms\EventRoomHandler.cs'
 $ritsuManifestPath = Join-Path $ritsuLibRootFull 'mod_manifest.json'
-$ritsuVariantsPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.json'
+$ritsuVariantsManifestPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.manifest'
+$ritsuVariantsJsonPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.json'
+$ritsuVariantsPath = if (Test-Path -LiteralPath $ritsuVariantsManifestPath -PathType Leaf) {
+    $ritsuVariantsManifestPath
+} elseif (Test-Path -LiteralPath $ritsuVariantsJsonPath -PathType Leaf) {
+    $ritsuVariantsJsonPath
+} else {
+    $ritsuVariantsManifestPath
+}
 $ritsuViewerPath = Join-Path $ritsuLibRootFull 'viewer\index.html'
 
 Add-Check -Name 'source_root_exists' -Passed (Test-Path -LiteralPath $sourceRootFull -PathType Container) -Detail "expected recovered source folder at $sourceRootFull"
@@ -416,7 +424,7 @@ Add-Check -Name 'source_root_has_no_tracked_files' -Passed ($sourceRootTrackedFi
 Add-Check -Name 'godot_open_command_prepared' -Passed ((Test-Path -LiteralPath $godotExeFull -PathType Leaf) -and (Test-Path -LiteralPath $sourceProjectPath -PathType Leaf)) -Detail "open project reference: $godotOpenProjectCommand"
 
 Add-Check -Name 'ritsulib_manifest_exists' -Passed (Test-Path -LiteralPath $ritsuManifestPath -PathType Leaf) -Detail "expected RitsuLib manifest at $ritsuManifestPath"
-Add-Check -Name 'ritsulib_variants_exists' -Passed (Test-Path -LiteralPath $ritsuVariantsPath -PathType Leaf) -Detail "expected RitsuLib variants at $ritsuVariantsPath"
+Add-Check -Name 'ritsulib_variants_exists' -Passed (Test-Path -LiteralPath $ritsuVariantsPath -PathType Leaf) -Detail "expected RitsuLib variants at $ritsuVariantsManifestPath or $ritsuVariantsJsonPath"
 Add-Check -Name 'ritsulib_viewer_exists' -Passed (Test-Path -LiteralPath $ritsuViewerPath -PathType Leaf) -Detail 'RitsuLib viewer exists; it is a log viewer, not an unpacker or monkey runner'
 
 $ritsuManifest = $null

@@ -1479,7 +1479,14 @@ if (-not $ExpectedRitsuLibVersion) {
 }
 
 if (-not $ExpectedRitsuCompatBranch) {
-    $variantConfig = Read-JsonOrNull -Path (Join-Path $GameRoot 'mods\STS2-RitsuLib\ritsulib-variants.json')
+    $ritsuVariantManifestPath = Join-Path $GameRoot 'mods\STS2-RitsuLib\ritsulib-variants.manifest'
+    $ritsuVariantJsonPath = Join-Path $GameRoot 'mods\STS2-RitsuLib\ritsulib-variants.json'
+    $ritsuVariantConfigPath = if (Test-Path -LiteralPath $ritsuVariantManifestPath -PathType Leaf) {
+        $ritsuVariantManifestPath
+    } else {
+        $ritsuVariantJsonPath
+    }
+    $variantConfig = Read-JsonOrNull -Path $ritsuVariantConfigPath
     if ($variantConfig -and $variantConfig.variants -and $ExpectedGameVersion) {
         $expectedGameWithoutPrefix = Normalize-VersionWithoutPrefix -Version $ExpectedGameVersion
         $variant = @($variantConfig.variants | Where-Object {

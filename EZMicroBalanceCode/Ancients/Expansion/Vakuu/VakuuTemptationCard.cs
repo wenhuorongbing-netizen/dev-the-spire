@@ -1,10 +1,9 @@
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-internal abstract class VakuuContractCard : CustomCardModel
+internal abstract class VakuuContractCard : ModCardTemplate
 {
     private static readonly CardKeyword[] ContractKeywords = [CardKeyword.Ethereal, CardKeyword.Exhaust];
 
@@ -21,7 +20,7 @@ internal abstract class VakuuContractCard : CustomCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => ContractKeywords;
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
             HoverTipFactory.FromKeyword(CardKeyword.Exhaust),
@@ -47,8 +46,6 @@ internal abstract class VakuuContractCard : CustomCardModel
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
 internal sealed class VakuuKnifeContract : VakuuContractCard
 {
     public const string CardId = "EZMB_VAKUU_KNIFE_CONTRACT";
@@ -77,8 +74,6 @@ internal sealed class VakuuKnifeContract : VakuuContractCard
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
 internal sealed class VakuuTemptation : VakuuContractCard
 {
     public const string CardId = "EZMB_VAKUU_TEMPTATION";
@@ -103,8 +98,6 @@ internal sealed class VakuuTemptation : VakuuContractCard
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
 internal sealed class VakuuShelterContract : VakuuContractCard
 {
     public const string CardId = "EZMB_VAKUU_SHELTER_CONTRACT";
@@ -119,8 +112,6 @@ internal sealed class VakuuShelterContract : VakuuContractCard
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
 internal sealed class VakuuTrickContract : VakuuContractCard
 {
     public const string CardId = "EZMB_VAKUU_TRICK_CONTRACT";
@@ -134,13 +125,11 @@ internal sealed class VakuuTrickContract : VakuuContractCard
     }
 }
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
 internal sealed class VakuuCashOutContract : VakuuContractCard
 {
     public const string CardId = "EZMB_VAKUU_CASH_OUT_CONTRACT";
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
             HoverTipFactory.FromKeyword(CardKeyword.Exhaust),

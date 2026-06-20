@@ -1,4 +1,3 @@
-using BaseLib.Utils.Attributes;
 using Godot;
 using MegaCrit.Sts2.Core.Audio;
 using MegaCrit.Sts2.Core.Entities.Ascension;
@@ -8,8 +7,7 @@ using MegaCrit.Sts2.Core.Nodes.Combat;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-[CustomID(MonsterId)]
-internal sealed class EzmbVakuuTrialMonster : CustomMonsterModel
+internal sealed class EzmbVakuuTrialMonster : ModMonsterTemplate
 {
     public const string MonsterId = "EZMB_VAKUU_TRIAL_MONSTER";
 
@@ -23,7 +21,7 @@ internal sealed class EzmbVakuuTrialMonster : CustomMonsterModel
 
     public override int MaxInitialHp => AscensionHelper.GetValueIfAscension(AscensionLevel.ToughEnemies, 184, 168);
 
-    public override string? CustomVisualPath => VakuuFightAssetPaths.MonsterVisual;
+    public override string? CustomVisualsPath => VakuuFightAssetPaths.MonsterVisual;
 
     public override bool HasDeathSfx => false;
 
@@ -37,11 +35,15 @@ internal sealed class EzmbVakuuTrialMonster : CustomMonsterModel
 
     private int GildedHideBlock => AscensionHelper.GetValueIfAscension(AscensionLevel.DeadlyEnemies, 28, 24);
 
-    public override NCreatureVisuals? CreateCustomVisuals()
+    protected override NCreatureVisuals? TryCreateCreatureVisuals()
     {
-#pragma warning disable CS0618
-        var visuals = GodotUtils.CreatureVisualsFromImage(VakuuFightAssetPaths.MonsterVisual);
-#pragma warning restore CS0618
+        var texture = ResourceLoader.Load<Texture2D>(VakuuFightAssetPaths.MonsterVisual);
+        var visuals = RitsuGodotNodeFactories.CreateFromResource<NCreatureVisuals>(texture);
+        if (visuals is null)
+        {
+            return null;
+        }
+
         ResizeImageVisuals(visuals);
         return visuals;
     }

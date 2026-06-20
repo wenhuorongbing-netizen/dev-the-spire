@@ -127,7 +127,7 @@ public sealed partial class ReleaseEvidenceGateTests
             var loaderEvidenceDir = loaderNode["EvidenceDir"]!.GetValue<string>();
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot.log"), "Synthetic loader log for package-hash verifier contract.");
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), """{ "Clean": true }""");
-            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "BaseLib\r\nEZMicroBalance\r\n");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "STS2-RitsuLib\r\nEZMicroBalance\r\n");
 
             var packageHashesPath = Path.Combine(loaderEvidenceDir, "package-hashes.json");
             var packageHashesNode = JsonNode.Parse(File.ReadAllText(packageHashesPath))!.AsObject();

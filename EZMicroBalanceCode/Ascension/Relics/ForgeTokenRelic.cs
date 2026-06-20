@@ -2,8 +2,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 using MegaCrit.Sts2.Core.Models.RelicPools;
 
-[Pool(typeof(SharedRelicPool))]
-internal sealed class ForgeTokenRelic : CustomRelicModel, ILocalizationProvider
+internal sealed class ForgeTokenRelic : ModRelicTemplate, ILocalizationProvider
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
@@ -13,13 +12,13 @@ internal sealed class ForgeTokenRelic : CustomRelicModel, ILocalizationProvider
 
     public override int DisplayAmount => 1;
 
-    public override string PackedIconPath => AscensionAssetPaths.ForgeTokenStatus;
+    public override string CustomIconPath => AscensionAssetPaths.ForgeTokenStatus;
 
-    protected override string PackedIconOutlinePath => AscensionAssetPaths.ForgeTokenStatus;
+    public override string CustomIconOutlinePath => AscensionAssetPaths.ForgeTokenStatus;
 
-    protected override string BigIconPath => AscensionAssetPaths.ForgeTokenStatus;
+    public override string CustomBigIconPath => AscensionAssetPaths.ForgeTokenStatus;
 
-    public override List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
+    public List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new RelicLoc(
             "铸令",
             "击败[gold]火印精英[/gold]后获得。下一个[gold]休息处[/gold]：若选择[gold]休息[/gold]，随机升级[blue]1[/blue]张可升级的[gold]普通[/gold]或[gold]罕见[/gold]牌；若选择[gold]锻造[/gold]，回复[blue]7[/blue]点生命。休息没有可升级目标时，改为回复[blue]5[/blue]点生命。只有[gold]休息[/gold]或[gold]锻造[/gold]会消耗铸令。最多持有[blue]1[/blue]枚。",

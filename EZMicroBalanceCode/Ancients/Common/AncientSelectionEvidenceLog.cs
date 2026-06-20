@@ -1,4 +1,4 @@
-﻿using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
+using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 

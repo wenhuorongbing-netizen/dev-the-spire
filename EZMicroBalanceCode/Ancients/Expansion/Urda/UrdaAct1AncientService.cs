@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
-using BaseLib.Utils;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Ancients;

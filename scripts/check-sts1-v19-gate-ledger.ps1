@@ -213,7 +213,7 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O21'; Field = 'requirement'; Needle = 'Current v0.107 game path and dependency path recorded' },
     [pscustomobject]@{ GateId = 'O21'; Field = 'evidence'; Needle = 'v0.107.0' },
     [pscustomobject]@{ GateId = 'O21'; Field = 'evidence'; Needle = 'beta.87' },
-    [pscustomobject]@{ GateId = 'O22'; Field = 'requirement'; Needle = 'STS2-RitsuLib v0.4.24 with lib/0.107.0 installed' },
+    [pscustomobject]@{ GateId = 'O22'; Field = 'requirement'; Needle = 'STS2-RitsuLib v0.4.28 with lib/0.107.1 installed' },
     [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = '.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/godot.log.after-launch' },
     [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = 'v0.107.0' },
     [pscustomobject]@{ GateId = 'O23'; Field = 'evidence'; Needle = 'v0.1.0-private-beta.87' },

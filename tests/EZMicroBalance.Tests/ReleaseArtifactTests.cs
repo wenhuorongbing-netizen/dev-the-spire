@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -51,9 +51,9 @@ public sealed partial class ReleaseArtifactTests
             active.RootElement.GetProperty("dependencies").EnumerateArray(),
             dependency => dependency.ValueKind == JsonValueKind.Object &&
                 dependency.TryGetProperty("id", out var id) &&
-                id.GetString() == "BaseLib" &&
+                id.GetString() == "STS2-RitsuLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "v3.3.0");
+                minVersion.GetString() == "0.4.28");
 
         foreach (var removedRootSurface in new[]
         {
@@ -176,7 +176,7 @@ public sealed partial class ReleaseArtifactTests
         Assert.Contains("keyword => keyword != CardKeyword.Innate", source, StringComparison.Ordinal);
         Assert.Contains("JewelryBoxApotheosisMarker.Mark(card)", source, StringComparison.Ordinal);
         Assert.Contains("JewelryBoxApotheosisMarker.Mark(result.cardAdded)", source, StringComparison.Ordinal);
-        Assert.Contains("SavedSpireField<CardModel, bool>", ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs"), StringComparison.Ordinal);
+        Assert.Contains("SavedAttachedState<CardModel, bool>", ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs"), StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.JewelryBoxNonInnateApotheosis[card] = true", source, StringComparison.Ordinal);
         Assert.Contains("AncientSavedStateFields.JewelryBoxNonInnateApotheosis[card]", source, StringComparison.Ordinal);
 
@@ -293,9 +293,10 @@ public sealed partial class ReleaseArtifactTests
     public void HarmonyPatchesResolveAgainstInstalledGameApi()
     {
         var dataDir = GamePath("data_sts2_windows_x86_64");
-        var baseLibDir = GamePath("mods", "BaseLib");
+        var ritsuLibDll = FindInstalledRitsuLibDll();
+        var ritsuLibDir = Path.GetDirectoryName(ritsuLibDll)!;
         var installedModDir = GamePath("mods", "EZMicroBalance");
-        var searchDirs = new[] { dataDir, baseLibDir, installedModDir }
+        var searchDirs = new[] { dataDir, ritsuLibDir, installedModDir }
             .Concat(CandidateBuildDirectories())
             .ToArray();
 
@@ -306,7 +307,7 @@ public sealed partial class ReleaseArtifactTests
             Assembly.LoadFrom(Path.Combine(dataDir, "0Harmony.dll"));
             Assembly.LoadFrom(Path.Combine(dataDir, "GodotSharp.dll"));
             Assembly.LoadFrom(Path.Combine(dataDir, "sts2.dll"));
-            Assembly.LoadFrom(Path.Combine(baseLibDir, "BaseLib.dll"));
+            Assembly.LoadFrom(ritsuLibDll);
             var ez = Assembly.LoadFrom(Path.Combine(installedModDir, "EZMicroBalance.dll"));
 
             var harmonyType = Type.GetType("HarmonyLib.Harmony, 0Harmony", throwOnError: true)!;
@@ -326,9 +327,10 @@ public sealed partial class ReleaseArtifactTests
     public void InstalledUrdaUsesCustomAncientAssetPaths()
     {
         var dataDir = GamePath("data_sts2_windows_x86_64");
-        var baseLibDir = GamePath("mods", "BaseLib");
+        var ritsuLibDll = FindInstalledRitsuLibDll();
+        var ritsuLibDir = Path.GetDirectoryName(ritsuLibDll)!;
         var installedModDir = GamePath("mods", "EZMicroBalance");
-        var searchDirs = new[] { dataDir, baseLibDir, installedModDir }
+        var searchDirs = new[] { dataDir, ritsuLibDir, installedModDir }
             .Concat(CandidateBuildDirectories())
             .ToArray();
 
@@ -338,20 +340,20 @@ public sealed partial class ReleaseArtifactTests
         {
             Assembly.LoadFrom(Path.Combine(dataDir, "GodotSharp.dll"));
             Assembly.LoadFrom(Path.Combine(dataDir, "sts2.dll"));
-            Assembly.LoadFrom(Path.Combine(baseLibDir, "BaseLib.dll"));
+            Assembly.LoadFrom(ritsuLibDll);
             var ez = Assembly.LoadFrom(Path.Combine(installedModDir, "EZMicroBalance.dll"));
 
             var urdaType = ez.GetType(
                 "EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda.EzmbUrda",
                 throwOnError: true)!;
-            Assert.Equal("BaseLib.Abstracts.CustomAncientModel", urdaType.BaseType?.FullName);
+            Assert.Equal("STS2RitsuLib.Scaffolding.Content.ModAncientEventTemplate", urdaType.BaseType?.FullName);
 
             var urda = Activator.CreateInstance(urdaType, nonPublic: true)!;
             Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png", GetStringProperty(urdaType, urda, "CustomMapIconPath"));
             Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png", GetStringProperty(urdaType, urda, "CustomMapIconOutlinePath"));
             Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png", GetStringProperty(urdaType, urda, "CustomRunHistoryIconPath"));
             Assert.Equal("res://EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png", GetStringProperty(urdaType, urda, "CustomRunHistoryIconOutlinePath"));
-            Assert.Equal("res://EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn", GetStringProperty(urdaType, urda, "CustomScenePath"));
+            Assert.Equal("res://EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn", GetStringProperty(urdaType, urda, "CustomBackgroundScenePath"));
 
             var entries = ReadPckDirectory(Path.Combine(installedModDir, "EZMicroBalance.pck"));
             Assert.Contains("EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png.import", entries);
@@ -410,8 +412,7 @@ public sealed partial class ReleaseArtifactTests
     public void PrismaticGemRewardBannerContractMatchesInstalledGameApi()
     {
         var dataDir = GamePath("data_sts2_windows_x86_64");
-        var baseLibDir = GamePath("mods", "BaseLib");
-        var searchDirs = new[] { dataDir, baseLibDir };
+        var searchDirs = new[] { dataDir };
 
         var resolver = CreateAssemblyResolver(searchDirs);
         AppDomain.CurrentDomain.AssemblyResolve += resolver;
@@ -561,6 +562,21 @@ public sealed partial class ReleaseArtifactTests
     private static IEnumerable<string> CandidateBuildDlls()
     {
         return CandidateBuildDirectories().Select(dir => Path.Combine(dir, "EZMicroBalance.dll"));
+    }
+
+    private static string FindInstalledRitsuLibDll()
+    {
+        var ritsuLibRoot = GamePath("mods", "STS2-RitsuLib");
+        Assert.True(Directory.Exists(ritsuLibRoot), $"Missing STS2-RitsuLib runtime directory: {ritsuLibRoot}");
+
+        var dll = Directory
+            .GetFiles(ritsuLibRoot, "STS2-RitsuLib.dll", SearchOption.AllDirectories)
+            .OrderByDescending(path => path.Contains($"{Path.DirectorySeparatorChar}lib{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+            .ThenByDescending(path => path, StringComparer.OrdinalIgnoreCase)
+            .FirstOrDefault();
+
+        Assert.True(File.Exists(dll), $"Missing STS2-RitsuLib.dll under {ritsuLibRoot}");
+        return dll!;
     }
 
     private static IEnumerable<string> CandidateBuildDirectories()

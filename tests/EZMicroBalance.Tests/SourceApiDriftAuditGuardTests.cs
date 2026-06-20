@@ -120,18 +120,19 @@ public sealed class SourceApiDriftAuditGuardTests
     }
 
     [Fact]
-    public void ProjectUsesCurrentBaseLibPackageAndModConfigRegistration()
+    public void ProjectUsesCurrentRitsuLibPackageAndModConfigRegistration()
     {
         var project = ReadRepoText("EZMicroBalance.csproj");
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
 
         AssertSourceContains(
             project,
-            "Alchyr.Sts2.BaseLib\" Version=\"3.3.0",
+            "STS2.RitsuLib\" Version=\"0.4.28",
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 
-        Assert.Contains("ModConfigRegistry.Register(ModId, new SpirePlusModConfig())", mainFile, StringComparison.Ordinal);
+        Assert.Contains("SpirePlusModConfig.Register(ModId)", mainFile, StringComparison.Ordinal);
+        Assert.Contains("SpirePlusContentRegistrationService.Register(ModId)", mainFile, StringComparison.Ordinal);
     }
 
 }

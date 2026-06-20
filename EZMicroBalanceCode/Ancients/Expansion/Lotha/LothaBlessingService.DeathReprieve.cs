@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 

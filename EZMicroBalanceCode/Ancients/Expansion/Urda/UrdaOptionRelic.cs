@@ -1,6 +1,6 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-internal abstract class UrdaOptionRelic : CustomRelicModel
+internal abstract class UrdaOptionRelic : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
@@ -10,7 +10,7 @@ internal abstract class UrdaOptionRelic : CustomRelicModel
 
     public override bool IsAllowedInShops => false;
 
-    protected override string BigIconPath => PackedIconPath;
+    public override string CustomBigIconPath => CustomIconPath!;
 
-    protected override string PackedIconOutlinePath => PackedIconPath;
+    public override string CustomIconOutlinePath => CustomIconPath!;
 }

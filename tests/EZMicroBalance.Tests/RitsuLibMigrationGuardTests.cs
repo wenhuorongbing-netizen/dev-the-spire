@@ -55,7 +55,7 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
     private const int ExpectedTotalMigratedCount = 25;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 142;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 146;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -238,9 +238,9 @@ public sealed class RitsuLibMigrationGuardTests
 
         // Total migrated line
         Assert.Contains("Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b)", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("**Remaining:** 142 `[HarmonyPatch]` declarations still on raw Harmony.", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("**Remaining:** 146 `[HarmonyPatch]` declarations still on raw Harmony.", migrationDoc, StringComparison.Ordinal);
         Assert.Contains(
-            "Inventory rechecked on 2026-06-17 against the current source tree: 25 migrated `IPatchMethod` classes, 142 raw `[HarmonyPatch]` declarations, and 167 tracked patch units.",
+            "Inventory rechecked on 2026-06-20 against the current source tree: 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, and 171 tracked patch units.",
             migrationDoc,
             StringComparison.Ordinal);
 

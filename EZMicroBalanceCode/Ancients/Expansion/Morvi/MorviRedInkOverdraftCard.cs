@@ -1,12 +1,9 @@
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
-internal sealed class MorviRedInkOverdraftCard : CustomCardModel
+internal sealed class MorviRedInkOverdraftCard : ModCardTemplate
 {
     public const string CardId = "EZMB_MORVI_RED_INK_OVERDRAFT";
 
@@ -27,7 +24,7 @@ internal sealed class MorviRedInkOverdraftCard : CustomCardModel
 
     protected override bool IsPlayable => MorviBlessingService.CanUseRedInkOverdraft(Owner);
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
             HoverTipFactory.FromKeyword(CardKeyword.Exhaust),

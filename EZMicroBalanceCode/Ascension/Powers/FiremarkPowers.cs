@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-internal abstract class FiremarkPower : CustomPowerModel, ILocalizationProvider
+internal abstract class FiremarkPower : ModPowerTemplate, ILocalizationProvider
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -12,9 +12,9 @@ internal abstract class FiremarkPower : CustomPowerModel, ILocalizationProvider
 
     protected virtual string FiremarkIconPath => AscensionAssetPaths.FiremarkedEliteIndicator;
 
-    public override string CustomPackedIconPath => FiremarkIconPath;
+    public override string CustomIconPath => FiremarkIconPath;
 
     public override string CustomBigIconPath => FiremarkIconPath;
 
-    public override abstract List<(string, string)>? Localization { get; }
+    public abstract List<(string, string)>? Localization { get; }
 }

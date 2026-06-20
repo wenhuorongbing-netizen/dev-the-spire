@@ -1,5 +1,4 @@
-﻿using Godot;
-using BaseLib.Config;
+using Godot;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Core.Features;
 using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -22,8 +21,11 @@ public partial class MainFile : Node
 
         RitsuLibBootstrap.ApplyPatches(ModId);
 
-        ModConfigRegistry.Register(ModId, new SpirePlusModConfig());
-        SpirePlusDebug.Log("Init", "ModConfig registered.");
+        SpirePlusModConfig.Register(ModId);
+        SpirePlusDebug.Log("Init", "RitsuLib mod settings registered.");
+
+        SpirePlusContentRegistrationService.Register(ModId);
+        SpirePlusDebug.Log("Init", "RitsuLib content registered.");
 
         var registry = SpirePlusFeatureRegistry.CreateDefault();
         registry.InitializeAll();

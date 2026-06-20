@@ -150,9 +150,9 @@ public sealed partial class AncientPlayerFacingPolishGuardTests
         Assert.Contains("encounter.VictoryGold", victory, StringComparison.Ordinal);
         Assert.DoesNotContain("ExtraRewards", patch + entry + victory, StringComparison.Ordinal);
         Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", patch + entry, StringComparison.Ordinal);
-        Assert.Contains("base(RoomType.Monster, autoAdd: false)", encounter, StringComparison.Ordinal);
+        Assert.Contains("public override RoomType RoomType => RoomType.Monster", encounter, StringComparison.Ordinal);
         Assert.Contains("ShouldGiveRewards => false", encounter, StringComparison.Ordinal);
-        Assert.Contains("CustomScenePath => VakuuFightAssetPaths.EncounterScene", encounter, StringComparison.Ordinal);
+        Assert.Contains("CustomEncounterScenePath => VakuuFightAssetPaths.EncounterScene", encounter, StringComparison.Ordinal);
         Assert.Contains("Slots => [VakuuSlot]", encounter, StringComparison.Ordinal);
         Assert.Contains("ModelDb.Monster<EzmbVakuuTrialMonster>()", encounter, StringComparison.Ordinal);
         Assert.Contains("runState.Players.Count == 1", gate, StringComparison.Ordinal);

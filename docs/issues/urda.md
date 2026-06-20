@@ -48,7 +48,7 @@ Source-safe deviations:
 | ID | Severity | Status | Notes |
 | --- | --- | --- | --- |
 | URDA-BL-01 | P0 | open | Source gameplay slice exists for eleven active blessings; live selection, reward-screen, room-entry, act-transition, death-prevention, map-marker, and card behavior checks are still pending.
-| URDA-BL-02 | P0 | open | Blessing implementations must be live save/load-tested before any release-ready claim; `SavedSpireField<Player,string>` is registered but not source-proven as persisted by this pass, and the card-backed `UrdaDeckStateKey` mirror is source mitigation rather than live proof.
+| URDA-BL-02 | P0 | open | Blessing implementations must be live save/load-tested before any release-ready claim; `SavedAttachedState<Player, string>` is registered but not source-proven as persisted by this pass, and the card-backed `UrdaDeckStateKey` mirror is source mitigation rather than live proof.
 | URDA-BL-03 | P0 | open | Keep `Urda, Loamweaver` out of user-facing release-ready claims until the manual matrix passes or the feature is explicitly postponed.
 | URDA-BL-04 | P1 | source-mitigated / live-pending | Humus Pact no longer uses `CardReward.OnSkipped`; third payoff pending state is kept until resolver success; verify the explicit `Compost Reward` flow does not reenter reward UI, duplicate/lost payoff, or fire from room-exit cleanup.
 | URDA-BL-05 | P1 | source-mitigated / live-pending | Seedbed now counts accepted choices only and uses no-heal max HP gain; verify reroll, low max HP, and fourth-accept behavior live.

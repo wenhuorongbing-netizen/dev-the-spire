@@ -91,7 +91,7 @@ public sealed partial class AncientUiReadinessGuardTests
             "CurrentActIndex == 0",
             "ReplaceGeneratedOptionsAndRefreshScreen",
             "SetEventStateMethod");
-        Assert.Contains("SavedSpireField<Player, string> AncientInitialOptionRerollStateKey", savedFields, StringComparison.Ordinal);
+        Assert.Contains("SavedAttachedState<Player, string> AncientInitialOptionRerollStateKey", savedFields, StringComparison.Ordinal);
 
         AssertSourceContains(
             neowReroll,

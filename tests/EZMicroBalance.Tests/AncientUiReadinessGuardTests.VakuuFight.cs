@@ -17,15 +17,15 @@ public sealed partial class AncientUiReadinessGuardTests
 
         AssertSourceContains(
             encounter,
-            "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
+            "CustomEncounterScenePath => VakuuFightAssetPaths.EncounterScene",
             "HasScene => true",
             "Slots => [VakuuSlot]",
             "ModelDb.Monster<EzmbVakuuTrialMonster>()");
         Assert.DoesNotContain("OwlMagistrate", encounter, StringComparison.Ordinal);
         AssertSourceContains(
             monster,
-            "CustomMonsterModel",
-            "CustomVisualPath => VakuuFightAssetPaths.MonsterVisual",
+            "ModMonsterTemplate",
+            "CustomVisualsPath => VakuuFightAssetPaths.MonsterVisual",
             "VisualScale = 1.25f",
             "GenerateMoveStateMachine",
             "OpeningOfferMove",

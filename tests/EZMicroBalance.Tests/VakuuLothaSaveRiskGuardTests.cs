@@ -201,7 +201,7 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
         AssertSourceContains(
             encounter,
             "public override bool ShouldGiveRewards => false",
-            "base(RoomType.Monster, autoAdd: false)");
+            "public override RoomType RoomType => RoomType.Monster");
         AssertSourceContains(
             startFight,
             "AncientRewardRelicService.ObtainSelectionRelicIfMissing<VakuuFightOptionRelic>",
@@ -295,7 +295,7 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
             "decimal.TryParse(value, CultureInfo.InvariantCulture, out var parsed)",
             ": 0m",
             "value == \"1\" || bool.TryParse(value, out var parsed) && parsed");
-        AssertSourceContains(encounter, "internal sealed partial class EzmbVakuuTrialEncounter : CustomEncounterModel");
+        AssertSourceContains(encounter, "internal sealed partial class EzmbVakuuTrialEncounter : ModEncounterTemplate");
         Assert.DoesNotContain("using System.Globalization;", encounter, StringComparison.Ordinal);
         Assert.DoesNotContain("SaveCustomState()", encounter, StringComparison.Ordinal);
         Assert.DoesNotContain("LoadCustomState(Dictionary<string, string> state)", encounter, StringComparison.Ordinal);

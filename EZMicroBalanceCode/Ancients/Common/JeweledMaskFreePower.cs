@@ -1,6 +1,6 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal sealed class JeweledMaskFreePower : CustomEnchantmentModel, ILocalizationProvider
+internal sealed class JeweledMaskFreePower : ModEnchantmentTemplate, ILocalizationProvider
 {
     public override bool HasExtraCardText => true;
 

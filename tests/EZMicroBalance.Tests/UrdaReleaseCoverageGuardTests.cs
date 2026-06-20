@@ -18,6 +18,7 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRainBreath.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "WitheredHusk.cs"));
         var witheredHusk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "WitheredHusk.cs");
+        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
         var urdaMapUiPatches = string.Join(
             Environment.NewLine,
@@ -83,8 +84,8 @@ public sealed partial class UrdaReleaseCoverageGuardTests
 
         Assert.Contains("IsUrdaEnabled", urdaSource, StringComparison.Ordinal);
         Assert.Contains("UrdaFeatureGate.ShouldForceUrda", urdaSource, StringComparison.Ordinal);
-        Assert.Contains("CustomAncientModel", urdaAncient, StringComparison.Ordinal);
-        Assert.Contains("CustomScenePath", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("ModAncientEventTemplate", urdaAncient, StringComparison.Ordinal);
+        Assert.Contains("CustomBackgroundScenePath", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("CustomMapIconPath", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("CustomMapIconOutlinePath", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("CustomRunHistoryIconPath", urdaAncient, StringComparison.Ordinal);
@@ -108,7 +109,7 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         Assert.Contains("ExpectedInitialOptionCount = 4", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("candidates.UnstableShuffle(Rng).Take(ExpectedInitialOptionCount).ToList()", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("AncientInitialOptionReroll.CanOffer", urdaAncient, StringComparison.Ordinal);
-        Assert.Contains("base(autoAdd: false)", urdaAncient, StringComparison.Ordinal);
+        Assert.DoesNotContain("base(autoAdd: false)", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("AllPossibleOptions", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaBlessingIds.Seedbed", urdaAncient, StringComparison.Ordinal);
         Assert.Contains("UrdaRewardSelectionService.SelectBlessing<T>", urdaSource, StringComparison.Ordinal);
@@ -145,7 +146,7 @@ public sealed partial class UrdaReleaseCoverageGuardTests
 
         AssertSourceContains(
             urdaOptionRelics,
-            "UrdaOptionRelic : CustomRelicModel",
+            "UrdaOptionRelic : ModRelicTemplate",
             "Rarity => RelicRarity.Event",
             "IsAllowed(IRunState runState) => false",
             "IsAllowedAtNeow(Player player) => false",
@@ -172,42 +173,14 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             "storedSeeds.descriptionPrefix");
         Assert.DoesNotContain("HoverTipFactory.FromCard(card)", urdaOptionRelics, StringComparison.Ordinal);
         Assert.DoesNotContain(".Concat(card.HoverTips)", urdaOptionRelics, StringComparison.Ordinal);
-        Assert.Equal(11, Regex.Matches(urdaOptionRelics, @"\[Pool\(typeof\(SharedRelicPool\)\)\]").Count);
+        Assert.DoesNotContain("[Pool(typeof(SharedRelicPool))]", urdaOptionRelics, StringComparison.Ordinal);
+        Assert.Equal(11, Regex.Matches(ritsuRegistration, @"content\.Relic<SharedRelicPool, Urda[A-Za-z]+(?:OptionRelic|RelicOptionRelic)>\(\);").Count);
         Assert.DoesNotContain(
             "HarmonyPatch(typeof(NRelicInventory)",
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaSeedBankOptionRelic.cs"),
             StringComparison.Ordinal);
 
-        AssertSourceContains(
-            urdaScene,
-            "[node name=\"EzmbUrdaBackground\" type=\"Control\"]",
-            "[node name=\"Artwork\" type=\"TextureRect\" parent=\".\"]",
-            "texture = ExtResource(\"1_urda\")");
-        Assert.DoesNotContain("[node name=\"EzmbUrdaBackground\" type=\"Node2D\"]", urdaScene, StringComparison.Ordinal);
-        Assert.DoesNotContain("type=\"Sprite2D\"", urdaScene, StringComparison.Ordinal);
-
-        foreach (var relativePath in new[]
-        {
-            "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon.png",
-            "EZMicroBalance/images/ancients/urda/ezmb_urda_map_icon_outline.png",
-            "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon.png",
-            "EZMicroBalance/images/ancients/urda/ezmb_urda_run_history_icon_outline.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_seedbed.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_humus_pact.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_molting.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_moss_map.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_trial_branch.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_shallow_root_relic.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_elite_root.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_rooted_route.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_after_rain.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_root_sight.png",
-            "EZMicroBalance/images/ancients/urda/options/urda_seed_bank.png"
-        })
-        {
-            AssertRepoFileExists(relativePath.Split('/'));
-            Assert.Contains($"res://{relativePath}", exportPreset, StringComparison.Ordinal);
-        }
+        AssertUrdaSceneAndAssetCoverage(urdaScene, exportPreset);
 
         AssertSourceContains(
             urdaInitializer,
@@ -603,15 +576,9 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("SettleSeedBankBeforeActOneBoss", urdaRunHook, StringComparison.Ordinal);
         Assert.DoesNotContain("room.RoomType == RoomType.Boss", urdaRunHook, StringComparison.Ordinal);
         var huskTransformPatch = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaWitheredHuskTransformPatches.cs");
-        var normalizedWitheredHusk = witheredHusk.Replace("\r\n", "\n", StringComparison.Ordinal);
-        Assert.Contains(
-            "[Pool(typeof(CurseCardPool))]\npublic sealed class WitheredHusk",
-            normalizedWitheredHusk,
-            StringComparison.Ordinal);
-        Assert.DoesNotContain(
-            "[Pool(typeof(TokenCardPool))]\npublic sealed class WitheredHusk",
-            normalizedWitheredHusk,
-            StringComparison.Ordinal);
+        Assert.Contains("content.Card<CurseCardPool, WitheredHusk>(FullEntry(WitheredHusk.CardId));", ritsuRegistration, StringComparison.Ordinal);
+        Assert.DoesNotContain("[Pool(typeof(CurseCardPool))]", witheredHusk, StringComparison.Ordinal);
+        Assert.DoesNotContain("[Pool(typeof(TokenCardPool))]", witheredHusk, StringComparison.Ordinal);
         AssertSourceContains(
             huskTransformPatch,
             "HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)",

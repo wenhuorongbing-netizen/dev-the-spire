@@ -4,10 +4,9 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaSeedBankOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.SeedBankOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.SeedBankOptionIcon;
 
     public override bool IsUsedUp =>
         IsMutable &&
@@ -25,7 +24,7 @@ internal sealed class UrdaSeedBankOptionRelic : UrdaOptionRelic
             ? UrdaBlessingService.GetSeedBankStoredCount(Owner)
             : 0;
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips
     {
         get
         {

@@ -69,7 +69,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "SPIREPLUS_FORCE_MORVI_BLESSING",
             "ISSUE-2026-05-13-LOTHA-FULL-TEST-IMPLEMENTATION",
             "ISSUE-2026-05-12-ANCIENT-EXPANSION-V22-CARD-POWER-SAFETY-RULES",
-            "SavedSpireField<Player,string>",
+            "SavedAttachedState<Player, string>",
             "UrdaDeckStateKey");
         var cardPowerSafetyIssue = SliceBetween(
             issueDetails,

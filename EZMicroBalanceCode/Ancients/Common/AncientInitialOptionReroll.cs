@@ -116,8 +116,7 @@ internal static class AncientRerollAssetPaths
     public static string OptionIcon => $"{MainFile.ResPath}/images/ancients/common/ancient_reroll_die.png";
 }
 
-[Pool(typeof(SharedRelicPool))]
-internal sealed class AncientInitialRerollOptionRelic : CustomRelicModel
+internal sealed class AncientInitialRerollOptionRelic : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
@@ -127,9 +126,9 @@ internal sealed class AncientInitialRerollOptionRelic : CustomRelicModel
 
     public override bool IsAllowedInShops => false;
 
-    public override string PackedIconPath => AncientRerollAssetPaths.OptionIcon;
+    public override string CustomIconPath => AncientRerollAssetPaths.OptionIcon;
 
-    protected override string BigIconPath => PackedIconPath;
+    public override string CustomBigIconPath => CustomIconPath!;
 
-    protected override string PackedIconOutlinePath => PackedIconPath;
+    public override string CustomIconOutlinePath => CustomIconPath!;
 }

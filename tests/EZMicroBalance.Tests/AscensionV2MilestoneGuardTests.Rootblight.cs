@@ -47,15 +47,15 @@ public sealed partial class AscensionV2MilestoneGuardTests
 
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<Player, int> RootblightLevel",
-            "SavedSpireField<Player, string> RootblightPendingCombatDowngrades",
+            "SavedAttachedState<Player, int> RootblightLevel",
+            "SavedAttachedState<Player, string> RootblightPendingCombatDowngrades",
             "EZMicroBalanceAscensionRootblightPendingCombatDowngrades",
-            "SavedSpireField<RootFamilyCard, bool> RootblightWasPresentAtCombatStart",
-            "SavedSpireField<RootFamilyCard, bool> RootblightHasSplit",
-            "SavedSpireField<RootBud, bool> RootBudEnteredHand",
-            "SavedSpireField<RootBud, bool> RootBudPlayed",
-            "SavedSpireField<RootBud, bool> RootBudSprouted",
-            "SavedSpireField<RootBud, int> RootBudSproutRound");
+            "SavedAttachedState<RootFamilyCard, bool> RootblightWasPresentAtCombatStart",
+            "SavedAttachedState<RootFamilyCard, bool> RootblightHasSplit",
+            "SavedAttachedState<RootBud, bool> RootBudEnteredHand",
+            "SavedAttachedState<RootBud, bool> RootBudPlayed",
+            "SavedAttachedState<RootBud, bool> RootBudSprouted",
+            "SavedAttachedState<RootBud, int> RootBudSproutRound");
 
         AssertSourceContains(
             deckService,

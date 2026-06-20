@@ -47,7 +47,7 @@ public sealed partial class AncientUiReadinessGuardTests
                 : ReadRepoText(roleSet.SourcePath.Split('/'));
             AssertSourceContains(
                 source,
-                $"CustomScenePath => {roleSet.AssetPrefix}.BackgroundScene",
+                $"CustomBackgroundScenePath => {roleSet.AssetPrefix}.BackgroundScene",
                 $"CustomMapIconPath => {roleSet.AssetPrefix}.MapIcon",
                 $"CustomMapIconOutlinePath => {roleSet.AssetPrefix}.MapIconOutline",
                 $"CustomRunHistoryIconPath => {roleSet.AssetPrefix}.RunHistoryIcon",

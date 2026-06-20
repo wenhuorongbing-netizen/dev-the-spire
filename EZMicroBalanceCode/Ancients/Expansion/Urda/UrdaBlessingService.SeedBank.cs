@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
+using MegaCrit.Sts2.Core.Entities.CardRewardAlternatives;
 using MegaCrit.Sts2.Core.Entities.Rewards;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;

@@ -74,7 +74,7 @@ public sealed partial class AscensionFeatureGuardTests
             "[gold]耗能[/gold]降低[blue]1[/blue]。正常触发[gold]消耗[/gold]效果。",
             "This card costs [blue]1[/blue] less. After play, it enters the [gold]Exhaust[/gold] pile and triggers [gold]Exhaust[/gold] effects normally.",
             "Costs [blue]1[/blue] less. Triggers [gold]Exhaust[/gold] effects normally.",
-            "HoverTipFactory.FromKeyword(CardKeyword.Exhaust)");
+            "Card.AddKeyword(CardKeyword.Exhaust)");
         Assert.DoesNotContain("energyPrefix:energyIcons", fission, StringComparison.Ordinal);
         Assert.DoesNotContain("\"[gold]能量[/gold]费用降低[blue]1[/blue]。\"", fission, StringComparison.Ordinal);
 

@@ -1,8 +1,6 @@
-using MegaCrit.Sts2.Core.HoverTips;
-
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-internal sealed class UrdaTrialBranchEnchantment : CustomEnchantmentModel, ILocalizationProvider
+internal sealed class UrdaTrialBranchEnchantment : ModEnchantmentTemplate, ILocalizationProvider
 {
     private const string CombatsLeftVar = "CombatsLeft";
     private const string PlayedThisCombatVar = "PlayedThisCombat";
@@ -14,7 +12,7 @@ internal sealed class UrdaTrialBranchEnchantment : CustomEnchantmentModel, ILoca
 
     public override int DisplayAmount => DynamicVars[CombatsLeftVar].IntValue;
 
-    protected override string? CustomIconPath => UrdaAssetPaths.TrialBranchOptionIcon;
+    public override string? CustomIconPath => UrdaAssetPaths.TrialBranchOptionIcon;
 
     protected override IEnumerable<DynamicVar> CanonicalVars =>
     [
@@ -22,8 +20,6 @@ internal sealed class UrdaTrialBranchEnchantment : CustomEnchantmentModel, ILoca
         new IntVar(PlayedThisCombatVar, 0m),
         new IntVar(PlaysLeftVar, 3m)
     ];
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => [];
 
     public List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new CardModifierLoc(

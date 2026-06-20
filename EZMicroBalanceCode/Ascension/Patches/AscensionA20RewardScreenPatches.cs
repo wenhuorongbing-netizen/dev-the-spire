@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.addons.mega_text;
+using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Nodes.Screens;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;

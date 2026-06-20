@@ -1,4 +1,4 @@
-﻿using STS2RitsuLib.Patching.Models;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 

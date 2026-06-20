@@ -14,7 +14,7 @@ public sealed partial class AncientBehaviorGuardTests
 
         AssertSourceContains(
             enchantment,
-            "CustomEnchantmentModel, ILocalizationProvider",
+            "ModEnchantmentTemplate, ILocalizationProvider",
             "public override bool HasExtraCardText => true",
             "return cardType == CardType.Power",
             "Card.EnergyCost.SetCustomBaseCost(0)");

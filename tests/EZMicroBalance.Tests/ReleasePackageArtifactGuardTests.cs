@@ -99,10 +99,11 @@ public sealed partial class ReleasePackageArtifactGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Fresh loader smoke for the current beta.88 ZIP hash passed", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
-        Assert.Contains("This is loader/startup evidence, not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Current beta.90 RitsuLib-only Off proof has been recaptured", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Current beta.90 AdditiveBatch1 registration proof has been recaptured", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("loader/registration evidence, not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
-        Assert.Contains("current beta.88 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("current beta.90 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);

@@ -105,7 +105,7 @@ $requiredReleaseRows = @(
         Label = 'A19/A20 dedicated boss abilities and Branded Form live combat proof'
         ExtraRequiredFiles = @('boss-ability-checklist.md')
     },
-    @{ Id = 'disable-mod-gameplay'; Kind = 'gameplay'; Label = 'BaseLib-only disabled Spire Plus gameplay comparison' },
+    @{ Id = 'disable-mod-gameplay'; Kind = 'gameplay'; Label = 'RitsuLib-only disabled Spire Plus gameplay comparison' },
     @{
         Id = 'preview-tools-live-proof'
         Kind = 'preview-tools'
@@ -265,7 +265,7 @@ $requiredCoopRows = @(
 )
 
 $requiredModSettingsRows = @(
-    'base-lib-visible-enabled',
+    'ritsulib-visible-enabled',
     'spire-plus-list-display-name',
     'spire-plus-config-page-current-name',
     'technical-id-compatibility',

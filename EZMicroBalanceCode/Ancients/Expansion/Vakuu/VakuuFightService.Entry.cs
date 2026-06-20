@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Events;

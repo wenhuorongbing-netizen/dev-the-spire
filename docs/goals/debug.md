@@ -29,9 +29,13 @@ Longhaul audit：仍不能恢复
 
 新的下月开发规范和 overnight run 以本文件当前内容为准；不要依赖 sandbox-only 下载链接作为当前证据。
 
-## 2026-06-19 Current Override
+## 2026-06-20 Current Override
 
-Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for current StS1 event proof status. Current beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and current beta.88 AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`. Any older retained-loader notes that treat beta.85 or beta.87 as the next active runtime target are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending.
+Use `docs/goals/migration.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/runtime-smoke-checklist.md` for current migration/runtime truth. Current beta.91 loader truth is RitsuLib-only on Slay the Spire 2 `v0.107.1`: `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/` and `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/` reached main menu with exactly STS2-RitsuLib `v0.4.28` and Spire Plus `v0.1.0-private-beta.91`, no Spire Plus BaseLib dependency, 25/25 Spire Plus patches applied, clean audits, Off packet verifier 43 / 0, AdditiveBatch1 enabled-mode verifier 31 / 0, and AdditiveBatch1 packet verifier 61 / 0. Any beta.88/BaseLib-backed notes below are historical previous-dependency context only.
+
+## 2026-06-19 Historical Override
+
+Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status-board.md`, and `docs/features/ritsulib-migration/next-overnight-run.md` for historical StS1 event proof status. Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous BaseLib-backed context, and beta.91 is the current RitsuLib-only loader/registration proof. Any older retained-loader notes that treat beta.85, beta.87, or beta.88 as the next active runtime target are historical working notes only. Gameplay, clicked UI, save-load, replacement, multiplayer, independent QA, release handoff, and owner clean-worktree/commit decisions remain pending.
 
 2026-06-19 pause-safe implementation note: Revision N now routes through `docs/goals/m5-revision-n-final-report.md`, `docs/goals/m5-revision-n-owner-commit-packet.md`, `docs/goals/m5-revision-n-validation-replay.md`, and `docs/goals/m5-revision-n-runtime-evidence-plan.md`. This prepares owner-ready planning under the active coordination pause only; it does not run or replace validation, runtime smoke, gameplay, staging, commit, push, release, or handoff gates.
 
@@ -43,7 +47,7 @@ Use `docs/goals/event.md`, `PROJECT_STATE.md`, `docs/features/sts1-events/status
 
 当前 build/test/package 记录也比之前强：beta.88 记录有 build 0 warnings / 0 errors、publish/package refresh、installed package parity、runtime preflight、retained beta.88 AdditiveBatch1 packet verification、current-doc claims、static suite、static-file hygiene 和 split no-build runtime-harness coverage。它们仍然不是 gameplay、clicked UI、save-load、route traversal、preview-tools、Vakuu、co-op、independent QA、clean-worktree proof。
 
-Runtime 部分也已经更新：`STS2-RitsuLib v0.4.24` 和 BaseLib `v3.3.0` 已安装；当前 beta.88 AdditiveBatch1 proof 在 `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`，已加载 BaseLib/RitsuLib/Spire Plus，选择 RitsuLib compat branch `0.107.0`，25/25 ModPatcher patches 应用，10 event types / 14 registration calls，audit clean。先前 beta.84/beta.87 失败证据现在只作为 root-cause 证据。
+Runtime 部分已经更新到 beta.91：`STS2-RitsuLib v0.4.28` / `lib\0.107.1` 已安装；当前 RitsuLib-only Off/AdditiveBatch1 proof 在 `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/` 和 `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`，只加载 RitsuLib/Spire Plus，25/25 ModPatcher patches 应用，10 event types / 14 registration calls，audit clean。先前 beta.84/beta.87/beta.88 证据现在只作为 root-cause 或 previous-context 证据。
 
 `docs/goals/m5-revision-n-final-report.md` 也写明：Revision N 对 beta.88 current-loader governance 已经形成 owner-ready planning，但不是 live-ready 或 release-ready；gameplay、clicked UI、save-load、replacement、multiplayer、independent QA、release handoff proof 仍 pending。
 
@@ -65,9 +69,9 @@ M5 Revision M 的 Off-loader runtime-drift closure，以及 beta.88 current-load
 1. beta.84 的 red smoke root cause 已定位到 stale API / Ectoplasm target。
 2. beta.85 package 已刷新。
 3. beta.85 v0.107.0 Off smoke clean。
-4. beta.88 / v0.107.1 / BaseLib v3.3.0 AdditiveBatch1 loader/registration smoke clean。
+4. beta.91 / v0.107.1 / RitsuLib v0.4.28 Off/AdditiveBatch1 loader/registration smoke clean。
 5. Spire Plus 25/25 migrated patches 应用。
-6. RitsuLib v0.4.24 / compat 0.107.0 加载成功。
+6. RitsuLib v0.4.28 / compat 0.107.1 加载成功。
 7. EctoplasmGoldGatePatch exception 和 BaseLib v3.2.1 blocker 都已有 root-cause / closure 记录。
 8. package checker / opt-in artifact subset / static validations 有记录。
 ```
@@ -119,8 +123,8 @@ beta.88 v0.107.1 AdditiveBatch1 loader/registration packet：clean
 当前状态：
 
 ```text
-current beta.88 AdditiveBatch1 loader/registration：clean
-current beta.88 CanaryOnly recapture before canary gameplay claim：pending
+current beta.91 RitsuLib-only AdditiveBatch1 loader/registration：clean
+current CanaryOnly recapture before canary gameplay claim：pending
 gameplay/render/save-load proof：pending
 ```
 
@@ -131,10 +135,10 @@ gameplay/render/save-load proof：pending
 当前状态：
 
 ```text
-Runtime installed: STS2-RitsuLib v0.4.24
-Compile package: STS2.RitsuLib 0.4.24
-Manifest min_version: 0.4.24
-BaseLib floor: v3.3.0
+Runtime installed: STS2-RitsuLib v0.4.28
+Compile package: STS2.RitsuLib 0.4.28
+Manifest min_version: 0.4.28
+BaseLib floor: none for current Spire Plus package
 ```
 
 Owner packet 建议：不要再自动 bump；除非 owner 决定做 future versioned tester package，否则保持 beta.88 dependency floor。
@@ -279,8 +283,8 @@ docs/goals/m5-revision-n-runtime-evidence-plan.md
 只在没有 overlapping validation/runtime processes 时运行。当前 coordination pause 期间不运行：
 
 ```text
-1. current beta.88 CanaryOnly recapture before any canary gameplay claim
-2. beta.88 gameplay/render/save-load evidence rows
+1. current CanaryOnly recapture before any canary gameplay claim
+2. beta.91 gameplay/render/save-load evidence rows
 3. Mod Settings current display screenshots and same-session log/audit
 4. game-native AutoSlay/runtime-monkey packets only with current schema-bound proof
 5. evidence folders recorded without turning loader proof into gameplay proof
@@ -299,7 +303,7 @@ no release-ready claim
 当前默认决策：
 
 ```text
-A. 保持 beta.88 package line：BaseLib v3.3.0，STS2-RitsuLib v0.4.24。
+A. 保持 beta.91 package line：STS2-RitsuLib v0.4.28，当前 Spire Plus 包不依赖 BaseLib。
 B. 只有 owner 明确批准新的 versioned tester package 时，才再次调整 dependency floor 或 package version。
 ```
 
@@ -373,7 +377,7 @@ RitsuLibRuntimeAgent 不能擅自 bump dependency/package versions。
 ```text
 进入 M5 Revision N overnight beta.88 evidence governance and owner-commit authorization run。
 
-当前状态 NOT COMPLETE，但 beta.88 / v0.107.1 / BaseLib v3.3.0 AdditiveBatch1 loader/registration packet 已 clean。不要继续 PR6 Batch4c、Batch5、PR7、debug expansion、Sts1Events formalization 或 longhaul audit。
+当前状态 NOT COMPLETE，但 beta.91 / v0.107.1 / STS2-RitsuLib v0.4.28 RitsuLib-only Off/AdditiveBatch1 loader/registration packets 已 clean。不要继续 PR6 Batch4c、Batch5、PR7、debug expansion、Sts1Events formalization 或 longhaul audit。
 
 禁止：
 - commit or push unless owner explicitly authorizes after commit packet review
@@ -472,4 +476,4 @@ Not complete: exact hard blocker encountered.
 
 ## 一句话总评
 
-这次状态已经从“v0.107.0 runtime drift 红灯”推进到“beta.88 / v0.107.1 clean loader-registration 绿灯”。这是实质完成项；但仍不是 release/live 完成。下一步不是继续迁移，而是 **M5 Revision N：在 coordination pause 解除后复跑 validation、补 gameplay/UI/save-load/co-op/QA/handoff evidence、做 owner commit authorization，然后再考虑恢复 one-file longhaul audit。**
+这次状态已经从“v0.107.0 runtime drift 红灯”和“beta.88 BaseLib-backed loader proof”推进到“beta.91 / v0.107.1 RitsuLib-only clean loader-registration 绿灯”。这是实质完成项；但仍不是 release/live 完成。下一步不是继续迁移，而是补 gameplay/UI/save-load/co-op/QA/handoff evidence、做 owner commit authorization，然后再考虑恢复 one-file longhaul audit。

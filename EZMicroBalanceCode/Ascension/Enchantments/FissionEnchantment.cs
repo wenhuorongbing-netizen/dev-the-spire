@@ -1,15 +1,10 @@
-using MegaCrit.Sts2.Core.HoverTips;
-
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-internal sealed class FissionEnchantment : CustomEnchantmentModel, ILocalizationProvider
+internal sealed class FissionEnchantment : ModEnchantmentTemplate, ILocalizationProvider
 {
     public override bool HasExtraCardText => true;
 
-    protected override string? CustomIconPath => AscensionAssetPaths.FissionEnchantmentIcon;
-
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
-        new[] { HoverTipFactory.FromKeyword(CardKeyword.Exhaust) };
+    public override string? CustomIconPath => AscensionAssetPaths.FissionEnchantmentIcon;
 
     public List<(string, string)>? Localization => LocManager.Instance.Language == "zhs"
         ? new CardModifierLoc(

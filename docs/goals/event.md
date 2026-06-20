@@ -34,7 +34,7 @@ Source/test/static guard: strong progress
 Retained beta.85 default-Off loader: previous-package/game-version pass
 Retained beta.85 CanaryOnly enabled-mode loader: previous-package/game-version pass
 Retained beta.87 AdditiveBatch1 enabled-mode loader/registration: previous-package/game-version pass
-Current beta.88 AdditiveBatch1 enabled-mode loader/registration: pass for v0.107.1 with BaseLib v3.3.0
+Current beta.91 RitsuLib-only Off/AdditiveBatch1 loader/registration: pass for v0.107.1 with STS2-RitsuLib v0.4.28 and no Spire Plus BaseLib dependency
 Gameplay parity: blocked / unverified
 Release-ready/live-ready: no
 Full StS1 experience: no
@@ -59,7 +59,11 @@ Allowed work during the pause is read-only/static checking, documentation/guard 
 
 Runtime, gameplay, QA, build/test/publish, package/release-evidence, staging, commit, and push instructions below apply only after the coordination pause is explicitly lifted. During the coordination pause, do not treat static or source-only work as closing runtime gates.
 
-### 0.2 Current beta.88 override
+### 0.2 Current beta.91 override
+
+As of 2026-06-20, current loader truth is beta.91 on Slay the Spire 2 `v0.107.1`: `.tools/runtime-evidence/v01071-beta91-ritsulib0428-off-direct-20260620/` and `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/` reached main menu with exactly STS2-RitsuLib `v0.4.28` and Spire Plus `v0.1.0-private-beta.91` loaded, no Spire Plus BaseLib dependency, 25/25 Spire Plus patches applied, clean audits, Off packet verifier 43 / 0, AdditiveBatch1 enabled-mode verifier 31 / 0, and AdditiveBatch1 packet verifier 61 / 0. Treat beta.85, beta.86, beta.87, beta.88, and beta.90 loader lines below as retained previous-package or previous-dependency context unless a line explicitly names beta.91 evidence.
+
+### 0.3 Historical beta.88 override
 
 As of 2026-06-19, current loader truth is beta.88 on Slay the Spire 2 `v0.107.1`: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu with BaseLib `v3.3.0`, STS2-RitsuLib `v0.4.24`, Spire Plus `v0.1.0-private-beta.88`, 25/25 Spire Plus patches applied, AdditiveBatch1 10 event types / 14 registration calls, clean audit, enabled-mode verifier 31 / 0, and runtime packet verifier 0 mismatches. Treat beta.85, beta.86, and beta.87 loader lines below as retained previous-package/game-version context unless a line explicitly names the beta.88 evidence path.
 
@@ -258,7 +262,7 @@ retained runtime packet verifier 45 / 0
 
 严格解释：
 
-- Current beta.88 AdditiveBatch1 loader registration proof can be treated as current-pass for `O33`.
+- Current beta.91 RitsuLib-only AdditiveBatch1 loader registration proof can be treated as current-pass for `O33`.
 - It still does not prove event encounter gameplay, result state, save/load, EN/ZHS render, image/license/render, replacement functional behavior, multiplayer, QA, or handoff readiness.
 
 ### 3.2 仍未通过的部分
@@ -266,7 +270,7 @@ retained runtime packet verifier 45 / 0
 当前 validation 明确说：
 
 ```text
-Retained beta.85 Off, retained beta.85 CanaryOnly, retained beta.87 AdditiveBatch1, and current beta.88 AdditiveBatch1 loader proof must not be extended to:
+Retained beta.85 Off, retained beta.85 CanaryOnly, retained beta.87 AdditiveBatch1, previous BaseLib-backed beta.88 AdditiveBatch1, and current beta.91 AdditiveBatch1 loader proof must not be extended to:
 gameplay
 save-load
 replacement
@@ -408,7 +412,7 @@ StS1 events must be judged by gameplay behavior, not by source count.
 | Build/test/static | Strong progress | Pass for source/static only |
 | beta.85 Off loader | Clean | Pass for default-Off only |
 | CanaryOnly enabled-mode | Retained beta.85 proof | Previous-package/game-version loader proof only |
-| AdditiveBatch1 enabled-mode | Current beta.88 direct proof: 10 event types / 14 calls | Loader/registration proof only |
+| AdditiveBatch1 enabled-mode | Current beta.91 RitsuLib-only direct proof: 10 event types / 14 calls | Loader/registration proof only |
 | Canary gameplay | Missing | Blocked |
 | Simple batch gameplay | Missing | Blocked |
 | Save/load | Missing | Blocked |
@@ -439,7 +443,7 @@ Priority optimization:
 ```text
 - protect beta.85 Off loader clean state
 - preserve retained beta.85 CanaryOnly loader proof as previous-package/game-version context
-- preserve current beta.88 AdditiveBatch1 loader/registration proof
+- preserve current beta.91 AdditiveBatch1 loader/registration proof
 - close or track 33 localization result-page key gaps
 - keep zero-warning build
 - maintain static-suite guards

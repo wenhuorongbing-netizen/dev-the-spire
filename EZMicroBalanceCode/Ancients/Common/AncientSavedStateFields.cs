@@ -1,46 +1,46 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static class AncientSavedStateFields
 {
-    public static readonly SavedSpireField<PrismaticGem, int> PrismaticGemNormalRewardCounter =
-        new(() => 0, "EZMicroBalanceNormalRewardCounter");
+    public static readonly SavedAttachedState<PrismaticGem, int> PrismaticGemNormalRewardCounter =
+        new("EZMicroBalanceNormalRewardCounter", () => 0);
 
-    public static readonly SavedSpireField<PaelsTooth, int> PaelsToothNonBossCombatCounter =
-        new(() => 0, "EZMicroBalanceNonBossCombatCounter");
+    public static readonly SavedAttachedState<PaelsTooth, int> PaelsToothNonBossCombatCounter =
+        new("EZMicroBalanceNonBossCombatCounter", () => 0);
 
-    public static readonly SavedSpireField<CardModel, bool> JewelryBoxNonInnateApotheosis =
-        new(() => false, "EZMicroBalanceJewelryBoxNonInnateApotheosis");
+    public static readonly SavedAttachedState<CardModel, bool> JewelryBoxNonInnateApotheosis =
+        new("EZMicroBalanceJewelryBoxNonInnateApotheosis", () => false);
 
-    public static readonly SavedSpireField<Player, string> UrdaStateKey =
-        new(() => string.Empty, "EZMicroBalanceUrdaStateKey");
+    public static readonly SavedAttachedState<Player, string> UrdaStateKey =
+        new("EZMicroBalanceUrdaStateKey", () => string.Empty);
 
-    public static readonly SavedSpireField<CardModel, string> UrdaDeckStateKey =
-        new(() => string.Empty, "EZMicroBalanceUrdaDeckStateKey");
+    public static readonly SavedAttachedState<CardModel, string> UrdaDeckStateKey =
+        new("EZMicroBalanceUrdaDeckStateKey", () => string.Empty);
 
-    public static readonly SavedSpireField<CardModel, bool> UrdaTrialPlantCard =
-        new(() => false, "EZMicroBalanceUrdaTrialPlantCard");
+    public static readonly SavedAttachedState<CardModel, bool> UrdaTrialPlantCard =
+        new("EZMicroBalanceUrdaTrialPlantCard", () => false);
 
-    public static readonly SavedSpireField<Player, string> MorviStateKey =
-        new(() => string.Empty, "EZMicroBalanceMorviStateKey");
+    public static readonly SavedAttachedState<Player, string> MorviStateKey =
+        new("EZMicroBalanceMorviStateKey", () => string.Empty);
 
-    public static readonly SavedSpireField<CardModel, string> MorviDeckStateKey =
-        new(() => string.Empty, "EZMicroBalanceMorviDeckStateKey");
+    public static readonly SavedAttachedState<CardModel, string> MorviDeckStateKey =
+        new("EZMicroBalanceMorviDeckStateKey", () => string.Empty);
 
-    public static readonly SavedSpireField<CardModel, bool> MorviBorrowedAncientCard =
-        new(() => false, "EZMicroBalanceMorviBorrowedAncientCard");
+    public static readonly SavedAttachedState<CardModel, bool> MorviBorrowedAncientCard =
+        new("EZMicroBalanceMorviBorrowedAncientCard", () => false);
 
-    public static readonly SavedSpireField<CardModel, bool> MorviOpenBookSealedCard =
-        new(() => false, "EZMicroBalanceMorviOpenBookSealedCard");
+    public static readonly SavedAttachedState<CardModel, bool> MorviOpenBookSealedCard =
+        new("EZMicroBalanceMorviOpenBookSealedCard", () => false);
 
-    public static readonly SavedSpireField<Player, string> LothaStateKey =
-        new(() => string.Empty, "EZMicroBalanceLothaStateKey");
+    public static readonly SavedAttachedState<Player, string> LothaStateKey =
+        new("EZMicroBalanceLothaStateKey", () => string.Empty);
 
-    public static readonly SavedSpireField<CardModel, string> LothaDeckStateKey =
-        new(() => string.Empty, "EZMicroBalanceLothaDeckStateKey");
+    public static readonly SavedAttachedState<CardModel, string> LothaDeckStateKey =
+        new("EZMicroBalanceLothaDeckStateKey", () => string.Empty);
 
-    public static readonly SavedSpireField<CardModel, bool> LothaMirrorRebuttalCard =
-        new(() => false, "EZMicroBalanceLothaMirrorRebuttalCard");
+    public static readonly SavedAttachedState<CardModel, bool> LothaMirrorRebuttalCard =
+        new("EZMicroBalanceLothaMirrorRebuttalCard", () => false);
 
-    public static readonly SavedSpireField<Player, string> AncientInitialOptionRerollStateKey =
-        new(() => string.Empty, "EZMicroBalanceAncientInitialOptionRerollStateKey");
+    public static readonly SavedAttachedState<Player, string> AncientInitialOptionRerollStateKey =
+        new("EZMicroBalanceAncientInitialOptionRerollStateKey", () => string.Empty);
 }

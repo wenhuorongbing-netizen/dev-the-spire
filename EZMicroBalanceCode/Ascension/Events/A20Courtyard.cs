@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
 using MegaCrit.Sts2.Core.Assets;

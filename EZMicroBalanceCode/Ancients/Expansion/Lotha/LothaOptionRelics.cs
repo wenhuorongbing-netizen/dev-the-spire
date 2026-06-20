@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
-internal abstract class LothaOptionRelic : CustomRelicModel
+internal abstract class LothaOptionRelic : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
@@ -12,55 +12,47 @@ internal abstract class LothaOptionRelic : CustomRelicModel
 
     public override bool IsAllowedInShops => false;
 
-    protected override string BigIconPath => PackedIconPath;
+    public override string CustomBigIconPath => CustomIconPath!;
 
-    protected override string PackedIconOutlinePath => PackedIconPath;
+    public override string CustomIconOutlinePath => CustomIconPath!;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaMirrorRebuttalOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.MirrorRebuttalOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.MirrorRebuttalOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaMirrorHallEchoOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.MirrorHallEchoOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.MirrorHallEchoOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaPresumptionOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.PresumptionOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.PresumptionOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaClosedCourtOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.ClosedCourtOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.ClosedCourtOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaDeferredVerdictOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.DeferredVerdictOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.DeferredVerdictOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaDeathReprieveOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.DeathReprieveOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.DeathReprieveOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaSingleSentenceOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.SingleSentenceOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.SingleSentenceOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class LothaPublicEvidenceOptionRelic : LothaOptionRelic
 {
-    public override string PackedIconPath => LothaAssetPaths.PublicEvidenceOptionIcon;
+    public override string CustomIconPath => LothaAssetPaths.PublicEvidenceOptionIcon;
 }

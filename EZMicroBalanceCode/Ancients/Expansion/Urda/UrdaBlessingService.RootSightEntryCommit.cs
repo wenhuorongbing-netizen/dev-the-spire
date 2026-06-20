@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 

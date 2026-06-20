@@ -88,7 +88,7 @@ public sealed partial class EngineeringGovernanceGuardTests
 
         AssertSourceContains(
             config,
-            "public static bool ShowPreviewDebugLogs { get; set; } = false;");
+            "public bool ShowPreviewDebugLogs { get; set; }");
         Assert.DoesNotContain("EnableDebugLogs", config, StringComparison.Ordinal);
         Assert.DoesNotContain("SPIREPLUS_ENABLE_DEBUG_LOGS", config, StringComparison.Ordinal);
         Assert.DoesNotContain("EZMB_ENABLE_DEBUG_LOGS", config, StringComparison.Ordinal);

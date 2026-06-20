@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Map;
+using MegaCrit.Sts2.Core.Map;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 

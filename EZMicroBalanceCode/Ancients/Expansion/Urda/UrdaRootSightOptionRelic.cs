@@ -2,10 +2,9 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class UrdaRootSightOptionRelic : UrdaOptionRelic
 {
-    public override string PackedIconPath => UrdaAssetPaths.RootSightOptionIcon;
+    public override string CustomIconPath => UrdaAssetPaths.RootSightOptionIcon;
 
     public override bool IsUsedUp =>
         IsMutable &&

@@ -20,6 +20,7 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
         var optionRelic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightOptionRelic.cs");
+        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
         var assetPaths = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightAssetPaths.cs");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
@@ -120,9 +121,9 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
         Assert.DoesNotContain("ExtraRewards", patch + victory, StringComparison.Ordinal);
         AssertSourceContains(
             encounter,
-            "CustomEncounterModel",
-            "base(RoomType.Monster, autoAdd: false)",
-            "CustomScenePath => VakuuFightAssetPaths.EncounterScene",
+            "ModEncounterTemplate",
+            "public override RoomType RoomType => RoomType.Monster",
+            "CustomEncounterScenePath => VakuuFightAssetPaths.EncounterScene",
             "HasScene => true",
             "ShouldGiveRewards => false",
             "Slots => [VakuuSlot]",
@@ -130,9 +131,9 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
             "IsValidForAct(ActModel act) => false");
         AssertSourceContains(
             monster,
-            "CustomMonsterModel",
+            "ModMonsterTemplate",
             "public const string MonsterId = \"EZMB_VAKUU_TRIAL_MONSTER\"",
-            "CustomVisualPath => VakuuFightAssetPaths.MonsterVisual",
+            "CustomVisualsPath => VakuuFightAssetPaths.MonsterVisual",
             "VisualScale = 1.25f",
             "public override async Task AfterAddedToRoom()",
             "VakuuFightService.EnsureStolenVaultPower(Creature)",
@@ -147,11 +148,12 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
         Assert.DoesNotContain("MonsterVisual => OptionIcon", assetPaths, StringComparison.Ordinal);
         AssertSourceContains(
             optionRelic,
-            "[Pool(typeof(SharedRelicPool))]",
-            "PackedIconPath => VakuuFightAssetPaths.OptionIcon",
+            "CustomIconPath => VakuuFightAssetPaths.OptionIcon",
             "IsAllowed(IRunState runState) => false",
             "IsAllowedAtNeow(Player player) => false",
             "IsAllowedInShops => false");
+        Assert.Contains("content.Relic<SharedRelicPool, VakuuFightOptionRelic>();", ritsuRegistration, StringComparison.Ordinal);
+        Assert.DoesNotContain("[Pool(typeof(SharedRelicPool))]", optionRelic, StringComparison.Ordinal);
 
         AssertLocalizedKeys(
             [

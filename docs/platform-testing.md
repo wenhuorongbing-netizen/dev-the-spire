@@ -10,7 +10,7 @@ Use `docs/private-beta-verification-handoff.md` as the current hash source. It l
 - `EZMicroBalance.json`
 - `EZMicroBalance.pck`
 - `README_INSTALL.txt`
-- `publish/SpirePlus-v0.1.0-private-beta.88.zip`
+- `publish/SpirePlus-v0.1.0-private-beta.91.zip`
 
 The test package should contain only:
 
@@ -21,7 +21,7 @@ EZMicroBalance/EZMicroBalance.pck
 EZMicroBalance/README_INSTALL.txt
 ```
 
-It must not include duplicate runtime dependency DLLs such as `BaseLib.dll`, `0Harmony.dll`, or `sts2.dll`. Those belong to the installed game or the separate `mods/BaseLib` dependency.
+It must not include duplicate runtime dependency DLLs such as `STS2-RitsuLib.dll`, `0Harmony.dll`, or `sts2.dll`. Those belong to the installed game or the separate `mods/STS2-RitsuLib` dependency.
 
 ## Windows
 
@@ -40,13 +40,13 @@ Verify the installed mod folder against the handoff hashes:
 Check a package hash directly:
 
 ```powershell
-Get-FileHash -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.88.zip -Algorithm SHA256
+Get-FileHash -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.91.zip -Algorithm SHA256
 ```
 
 Unpack a package for inspection:
 
 ```powershell
-Expand-Archive -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.88.zip -DestinationPath .\publish\inspect -Force
+Expand-Archive -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.91.zip -DestinationPath .\publish\inspect -Force
 ```
 
 Current Windows log path used by the project helpers:
@@ -81,13 +81,13 @@ scripts/check-installed-spire-plus-package.sh "$STS2_PATH/mods/EZMicroBalance"
 Check a package hash directly:
 
 ```sh
-shasum -a 256 publish/SpirePlus-v0.1.0-private-beta.88.zip
+shasum -a 256 publish/SpirePlus-v0.1.0-private-beta.91.zip
 ```
 
 Unpack a package for inspection:
 
 ```sh
-unzip -q publish/SpirePlus-v0.1.0-private-beta.88.zip -d publish/inspect
+unzip -q publish/SpirePlus-v0.1.0-private-beta.91.zip -d publish/inspect
 ```
 
 Expected macOS log path to check first:
@@ -113,7 +113,7 @@ For Windows/macOS co-op tests, record the host and client values from the same r
 
 - package zip SHA256
 - installed `EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt` SHA256
-- BaseLib version and installed `mods/BaseLib` folder presence
+- STS2-RitsuLib version and installed `mods/STS2-RitsuLib` folder presence
 - `godot.log` from host and client
 - `godot-log-audit.json` for both logs
 - loaded mod list and any ModelDb mismatch diagnostics

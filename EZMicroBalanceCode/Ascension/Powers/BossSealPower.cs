@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Entities.Powers;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-internal abstract class BossSealPower : CustomPowerModel, ILocalizationProvider
+internal abstract class BossSealPower : ModPowerTemplate, ILocalizationProvider
 {
     public override PowerType Type => PowerType.Buff;
 
@@ -16,11 +16,11 @@ internal abstract class BossSealPower : CustomPowerModel, ILocalizationProvider
         ? AscensionAssetPaths.GetBossSealIndicator(id)
         : AscensionAssetPaths.BossSealIndicator;
 
-    public override string CustomPackedIconPath => BossSealIconPath;
+    public override string CustomIconPath => BossSealIconPath;
 
     public override string CustomBigIconPath => BossSealIconPath;
 
-    public override abstract List<(string, string)>? Localization { get; }
+    public abstract List<(string, string)>? Localization { get; }
 
     protected static List<(string, string)> Loc(string zhsTitle, string zhsDescription, string zhsShort, string engTitle, string engDescription, string engShort) =>
         LocManager.Instance.Language == "zhs"

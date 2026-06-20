@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Common;
 
 internal static class AncientRewardRelicService
 {

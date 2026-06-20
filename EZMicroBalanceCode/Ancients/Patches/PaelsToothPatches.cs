@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterObtained))]
 internal static class PaelsToothPickupPatch

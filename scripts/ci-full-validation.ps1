@@ -106,14 +106,15 @@ if ([string]::IsNullOrWhiteSpace($GodotPath)) {
 $sts2FullPath = [System.IO.Path]::GetFullPath($Sts2Path)
 $godotFullPath = [System.IO.Path]::GetFullPath($GodotPath)
 $sts2DataDir = Join-Path $sts2FullPath 'data_sts2_windows_x86_64'
-$baseLibDir = Join-Path $sts2FullPath 'mods\BaseLib'
+$ritsuLibDir = Join-Path $sts2FullPath 'mods\STS2-RitsuLib'
 
 Assert-ExistingDirectory $sts2FullPath "Slay the Spire 2 root not found: $sts2FullPath"
 Assert-ExistingDirectory $sts2DataDir "Slay the Spire 2 Windows data dir not found: $sts2DataDir"
 Assert-ExistingFile (Join-Path $sts2DataDir 'sts2.dll') "Missing sts2.dll under $sts2DataDir"
 Assert-ExistingFile (Join-Path $sts2DataDir '0Harmony.dll') "Missing 0Harmony.dll under $sts2DataDir"
-Assert-ExistingDirectory $baseLibDir "BaseLib runtime mod directory not found: $baseLibDir"
-Assert-ExistingFile (Join-Path $baseLibDir 'BaseLib.dll') "Missing BaseLib.dll under $baseLibDir"
+Assert-ExistingDirectory $ritsuLibDir "STS2-RitsuLib runtime mod directory not found: $ritsuLibDir"
+Assert-ExistingFile (Join-Path $ritsuLibDir 'mod_manifest.json') "Missing mod_manifest.json under $ritsuLibDir"
+Assert-ExistingFile (Join-Path $ritsuLibDir 'ritsulib-variants.manifest') "Missing ritsulib-variants.manifest under $ritsuLibDir"
 Assert-ExistingFile $godotFullPath "Godot executable not found: $godotFullPath"
 
 $env:STS2_PATH = $sts2FullPath

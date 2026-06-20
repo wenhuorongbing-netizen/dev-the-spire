@@ -96,7 +96,7 @@ public sealed partial class ReleaseEvidenceGateTests
     {
         return
         [
-            ("coop-host-join-clean-logs", "Host and client load exactly BaseLib plus Spire Plus with matching package hashes and clean logs."),
+            ("coop-host-join-clean-logs", "Host and client load exactly STS2-RitsuLib plus Spire Plus with matching package hashes and clean logs."),
             ("coop-a11-a20-selection", "A11-A20 selection/start-run behavior is recorded on host and client; selection visibility alone is not gameplay support."),
             ("coop-ancients", "Urda, Morvi, Lotha, and gated Vakuu have explicit host/client disposition notes for reward state and relic visibility."),
             ("coop-root-eyes", "Root Eyes map preview either stays gated in co-op or shows host/client-consistent map state with no desync."),
@@ -111,7 +111,7 @@ public sealed partial class ReleaseEvidenceGateTests
     {
         return
         [
-            ("base-lib-visible-enabled", "BaseLib appears in Settings -> Mod Settings and is enabled for the session."),
+            ("ritsulib-visible-enabled", "STS2-RitsuLib appears in Settings -> Mod Settings and is enabled for the session."),
             ("spire-plus-list-display-name", "The Mods list shows the player-facing name Spire Plus for the current package."),
             ("spire-plus-config-page-current-name", "Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text."),
             ("technical-id-compatibility", "EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name."),

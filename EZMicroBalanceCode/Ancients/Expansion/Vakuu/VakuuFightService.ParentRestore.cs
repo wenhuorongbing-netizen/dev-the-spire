@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Entities.Ancients;
+using MegaCrit.Sts2.Core.Entities.Ancients;
 using System.Runtime.CompilerServices;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 

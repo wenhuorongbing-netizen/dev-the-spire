@@ -1,22 +1,14 @@
 using System;
 using System.Collections.Generic;
 
-using BaseLib.Abstracts;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Events;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-internal sealed partial class EzmbUrda : CustomAncientModel
+internal sealed partial class EzmbUrda : ModAncientEventTemplate
 {
-    public EzmbUrda()
-        : base(autoAdd: false)
-    {
-    }
-
-    protected override OptionPools MakeOptionPools => new(MakePool(Array.Empty<AncientOption>()));
-
-    public override string? CustomScenePath => UrdaAssetPaths.BackgroundScene;
+    public override string? CustomBackgroundScenePath => UrdaAssetPaths.BackgroundScene;
 
     public override string? CustomMapIconPath => UrdaAssetPaths.MapIcon;
 

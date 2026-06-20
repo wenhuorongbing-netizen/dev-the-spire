@@ -1,6 +1,6 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.88.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.91.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
@@ -11,7 +11,7 @@ Current package hashes:
 | Manifest | `7A0E554EBE5F5E0F2BC739E61591A8E312433EA4BE82B90CB8151EC05DA02A09` |
 | README_INSTALL | `75C5E426A4A2269FA5D45A1ABE29427F7BA94FC39B139799FEB434395622E28A` |
 
-Latest validation snapshot: beta.88 build, publish/package refresh, installed-package parity, runtime preflight, and current-game AdditiveBatch1 direct loader proof are the current package target. The beta.88 proof is `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` with retained verifier proof for 10 event types / 14 registration calls, clean audit, enabled-mode verifier 31 / 0, and packet verifier 0 mismatches. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, and beta.19 startup proof remain previous-package or historical context. Closing only the direct Golden Idol localization key remains a localization unblocker; it does not prove gameplay or replace future gameplay verifier reports. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
+Latest validation snapshot: beta.91 build, publish/package refresh, installed-package parity, runtime preflight, current-game RitsuLib-only Off direct loader proof, and current-game RitsuLib-only AdditiveBatch1 direct loader proof are the current package target. The beta.91 AdditiveBatch1 proof is `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/` with retained verifier proof for 10 event types / 14 registration calls, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, beta.88 BaseLib-backed proof, beta.90 RitsuLib-only proof, and beta.19 startup proof remain previous-package or historical context. Closing only the direct Golden Idol localization key remains a localization unblocker; it does not prove gameplay or replace future gameplay verifier reports. Gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

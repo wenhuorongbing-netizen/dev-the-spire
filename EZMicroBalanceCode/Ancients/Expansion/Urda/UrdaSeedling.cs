@@ -1,12 +1,9 @@
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[CustomID(CardId)]
-[Pool(typeof(ColorlessCardPool))]
-public sealed class UrdaSeedling : CustomCardModel
+public sealed class UrdaSeedling : ModCardTemplate
 {
     public const string CardId = "EZMB_URDA_SEEDLING";
 
@@ -21,7 +18,7 @@ public sealed class UrdaSeedling : CustomCardModel
     public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/urda_seedling.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => SeedlingKeywords;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         AncientCardHelpers.TemporaryHoverTip(),
         HoverTipFactory.FromKeyword(CardKeyword.Exhaust)

@@ -3,7 +3,7 @@ using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
-internal abstract class MorviArchivePageCard : CustomCardModel
+internal abstract class MorviArchivePageCard : ModCardTemplate
 {
     private static readonly CardKeyword[] ArchivePageKeywords = [CardKeyword.Ethereal, CardKeyword.Exhaust];
 
@@ -20,7 +20,7 @@ internal abstract class MorviArchivePageCard : CustomCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => ArchivePageKeywords;
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
             HoverTipFactory.FromKeyword(CardKeyword.Exhaust),

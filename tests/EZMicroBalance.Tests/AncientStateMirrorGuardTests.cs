@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
 using Xunit;
 
@@ -178,8 +178,8 @@ public sealed class AncientStateMirrorGuardTests
 
         AssertSourceContains(
             riskRegister,
-            "`SavedSpireField<Player,string>`",
-            "`SavedSpireField<CardModel,string>`",
+            "`SavedAttachedState<Player, string>`",
+            "`SavedAttachedState<CardModel, string>`",
             "`AncientPlayerState`",
             "direct field bypasses");
         AssertSourceContains(

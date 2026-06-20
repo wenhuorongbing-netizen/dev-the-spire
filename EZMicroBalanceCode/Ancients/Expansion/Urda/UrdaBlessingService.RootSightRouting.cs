@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Map;
+using MegaCrit.Sts2.Core.Map;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 

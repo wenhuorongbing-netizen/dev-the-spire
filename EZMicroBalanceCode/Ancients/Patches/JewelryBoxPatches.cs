@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 [HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]
 internal static class JewelryBoxPatch

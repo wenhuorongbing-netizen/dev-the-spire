@@ -32,7 +32,7 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')
 $runtimeRoot = Join-Path $repoRoot.Path '.tools\runtime-evidence'
-$defaultAllowedModIds = @('BaseLib', 'STS2-RitsuLib', 'EZMicroBalance')
+$defaultAllowedModIds = @('STS2-RitsuLib', 'EZMicroBalance')
 
 function New-DirectoryIfMissing {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -147,11 +147,6 @@ function Set-SpirePlusSettings {
     }
 
     $enabledMods = @(
-        [pscustomobject]@{
-            id = 'BaseLib'
-            is_enabled = $true
-            source = 'mods_directory'
-        },
         [pscustomobject]@{
             id = 'STS2-RitsuLib'
             is_enabled = $true
@@ -502,7 +497,7 @@ if ($Mode -eq 'Prepare') {
     }
 
     $movedMods = @()
-    $allowedModIds = if ($DisableSpirePlus) { @('BaseLib') } else { $defaultAllowedModIds }
+    $allowedModIds = if ($DisableSpirePlus) { @('STS2-RitsuLib') } else { $defaultAllowedModIds }
     if ($MoveOtherMods) {
         $movedMods = Move-ModsForIsolation -ModsRoot $modsRoot -DestinationRoot (Join-Path $evidenceFull 'isolated-mods') -AllowedModIds $allowedModIds
     }

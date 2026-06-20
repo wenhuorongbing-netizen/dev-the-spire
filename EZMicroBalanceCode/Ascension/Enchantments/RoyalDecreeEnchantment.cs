@@ -1,8 +1,8 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-internal sealed class RoyalDecreeEnchantment : CustomEnchantmentModel, ILocalizationProvider
+internal sealed class RoyalDecreeEnchantment : ModEnchantmentTemplate, ILocalizationProvider
 {
-    protected override string? CustomIconPath => AscensionAssetPaths.GetBossSealIndicator(BossSealId.ChosenDecree);
+    public override string? CustomIconPath => AscensionAssetPaths.GetBossSealIndicator(BossSealId.ChosenDecree);
 
     public override bool HasExtraCardText => true;
 

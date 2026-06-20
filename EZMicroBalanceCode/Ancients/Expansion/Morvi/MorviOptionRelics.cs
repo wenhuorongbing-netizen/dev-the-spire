@@ -2,7 +2,7 @@ using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
-internal abstract class MorviOptionRelic : CustomRelicModel
+internal abstract class MorviOptionRelic : ModRelicTemplate
 {
     public override RelicRarity Rarity => RelicRarity.Event;
 
@@ -12,55 +12,47 @@ internal abstract class MorviOptionRelic : CustomRelicModel
 
     public override bool IsAllowedInShops => false;
 
-    protected override string BigIconPath => PackedIconPath;
+    public override string CustomBigIconPath => CustomIconPath!;
 
-    protected override string PackedIconOutlinePath => PackedIconPath;
+    public override string CustomIconOutlinePath => CustomIconPath!;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviForbiddenLoanOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.ForbiddenLoanOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.ForbiddenLoanOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviMisprintPressOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.MisprintPressOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.MisprintPressOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviRedInkOverdraftOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.RedInkOverdraftOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.RedInkOverdraftOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviOverdueLibraryOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.OverdueLibraryOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.OverdueLibraryOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviOpenBookExamOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.OpenBookExamOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.OpenBookExamOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviPaperstormOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.PaperstormOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.PaperstormOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviBlueprintProofOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.BlueprintProofOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.BlueprintProofOptionIcon;
 }
 
-[Pool(typeof(SharedRelicPool))]
 internal sealed class MorviDebtSettlementOptionRelic : MorviOptionRelic
 {
-    public override string PackedIconPath => MorviAssetPaths.DebtSettlementOptionIcon;
+    public override string CustomIconPath => MorviAssetPaths.DebtSettlementOptionIcon;
 }

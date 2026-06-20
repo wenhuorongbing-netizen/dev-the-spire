@@ -58,13 +58,13 @@ public sealed partial class AscensionV2MilestoneGuardTests
         AssertRepoPathDoesNotExist("EZMicroBalanceCode", "Ascension", "Powers", "BossSealMarkerPowers.cs");
         AssertSourceContains(
             basePower,
-            "internal abstract class BossSealPower : CustomPowerModel, ILocalizationProvider",
+            "internal abstract class BossSealPower : ModPowerTemplate, ILocalizationProvider",
             "public override PowerType Type => PowerType.Buff",
             "public override PowerStackType StackType => PowerStackType.Single",
             "public override int DisplayAmount => Amount",
             "protected virtual BossSealId? SealId => null",
             "AscensionAssetPaths.GetBossSealIndicator(id)",
-            "public override string CustomPackedIconPath => BossSealIconPath",
+            "public override string CustomIconPath => BossSealIconPath",
             "public override string CustomBigIconPath => BossSealIconPath",
             "AscensionAssetPaths.BossSealIndicator");
         AssertSourceContains(

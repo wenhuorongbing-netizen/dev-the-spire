@@ -1,4 +1,4 @@
-﻿using EZMicroBalance.EZMicroBalanceCode.Config;
+using EZMicroBalance.EZMicroBalanceCode.Config;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 

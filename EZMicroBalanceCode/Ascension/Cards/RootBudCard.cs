@@ -1,6 +1,3 @@
-using BaseLib.Abstracts;
-using BaseLib.Utils;
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
@@ -9,9 +6,7 @@ using MegaCrit.Sts2.Core.Models.CardPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[CustomID(CardId)]
-[Pool(typeof(CurseCardPool))]
-public sealed class RootBud : CustomCardModel
+public sealed class RootBud : ModCardTemplate
 {
     public const string CardId = "EZMB_ROOT_BUD";
     public const int DefaultSproutRound = 3;
@@ -58,7 +53,7 @@ public sealed class RootBud : CustomCardModel
     public override string PortraitPath => RootPortraitPaths.BlightSprout;
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => ExhaustKeyword;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         AncientCardHelpers.TemporaryHoverTip(),
         HoverTipFactory.FromCard<Root>()

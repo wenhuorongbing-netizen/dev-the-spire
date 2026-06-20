@@ -23,7 +23,7 @@ public sealed class CrossPlatformTestingGuardTests
             "EZMicroBalance/EZMicroBalance.json",
             "EZMicroBalance/EZMicroBalance.pck",
             "EZMicroBalance/README_INSTALL.txt",
-            "It must not include duplicate runtime dependency DLLs such as `BaseLib.dll`, `0Harmony.dll`, or `sts2.dll`.",
+            "It must not include duplicate runtime dependency DLLs such as `STS2-RitsuLib.dll`, `0Harmony.dll`, or `sts2.dll`.",
             "$env:STS2_PATH='D:\\Steam\\steamapps\\common\\Slay the Spire 2'",
             $"Get-FileHash -LiteralPath .\\publish\\{packageName}.zip -Algorithm SHA256",
             $"Expand-Archive -LiteralPath .\\publish\\{packageName}.zip -DestinationPath .\\publish\\inspect -Force",
@@ -35,7 +35,7 @@ public sealed class CrossPlatformTestingGuardTests
             $"unzip -q publish/{packageName}.zip -d publish/inspect",
             "$HOME/Library/Application Support/SlayTheSpire2/logs/godot.log",
             "SPIREPLUS_DISABLE_MORVI=1",
-            "BaseLib version and installed `mods/BaseLib` folder presence",
+            "STS2-RitsuLib version and installed `mods/STS2-RitsuLib` folder presence",
             "loaded mod list and any ModelDb mismatch diagnostics",
             "Sere Talon imported texture entries are present in the installed PCK",
             "loader parity on another machine or OS");

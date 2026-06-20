@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Entities.Cards;
+using MegaCrit.Sts2.Core.Entities.Cards;
 
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 

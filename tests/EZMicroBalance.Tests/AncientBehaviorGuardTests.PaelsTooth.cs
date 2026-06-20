@@ -13,7 +13,7 @@ public sealed partial class AncientBehaviorGuardTests
 
         AssertSourceContains(
             savedFields,
-            "SavedSpireField<PaelsTooth, int>",
+            "SavedAttachedState<PaelsTooth, int>",
             "EZMicroBalanceNonBossCombatCounter");
 
         AssertSourceContains(

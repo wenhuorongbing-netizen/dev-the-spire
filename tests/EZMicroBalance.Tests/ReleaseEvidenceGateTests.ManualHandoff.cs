@@ -207,8 +207,8 @@ public sealed partial class ReleaseEvidenceGateTests
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "command.txt"), "Synthetic current-package loader command fixture.");
             File.WriteAllText(
                 Path.Combine(loaderEvidenceDir, "godot.log"),
-                "BaseLib initialized. Spire Plus initialized. Loaded 2 mods. Registered config for mod EZMicroBalance. Found 30 SavedSpireFields.");
-            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "BaseLib" + Environment.NewLine + "Spire Plus");
+                "STS2-RitsuLib initialized. Spire Plus initialized. Loaded 2 mods. RitsuLib mod settings registered. RitsuLib content registered.");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "STS2-RitsuLib" + Environment.NewLine + "Spire Plus");
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), "{ \"Clean\": true }");
 
             var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();

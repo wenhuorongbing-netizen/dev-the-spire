@@ -1,12 +1,10 @@
-using BaseLib.Abstracts;
-using BaseLib.Utils;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.GameActions.Multiplayer;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-public abstract class RootFamilyCard : CustomCardModel
+public abstract class RootFamilyCard : ModCardTemplate
 {
     private static readonly CardKeyword[] ExhaustKeyword = [CardKeyword.Exhaust];
 
@@ -40,7 +38,7 @@ public abstract class RootFamilyCard : CustomCardModel
     public override string PortraitPath => RootPortraitPaths.Rootblight(RootblightLevel);
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => ExhaustKeyword;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips => RootblightLevel switch
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips => RootblightLevel switch
     {
         1 => [HoverTipFactory.FromCard<DeepRoot>()],
         2 => [HoverTipFactory.FromCard<Root>(), HoverTipFactory.FromCard<RootblightIII>()],

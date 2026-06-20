@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18: superseded; current 2026-06-19 hashes:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-18: superseded; current 2026-06-20 beta.91 hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D` |
-| DLL | `7CEAD97D55991C4ACE71A521E140B4DCA3EB814613B496E94943F137B6CFE37A` |
-| PCK | `069180E97CEFCABA586CB5D0893AEC96BEC90602006A99EC305E4D2B8E124C62` |
-| Manifest | `7A0E554EBE5F5E0F2BC739E61591A8E312433EA4BE82B90CB8151EC05DA02A09` |
-| README_INSTALL | `75C5E426A4A2269FA5D45A1ABE29427F7BA94FC39B139799FEB434395622E28A` |
+| ZIP | `ED86E18B23256CC5E4BF56B9E4BB168D213FBBB0F28F5C7C6FDBF8F64ABD1EB1` |
+| DLL | `986EE9880B7B17C90AA5D557370D309A3D3BC2775227B5C12C7508910C55E5B7` |
+| PCK | `AD81B76F088375E5064494C0A34F85E1370F6FB7236BE4646C38B53089A8232C` |
+| Manifest | `42561D8E67A3C904A6D75F47639FF918DAF9220B3FF75FDA9FE436B055746A14` |
+| README_INSTALL | `0943B86C13B4035B7BC5E615D662D0ED226D422D7A4132192EED8282EB53CD76` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -34,10 +34,10 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: build 0 errors / 0 warnings; split no-build lanes passed 475 / 0 / 21 / 496 after beta.85. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: beta.88 AdditiveBatch1 proof is clean on `v0.107.1` with BaseLib `v3.3.0` / RitsuLib `v0.4.24`; earlier smokes are previous-version context.
-  Fresh beta.88 direct proof: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/` reached main menu, audited clean, passed retained enabled-mode verifier 31 / 0, and passed packet verification with 0 mismatches.
-  Runtime blocker root cause was game `v0.107.1` compatibility drift: Spire Plus needed one multiplayer diagnostics API fix, and BaseLib `v3.2.1` logged two Harmony patch failures.
-  BaseLib `v3.3.0` resolves the clean-loader blocker. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
+- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: beta.91 Off and AdditiveBatch1 proof is clean on `v0.107.1` with RitsuLib `v0.4.28` / `lib\0.107.1` and no BaseLib dependency; earlier smokes are previous-version or previous-package context.
+  current RitsuLib-only AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01071-beta91-ritsulib0428-additivebatch1-direct-20260620/`.
+  Fresh beta.91 direct proof: Off packet verifier 43 / 0; AdditiveBatch1 reached main menu, audited clean, enabled-mode verifier 31 / 0, packet verifier 61 / 0.
+  Runtime blocker root cause history was game `v0.107.1` compatibility drift plus older BaseLib patch drift; current Spire Plus package no longer depends on BaseLib. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

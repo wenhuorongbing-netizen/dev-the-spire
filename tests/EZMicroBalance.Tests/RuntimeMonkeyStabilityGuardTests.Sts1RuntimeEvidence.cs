@@ -61,6 +61,64 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void Sts1RuntimeEvidencePacketVerifierAcceptsRewrittenFullLogWhenCurrentSliceMatchesAfterLaunch()
+    {
+        var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-runtime-packet-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteSts1RuntimePacketState(workdir, mode: "AdditiveBatch1");
+            const string overwrittenPreLaunchLog = "[Startup] earlier process log that Godot overwrote\r\n";
+            var rewrittenLaunchLog = BuildSts1ModeRuntimeLog("AdditiveBatch1");
+            var retainedCurrentSlicePath = Path.Combine(workdir, "godot.log.current-iteration");
+            var retainedCurrentAuditPath = Path.Combine(workdir, "godot-log-current-iteration-audit.json");
+            File.WriteAllText(Path.Combine(workdir, "godot.log.before"), overwrittenPreLaunchLog);
+            File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), rewrittenLaunchLog);
+            File.WriteAllText(retainedCurrentSlicePath, rewrittenLaunchLog);
+
+            var auditResult = RunPowerShell(auditScript, "-Path", retainedCurrentSlicePath, "-OutFile", retainedCurrentAuditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+
+            var result = RunPowerShell(
+                packetVerifier,
+                "-Mode",
+                "AdditiveBatch1",
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedPackageVersion",
+                "v0.1.0-private-beta.87",
+                "-ExpectedRitsuCompatBranch",
+                "0.107.0",
+                "-ExpectedRitsuLibVersion",
+                "0.4.24",
+                "-ExpectedGameVersion",
+                "0.107.0",
+                "-OutFile",
+                Path.Combine(workdir, "runtime-evidence-packet-check.json"),
+                "-FailOnMismatch");
+
+            Assert.True(result.ExitCode == 0, $"Packet verifier failed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("current_slice_matches_before_after status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("enabled_mode_log_verifier_clean status=pass", result.Output, StringComparison.Ordinal);
+
+            using var report = JsonDocument.Parse(File.ReadAllText(Path.Combine(workdir, "runtime-evidence-packet-check.json")));
+            Assert.False(report.RootElement.GetProperty("CurrentSliceDerivedFromBeforeAfter").GetBoolean());
+            Assert.True(report.RootElement.GetProperty("CurrentSliceMatchesBeforeAfter").GetBoolean());
+            Assert.Contains("rewrote the log", report.RootElement.GetProperty("CurrentSliceBindingDetail").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void Sts1RuntimeEvidencePacketVerifierRejectsRetainedCurrentSliceThatDoesNotMatchBeforeAfter()
     {
         var packetVerifier = AssertRepoFileExists("scripts", "check-sts1-runtime-evidence-packet.ps1");

@@ -1,12 +1,9 @@
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[CustomID(CardId)]
-[Pool(typeof(CurseCardPool))]
-public sealed class WitheredHusk : CustomCardModel
+public sealed class WitheredHusk : ModCardTemplate
 {
     public const string CardId = "EZMB_WITHERED_HUSK";
 
@@ -21,7 +18,7 @@ public sealed class WitheredHusk : CustomCardModel
     public override string PortraitPath => $"{MainFile.ResPath}/images/card_portraits/withered_husk.png";
     public override string BetaPortraitPath => PortraitPath;
     public override IEnumerable<CardKeyword> CanonicalKeywords => HuskKeywords;
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
     [
         HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
         HoverTipFactory.FromKeyword(CardKeyword.Exhaust),

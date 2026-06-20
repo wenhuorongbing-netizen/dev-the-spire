@@ -1,4 +1,4 @@
-﻿using MegaCrit.Sts2.Core.Multiplayer.Game;
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;

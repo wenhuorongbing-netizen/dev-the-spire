@@ -1,4 +1,4 @@
-﻿namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
+namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
 internal static partial class MorviBlessingService
 {

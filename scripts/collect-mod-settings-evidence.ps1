@@ -234,7 +234,7 @@ Template reference for `mod-settings-checklist.md`. Fill the working `mod-settin
 
 | Scenario ID | Expected behavior | Live result | Evidence file(s) |
 | --- | --- | --- | --- |
-| base-lib-visible-enabled | BaseLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |
+| ritsulib-visible-enabled | STS2-RitsuLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |
 | spire-plus-list-display-name | The Mods list shows the player-facing name Spire Plus for the current package. |  |  |
 | spire-plus-config-page-current-name | Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text. |  |  |
 | technical-id-compatibility | EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name. |  |  |
@@ -255,7 +255,7 @@ Required before pass:
 - normal Steam-client path or explicitly documented direct smoke path;
 - language used;
 - screenshot filenames for the Mod Settings list and Spire Plus page;
-- confirmation that BaseLib and Spire Plus are enabled;
+- confirmation that STS2-RitsuLib and Spire Plus are enabled;
 - confirmation that legacy EzDailyContent and standalone EZFuturePeek surfaces are absent or disabled.
 '@
 Set-TextIfMissing -Path (Join-Path $evidenceFull 'route-note.md') -Text $routeNote
@@ -281,7 +281,7 @@ $manualRows = [ordered]@{
             ResultNote = ''
             ExplicitOwnerDecision = $false
             Checkpoints = @(
-                'BaseLib appears and is enabled.',
+                'STS2-RitsuLib appears and is enabled.',
                 'Spire Plus appears as the player-facing name in the current package.',
                 'Spire Plus settings page opens and renders without errors.',
                 'EZMicroBalance is used only as technical compatibility id where applicable.',

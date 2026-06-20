@@ -68,7 +68,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             devEnvironment,
             "Historical 22-field loader evidence:",
-            "Current source defines 30 SavedSpireFields",
+            "Current source defines 30 SavedAttachedState fields",
             "Historical beta.19 loader evidence:",
             "dev-environment-runtime-smoke-history-20260526.md",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
@@ -153,7 +153,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "Fresh loader smoke for the current beta.87 package hash is clean",
+            "active manifest is `v0.1.0-private-beta.91` after the latest RitsuLib-only migration target",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

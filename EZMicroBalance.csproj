@@ -13,7 +13,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <NoWarn>$(NoWarn);MSB3270</NoWarn>
+        <NoWarn>$(NoWarn);MSB3270;STS001;STS003;STS004</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -36,8 +36,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Alchyr.Sts2.BaseLib" Version="3.3.0" PrivateAssets="All"/>
-        <PackageReference Include="STS2.RitsuLib" Version="0.4.24" PrivateAssets="All"/>
+        <PackageReference Include="STS2.RitsuLib" Version="0.4.28" PrivateAssets="All"/>
         <PackageReference Include="Krafs.Publicizer" Version="2.3.0" PrivateAssets="All"/>
         <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="0.1.9" />
         <AdditionalFiles Include="EZMicroBalance/localization/**/*.json"/>
@@ -76,7 +75,6 @@
     <ItemGroup>
         <GodotExportRuntimeReference Include="$(Sts2DataDir)/sts2.dll" Condition="Exists('$(Sts2DataDir)/sts2.dll')" />
         <GodotExportRuntimeReference Include="$(Sts2DataDir)/0Harmony.dll" Condition="Exists('$(Sts2DataDir)/0Harmony.dll')" />
-        <GodotExportRuntimeReference Include="$(ModsPath)BaseLib/BaseLib.dll" Condition="Exists('$(ModsPath)BaseLib/BaseLib.dll')" />
     </ItemGroup>
 
     <Target Name="CopyGodotExportRuntimeReferences" BeforeTargets="GodotPublish" Condition="'$(IsInnerGodotExport)' != 'true'">

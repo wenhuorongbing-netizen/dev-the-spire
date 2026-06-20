@@ -1,12 +1,9 @@
-using BaseLib.Utils.Attributes;
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using MegaCrit.Sts2.Core.HoverTips;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
-[CustomID(CardId)]
-[Pool(typeof(StatusCardPool))]
-internal sealed class MorviWastePaper : CustomCardModel
+internal sealed class MorviWastePaper : ModCardTemplate
 {
     public const string CardId = "EZMB_MORVI_WASTE_PAPER";
 
@@ -25,7 +22,7 @@ internal sealed class MorviWastePaper : CustomCardModel
 
     public override IEnumerable<CardKeyword> CanonicalKeywords => WastePaperKeywords;
 
-    protected override IEnumerable<IHoverTip> ExtraHoverTips =>
+    protected override IEnumerable<IHoverTip> AdditionalHoverTips =>
         [
             HoverTipFactory.FromKeyword(CardKeyword.Ethereal),
             HoverTipFactory.FromKeyword(CardKeyword.Unplayable),

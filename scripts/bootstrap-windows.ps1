@@ -58,23 +58,28 @@ $props = [regex]::Replace($props, '<GodotPath>.*?</GodotPath>', "<GodotPath>$god
 $props = [regex]::Replace($props, '<Sts2Path>.*?</Sts2Path>', "<Sts2Path>$sts2Value</Sts2Path>")
 Set-Content -LiteralPath $propsPath -Value $props -Encoding UTF8
 
-$baseLibPath = Join-Path $resolvedGameRoot.Path 'mods\BaseLib'
-Write-Host "Expected BaseLib path: $baseLibPath"
+$ritsuLibPath = Join-Path $resolvedGameRoot.Path 'mods\STS2-RitsuLib'
+Write-Host "Expected STS2-RitsuLib path: $ritsuLibPath"
 
-$baseLibFiles = @('BaseLib.json', 'BaseLib.dll', 'BaseLib.pck')
-$missingBaseLib = @()
-foreach ($file in $baseLibFiles) {
-    $candidate = Join-Path $baseLibPath $file
+$ritsuLibFiles = @(
+    'mod_manifest.json',
+    'STS2-RitsuLib.dll',
+    'ritsulib-variants.manifest',
+    'lib\0.107.1\STS2-RitsuLib.dll'
+)
+$missingRitsuLib = @()
+foreach ($file in $ritsuLibFiles) {
+    $candidate = Join-Path $ritsuLibPath $file
     if (-not (Test-Path -LiteralPath $candidate)) {
-        $missingBaseLib += $file
+        $missingRitsuLib += $file
     }
 }
 
-if ($missingBaseLib.Count -gt 0) {
-    Write-Warning "BaseLib appears incomplete. Missing: $($missingBaseLib -join ', ')"
-    Write-Warning 'Install BaseLib v3.3.0 under <GameRoot>\mods\BaseLib before game verification.'
+if ($missingRitsuLib.Count -gt 0) {
+    Write-Warning "STS2-RitsuLib appears incomplete. Missing: $($missingRitsuLib -join ', ')"
+    Write-Warning 'Install STS2-RitsuLib v0.4.28 or newer under <GameRoot>\mods\STS2-RitsuLib before game verification.'
 } else {
-    Write-Host 'BaseLib runtime files found.'
+    Write-Host 'STS2-RitsuLib runtime files found.'
 }
 
 Write-Host 'Running dotnet build...'
@@ -94,4 +99,4 @@ if (-not $SkipPublish) {
 }
 
 Write-Host 'Bootstrap completed.'
-Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm BaseLib plus Spire Plus appear and are enabled.'
+Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm STS2-RitsuLib plus Spire Plus appear and are enabled.'

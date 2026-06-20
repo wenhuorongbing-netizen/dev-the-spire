@@ -4,8 +4,8 @@ internal static class AncientPlayerState
 {
     public static string Get(
         Player player,
-        SavedSpireField<Player, string> runtimeField,
-        SavedSpireField<CardModel, string> deckField)
+        SavedAttachedState<Player, string> runtimeField,
+        SavedAttachedState<CardModel, string> deckField)
     {
         var runtimeState = runtimeField[player] ?? string.Empty;
         if (!string.IsNullOrWhiteSpace(runtimeState))
@@ -28,8 +28,8 @@ internal static class AncientPlayerState
     public static void Set(
         Player player,
         string state,
-        SavedSpireField<Player, string> runtimeField,
-        SavedSpireField<CardModel, string> deckField)
+        SavedAttachedState<Player, string> runtimeField,
+        SavedAttachedState<CardModel, string> deckField)
     {
         runtimeField[player] = state;
         MirrorToDeck(player, deckField, state);
@@ -37,8 +37,8 @@ internal static class AncientPlayerState
 
     public static void SyncDeck(
         Player player,
-        SavedSpireField<Player, string> runtimeField,
-        SavedSpireField<CardModel, string> deckField)
+        SavedAttachedState<Player, string> runtimeField,
+        SavedAttachedState<CardModel, string> deckField)
     {
         var state = Get(player, runtimeField, deckField);
         if (!string.IsNullOrWhiteSpace(state))
@@ -49,7 +49,7 @@ internal static class AncientPlayerState
 
     private static string ReadFromDeck(
         Player player,
-        SavedSpireField<CardModel, string> deckField)
+        SavedAttachedState<CardModel, string> deckField)
     {
         return player.Deck.Cards
             .Where(card => card.Owner == player && !card.HasBeenRemovedFromState)
@@ -59,7 +59,7 @@ internal static class AncientPlayerState
 
     private static void MirrorToDeck(
         Player player,
-        SavedSpireField<CardModel, string> deckField,
+        SavedAttachedState<CardModel, string> deckField,
         string state)
     {
         foreach (var card in player.Deck.Cards.Where(card => card.Owner == player && !card.HasBeenRemovedFromState))

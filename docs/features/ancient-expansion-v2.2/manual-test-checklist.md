@@ -91,7 +91,7 @@ Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen scr
 - [ ] After Rain gains 1 Rain Breath after the first unblocked enemy attack damage in each Act 1 combat; if the hand is full, verify Core's normal generated-card fallback is readable. At Act 2 start, fewer than 3 triggers gives 75 Gold, otherwise heal 8 and upgrade 1 card.
 - [ ] Root-Sight starts with 5 Root Eyes. Clicking the Root Eyes relic opens map selection, highlights future reachable Monster, Unknown, or Elite rooms, stores the chosen room's concrete enemy group or event on hover, excludes Rest Sites/Shops/Treasure/Boss rooms, and grants the first-use potion if a slot exists.
 - [ ] Seed Bank uses the source-safe `Store Seed` reward alternative, caps at three Seeds, and lets the player click the Seed Bank relic later to choose up to two Seeds with the first upgraded. It must not mark Seed Bank cards as Trial Branch plants.
-- [ ] Current Urda save/load verified; do not close from `SavedSpireField<Player,string>` source evidence alone.
+- [ ] Current Urda save/load verified; do not close from `SavedAttachedState<Player, string>` source evidence alone.
 
 ## 2. Default-On Morvi Source Slice
 
