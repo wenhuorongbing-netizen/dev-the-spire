@@ -1370,7 +1370,7 @@ function Get-NextStepForOwner {
         }
         default {
             if ($Signal -match 'package|expectation|TypeLoad|MissingMethod') {
-                return 'Check installed package parity, RitsuLib/BaseLib compatibility, and current game API targets before changing gameplay source.'
+                return 'Check installed package parity, current RitsuLib runtime compatibility, historical BaseLib context only for old packets, and current game API targets before changing gameplay source.'
             }
 
             return 'Start from iteration-result.json, runtime-probe-samples.json, godot.log.after-launch, and godot-log-audit.json; narrow to the first failing signal.'
