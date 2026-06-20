@@ -367,6 +367,51 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void HistoricalRefactorQaReviewsStayCompactAndArchivedOutOfActivePath()
+    {
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var activeFiles = new[]
+        {
+            "refactor-qa-20260602.md",
+            "refactor-qa-20260602-round2.md"
+        };
+        var archivedFiles = new[]
+        {
+            "refactor-qa-20260602.md",
+            "refactor-qa-20260602-round2.md"
+        };
+
+        foreach (var activeFile in activeFiles)
+        {
+            var activeBoundary = ReadRepoText("docs", "reviews", activeFile);
+            var lineCount = activeBoundary.Split('\n').Length;
+            Assert.True(lineCount <= 20, $"{activeFile} should stay a compact historical QA stub; current line count is {lineCount}.");
+            AssertSourceContains(
+                activeBoundary,
+                "Status: historical loader-gate QA stub",
+                "Full archived record:",
+                "Current StS1 event work routes through `docs/goals/event.md`",
+                "Do not use its `CONDITIONAL PASS`");
+            Assert.DoesNotContain("## Claim-by-Claim Verification", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("## Independent Verification Results", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("### 2.3 Runtime Smoke Evidence", activeBoundary, StringComparison.Ordinal);
+            Assert.DoesNotContain("### 1.6 CanaryOnly Runtime Smoke", activeBoundary, StringComparison.Ordinal);
+        }
+
+        foreach (var archivedFile in archivedFiles)
+        {
+            AssertRepoFileExists("docs", "archive", "feature-audits", archivedFile);
+            Assert.Contains(archivedFile, archiveReadme, StringComparison.Ordinal);
+            Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
+        }
+
+        Assert.Contains("docs/archive/feature-audits/refactor-qa-20260602*.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/reviews/refactor-qa-20260602*.md", projectMap, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void M5RevisionNDocsStayCompactAndArchivedOutOfActivePath()
     {
         var archiveReadme = ReadRepoText("docs", "archive", "README.md");
