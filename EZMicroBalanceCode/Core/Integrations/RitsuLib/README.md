@@ -10,8 +10,8 @@ compiles against `STS2.RitsuLib` 0.4.31, and the Spire Plus manifest
 requires `STS2-RitsuLib` for the beta.96 package line. Current beta.96
 settings UI proof is retained under
 `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
-Previous beta.93 Off and AdditiveBatch1 loader proof is retained only as
-previous-package evidence under
+Earlier beta.93 Off and AdditiveBatch1 loader proof is retained only as
+pre-beta.96 loader/registration context under
 `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/`
 and
 `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.

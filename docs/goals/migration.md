@@ -44,6 +44,10 @@ The migration is not release-ready. Gameplay, event screenshots, save-load, imag
 - GitHub release `v0.4.31` is marked Latest.
 - NuGet flat-container includes `0.4.31`.
 - Nexus files now list the variant-pack main file as `0.4.31`; the earlier Nexus `0.4.28` lag is historical only.
+- Use the GitHub latest-release/tag, NuGet, Nexus, and installed variant pack as
+  the dependency-floor evidence. A live 2026-06-21 check showed the GitHub
+  `main` branch manifest can lag the released/tagged version, so it is not the
+  source of truth for the Spire Plus dependency floor.
 - Keep Spire Plus on stable `0.4.31`, not a dev build, unless the owner explicitly approves a separate dev-runtime validation lane.
 
 ## Batch 4c Boundary

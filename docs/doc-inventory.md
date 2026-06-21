@@ -35,6 +35,7 @@ Current support docs, not default reading path:
 - `docs/architecture/bounded-contexts.md`
 - `docs/architecture/patch-boundaries.md`
 - `docs/architecture/save-state-contracts.md`
+- `docs/migration.md` (compact RitsuLib migration status index; detailed goal/evidence routes through `docs/goals/migration.md` and `docs/integrations/ritsulib.md`)
 - `docs/goals/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md` (compact historical-boundary stub; current StS1 event work routes through `docs/goals/event.md`)
 - `.github/workflows/spire-plus-site.yml`
 
@@ -143,6 +144,7 @@ Current support docs, not default reading path:
 - `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md` historical May 31 runtime table compressed into a current RitsuLib runtime-boundary stub; old environment archaeology remains in Git history, not the active migration reading path.
 - `docs/test-plan.md` current artifact and manual load checks now require the RitsuLib-only lane (`STS2-RitsuLib >= 0.4.31` plus `EZMicroBalance`) and are guarded against reintroducing old dependency-package setup instructions.
 - `docs/features/ritsulib-migration/runtime-smoke-checklist.md` active launch checklist compressed into beta.96 RitsuLib-only prerequisites, verifier commands, UI-proof status, and still-pending loader/gameplay gates; old smoke-history tables are no longer in the active checklist.
+- `docs/migration.md` active PR-sequencing table compressed into a compact RitsuLib migration status index; detailed migration goal/evidence now routes through `docs/goals/migration.md` and `docs/integrations/ritsulib.md`.
 - `docs/goals/debug.md` mojibake prompt dump -> `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`; active `docs/goals/debug.md` is now a compact debug-governance note.
 - `docs/goals/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md` long StS1 v5 overnight/subagent prompt dump -> `docs/archive/feature-inputs/sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md`; active file is now a compact historical-boundary stub.
 - `docs/goals/m5-revision-l-runtime-hard-blocker.md`, `docs/goals/m5-revision-l-runtime-smoke-plan.md`, `docs/goals/m5-revision-l-final-report.md`, `docs/goals/m5-revision-l-owner-review-packet.md`, `docs/goals/m5-revision-l-dirty-ledger.md`, `docs/goals/m5-revision-l-commit-slices.md`, and `docs/goals/m5-revision-l-warning-ledger.md` full beta.84/beta.85 planning records -> `docs/archive/legacy-planning/m5-revision-l-*.md`; active files are now compact historical-boundary stubs.

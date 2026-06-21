@@ -37,8 +37,10 @@ References:
 - RitsuLib GitHub release `v0.4.31` is marked Latest, the NuGet package index
   includes `0.4.31`, and the Nexus files page now lists the variant-pack main
   file as `0.4.31`; the earlier Nexus `0.4.28` lag is historical only.
-- GitHub latest-release API returned `v0.4.31`, and the main branch
-  `mod_manifest.json` reports `version: 0.4.31` with id `STS2-RitsuLib`.
+- GitHub latest-release API and the `v0.4.31` tag remain the GitHub version
+  authority for the current stable dependency target. A live 2026-06-21 check of
+  the raw `main` branch `mod_manifest.json` returned an older version string, so
+  the main branch manifest is not the dependency-floor source.
 - Official docs recheck found the current settings-page API names used by this
   repo: `RegisterModSettings`, `AddSection`, and `AddToggle`; the patching
   guide exposes `ApplyRequiredPatcher`, `CreatePatcher`, `RegisterPatch`, and

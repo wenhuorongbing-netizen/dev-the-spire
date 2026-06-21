@@ -1,49 +1,53 @@
-# Restructure Migration Plan
+# RitsuLib Migration Status Index
 
-This document tracks the PR sequencing for the `dev-the-spire` integration and refactor work described in `docs/restructure.md`.
+This file is the compact active index for migration status. It intentionally
+does not carry the old PR-sequencing history; current implementation work should
+start from:
 
-## PR Sequence
+- `docs/goals/migration.md` for the active goal, success criteria, and next
+  actions.
+- `docs/integrations/ritsulib.md` for the dependency, installed runtime, API,
+  and evidence record.
+- `docs/features/ritsulib-migration/batch-4c-candidates.md` for the proposal
+  boundary before any further patch migration.
+- `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current
+  command output and evidence scope.
 
-| PR | Scope | Risk | Status |
-| --- | --- | --- | --- |
-| PR 1 | Baseline lock + docs-only Codex harness integration | None | Done |
-| PR 2 | RitsuLib staging docs + install instructions + version mismatch record | None | Done (in PR 1) |
-| PR 3 | Move-only source folder refactor, no behavior changes | Low | Done |
-| PR 4 | Test/docs/script path updates after move-only refactor | Low | Done (no-op: no files moved) |
-| PR 5 | RitsuLib hard dependency | Medium | Compile/manifest dependency added; historical `v0.106.1` loader-gate validated; current `v0.107.1` dependency setup installed with STS2-RitsuLib `v0.4.31` / `lib\0.107.1`; previous beta.93 RitsuLib-only Off and AdditiveBatch1 smokes are clean |
-| PR 6 | Low-risk RitsuLib API adoption | Medium | Batch 4a+4b source migrated; historical `v0.106.1` loader-gate validated; retained beta.85-beta.90 rows remain previous-context evidence; previous `v0.107.1` beta.93 proof is clean for loader/patch application and AdditiveBatch1 registration shape |
-| PR 7+ | High-risk patch migrations, one feature surface at a time | High | Blocked on live/manual proof |
+## Current Boundary
 
-## PR 5: RitsuLib Hard Dependency
+Spire Plus is on the beta.96 RitsuLib-only target:
 
-Compile and manifest dependencies are present:
+- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31`.
+- `EZMicroBalance.json` declares `STS2-RitsuLib >= 0.4.31` as the shared runtime
+  framework dependency.
+- Current package parity and clicked RitsuLib Mod Settings UI proof exist for
+  beta.96.
+- Prior beta.93 RitsuLib-only Off and AdditiveBatch1 proof is loader and
+  registration evidence only. Recapture beta.96 loader proof before making a
+  current runtime-ready claim.
 
-- `<PackageReference Include="STS2.RitsuLib" Version="0.4.31" PrivateAssets="All" />`
-- `{ "id": "STS2-RitsuLib", "min_version": "0.4.31" }`
+Gameplay, event screenshots, save-load, image/render, replacement functional
+proof, co-op/fail-closed proof, independent QA, beta.96 loader proof, and
+tester-package handoff remain pending; handoff must recapture HEAD and worktree
+status after any later edits.
 
-Historical runtime loader-gate verification is no longer blocked for the Slay the Spire 2 `v0.106.1` setup. Historical clean diagnostic smokes exist for Off, CanaryOnly, and AdditiveBatch1 modes with RitsuLib and Spire Plus loaded, 25/25 migrated ModPatcher patches applied, and 30 previous saved-state registrations observed.
+## Migrated Patch Inventory
 
-Current runtime dependency drift is resolved for package and prior loader/registration proof: the local installed game reports Slay the Spire 2 `v0.107.1`, official STS2-RitsuLib `v0.4.31` is installed with `lib\0.107.1`, and Spire Plus uses RitsuLib as its only shared runtime framework in project, manifest, and package. Treat the previous `v0.106.1` Off/CanaryOnly/AdditiveBatch1 smokes as historical loader evidence only. The retained beta.85-beta.90 proof rows remain previous-context evidence; previous `v0.107.1` beta.93 proof is clean at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` for loader/patch application and AdditiveBatch1 registration shape. Current beta.96 RitsuLib Mod Settings UI proof is captured at `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`. The beta.85 AdditiveBatch1 mismatch remains root-cause history for stale package/source shape. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, beta.96 loader proof, and tester-package handoff remain pending; handoff must recapture HEAD and worktree status after any later edits. Post-baseline no-game/doc-governance recaptures do not close runtime/manual gates.
-
-Package metadata decision for the current source and beta.96 package line: the owner-requested RitsuLib blocker fix intentionally keeps the repo compile package and manifest minimum at `0.4.31` in the same versioned package pass. Future dependency-floor changes must again bump the package version and rerun build, tests, publish/package, opt-in artifact checks, and fresh loader smoke as appropriate.
-
-## Batch 4a: Low-Risk Patch Migration
-
-Migrated 9 low-risk patch classes to RitsuLib's `IPatchMethod` interface.
+Batch 4a source status: Migrated 9 low-risk patch classes to RitsuLib
+`IPatchMethod`.
 
 | File | Classes | PatchIds |
-| --- | --- | --- |
+| --- | ---: | --- |
 | `FiddlePatches.cs` | 4 | `fiddle-vars`, `fiddle-hand-draw`, `fiddle-should-draw`, `fiddle-draw-cap` |
 | `ChoicesParadoxPatches.cs` | 1 | `choices-paradox-turn-start` |
 | `DistinguishedCapePatches.cs` | 3 | `distinguished-cape-vars`, `distinguished-cape-event-option`, `distinguished-cape-pickup` |
 | `BlackStarCompensationPatches.cs` | 1 | `black-star-obtain` |
 
-## Batch 4b: Medium-Risk Patch Migration
-
-Migrated 16 medium-risk patch classes to RitsuLib's `IPatchMethod` interface.
+Batch 4b source status: Migrated 16 medium-risk patch classes to RitsuLib
+`IPatchMethod`.
 
 | File | Classes | PatchIds |
-| --- | --- | --- |
+| --- | ---: | --- |
 | `CrossbowPatches.cs` | 2 | `crossbow-offer`, `crossbow-vanilla-after-turn` |
 | `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords`, `brightest-flame-vars`, `brightest-flame-exhaust-backstop` |
 | `DebtAndCardPatches.cs` | 8 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` |
@@ -53,8 +57,11 @@ Migrated 16 medium-risk patch classes to RitsuLib's `IPatchMethod` interface.
 **Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b).
 **Remaining:** 146 `[HarmonyPatch]` declarations still on raw Harmony.
 
-Inventory rechecked on 2026-06-20 against the current source tree: 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, and 171 tracked patch units. This is source-inventory evidence only, not approval to migrate Batch 4c or any high-risk patch.
+Inventory rechecked on 2026-06-20 against the current source tree: 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, and 171 tracked patch units.
 
-## Batch 5: High-Risk Patches
+## Batch 4c Boundary
 
-High-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence. Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c or high-risk patches without explicit owner approval and fresh validation. The current candidate proposal is `docs/features/ritsulib-migration/batch-4c-candidates.md`; it records per-candidate unchanged behavior, source evidence, targeted tests, and rollback paths.
+Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c or high-risk run, map, reward, save, and multiplayer patches without explicit owner approval, current source evidence, focused tests, package-version planning when artifacts change, and fresh validation.
+
+The candidate proposal is
+`docs/features/ritsulib-migration/batch-4c-candidates.md`.

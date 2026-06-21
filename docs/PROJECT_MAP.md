@@ -59,7 +59,7 @@
 | `docs/codex-harness/` | Current support | Thin Codex workflow templates adapted from codex-app-better-token harness. |
 | `docs/integrations/` | Current support | Runtime integration records for active dependencies such as RitsuLib. |
 | `docs/refactor-map.md` | Current support | Move-only folder refactor map for EZMicroBalanceCode (planning only). |
-| `docs/migration.md` | Current support | Restructure migration plan and PR sequencing. |
+| `docs/migration.md` | Current support | Compact RitsuLib migration status index; route detailed goal and evidence work to `docs/goals/migration.md` and `docs/integrations/ritsulib.md`. |
 | `harness/` | Current support | Live task-scoped state files for Codex workflow (project root). |
 | `docs/architecture/` | Current support | Bounded context, patch boundary, and save-state contract maps. |
 | `docs/month-plan/` | Current support | 30-day plan outputs such as baseline freeze and commit boundaries. |
