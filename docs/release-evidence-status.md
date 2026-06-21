@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `A6203758F2F5B0267454CEB4463B842EE69DA800F4653282E55B4ECEE9DCC1BA` |
-| DLL | `A16EAA4E60006DCF6776A93B384C62183BFB6324FC1710A52E51E9AC0812BEFF` |
-| PCK | `626C1671247E4C6DCC6CD18355E4E3855690C8EF943366CBA89BC9ACD75B1E01` |
-| Manifest | `8D790970EDC5CAC738437641E1C73392274968B5499F33BEEC12B15EEB729067` |
-| README_INSTALL | `14A6FEDA48F2928C89014ED811BFA886B5EE572C78D2A1CEFAFA7A8FD58B52D1` |
+| ZIP | `F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A` |
+| DLL | `49A3CB201D52144E59A7275052EB30B53DE9AE0C4A8DC3F37BD39A91B2239450` |
+| PCK | `C86AC44992541C2E92EE3F064E786E98E50357E6CE3A80ABF2F39EDF42B5F705` |
+| Manifest | `E41ABEF8AC23CE61641C7BF94559F33101B76079FE5F94ED3ECFA5C7FF495D1E` |
+| README_INSTALL | `2FB017D12AB220D70C1C52434D80049BDF715D431303D6FA8CB6524744E544A0` |
 
 ## Automation Summary
 
@@ -22,16 +22,16 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.97 publish/package sync and installed package parity are refreshed; beta.98 Off loader and clicked settings UI proof remain pending. Previous beta.96 Off proof and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.97 publish/package sync and installed package parity are refreshed; beta.99 Off loader and clicked settings UI proof remain pending. Previous beta.96 Off proof and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.96 RitsuLib-only Off direct loader smoke and beta.96 Mod Settings page proof are previous-package context after beta.98. Gameplay, clicked Ancient UI, save-load, preview-tools live behavior, beta.98 loader/settings proof, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.96 RitsuLib-only Off direct loader smoke and beta.96 Mod Settings page proof are previous-package context after beta.99. Gameplay, clicked Ancient UI, save-load, preview-tools live behavior, beta.99 loader/settings proof, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Pending | Codex/User | Recapture beta.98 Off loader proof after the settings-page I18N resource migration. Previous beta.96 proof at `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and previous beta.93 AdditiveBatch1 proof at `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` are previous-package context only. |
-| mod-settings-current-display | clicked-ui | Pending | Codex/User | Recapture beta.98 normal Steam-client Settings -> `Mod Settings (RitsuLib)` proof after the RitsuLib I18N settings resource migration. Previous beta.96 proof under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701` proves earlier settings UI visibility only, not beta.98 gameplay or release readiness. |
+| fresh-current-package-loader-smoke | loader | Pending | Codex/User | Recapture beta.99 Off loader proof after the settings-page I18N resource migration. Previous beta.96 proof at `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and previous beta.93 AdditiveBatch1 proof at `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` are previous-package context only. |
+| mod-settings-current-display | clicked-ui | Pending | Codex/User | Recapture beta.99 normal Steam-client Settings -> `Mod Settings (RitsuLib)` proof after the RitsuLib I18N settings resource migration. Previous beta.96 proof under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701` proves earlier settings UI visibility only, not beta.99 gameplay or release readiness. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

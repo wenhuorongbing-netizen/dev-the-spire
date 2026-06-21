@@ -5,7 +5,7 @@
 Current compatibility work targets:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.98`
+- Spire Plus `v0.1.0-private-beta.99`
 - STS2-RitsuLib `v0.4.32` in direct NuGet runtime layout
 - Stable technical manifest id `EZMicroBalance`
 
@@ -15,9 +15,9 @@ only `STS2-RitsuLib >= 0.4.32` as the shared runtime dependency.
 
 Current evidence:
 
-- beta.98 build, publish, package refresh, and installed package parity are
+- beta.99 build, publish, package refresh, and installed package parity are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
-- beta.98 clicked settings UI and Off loader proof remain pending after the
+- beta.99 clicked settings UI and Off loader proof remain pending after the
   settings-page I18N resource migration.
 - Previous beta.96 clicked settings proof is retained at
   `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
@@ -27,7 +27,7 @@ Current evidence:
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 loader packets are retained only as older
-  package loader/registration context. They do not prove beta.98 enabled-mode
+  package loader/registration context. They do not prove beta.99 enabled-mode
   gameplay or tester readiness.
 
 Treat loader and settings evidence as scoped proof only: gameplay, save-load, replacement, multiplayer, independent QA, package handoff, and release-ready compatibility proof remain pending.

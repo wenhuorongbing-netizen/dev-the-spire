@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.98.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.99.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `A6203758F2F5B0267454CEB4463B842EE69DA800F4653282E55B4ECEE9DCC1BA` |
-| DLL | `A16EAA4E60006DCF6776A93B384C62183BFB6324FC1710A52E51E9AC0812BEFF` |
-| PCK | `626C1671247E4C6DCC6CD18355E4E3855690C8EF943366CBA89BC9ACD75B1E01` |
-| Manifest | `8D790970EDC5CAC738437641E1C73392274968B5499F33BEEC12B15EEB729067` |
-| README_INSTALL | `14A6FEDA48F2928C89014ED811BFA886B5EE572C78D2A1CEFAFA7A8FD58B52D1` |
+| ZIP | `F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A` |
+| DLL | `49A3CB201D52144E59A7275052EB30B53DE9AE0C4A8DC3F37BD39A91B2239450` |
+| PCK | `C86AC44992541C2E92EE3F064E786E98E50357E6CE3A80ABF2F39EDF42B5F705` |
+| Manifest | `E41ABEF8AC23CE61641C7BF94559F33101B76079FE5F94ED3ECFA5C7FF495D1E` |
+| README_INSTALL | `2FB017D12AB220D70C1C52434D80049BDF715D431303D6FA8CB6524744E544A0` |
 
-Latest validation snapshot: beta.98 build, publish/package refresh, installed-package parity, and source-workspace check are the current package target. Beta.98 Mod Settings UI proof and Off loader proof remain pending after the RitsuLib settings-page I18N resource migration.
+Latest validation snapshot: beta.99 build, publish/package refresh, installed-package parity, and source-workspace check are the current package target. Beta.99 Mod Settings UI proof and Off loader proof remain pending after the RitsuLib settings-page I18N resource migration.
 
 Previous beta.96 Off proof is `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` with clean audit, StS1Events disabled with 0 registration lines, and packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof remains previous-package loader/registration context only at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` with retained verifier proof for 10 event types / 14 registration calls, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, beta.88 previous package proof, beta.90 RitsuLib-only proof, and beta.19 startup proof remain previous-package or historical context. Closing only the direct Golden Idol localization key remains a localization unblocker; it does not prove gameplay or replace future gameplay verifier reports. Gameplay, clicked UI, save-load, preview-tools, Vakuu, current enabled-mode proof, and co-op proof remain pending.
 

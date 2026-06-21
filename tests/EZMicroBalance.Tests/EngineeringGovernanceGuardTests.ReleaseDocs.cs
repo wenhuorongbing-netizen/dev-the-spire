@@ -17,7 +17,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`.",
             "| Row ID | Kind | Status | Owner | Evidence Needed |",
             "The beta.19 loader smoke is historical startup evidence only",
-            "Gameplay, clicked Ancient UI, save-load, preview-tools live behavior, beta.98 loader/settings proof, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending",
+            "Gameplay, clicked Ancient UI, save-load, preview-tools live behavior, beta.99 loader/settings proof, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending",
             "| fresh-current-package-loader-smoke | loader | Pending |",
             "| ancient-ui-urda | clicked-ui | Pending |",
             "| ancient-ui-morvi | clicked-ui | Pending |",

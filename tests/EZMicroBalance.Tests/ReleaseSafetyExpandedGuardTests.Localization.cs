@@ -13,13 +13,14 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         var zhsRoot = RepoPath("EZMicroBalance", "localization", "zhs");
         var failures = new List<string>();
 
-        foreach (var file in Directory.GetFiles(zhsRoot, "*.json", SearchOption.AllDirectories))
+        foreach (var file in ActiveSimplifiedChineseLocalizationFiles(zhsRoot))
         {
             var relativePath = ToRepoRelativePath(file);
             using var document = JsonDocument.Parse(File.ReadAllText(file, Encoding.UTF8));
             foreach (var (key, value) in JsonStringValues(document.RootElement))
             {
-                if (relativePath.EndsWith("EZMicroBalance/localization/zhs/settings_ui.json", StringComparison.Ordinal) &&
+                if ((relativePath.EndsWith("EZMicroBalance/localization/zhs/settings_ui.json", StringComparison.Ordinal) ||
+                     relativePath.EndsWith("EZMicroBalance/localization/settings_ui/zhs.json", StringComparison.Ordinal)) &&
                     (key == "EZMICROBALANCE.mod_title" || key == "SPIREPLUS.mod_title"))
                 {
                     continue;
@@ -63,7 +64,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         var zhsRoot = RepoPath("EZMicroBalance", "localization", "zhs");
         var allText = string.Join(
             Environment.NewLine,
-            Directory.GetFiles(zhsRoot, "*.json", SearchOption.AllDirectories)
+            ActiveSimplifiedChineseLocalizationFiles(zhsRoot)
                 .OrderBy(path => path, StringComparer.Ordinal)
                 .Select(path => File.ReadAllText(path, Encoding.UTF8)));
 
@@ -101,5 +102,13 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             .ToArray();
 
         Assert.True(matches.Length == 0, "Found mojibake fragments in active zhs localization: " + string.Join(", ", matches));
+    }
+
+    private static IEnumerable<string> ActiveSimplifiedChineseLocalizationFiles(string zhsRoot)
+    {
+        var localizationRoot = RepoPath("EZMicroBalance", "localization");
+        return Directory.GetFiles(zhsRoot, "*.json", SearchOption.AllDirectories)
+            .Concat(Directory.GetFiles(localizationRoot, "zhs.json", SearchOption.AllDirectories))
+            .Distinct(StringComparer.Ordinal);
     }
 }

@@ -15,17 +15,17 @@ start from:
 
 ## Current Boundary
 
-Spire Plus is on the beta.98 RitsuLib-only target:
+Spire Plus is on the beta.99 RitsuLib-only target:
 
 - `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.32`.
 - `EZMicroBalance.json` declares `STS2-RitsuLib >= 0.4.32` as the shared runtime
   framework dependency.
-- Current package parity exists for beta.98 after the RitsuLib settings-page
+- Current package parity exists for beta.99 after the RitsuLib settings-page
   I18N resource migration.
-- Beta.98 clicked RitsuLib Mod Settings UI and Off loader proof remain pending.
+- Beta.99 clicked RitsuLib Mod Settings UI and Off loader proof remain pending.
 - Previous beta.96 RitsuLib-only Off proof is startup/loading evidence only.
   Prior beta.93 RitsuLib-only AdditiveBatch1 proof is previous-package
-  registration evidence only. Recapture beta.98 loader proof before making a
+  registration evidence only. Recapture beta.99 loader proof before making a
   current runtime claim.
 
 Gameplay, event screenshots, save-load, image/render, replacement functional

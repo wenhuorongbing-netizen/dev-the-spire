@@ -20,7 +20,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.98 loader proof and clicked settings UI proof still need recapture", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.99 loader proof and clicked settings UI proof still need recapture", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta.19 packages have historical loader/startup evidence", projectState, StringComparison.Ordinal);
@@ -90,7 +90,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-06-21 beta.98:",
+            "Current package hashes, 2026-06-21 beta.99:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -127,7 +127,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
             "Active M5 Revision S truth",
-            "Latest package target is beta.98 RitsuLib-only",
+            "Latest package target is beta.99 RitsuLib-only",
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],

@@ -3,7 +3,7 @@
 Prepared: 2026-05-07
 Updated: 2026-06-21
 
-Status: automated gates passed for the current RitsuLib-only beta.98 package shape. Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration. Previous beta.96 Off proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is previous-package startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.98.
+Status: automated gates passed for the current RitsuLib-only beta.99 package shape. Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration. Previous beta.96 Off proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is previous-package startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.99.
 
 Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.98.zip`, SHA256 `A6203758F2F5B0267454CEB4463B842EE69DA800F4653282E55B4ECEE9DCC1BA`; beta.98 Off loader proof is pending |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.99.zip`, SHA256 `F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A`; beta.99 Off loader proof is pending |
 
 ## Runtime Load Checklist
 

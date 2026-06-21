@@ -157,6 +157,8 @@ public sealed partial class PreviewToolsGuardTests
     {
         var english = TestRepo.JsonStringMap("EZMicroBalance", "localization", "eng", "settings_ui.json");
         var simplifiedChinese = TestRepo.JsonStringMap("EZMicroBalance", "localization", "zhs", "settings_ui.json");
+        var englishRitsu = TestRepo.JsonStringMap("EZMicroBalance", "localization", "settings_ui", "eng.json");
+        var simplifiedChineseRitsu = TestRepo.JsonStringMap("EZMicroBalance", "localization", "settings_ui", "zhs.json");
         var requiredKeys = new[]
         {
             "SPIREPLUS.mod_title",
@@ -179,10 +181,16 @@ public sealed partial class PreviewToolsGuardTests
         {
             Assert.True(english.TryGetValue(key, out var englishValue), $"Missing English key: {key}");
             Assert.True(simplifiedChinese.TryGetValue(key, out var zhsValue), $"Missing zhs key: {key}");
+            Assert.True(englishRitsu.TryGetValue(key, out var englishRitsuValue), $"Missing Ritsu English key: {key}");
+            Assert.True(simplifiedChineseRitsu.TryGetValue(key, out var zhsRitsuValue), $"Missing Ritsu zhs key: {key}");
             Assert.False(string.IsNullOrWhiteSpace(englishValue), $"Empty English key: {key}");
             Assert.False(string.IsNullOrWhiteSpace(zhsValue), $"Empty zhs key: {key}");
+            Assert.False(string.IsNullOrWhiteSpace(englishRitsuValue), $"Empty Ritsu English key: {key}");
+            Assert.False(string.IsNullOrWhiteSpace(zhsRitsuValue), $"Empty Ritsu zhs key: {key}");
         }
 
+        Assert.Equal(english, englishRitsu);
+        Assert.Equal(simplifiedChinese, simplifiedChineseRitsu);
         Assert.Equal("Spire Plus", simplifiedChinese["EZMICROBALANCE.mod_title"]);
         Assert.Equal("Spire Plus", simplifiedChinese["SPIREPLUS.mod_title"]);
         Assert.Equal("预知", simplifiedChinese["SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title"]);

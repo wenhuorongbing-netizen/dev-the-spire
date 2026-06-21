@@ -1,22 +1,22 @@
 # Spire Plus Private Beta Verification Handoff
 
-Date: 2026-06-21 beta.98 handoff summary; older May notes below are retained only as historical context.
+Date: 2026-06-21 beta.99 handoff summary; older May notes below are retained only as historical context.
 
 **Environment warning (2026-05-08):** The earlier `godot2026-05-08T05.06.30.log` came from v0.105.0 with 17 mods loaded and previous package `v3.1.0`, so it is not the required STS2-RitsuLib + Spire Plus-only setup.
 
-Current docs keep current beta.98 RitsuLib-only source/package evidence separated from older previous-package runtime evidence: beta.96 RitsuLib Mod Settings page proof, beta.96 Off loader proof, historical installed-PCK resource smoke, historical current-display Mod Settings list evidence, normal-Steam A0/A10/A20 combat smoke, A11 map/save-load spot checks, Act 2/3 A11 map-surface observations, and targeted A14 Rootblight hover/starter-notice evidence.
+Current docs keep current beta.99 RitsuLib-only source/package evidence separated from older previous-package runtime evidence: beta.96 RitsuLib Mod Settings page proof, beta.96 Off loader proof, historical installed-PCK resource smoke, historical current-display Mod Settings list evidence, normal-Steam A0/A10/A20 combat smoke, A11 map/save-load spot checks, Act 2/3 A11 map-surface observations, and targeted A14 Rootblight hover/starter-notice evidence.
 Previous beta.96 RitsuLib-only Off loader proof is clean under `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056`, and previous beta.93 RitsuLib-only AdditiveBatch1 registration proof is clean previous-package context under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`.
-Beta.96 RitsuLib Mod Settings page-level proof is captured under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`; it is previous-package settings-page visibility only after the beta.98 RitsuLib I18N settings resource refresh. Full Ancient reward gameplay, clicked Ancient UI, natural A11 traversal, full Rootblight combat behavior, and co-op verification are pending.
+Beta.96 RitsuLib Mod Settings page-level proof is captured under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`; it is previous-package settings-page visibility only after the beta.99 RitsuLib I18N settings resource refresh. Full Ancient reward gameplay, clicked Ancient UI, natural A11 traversal, full Rootblight combat behavior, and co-op verification are pending.
 
 Current naming note: testers should see `Spire Plus`. The technical manifest id and package folder remain `EZMicroBalance` for compatibility.
 Historical normal Steam-client startup/log evidence confirms the display name and config registration for an earlier package.
 Previous beta.96 Mod Settings evidence at `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701` shows the RitsuLib Mods list with `RitsuLib` and `Spire Plus` only.
 It also shows the Spire Plus config page with Migration Status, `STS2-RitsuLib >= 0.4.31`, evidence-boundary, technical-id, and Preview Tools controls.
-The beta.98 package moves the settings page strings onto RitsuLib `ModSettingsText.I18N(...)` resources under `EZMicroBalance/localization/settings_ui/`; recapture the page before claiming beta.98 clicked settings UI proof.
+The beta.99 package moves the settings page strings onto RitsuLib `ModSettingsText.I18N(...)` resources under `EZMicroBalance/localization/settings_ui/`; recapture the page before claiming beta.99 clicked settings UI proof.
 
 This handoff is for manual verification that cannot be completed by the local automated build/test loop.
 
-Latest package note, 2026-06-21: the package hashes below identify the current beta.98 RitsuLib-only manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
+Latest package note, 2026-06-21: the package hashes below identify the current beta.99 RitsuLib-only manual-test package copied to the local game root for testing. Detailed historical pass logs live in `docs/archive/**` and feature work logs; `docs/review.md` keeps only compact current source-review context. This handoff keeps only current tester-facing facts.
 
 Current source/package highlights:
 
@@ -24,21 +24,21 @@ Current source/package highlights:
 - Morvi, Lotha, Vakuu, RootBud, Banner, RootDeck, Ascension map helpers, and combat-only Ancient hook ownership have been split into focused service files without intended player-visible behavior changes.
 - Latest source/package validation on 2026-06-21: `dotnet build`, `dotnet publish`,
   package refresh, installed package parity, runtime preflight, and source-workspace
-  validation passed for beta.98 after the RitsuLib `0.4.32` dependency refresh and
+  validation passed for beta.99 after the RitsuLib `0.4.32` dependency refresh and
   settings page I18N resource migration. Previous beta.96 RitsuLib-only Off loader
   proof passed under `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056`.
   Previous beta.93 AdditiveBatch1 loader/registration proof remains previous-package
   context under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`;
   `.tools\publish-game-root` is isolated tooling context only and is not the current
   package-parity source.
-- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. The retained beta.87 AdditiveBatch1 loader smoke is clean previous-game evidence, beta.88 has previous package current-game loader proof, beta.90 has previous RitsuLib-only loader proof, beta.93 has previous-package AdditiveBatch1 loader/registration proof, and beta.96 has previous-package RitsuLib Mod Settings clicked UI proof plus previous-package RitsuLib-only Off loader proof. Feature screenshots, gameplay logs, save-load, route traversal, preview-tools live behavior, beta.98 settings-page recapture, current enabled-mode event gameplay, and co-op evidence are still required before the release-evidence verifier can pass.
+- `TESTER_START_HERE.md` in the current handoff starts with the installed-package checker command. The retained beta.87 AdditiveBatch1 loader smoke is clean previous-game evidence, beta.88 has previous package current-game loader proof, beta.90 has previous RitsuLib-only loader proof, beta.93 has previous-package AdditiveBatch1 loader/registration proof, and beta.96 has previous-package RitsuLib Mod Settings clicked UI proof plus previous-package RitsuLib-only Off loader proof. Feature screenshots, gameplay logs, save-load, route traversal, preview-tools live behavior, beta.99 settings-page recapture, current enabled-mode event gameplay, and co-op evidence are still required before the release-evidence verifier can pass.
 - The previous direct enabled-mode smoke under `.tools\runtime-evidence\v01071-beta88-previous-package330-additive-batch1-direct-cleanlog-20260619-103937` covered the beta.88 package on Slay the Spire 2 `v0.107.1`: previous package `v3.3.0`, RitsuLib `0.4.24`, and Spire Plus loaded, RitsuLib selected compat branch `0.107.0`, `v0.1.0-private-beta.88` was logged, Spire Plus applied 25/25 ModPatcher patches, startup reached main menu, the log audit was clean, enabled-mode verifier passed 31 / 0, and packet verification had 0 mismatches. It is previous-package loader context only. Feature gameplay rows remain pending.
 - StS1 event prototype note: beta.93 AdditiveBatch1 loader/registration proof is current for registration only and is not event gameplay proof.
   Use `docs/features/sts1-events/v19-gate-evidence-map.md` and `docs/features/sts1-events/v19-gate-ledger.csv` for the current O0-O76 gate split, plus `docs/features/sts1-events/v20-final-gate-overlay.csv` for the O76-O84 final documentation/handoff overlay and `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md` for the current v20 hard-stop/next-run start point; the ledgers are guarded by `scripts/check-sts1-v19-gate-ledger.ps1` and `scripts/check-sts1-v20-final-gate-overlay.ps1`.
 Static source/doc checks passed for the beta.96 migration pass after latest RitsuLib-only source alignment.
-The beta.98 pass adds RitsuLib I18N setting-page resources and must use the validation section below as the current package truth.
+The beta.99 pass adds RitsuLib I18N setting-page resources and must use the validation section below as the current package truth.
 Build, focused guards, publish/package refresh, installed package parity, hash-doc updates, runtime preflight, and source-workspace checks passed for the current package.
-Previous beta.96 RitsuLib-only Off loader proof is startup/loading context only after the beta.98 package refresh; previous beta.93 AdditiveBatch1 registration proof remains previous-package loader/registration context only.
+Previous beta.96 RitsuLib-only Off loader proof is startup/loading context only after the beta.99 package refresh; previous beta.93 AdditiveBatch1 registration proof remains previous-package loader/registration context only.
 Beta.85 default-Off/CanaryOnly, beta.86 AdditiveBatch1, beta.87 AdditiveBatch1, beta.88 AdditiveBatch1, and beta.90 RitsuLib-only loader proof remain previous-package/game-version or previous-package contexts.
 Gameplay, save-load, replacement, multiplayer, image/render, and QA gates remain pending or blocked.
 Current AdditiveBatch1 enabled-mode proof remains loader/registration evidence only and does not prove gameplay.
@@ -67,21 +67,21 @@ Clicked Ancient UI handoff, 2026-05-15:
 
 ## Package Under Test
 
-- Package: `publish\SpirePlus-v0.1.0-private-beta.98.zip`
+- Package: `publish\SpirePlus-v0.1.0-private-beta.99.zip`
 - Player-facing name: `Spire Plus`
-- Zip SHA256: `A6203758F2F5B0267454CEB4463B842EE69DA800F4653282E55B4ECEE9DCC1BA`
+- Zip SHA256: `F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A`
 - Manifest id: `EZMicroBalance`
-- DLL SHA256: `A16EAA4E60006DCF6776A93B384C62183BFB6324FC1710A52E51E9AC0812BEFF`
-- Manifest SHA256: `8D790970EDC5CAC738437641E1C73392274968B5499F33BEEC12B15EEB729067`
-- PCK SHA256: `626C1671247E4C6DCC6CD18355E4E3855690C8EF943366CBA89BC9ACD75B1E01`
-- README_INSTALL SHA256: `14A6FEDA48F2928C89014ED811BFA886B5EE572C78D2A1CEFAFA7A8FD58B52D1`
+- DLL SHA256: `49A3CB201D52144E59A7275052EB30B53DE9AE0C4A8DC3F37BD39A91B2239450`
+- Manifest SHA256: `E41ABEF8AC23CE61641C7BF94559F33101B76079FE5F94ED3ECFA5C7FF495D1E`
+- PCK SHA256: `C86AC44992541C2E92EE3F064E786E98E50357E6CE3A80ABF2F39EDF42B5F705`
+- README_INSTALL SHA256: `2FB017D12AB220D70C1C52434D80049BDF715D431303D6FA8CB6524744E544A0`
 
 ## Known Automated Evidence
 
-- Current automated snapshot: beta.98 passed `dotnet build`, `dotnet publish`, package refresh, hash refresh, installed-package parity, runtime preflight, and source-workspace validation after the STS2-RitsuLib `0.4.32` update and settings-page I18N resource migration. Installed-package parity is checked against the hashes in **Package Under Test**.
-- Previous beta.96 RitsuLib Mod Settings page proof is `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`; recapture is required before claiming beta.98 clicked settings UI proof.
+- Current automated snapshot: beta.99 passed `dotnet build`, `dotnet publish`, package refresh, hash refresh, installed-package parity, runtime preflight, and source-workspace validation after the STS2-RitsuLib `0.4.32` update and settings-page I18N resource migration. Installed-package parity is checked against the hashes in **Package Under Test**.
+- Previous beta.96 RitsuLib Mod Settings page proof is `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`; recapture is required before claiming beta.99 clicked settings UI proof.
 - Previous beta.96 Off evidence reached main menu with exactly `RitsuLib [STS2-RitsuLib] (0.4.31)` and `Spire Plus [EZMicroBalance] (v0.1.0-private-beta.96)` loaded, audited clean, logged StS1Events disabled with 0 registration lines, and passed packet verification with 43 / 0 checks.
-- Previous beta.93 AdditiveBatch1 evidence registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verification with 61 / 0 checks for the previous package only. Current beta.98 loader proof, enabled-mode proof, and gameplay proof are still pending.
+- Previous beta.93 AdditiveBatch1 evidence registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verification with 61 / 0 checks for the previous package only. Current beta.99 loader proof, enabled-mode proof, and gameplay proof are still pending.
 - Previous split no-build test coverage after beta.85 packaging: the isolated `ReleaseEvidenceGateTests` class passed 9 passed / 0 skipped / 0 failed / 9 total, and the complementary test-project lane excluding `ReleaseEvidenceGateTests` passed 466 passed / 21 skipped / 0 failed / 487 total, for combined coverage of 475 passed / 21 skipped / 0 failed / 496 total. Fresh beta.86 AdditiveBatch1 loader smoke is previous-package context; the stale local `godot.log` from beta.0 was archived so it is not treated as current evidence.
 - Current package parity is represented by the hashes in **Package Under Test** and by `scripts/check-installed-spire-plus-package.ps1 -ModDirectory "E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance"`, which also checks the packaged PCK's Sere Talon imported textures and Sere Talon / Tanx Claws content split.
 - Historical loader/resource evidence remains useful context only.
@@ -89,7 +89,7 @@ Clicked Ancient UI handoff, 2026-05-15:
 - Beta.87 has previous-game AdditiveBatch1 loader proof at `.tools\runtime-evidence\v01070-beta87-additive-batch1-direct-20260618-152531`.
 - Beta.88 current-game loader proof is `.tools\runtime-evidence\v01071-beta88-previous-package330-additive-batch1-direct-cleanlog-20260619-103937` and is previous-package context only.
 - Beta.93 is previous-package RitsuLib-only enabled-mode loader/registration context after the beta.96 package bump.
-- Beta.96 Mod Settings clicked UI proof is previous-package settings-page visibility context, and beta.96 Off loader proof is previous-package startup/loading context after the beta.98 package bump.
+- Beta.96 Mod Settings clicked UI proof is previous-package settings-page visibility context, and beta.96 Off loader proof is previous-package startup/loading context after the beta.99 package bump.
 - Gameplay, clicked Ancient UI, save-load, death/failure, route traversal, preview-tools live behavior, event gameplay, and co-op rows remain open.
 - Historical detailed command logs are preserved in `docs/archive/project-state-history-20260516.md`, `docs/archive/implementation-records/rc1-live-validation-log-20260508-20260513.md`, and feature work logs; `docs/review.md` keeps compact current source-review context. This handoff intentionally keeps only the current tester-facing summary.
 - Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.
@@ -102,7 +102,7 @@ Historical RC1 notes now live at `docs/archive/implementation-records/rc1-live-v
 Current manual-proof summary:
 
 - Historical normal Steam-client startup/log verification passed for the beta.17 package hash and remains historical startup context only.
-- Direct Off startup/log verification passed for the beta.96 package hash under `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and remains previous-package context only for beta.98; direct AdditiveBatch1 startup/log verification passed for the beta.93 package hash under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` and remains previous-package context only for beta.98.
+- Direct Off startup/log verification passed for the beta.96 package hash under `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and remains previous-package context only for beta.99; direct AdditiveBatch1 startup/log verification passed for the beta.93 package hash under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` and remains previous-package context only for beta.99.
 - Historical helper-driven startup/log verification confirms loader health only. This is loader/helper evidence, not live gameplay evidence.
 - Previous beta.96 Mod Settings proof is captured under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`; the older current-display screenshot remains historical list context only.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.
@@ -111,7 +111,7 @@ Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplay
 
 1. Launch through the normal Steam client.
 2. Open Settings -> Mod Settings.
-3. Mod Settings row must be recaptured for beta.98 because settings UI code/resources changed. The previous beta.96 row is retained at `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701` as previous-package context only.
+3. Mod Settings row must be recaptured for beta.99 because settings UI code/resources changed. The previous beta.96 row is retained at `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701` as previous-package context only.
 4. Confirm legacy `EzDailyContent` is disabled or absent if you recapture the Mod Settings row.
 5. Start a run with STS2-RitsuLib and Spire Plus enabled.
 6. Execute the Ancient reward matrix, including Velvet Choker soft-limit counting, Distinguished Cape v4.3 max-HP math/pay gate with same-pool replacement and locked fallback for unaffordable Vakuu Cape rolls, Prismatic Gem all-off-color reroll/exclusion checks plus reward-screen hint fallback log checks, zhs numeric formatting, and the save/load rows.

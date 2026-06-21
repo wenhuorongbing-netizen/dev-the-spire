@@ -7,7 +7,8 @@ Preview tools are part of the single `Spire Plus` mod.
 - Manifest id: `EZMicroBalance`
 - Display name: `Spire Plus`
 - Source path: `EZMicroBalanceCode/Preview/`
-- Settings path: `EZMicroBalance/localization/*/settings_ui.json`
+- Settings paths: game-native `EZMicroBalance/localization/*/settings_ui.json`
+  and RitsuLib I18N `EZMicroBalance/localization/settings_ui/{eng,zhs}.json`
 - First test scope: Crystal Sphere peek and deterministic transform preview
 - Product decision: these tools create an information advantage, so they ship inside the gameplay-affecting `Spire Plus` manifest instead of a separate non-gameplay helper mod.
 - Multiplayer stance: Crystal Sphere peek and transform preview now run in co-op as local UI-only previews. They still are not release-certified for multiplayer until two-client evidence proves reconnect, save-load, and host/client display agreement.
@@ -21,6 +22,11 @@ Preview tools are part of the single `Spire Plus` mod.
 - Co-op preview patches may log evidence, but they must not add `PlayerChoice`, `CardRewardAlternative`, rewards, or any real RNG advancement.
 - Transform preview display must fail open to the vanilla cycling preview if any UI lifecycle error occurs.
 - Preview code stays in `EZMicroBalanceCode/Preview/` so the player sees one mod while source ownership remains clear. `TransformPreviewPatch.cs` owns initialization and prediction preparation, `TransformPreviewCyclePatch.Display.cs` owns card-display and fail-open fallback behavior, and `TransformPreviewPredictionQueue.cs` owns per-preview prediction queue state.
+- The native and RitsuLib settings localization files must stay key/value identical.
+  `PreviewToolsGuardTests.ConfigLocalizationContainsReadablePreviewRows` guards
+  this because Crystal Sphere's runtime button still reads the native
+  `LocString("settings_ui", ...)` table while the RitsuLib settings page reads
+  `ModSettingsText.I18N(...)` from the RitsuLib folder.
 
 ## Future Peek Intake
 
@@ -52,4 +58,3 @@ The following phrases must remain present in this documentation to maintain test
 - 无需再靠存档读档来猜测
 - 右侧预览区域会直接显示你点击确认后将百分之百获得的卡牌
 - 彻底消除随机盲盒的赌博风险
-

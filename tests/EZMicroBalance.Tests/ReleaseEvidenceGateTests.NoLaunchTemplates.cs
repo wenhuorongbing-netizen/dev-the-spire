@@ -81,7 +81,7 @@ public sealed partial class ReleaseEvidenceGateTests
                     var checklist = File.ReadAllText(Path.Combine(evidenceDir, "mod-settings-checklist.md"));
                     Assert.Contains("collect-mod-settings-evidence.ps1 -NoLaunch", readme, StringComparison.Ordinal);
                     Assert.Contains("Current package version:", readme, StringComparison.Ordinal);
-                    Assert.Contains("beta.98 pass", readme, StringComparison.Ordinal);
+                    Assert.Contains("beta.99 pass", readme, StringComparison.Ordinal);
                     Assert.Contains("-Capture List -RequireSpireForeground", readme, StringComparison.Ordinal);
                     Assert.Contains("-Capture Page -RequireSpireForeground", readme, StringComparison.Ordinal);
                     Assert.Contains("Pending scaffold only", result.Output, StringComparison.Ordinal);
