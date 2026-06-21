@@ -72,7 +72,7 @@ public sealed partial class AncientBehaviorGuardTests
             "Previous beta.93 AdditiveBatch1 registration proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`",
             "loader/registration evidence, not gameplay proof.",
             "Current beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\mod-settings-beta99-ritsulib-click-20260621-223210`",
-            "The beta.96 UI proof and older `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` screenshot are historical list/page context only.",
+            "The older `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` screenshot is historical list context only.",
             "Manual feature results are pending",
             "Unsupported Cases",
             "A11-A20 selection is default-on only for single-player standard lobbies",

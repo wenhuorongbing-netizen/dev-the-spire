@@ -103,7 +103,7 @@ Current manual-proof summary:
 - Historical normal Steam-client startup/log verification passed for the beta.17 package hash and remains historical startup context only.
 - Direct Off startup/log verification passed for the beta.96 package hash under `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and remains previous-package context only for beta.99; direct AdditiveBatch1 startup/log verification passed for the beta.93 package hash under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` and remains previous-package context only for beta.99.
 - Historical helper-driven startup/log verification confirms loader health only. This is loader/helper evidence, not live gameplay evidence.
-- Current beta.99 Mod Settings proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`; the previous beta.96 proof and older current-display screenshot remain historical context only.
+- Current beta.99 Mod Settings proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`; older current-display screenshots remain historical context only.
 - Normal Steam-client A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, saved-map boss-reachability graph proof, Act 2/3 A11 map-surface checks, and targeted A14 Rootblight hover/starter-notice spot checks passed.
 - Live Ancient reward gameplay, Urda gameplay, Rootblight combat-end behavior/notices, natural A11 click-by-click traversal, disable-gameplay, broader save/load, and multiplayer checks remain pending.
 Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending.
