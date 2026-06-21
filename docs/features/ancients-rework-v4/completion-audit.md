@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-21
 
-Latest update: the beta.99 RitsuLib settings page I18N resource pass rebuilt `SpirePlus-v0.1.0-private-beta.99.zip` from installed artifacts after automated source validation and updated the runtime target to STS2-RitsuLib `0.4.32` in direct NuGet runtime layout. Earlier green runtime evidence remains useful history but is not beta.99 loader or live gameplay proof. Beta.38 loader startup and gameplay/manual rows pending remains true as historical release-governance context.
+Latest update: the beta.99 RitsuLib settings page I18N resource pass rebuilt `SpirePlus-v0.1.0-private-beta.99.zip` from installed artifacts after automated source validation and updated the runtime target to STS2-RitsuLib `0.4.32` in direct NuGet runtime layout. Beta.99 clicked settings UI proof is current at `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210`, but earlier green runtime evidence remains useful history and is not beta.99 direct Off loader or live gameplay proof. Beta.38 loader startup and gameplay/manual rows pending remains true as historical release-governance context.
 
 ## Objective
 

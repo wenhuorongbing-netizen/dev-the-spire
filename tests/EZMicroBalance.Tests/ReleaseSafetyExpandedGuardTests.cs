@@ -426,10 +426,10 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
-        Assert.Contains("- [ ] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Current beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] Current beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
@@ -437,8 +437,8 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Previous beta.96 RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Previous beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("mod-settings-beta99-ritsulib-click-20260621-223210", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\mod-settings-beta99-ritsulib-click-20260621-223210`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
@@ -448,7 +448,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed migration baseline must be read directly from `git log -1 --oneline --decorate`", projectState, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.99 loader proof and clicked settings UI proof still need recapture", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.99 clicked RitsuLib settings UI proof are current, while direct beta.99 Off loader proof still needs recapture", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

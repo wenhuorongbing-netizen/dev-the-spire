@@ -11,7 +11,7 @@ Current package hashes:
 | Manifest | `E41ABEF8AC23CE61641C7BF94559F33101B76079FE5F94ED3ECFA5C7FF495D1E` |
 | README_INSTALL | `2FB017D12AB220D70C1C52434D80049BDF715D431303D6FA8CB6524744E544A0` |
 
-Latest validation snapshot: beta.99 build, publish/package refresh, installed-package parity, and source-workspace check are the current package target. Beta.99 Mod Settings UI proof and Off loader proof remain pending after the RitsuLib settings-page I18N resource migration.
+Latest validation snapshot: beta.99 build, publish/package refresh, installed-package parity, source-workspace check, and Mod Settings UI proof are the current package target. Beta.99 direct Off loader proof remains pending after the RitsuLib settings-page I18N resource migration.
 
 Previous beta.96 Off proof is `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` with clean audit, StS1Events disabled with 0 registration lines, and packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof remains previous-package loader/registration context only at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` with retained verifier proof for 10 event types / 14 registration calls, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, beta.88 previous package proof, beta.90 RitsuLib-only proof, and beta.19 startup proof remain previous-package or historical context. Closing only the direct Golden Idol localization key remains a localization unblocker; it does not prove gameplay or replace future gameplay verifier reports. Gameplay, clicked UI, save-load, preview-tools, Vakuu, current enabled-mode proof, and co-op proof remain pending.
 

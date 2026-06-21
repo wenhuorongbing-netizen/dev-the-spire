@@ -22,7 +22,9 @@ Spire Plus is on the beta.99 RitsuLib-only target:
   framework dependency.
 - Current package parity exists for beta.99 after the RitsuLib settings-page
   I18N resource migration.
-- Beta.99 clicked RitsuLib Mod Settings UI and Off loader proof remain pending.
+- Beta.99 clicked RitsuLib Mod Settings UI proof is captured at
+  `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
+- Beta.99 direct Off loader proof remains pending.
 - Previous beta.96 RitsuLib-only Off proof is startup/loading evidence only.
   Prior beta.93 RitsuLib-only AdditiveBatch1 proof is previous-package
   registration evidence only. Recapture beta.99 loader proof before making a

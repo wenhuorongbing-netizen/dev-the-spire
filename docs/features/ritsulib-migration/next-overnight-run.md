@@ -11,7 +11,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus Batch 4c owner review
 
 - Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.99 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target; beta.99 loader/settings proof remains pending after the RitsuLib I18N settings resource migration. Previous beta.96 Off and beta.93 AdditiveBatch1 packet verification remains historical loader/registration evidence only.
+- Latest beta.99 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, source-workspace checks, and RitsuLib settings UI proof passed for the current dependency target; beta.99 direct Off loader proof remains pending after the RitsuLib I18N settings resource migration. Previous beta.96 Off and beta.93 AdditiveBatch1 packet verification remains historical loader/registration evidence only.
 - Current HEAD validation refreshed after the beta.99 RitsuLib-only settings page I18N pass; recheck again before handoff if any later edits appear.
 - Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 

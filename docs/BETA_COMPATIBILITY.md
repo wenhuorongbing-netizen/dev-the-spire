@@ -17,12 +17,13 @@ Current evidence:
 
 - beta.99 build, publish, package refresh, and installed package parity are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
-- beta.99 clicked settings UI and Off loader proof remain pending after the
-  settings-page I18N resource migration.
-- Previous beta.96 clicked settings proof is retained at
-  `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
+- beta.99 clicked settings UI proof is retained at
+  `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
   It shows Settings -> `Mod Settings (RitsuLib)`, the RitsuLib Mods tree with
-  only `RitsuLib` and `Spire Plus`, and the Spire Plus settings page.
+  only `RitsuLib` and `Spire Plus`, the Spire Plus settings page, a clean
+  same-session log audit, and StS1 Off runtime shape verification 21 / 0.
+- beta.99 direct Off loader proof remains pending after the settings-page I18N
+  resource migration.
 - Previous beta.96 Off loader proof is retained at
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
