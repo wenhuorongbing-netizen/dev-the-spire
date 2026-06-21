@@ -26,7 +26,7 @@ The project has 4 active work streams. All docs should route through these:
 | --- | --- | --- | --- |
 | 1 | **Ancient expansion** (Urda/Morvi/Lotha/Vakuu) | `features/ancient-expansion-v2.2/`, `features/ancient-expansion-urda/`, `features/ancients-rework-v4/` | Active |
 | 2 | **Ascension 11-20** | `features/ascension-11-20/` | Active |
-| 3 | **RitsuLib integration** (PR5/PR6+) | `integrations/ritsulib.md`, `migration.md` | Previous beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated |
+| 3 | **RitsuLib integration** (PR5/PR6+) | `integrations/ritsulib.md`, `migration.md` | Current beta.96 RitsuLib-only compile/manifest/package/settings target active; beta.93 loader proof retained only as previous-package evidence; later patch migrations gated |
 | 4 | **Release readiness** | `release-*.md`, `test-*.md`, `private-beta-*.md` | Validation pending |
 
 ## Target Structure

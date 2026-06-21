@@ -26,6 +26,9 @@ References:
 - RitsuLib Getting Started: `https://sts2-ritsulib.ritsukage.com/guide/getting-started`
 - RitsuLib GitHub: `https://github.com/BAKAOLC/STS2-RitsuLib`
 - RitsuLib Framework Design: `https://sts2-ritsulib.ritsukage.com/guide/framework-design`
+- RitsuLib Mod Settings: `https://sts2-ritsulib.ritsukage.com/guide/mod-settings`
+- RitsuLib Patching Guide: `https://sts2-ritsulib.ritsukage.com/guide/patching-guide`
+- RitsuLib Persistence Guide: `https://sts2-ritsulib.ritsukage.com/guide/persistence-guide`
 
 ## External Version Recheck
 
@@ -34,6 +37,13 @@ References:
 - RitsuLib GitHub release `v0.4.31` is marked Latest, the NuGet package index
   includes `0.4.31`, and the Nexus files page now lists the variant-pack main
   file as `0.4.31`; the earlier Nexus `0.4.28` lag is historical only.
+- GitHub latest-release API returned `v0.4.31`, and the main branch
+  `mod_manifest.json` reports `version: 0.4.31` with id `STS2-RitsuLib`.
+- Official docs recheck found the current settings-page API names used by this
+  repo: `RegisterModSettings`, `AddSection`, and `AddToggle`; the patching
+  guide exposes `ApplyRequiredPatcher`, `CreatePatcher`, `RegisterPatch`, and
+  `PatchAll`. Keep future settings and patch work aligned with those names
+  before adding local wrappers.
 - Do not use a dev build for a tester package unless the owner explicitly
   approves a dev-runtime validation lane.
 - GitHub release: `https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.4.31`.
@@ -59,6 +69,10 @@ The variant pack should be extracted to the game mods directory, not the repo:
 ```
 
 Do not commit `STS2-RitsuLib.dll`, `.pck`, `.zip`, or other downloaded runtime binaries into this repository.
+
+Ignored local leftovers `docs/STS2-RitsuLib.0.3.3.variant-pack.zip` and
+`docs/codex-app-better-token-main.zip` were removed on 2026-06-21 after a
+tracked-reference scan showed no current docs or code depend on them.
 
 ## Variant Pack Contents
 

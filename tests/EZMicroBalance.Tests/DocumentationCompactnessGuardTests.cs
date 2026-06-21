@@ -448,7 +448,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docRestructureSpec,
             "**RitsuLib integration** (PR5/PR6+)",
-            "Previous beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated");
+            "Current beta.96 RitsuLib-only compile/manifest/package/settings target active",
+            "beta.93 loader proof retained only as previous-package evidence");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",
@@ -457,6 +458,9 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
             "Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.",
             "2026-06-21 web recheck",
+            "GitHub latest-release API returned `v0.4.31`",
+            "RegisterModSettings",
+            "ApplyRequiredPatcher",
             "The current public Slay the Spire 2 update target remains Major Update #2",
             "Current compile dependency:",
             "Current manifest dependency:");
