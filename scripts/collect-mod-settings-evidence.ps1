@@ -340,7 +340,7 @@ $readme = @"
 This folder is a pending evidence scaffold for the RitsuLib migration Mod Settings UI gate. It does not prove gameplay, save-load, co-op, release readiness, or private beta readiness.
 
 Current package version: `$($environment.PackageVersion)`.
-For the beta.96 pass, capture both the Mods list and the Spire Plus page after navigating through RitsuLib's Mod Settings submenu.
+For the beta.97 pass, capture both the Mods list and the Spire Plus page after navigating through RitsuLib's Mod Settings submenu.
 
 Required files before pass:
 - `command.txt`

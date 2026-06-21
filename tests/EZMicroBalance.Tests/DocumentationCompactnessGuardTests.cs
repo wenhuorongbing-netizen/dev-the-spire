@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.96 Off loader truth is RitsuLib-only",
+            "Current beta.97 package truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -383,7 +383,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.96`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.97`",
             "`STS2-RitsuLib` `0.4.31`",
             "`lib\\0.107.1`",
             "previous package is previous-package or other-mod local context only",
@@ -448,8 +448,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docRestructureSpec,
             "**RitsuLib integration** (PR5/PR6+)",
-            "Current beta.96 RitsuLib-only compile/manifest/package/settings target active",
-            "beta.93 loader proof retained only as previous-package evidence");
+            "Current beta.97 RitsuLib-only compile/manifest/package/settings target active",
+            "beta.96 and beta.93 loader/settings proof retained only as previous-package evidence");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",

@@ -96,6 +96,7 @@ function Get-WorktreeBatch {
         $p.StartsWith('EZMicroBalanceCode/Diagnostics/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Modding/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Preview/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('EZMicroBalance/localization/settings_ui/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/(settings_ui|card_reward_ui|encounters|events|sts1_events|monsters|rest_site_ui)\.json$' -or
         $p.StartsWith('docs/features/future-peek/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/features/preview-tools/', [System.StringComparison]::OrdinalIgnoreCase) -or

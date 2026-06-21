@@ -85,6 +85,8 @@ public sealed partial class EngineeringGovernanceGuardTests
         var releaseChecklist = ReadRepoText("docs", "release-checklist.md");
         var englishSettings = JsonStringMap("EZMicroBalance", "localization", "eng", "settings_ui.json");
         var simplifiedChineseSettings = JsonStringMap("EZMicroBalance", "localization", "zhs", "settings_ui.json");
+        var englishRitsuSettings = JsonStringMap("EZMicroBalance", "localization", "settings_ui", "eng.json");
+        var simplifiedChineseRitsuSettings = JsonStringMap("EZMicroBalance", "localization", "settings_ui", "zhs.json");
 
         AssertSourceContains(
             config,
@@ -119,10 +121,74 @@ public sealed partial class EngineeringGovernanceGuardTests
 
         Assert.Contains("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", englishSettings.Keys);
         Assert.Contains("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", simplifiedChineseSettings.Keys);
+        Assert.Contains("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", englishRitsuSettings.Keys);
+        Assert.Contains("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", simplifiedChineseRitsuSettings.Keys);
+        foreach (var key in new[]
+                 {
+                     "SPIREPLUS.settings_page.description",
+                     "SPIREPLUS-MIGRATION_STATUS.title",
+                     "SPIREPLUS-MIGRATION_STATUS.description",
+                     "SPIREPLUS-RITSULIB_ONLY_SUMMARY.title",
+                     "SPIREPLUS-RITSULIB_ONLY_SUMMARY.description",
+                     "SPIREPLUS-REQUIRED_RUNTIME_DEPENDENCY.title",
+                     "SPIREPLUS-REQUIRED_RUNTIME_DEPENDENCY.description",
+                     "SPIREPLUS-STABLE_MANIFEST_ID.title",
+                     "SPIREPLUS-STABLE_MANIFEST_ID.description",
+                     "SPIREPLUS-PROOF_BOUNDARY.title",
+                     "SPIREPLUS-PROOF_BOUNDARY.subtitle",
+                     "SPIREPLUS-PROOF_BOUNDARY.description",
+                     "SPIREPLUS-PREVIEW_TOOLS.title",
+                     "SPIREPLUS-PREVIEW_TOOLS.description",
+                     "SPIREPLUS-ENABLE_CRYSTAL_SPHERE_PEEK.description",
+                     "SPIREPLUS-CRYSTAL_SPHERE_MASK_ALPHA.description",
+                     "SPIREPLUS-ENABLE_TRANSFORM_PREDICTION.description",
+                     "SPIREPLUS-TRANSFORM_PREDICTION_ALWAYS_ON.description",
+                     "SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.description"
+                 })
+        {
+            Assert.Contains(key, englishSettings.Keys);
+            Assert.Contains(key, simplifiedChineseSettings.Keys);
+            Assert.Contains(key, englishRitsuSettings.Keys);
+            Assert.Contains(key, simplifiedChineseRitsuSettings.Keys);
+        }
+
+        foreach (var key in new[]
+                 {
+                     "EZMICROBALANCE.settings_page.description",
+                     "EZMICROBALANCE-MIGRATION_STATUS.title",
+                     "EZMICROBALANCE-MIGRATION_STATUS.description",
+                     "EZMICROBALANCE-RITSULIB_ONLY_SUMMARY.title",
+                     "EZMICROBALANCE-RITSULIB_ONLY_SUMMARY.description",
+                     "EZMICROBALANCE-REQUIRED_RUNTIME_DEPENDENCY.title",
+                     "EZMICROBALANCE-REQUIRED_RUNTIME_DEPENDENCY.description",
+                     "EZMICROBALANCE-STABLE_MANIFEST_ID.title",
+                     "EZMICROBALANCE-STABLE_MANIFEST_ID.description",
+                     "EZMICROBALANCE-PROOF_BOUNDARY.title",
+                     "EZMICROBALANCE-PROOF_BOUNDARY.subtitle",
+                     "EZMICROBALANCE-PROOF_BOUNDARY.description",
+                     "EZMICROBALANCE-PREVIEW_TOOLS.title",
+                     "EZMICROBALANCE-PREVIEW_TOOLS.description",
+                     "EZMICROBALANCE-ENABLE_CRYSTAL_SPHERE_PEEK.description",
+                     "EZMICROBALANCE-CRYSTAL_SPHERE_MASK_ALPHA.description",
+                     "EZMICROBALANCE-ENABLE_TRANSFORM_PREDICTION.description",
+                     "EZMICROBALANCE-TRANSFORM_PREDICTION_ALWAYS_ON.description",
+                     "EZMICROBALANCE-SHOW_PREVIEW_DEBUG_LOGS.description"
+                 })
+        {
+            Assert.Contains(key, englishSettings.Keys);
+            Assert.Contains(key, simplifiedChineseSettings.Keys);
+            Assert.Contains(key, englishRitsuSettings.Keys);
+            Assert.Contains(key, simplifiedChineseRitsuSettings.Keys);
+        }
+
         Assert.DoesNotContain("SPIREPLUS-ENABLE_DEBUG_LOGS.title", englishSettings.Keys);
         Assert.DoesNotContain("SPIREPLUS-ENABLE_DEBUG_LOGS.title", simplifiedChineseSettings.Keys);
+        Assert.DoesNotContain("SPIREPLUS-ENABLE_DEBUG_LOGS.title", englishRitsuSettings.Keys);
+        Assert.DoesNotContain("SPIREPLUS-ENABLE_DEBUG_LOGS.title", simplifiedChineseRitsuSettings.Keys);
         Assert.DoesNotContain("EZMICROBALANCE-ENABLE_DEBUG_LOGS.title", englishSettings.Keys);
         Assert.DoesNotContain("EZMICROBALANCE-ENABLE_DEBUG_LOGS.title", simplifiedChineseSettings.Keys);
+        Assert.DoesNotContain("EZMICROBALANCE-ENABLE_DEBUG_LOGS.title", englishRitsuSettings.Keys);
+        Assert.DoesNotContain("EZMICROBALANCE-ENABLE_DEBUG_LOGS.title", simplifiedChineseRitsuSettings.Keys);
 
         AssertSourceContains(
             testReadyGoal,

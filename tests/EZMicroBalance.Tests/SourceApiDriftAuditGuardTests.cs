@@ -141,8 +141,13 @@ public sealed class SourceApiDriftAuditGuardTests
             "RegisterSettingsPage(modId)",
             "AddMigrationStatusSection(page)",
             "AddPreviewToolsSection(page, modId)",
+            "SettingsLocalizationStem",
+            "SettingsLocalizationPckRoot",
+            "res://EZMicroBalance/localization/settings_ui",
+            "RitsuLibFramework.CreateModLocalization",
             "RitsuLibFramework.BeginModDataRegistration(modId)",
             "RitsuLibFramework.RegisterModSettings",
+            "ModSettingsText.I18N(i18n, key, fallback)",
             "migration_status",
             "required_runtime_dependency",
             "proof_boundary",
@@ -159,9 +164,12 @@ public sealed class SourceApiDriftAuditGuardTests
             "NormalizeCrystalSphereMaskAlpha",
             "RitsuLib setting controls bind to this data key",
             "Keep these entry IDs stable",
+            "SPIREPLUS-MIGRATION_STATUS.title",
+            "SPIREPLUS-PREVIEW_TOOLS.title",
             "RitsuLib-only mod surface",
             "STS2-RitsuLib >= 0.4.31",
             "Settings screenshots prove UI visibility only.");
+        Assert.DoesNotContain("private static ModSettingsText Text(string value)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("Math.Clamp(value, 0.05, 0.95)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("store.InitializeGlobal();", settings, StringComparison.Ordinal);
     }

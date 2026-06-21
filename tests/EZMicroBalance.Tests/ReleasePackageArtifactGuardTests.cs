@@ -99,11 +99,11 @@ public sealed partial class ReleasePackageArtifactGuardTests
 
         Assert.Contains("manual feature verification", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
         Assert.Contains("still pending", docsByPath["README.md"], StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("Current beta.96 RitsuLib-only Off proof has been recaptured", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Previous beta.96 RitsuLib-only Off proof has been recaptured", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
-        Assert.Contains("Current beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Previous beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
@@ -127,7 +127,7 @@ public sealed partial class ReleasePackageArtifactGuardTests
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log verification passed for the beta.17 package hash", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log evidence confirms the display name", handoff, StringComparison.Ordinal);
-        Assert.Contains("Current beta.96 Mod Settings evidence", handoff, StringComparison.Ordinal);
+        Assert.Contains("Previous beta.96 Mod Settings evidence", handoff, StringComparison.Ordinal);
         Assert.Contains("beta96-ritsulib-mod-settings-clicked-ui-20260621-160701", handoff, StringComparison.Ordinal);
         Assert.Contains("settings-page visibility only", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);

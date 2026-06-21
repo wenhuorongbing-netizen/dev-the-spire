@@ -1,7 +1,6 @@
 {
   "SPIREPLUS.mod_title": "Spire Plus",
   "SPIREPLUS.settings_page.description": "RitsuLib settings page for Spire Plus private beta testing.",
-  "SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title": "Peek",
   "SPIREPLUS-MIGRATION_STATUS.title": "Migration Status",
   "SPIREPLUS-MIGRATION_STATUS.description": "Read-only status for the current RitsuLib-only settings surface.",
   "SPIREPLUS-RITSULIB_ONLY_SUMMARY.title": "RitsuLib-only mod surface",
@@ -27,7 +26,6 @@
   "SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.description": "Emit extra preview-tool diagnostics to the log.",
   "EZMICROBALANCE.mod_title": "Spire Plus",
   "EZMICROBALANCE.settings_page.description": "RitsuLib settings page for Spire Plus private beta testing.",
-  "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title": "Peek",
   "EZMICROBALANCE-MIGRATION_STATUS.title": "Migration Status",
   "EZMICROBALANCE-MIGRATION_STATUS.description": "Read-only status for the current RitsuLib-only settings surface.",
   "EZMICROBALANCE-RITSULIB_ONLY_SUMMARY.title": "RitsuLib-only mod surface",

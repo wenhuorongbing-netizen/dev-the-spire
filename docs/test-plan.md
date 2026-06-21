@@ -149,7 +149,7 @@ After a launched run, check the retained packet without launching the game:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.96 `
+  -ExpectedPackageVersion v0.1.0-private-beta.97 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch
 ```
@@ -226,7 +226,7 @@ Plus prerequisite.
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
 Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes.
-Installed beta.96 package parity is the current package evidence. Earlier
+Installed beta.97 package parity is the current package evidence. Earlier
 beta.93 `v0.107.1` RitsuLib-only direct AdditiveBatch1 proof under
 `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`
 reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed
@@ -237,6 +237,12 @@ The beta.85 Off/CanaryOnly smokes remain older dependency/game-version context,
 beta.87 direct proof remains previous-game-version context, and the beta.85
 AdditiveBatch1 13/14 mismatch remains root-cause history only.
 Current RitsuLib logs are class-only for some checks, so gameplay evidence still has to prove actual event behavior directly.
+No-launch StS1 packet verification commands for future retained evidence:
+
+```powershell
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.97 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.97 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+```
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
 - Historical package smoke/log/resource evidence under

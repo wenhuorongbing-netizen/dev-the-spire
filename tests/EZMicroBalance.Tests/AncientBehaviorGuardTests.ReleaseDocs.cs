@@ -49,15 +49,15 @@ public sealed partial class AncientBehaviorGuardTests
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
             "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.31`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
-            "- [x] STS2-RitsuLib appears in Mod Settings for the beta.96 RitsuLib-only package.",
+            "- [ ] STS2-RitsuLib appears in Mod Settings for the beta.97 RitsuLib-only package.",
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.",
-            "- [x] Current beta.96 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
+            "- [ ] Current beta.97 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [x] Current RitsuLib-only Off loader smoke for the beta.96 ZIP hash is captured after the latest RitsuLib package refresh under `.tools\\runtime-evidence\\v01071-beta96-ritsulib0431-off-direct-20260621-185056`. Historical note: Fresh loader smoke for the beta.87 package hash is clean under `.tools\\runtime-evidence\\v01070-beta87-additive-batch1-direct-20260618-152531`, but that row is now previous-game-version context only.",
+            "- [ ] Current RitsuLib-only Off loader smoke for the beta.97 ZIP hash is captured after the latest RitsuLib package refresh.",
             "- [x] Previous RitsuLib-only AdditiveBatch1 registration smoke for the beta.93 ZIP hash is captured",
-            "- [x] Latest RitsuLib-only Off loader smoke for the current beta.96 package hash is recaptured on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90 loader evidence is historical context only.",
-            "- [x] `godot.log` reviewed after fresh beta.96 RitsuLib-only Off isolated startup/log verification and previous beta.93 AdditiveBatch1 registration verification.",
+            "- [ ] Latest RitsuLib-only Off loader smoke for the current beta.97 package hash is recaptured on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90/beta.96 loader evidence is historical or previous-package context only.",
+            "- [ ] `godot.log` reviewed after fresh beta.97 RitsuLib-only Off isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -68,10 +68,10 @@ public sealed partial class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin` is performed after validation, packaging, and an intentional commit.",
-            "Current beta.96 RitsuLib-only Off proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and closes the package-hash loader smoke for that Off-mode surface.",
+            "Previous beta.96 RitsuLib-only Off proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and closed the package-hash loader smoke for that earlier Off-mode surface.",
             "Previous beta.93 AdditiveBatch1 registration proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`",
             "loader/registration evidence, not gameplay proof.",
-            "Current beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`",
+            "Previous beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`",
             "The older `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` screenshot is historical list context only.",
             "Manual feature results are pending",
             "Unsupported Cases",
@@ -89,7 +89,8 @@ public sealed partial class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.96 package shape; current beta.96 Off loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.97 package shape.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);

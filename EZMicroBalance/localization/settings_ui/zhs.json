@@ -1,7 +1,6 @@
-﻿{
+{
   "SPIREPLUS.mod_title": "Spire Plus",
   "SPIREPLUS.settings_page.description": "用于私测的运行库设置页。",
-  "SPIREPLUS-CRYSTAL_SPHERE_PEEK_BUTTON.title": "预知",
   "SPIREPLUS-MIGRATION_STATUS.title": "迁移状态",
   "SPIREPLUS-MIGRATION_STATUS.description": "当前运行库设置界面的只读状态。",
   "SPIREPLUS-RITSULIB_ONLY_SUMMARY.title": "运行库设置界面",
@@ -27,7 +26,6 @@
   "SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.description": "向日志输出额外的预览工具诊断信息。",
   "EZMICROBALANCE.mod_title": "Spire Plus",
   "EZMICROBALANCE.settings_page.description": "用于私测的运行库设置页。",
-  "EZMICROBALANCE-CRYSTAL_SPHERE_PEEK_BUTTON.title": "预知",
   "EZMICROBALANCE-MIGRATION_STATUS.title": "迁移状态",
   "EZMICROBALANCE-MIGRATION_STATUS.description": "当前运行库设置界面的只读状态。",
   "EZMICROBALANCE-RITSULIB_ONLY_SUMMARY.title": "运行库设置界面",

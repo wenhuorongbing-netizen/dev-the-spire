@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `6E313D383E49B750E3C5809E92D7795CC5E196B5A7511707D2AB4357E24D4265` |
-| DLL | `28D9AA1632B783CE34BC4D4174C5A84DEB26FD74947529656A71757BF660309F` |
-| PCK | `549FD8B2A90B2AF74F8D6C591107F423588EFD868A61D1C901585E6FE188D20C` |
-| Manifest | `A752A38EFF068FDB75B629D4A0DC92153D115EFD76D369B406E3D7077E4E4593` |
-| README_INSTALL | `C8171889B7B03E177CAC6428E4CCA3873BEEDB054180A10A7E6703DEBC72BDFE` |
+| ZIP | `420D055C0B231B6D6BEC46A7E43C5C9E9AFCE25C4AC7130F3552F844BFF7C197` |
+| DLL | `14778F8C2AEA3B2E3DA9B9DCC968D9340AB157A68491D3711CAC1856094D7BD3` |
+| PCK | `11342F264F73C6242615AFB86066F5E51D6E7D60D018A20377AD890BF0A503C0` |
+| Manifest | `E2E51AB9B4B8C4A8C4831C04F5A4D55C75DB581347E4A47CF7219F928E96897B` |
+| README_INSTALL | `EDFA228C17255A74A781850DB16E0B9252E51470E3B4B7614C6351E96302BF43` |
 
 ## Automation Summary
 
@@ -22,16 +22,16 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.96 publish/package sync, installed package parity, runtime preflight, source-workspace checks, and Off loader proof are refreshed; previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remains previous-package registration context only. Gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.97 publish/package sync and installed package parity are refreshed; beta.97 Off loader and clicked settings UI proof remain pending. Previous beta.96 Off proof and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the current beta.96 `v0.107.1` RitsuLib-only Off direct loader smoke audited clean for startup/loading proof, and previous beta.93 AdditiveBatch1 remains previous-package registration context only. The beta.96 Mod Settings page row is captured; gameplay, clicked Ancient UI, save-load, preview-tools live behavior, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.96 RitsuLib-only Off direct loader smoke and beta.96 Mod Settings page proof are previous-package context after beta.97. Gameplay, clicked Ancient UI, save-load, preview-tools live behavior, beta.97 loader/settings proof, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
-| fresh-current-package-loader-smoke | loader | Partial | Codex/User | Current Off loader proof exists at `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056`: clean `godot.log.current-iteration`, clean `godot-log-audit.json`, startup completion, StS1Events disabled with 0 registration lines, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof at `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` remains previous-package registration context only. To close the formal release-evidence row, add/promote the verifier-required `environment.json`, `package-hashes.json`, and `enabled-mods.txt` alongside current evidence or recapture through the release-evidence collector. |
-| mod-settings-current-display | clicked-ui | Pass | Codex | Current beta.96 normal Steam-client Settings -> `Mod Settings (RitsuLib)` proof is under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`: foreground Mods list screenshot showing RitsuLib and Spire Plus, foreground Spire Plus config-page screenshots showing Migration Status, `STS2-RitsuLib >= 0.4.31`, evidence-boundary, technical-id, and Preview Tools controls, route note, clean same-session `godot.log`, clean log audit, and filled `mod-settings-checklist.md`. This proves settings UI visibility only, not gameplay or release readiness. |
+| fresh-current-package-loader-smoke | loader | Pending | Codex/User | Recapture beta.97 Off loader proof after the settings-page I18N resource migration. Previous beta.96 proof at `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and previous beta.93 AdditiveBatch1 proof at `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` are previous-package context only. |
+| mod-settings-current-display | clicked-ui | Pending | Codex/User | Recapture beta.97 normal Steam-client Settings -> `Mod Settings (RitsuLib)` proof after the RitsuLib I18N settings resource migration. Previous beta.96 proof under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701` proves earlier settings UI visibility only, not beta.97 gameplay or release readiness. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

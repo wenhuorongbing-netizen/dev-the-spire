@@ -2,6 +2,7 @@ using System.Globalization;
 using STS2RitsuLib;
 using STS2RitsuLib.Data;
 using STS2RitsuLib.Settings;
+using STS2RitsuLib.Utils;
 using STS2RitsuLib.Utils.Persistence;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Config;
@@ -10,6 +11,8 @@ internal static class SpirePlusModConfig
 {
     private const string SettingsKey = "spire-plus-settings";
     private const string SettingsFileName = "spire-plus-settings.json";
+    private const string SettingsLocalizationStem = "settings_ui";
+    private const string SettingsLocalizationPckRoot = "res://EZMicroBalance/localization/settings_ui";
     private const string MigrationStatusSectionId = "migration_status";
     private const string PreviewToolsSectionId = "preview_tools";
     private const string RitsuLibSummaryEntryId = "ritsulib_only_summary";
@@ -33,6 +36,7 @@ internal static class SpirePlusModConfig
     // RitsuLib owns the persisted settings store. The fallback is only used while
     // the framework is unavailable during early startup or when a store read fails.
     private static readonly SettingsState FallbackState = new();
+    private static I18N? settingsLocalization;
     private static string? registeredModId;
 
     public static bool EnableCrystalSpherePeek
@@ -68,6 +72,13 @@ internal static class SpirePlusModConfig
     public static void Register(string modId)
     {
         registeredModId = modId;
+        settingsLocalization = RitsuLibFramework.CreateModLocalization(
+            modId,
+            SettingsLocalizationStem,
+            Array.Empty<string>(),
+            Array.Empty<string>(),
+            [SettingsLocalizationPckRoot],
+            typeof(SpirePlusModConfig).Assembly);
 
         RegisterSettingsStore(modId);
         RegisterSettingsPage(modId);
@@ -88,9 +99,11 @@ internal static class SpirePlusModConfig
     {
         RitsuLibFramework.RegisterModSettings(modId, page =>
         {
-            page.WithModDisplayName(Text("Spire Plus"));
-            page.WithTitle(Text("Spire Plus"));
-            page.WithDescription(Text("RitsuLib settings page for Spire Plus private beta testing."));
+            page.WithModDisplayName(Text("SPIREPLUS.mod_title", "Spire Plus"));
+            page.WithTitle(Text("SPIREPLUS.mod_title", "Spire Plus"));
+            page.WithDescription(Text(
+                "SPIREPLUS.settings_page.description",
+                "RitsuLib settings page for Spire Plus private beta testing."));
 
             AddMigrationStatusSection(page);
             AddPreviewToolsSection(page, modId);
@@ -103,27 +116,37 @@ internal static class SpirePlusModConfig
         // future automation use them to prove the RitsuLib-only settings page.
         page.AddSection(MigrationStatusSectionId, section =>
         {
-            section.WithTitle(Text("Migration Status"));
-            section.WithDescription(Text("Read-only status for the current RitsuLib-only settings surface."));
+            section.WithTitle(Text("SPIREPLUS-MIGRATION_STATUS.title", "Migration Status"));
+            section.WithDescription(Text(
+                "SPIREPLUS-MIGRATION_STATUS.description",
+                "Read-only status for the current RitsuLib-only settings surface."));
             section.AddParagraph(
                 RitsuLibSummaryEntryId,
-                Text("RitsuLib-only mod surface"),
-                Text("This page is registered through RitsuLib. Spire Plus uses RitsuLib for settings persistence, content registration, patch metadata, and saved marker state."));
+                Text("SPIREPLUS-RITSULIB_ONLY_SUMMARY.title", "RitsuLib-only mod surface"),
+                Text(
+                    "SPIREPLUS-RITSULIB_ONLY_SUMMARY.description",
+                    "This page is registered through RitsuLib. Spire Plus uses RitsuLib for settings persistence, content registration, patch metadata, and saved marker state."));
             section.AddInfoCard(
                 RequiredRuntimeDependencyEntryId,
-                Text("Runtime dependency"),
-                Text(RequiredRuntimeDependency),
-                Text("Install the runtime pack under the game mods/STS2-RitsuLib folder before enabling Spire Plus."));
+                Text("SPIREPLUS-REQUIRED_RUNTIME_DEPENDENCY.title", "Runtime dependency"),
+                LiteralText(RequiredRuntimeDependency),
+                Text(
+                    "SPIREPLUS-REQUIRED_RUNTIME_DEPENDENCY.description",
+                    "Install the runtime pack under the game mods/STS2-RitsuLib folder before enabling Spire Plus."));
             section.AddInfoCard(
                 StableManifestIdEntryId,
-                Text("Technical id"),
-                Text(StableTechnicalId),
-                Text("This id remains only for the manifest, install folder, saves, and compatibility. Player-facing UI should say Spire Plus."));
+                Text("SPIREPLUS-STABLE_MANIFEST_ID.title", "Technical id"),
+                LiteralText(StableTechnicalId),
+                Text(
+                    "SPIREPLUS-STABLE_MANIFEST_ID.description",
+                    "This id remains only for the manifest, install folder, saves, and compatibility. Player-facing UI should say Spire Plus."));
             section.AddInfoCard(
                 ProofBoundaryEntryId,
-                Text("Evidence boundary"),
-                Text("Settings screenshots prove UI visibility only."),
-                Text("Gameplay, clicked Ancient screens, save/load, co-op, and release readiness still need separate evidence."));
+                Text("SPIREPLUS-PROOF_BOUNDARY.title", "Evidence boundary"),
+                Text("SPIREPLUS-PROOF_BOUNDARY.subtitle", "Settings screenshots prove UI visibility only."),
+                Text(
+                    "SPIREPLUS-PROOF_BOUNDARY.description",
+                    "Gameplay, clicked Ancient screens, save/load, co-op, and release readiness still need separate evidence."));
         });
     }
 
@@ -131,40 +154,42 @@ internal static class SpirePlusModConfig
     {
         page.AddSection(PreviewToolsSectionId, section =>
         {
-            section.WithTitle(Text("Preview Tools"));
-            section.WithDescription(Text("Controls for Crystal Sphere peek and transform prediction."));
+            section.WithTitle(Text("SPIREPLUS-PREVIEW_TOOLS.title", "Preview Tools"));
+            section.WithDescription(Text(
+                "SPIREPLUS-PREVIEW_TOOLS.description",
+                "Controls for Crystal Sphere peek and transform prediction."));
             section.AddToggle(
                 EnableCrystalSpherePeekEntryId,
-                Text("Crystal Sphere peek"),
+                Text("SPIREPLUS-ENABLE_CRYSTAL_SPHERE_PEEK.title", "Crystal Sphere peek"),
                 Binding(modId, state => state.EnableCrystalSpherePeek, (state, value) => state.EnableCrystalSpherePeek = value),
-                Text("Show the peek overlay for Crystal Sphere when supported."),
+                Text("SPIREPLUS-ENABLE_CRYSTAL_SPHERE_PEEK.description", "Show the peek overlay for Crystal Sphere when supported."),
                 () => true);
             section.AddSlider(
                 CrystalSphereMaskAlphaEntryId,
-                Text("Crystal Sphere mask alpha"),
+                Text("SPIREPLUS-CRYSTAL_SPHERE_MASK_ALPHA.title", "Crystal Sphere mask alpha"),
                 Binding(modId, state => state.CrystalSphereMaskAlpha, (state, value) => state.CrystalSphereMaskAlpha = NormalizeCrystalSphereMaskAlpha(value)),
                 CrystalSphereMaskAlphaMin,
                 CrystalSphereMaskAlphaMax,
                 CrystalSphereMaskAlphaStep,
                 value => value.ToString("0.00", CultureInfo.InvariantCulture),
-                Text("Opacity of the Crystal Sphere peek mask."));
+                Text("SPIREPLUS-CRYSTAL_SPHERE_MASK_ALPHA.description", "Opacity of the Crystal Sphere peek mask."));
             section.AddToggle(
                 EnableTransformPredictionEntryId,
-                Text("Transform prediction"),
+                Text("SPIREPLUS-ENABLE_TRANSFORM_PREDICTION.title", "Transform prediction"),
                 Binding(modId, state => state.EnableTransformPrediction, (state, value) => state.EnableTransformPrediction = value),
-                Text("Show predicted transform outcomes when supported."),
+                Text("SPIREPLUS-ENABLE_TRANSFORM_PREDICTION.description", "Show predicted transform outcomes when supported."),
                 () => true);
             section.AddToggle(
                 TransformPredictionAlwaysOnEntryId,
-                Text("Always show transform prediction"),
+                Text("SPIREPLUS-TRANSFORM_PREDICTION_ALWAYS_ON.title", "Always show transform prediction"),
                 Binding(modId, state => state.TransformPredictionAlwaysOn, (state, value) => state.TransformPredictionAlwaysOn = value),
-                Text("Show transform prediction without requiring a modifier key."),
+                Text("SPIREPLUS-TRANSFORM_PREDICTION_ALWAYS_ON.description", "Show transform prediction without requiring a modifier key."),
                 () => EnableTransformPrediction);
             section.AddToggle(
                 ShowPreviewDebugLogsEntryId,
-                Text("Preview debug logs"),
+                Text("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.title", "Preview debug logs"),
                 Binding(modId, state => state.ShowPreviewDebugLogs, (state, value) => state.ShowPreviewDebugLogs = value),
-                Text("Emit extra preview-tool diagnostics to the log."),
+                Text("SPIREPLUS-SHOW_PREVIEW_DEBUG_LOGS.description", "Emit extra preview-tool diagnostics to the log."),
                 () => true);
         });
     }
@@ -218,7 +243,12 @@ internal static class SpirePlusModConfig
     private static double NormalizeCrystalSphereMaskAlpha(double value) =>
         Math.Clamp(value, CrystalSphereMaskAlphaMin, CrystalSphereMaskAlphaMax);
 
-    private static ModSettingsText Text(string value) => ModSettingsText.Literal(value);
+    private static ModSettingsText Text(string key, string fallback) =>
+        settingsLocalization is { } i18n
+            ? ModSettingsText.I18N(i18n, key, fallback)
+            : LiteralText(fallback);
+
+    private static ModSettingsText LiteralText(string value) => ModSettingsText.Literal(value);
 
     private sealed class SettingsState
     {
