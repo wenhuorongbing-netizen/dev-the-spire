@@ -61,6 +61,7 @@ These paths are active private-beta source, resource, test, script, or documenta
 | Ignored docs zip residue | Deleted local ignored files | `docs/STS2-RitsuLib.0.3.3.variant-pack.zip` and `docs/codex-app-better-token-main.zip` were ignored, untracked, unreferenced, and deleted on 2026-06-21 so docs point to official RitsuLib release/docs URLs rather than copied archives. |
 | Compatibility history compression | Current `docs/BETA_COMPATIBILITY.md` | The active compatibility doc now carries only the current RitsuLib-only package/update policy. Old compatibility tables were removed from the active reading path to avoid future dependency confusion. |
 | Runtime hard-block history compression | Current `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md` | The active RitsuLib runtime blocker doc now carries only the current beta.96/RitsuLib-only boundary, required proof, and next action. The old May 31 environment table was removed from the active reading path. |
+| Root test-plan dependency cleanup | Current `docs/test-plan.md` | The active artifact and manual-load checks now require the RitsuLib-only lane and no longer instruct testers to enable or expect the old dependency package. `check-sts1-event-current-doc-claims.ps1` guards against that wording returning. |
 
 ## Refactor Cleanup Completed
 
