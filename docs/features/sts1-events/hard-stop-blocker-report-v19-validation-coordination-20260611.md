@@ -1,7 +1,9 @@
 # StS1 Event Port v19 Validation Coordination Hard Stop
 
-Date: 2026-06-11; latest addendum: 2026-06-15
+Date: 2026-06-11; latest addendum: 2026-06-21
 Scope: Mandatory Overnight Run v19 continuation for `docs/goals/event.md`.
+
+Supersession note, 2026-06-21: this report remains the historical v19 coordination-blocker trace. Its beta.85 `v0.107.0` / RitsuLib `v0.4.16` facts below are no longer current runtime truth. Current status is beta.92 RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.29` / `lib\0.107.1`: Off and AdditiveBatch1 loader/registration proof are clean, but gameplay, save-load, replacement, multiplayer, image/render, QA, release, and handoff proof remain pending. Use `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, `docs/goals/event.md`, and the v20 trace for current decisions.
 
 This report records a coordination blocker for this thread only. It is not a completion claim and does not close CanaryOnly, AdditiveBatch1, gameplay, save/load, replacement, multiplayer, image/render, or QA gates.
 
@@ -19,7 +21,7 @@ Blocked in this thread:
 
 A same-repository coordination note from the migration validation lane instructed this thread to pause starting new `dotnet test`, build, release-evidence validation, and related processes in `D:\Game\FOTN\dev-the-spire`. Multiple same-repo threads were overlapping or killing `testhost` processes, making validation nondeterministic.
 
-The current authoritative project state is beta.85 on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.16`. `PROJECT_STATE.md` records clean beta.85 default-Off loader proof, but that proof does not cover CanaryOnly, AdditiveBatch1, event gameplay, save/load, replacement, multiplayer, image/render, or QA.
+Historical capture-time project state was beta.85 on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.16`. Current beta.92 supersedes it for loader/registration truth; retained beta.85 evidence remains previous-package/game-version context only and still does not cover event gameplay, save-load, replacement, multiplayer, image/render, or QA.
 
 ## Evidence
 
