@@ -1,148 +1,49 @@
-# Next Overnight Run - RitsuLib Migration
+# Next Runtime QA Run - RitsuLib Migration
 
-## Run Date
-
-TBD (next available runtime/manual QA session)
+Run date: TBD.
+Status: compact execution boundary. This replaces the long historical overnight plan; use archive docs and Git history for old detail.
 
 ## Objective
 
-**Manual QA + Batch 4c Owner Review After Clean RitsuLib-Only Loader Proof.**
+Manual QA after clean RitsuLib-only loader proof, plus Batch 4c owner review. This is not approval to migrate more patches and not a release-ready claim.
 
-The old hard blocker was missing or non-clean RitsuLib runtime smoke. That blocker is now closed for the previous `v0.107.1` / beta.93 RitsuLib-only loader/registration target: historical Slay the Spire 2 `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic evidence is clean; retained beta.85/beta.87 `v0.107.0` evidence remains previous-package context; the first `v0.107.1` beta.87 recapture failed clean audit because previous package `v3.2.1` logged 2 patch failures; beta.88 later passed only as previous-package context. Previous beta.93 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu with exactly STS2-RitsuLib `v0.4.31` and Spire Plus loaded, 25/25 patches, clean audits, Off packet 43 / 0, AdditiveBatch1 enabled-mode verifier 31 / 0, and AdditiveBatch1 packet 61 / 0. The next run should move to gameplay, render, save-load, replacement, multiplayer, QA, and handoff proof while keeping beta.96 RitsuLib-only package parity intact. It is not approval to migrate more patches.
+## Start State
 
-Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps. Assign one controlled lane, verify `git status --short --branch` first, and record the resulting HEAD/worktree status before using evidence for handoff.
-
-## Current State
-
-- Current repository HEAD must be checked at run start. Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
+- Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.96 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace check passed for the current dependency target; previous beta.93 RitsuLib-only Off/AdditiveBatch1 packet verification remains historical loader/registration evidence only. Revalidate current HEAD in a clean single validation lane again before package handoff if the worktree changes.
-- New no-launch evidence folders should retain the generated `environment.json` git handoff fields (`GitPushedHead`, `GitHeadMatchesUpstream`, branch status, and latest commit) as supporting provenance. Still run `git status --short --branch` and `git log -1 --oneline --decorate` directly at handoff time; collector metadata is not a substitute for final recapture.
-- Patch state remains 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, 171 tracked patch units total.
-- Historical `v0.106.1` loader-gate runtime proof exists:
-  - Off: `.tools\runtime-evidence\smoke-k1-off-20260602-145938`, 0 Sts1Events registrations, clean audit.
-  - CanaryOnly: `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104`, exactly 4 canary registrations in the old source shape, clean audit. Current source expects 4 event types through 6 registration calls.
-  - AdditiveBatch1: `.tools\runtime-evidence\additive-batch1-20260602-150445`, 10 event types through the old 11 registration calls, clean audit. Current source expects 10 event types through 14 registration calls.
-  - Recorded smokes loaded previous package, RitsuLib, and Spire Plus, applied 25/25 migrated patches, and observed 30 previous saved-state registrations.
-- Retained `v0.107.0` beta.85 package runtime proof is clean for loader/patch application under `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`; installed package parity passed for that package line.
-- Retained CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines, retained `enabled-mode-log-check.json` and `runtime-evidence-packet-check.json`, both 0 mismatches.
-- Previous beta.93 AdditiveBatch1 enabled-mode proof is clean under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`: 10 event types / 14 registration lines, retained enabled-mode report 31 / 0 and runtime packet verifier 61 / 0. The earlier `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` failure is previous package `v3.2.1` root-cause history, and beta.88 is previous-package context.
-- Dependency decision is recorded: beta.96 intentionally aligns the compile package and manifest minimum on STS2-RitsuLib `v0.4.31`, uses `lib\0.107.1`, removes previous package from current Spire Plus requirements, and uses package version `v0.1.0-private-beta.96`.
-- Batch 4c is proposal-only. The current candidate list is `docs/features/ritsulib-migration/batch-4c-candidates.md`; the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Migration requires explicit owner approval and fresh validation.
-- A historical no-launch Mod Settings UI scaffold exists at `.tools/runtime-evidence/mod-settings-current-display-20260618-223145/` with package `v0.1.0-private-beta.87`. Treat it as a template only; refresh or replace it for beta.96 before using it as current UI evidence. It is not screenshot, log/audit, gameplay, or handoff proof.
-- A historical no-launch manual-test handoff scaffold exists at `.tools/runtime-evidence/manual-test-handoff-20260619-120202/` on pushed HEAD `2400ec4b`, with 21 required live rows, 21 expected pending failures, 0 warnings, package ZIP `D547847874919EE923E2281A495D5389BAB22BBDB9F1090DC57B77033668A36D`, and `GitHeadMatchesUpstream=true`. Use it as a template only; current beta.96 handoff must use the package hashes in `docs/private-beta-verification-handoff.md` / `docs/release-evidence-status.md` and recapture HEAD/worktree status. No game was launched for that scaffold.
-- Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, multiplayer fail-closed proof, independent QA, and tester-package handoff remain pending. Previous clean loader proof is available for beta.93/RitsuLib-only only; future handoff must recapture HEAD and worktree status after any later edits.
-- Release-ready and live-ready remain no.
+- Latest beta.96 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace check passed for the current dependency target; previous beta.93 RitsuLib-only Off/AdditiveBatch1 packet verification remains historical loader/registration evidence only.
+- Current HEAD validation refreshed after the beta.96 RitsuLib-only settings UI pass and runtime packet-checker hardening; recheck again before handoff if any later edits appear.
+- Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 
-## Pre-Run Checklist
+## Retained Evidence Boundaries
 
-1. Confirm branch, HEAD, and dirty state:
+- CanaryOnly: `.tools\runtime-evidence\smoke-k1-canary3-20260602-151104`, exactly 4 canary registrations in the old source shape, clean audit. Current source expects 4 event types through 6 registration calls.
+- AdditiveBatch1: `.tools\runtime-evidence\additive-batch1-20260602-150445`, 10 event types through the old 11 registration calls, clean audit. Current source expects 10 event types through 14 registration calls.
+- Retained CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines with retained verifier reports.
+- Before any StS1 canary gameplay claim, recapture current-version CanaryOnly loader proof; `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` is retained previous-package/game-version context only.
+- Before any AdditiveBatch1 gameplay claim, confirm the beta.96 package and STS2-RitsuLib `v0.4.31` / `lib\0.107.1` runtime are installed and recapture current-package enabled-mode proof.
 
-```powershell
-git status --short --branch
-git log -1 --oneline --decorate
-```
+## Required Run Order
 
-2. Confirm or refresh no-game validation for the current HEAD:
+1. Recapture HEAD/worktree and installed game/RitsuLib versions.
+2. Run no-game validation in one controlled lane if source changed.
+3. Capture beta.96 loader proof with only STS2-RitsuLib and Spire Plus enabled.
+4. Capture StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
+5. Capture gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 
-```powershell
-dotnet clean EZMicroBalance.sln
-dotnet build EZMicroBalance.sln
-dotnet test EZMicroBalance.sln
-dotnet test EZMicroBalance.sln --no-build
-dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
-git diff --check
-.\scripts\generate-patch-inventory.ps1 -Check
-.\scripts\report-worktree-batches.ps1 -FailOnUnclassified
-```
+## Batch 4c Owner Review
 
-3. Confirm current runtime compatibility before any loader smoke:
+- the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.
+- The current static recapture is not that decision.
+- Forbidden candidate surfaces remain: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, reward-state.
+- Do not migrate Batch 4c without owner approval and fresh validation.
 
-```powershell
-Get-Content "E:\Steam\steamapps\common\Slay the Spire 2\release_info.json"
-Get-ChildItem "E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib\lib"
-```
+## Success Checklist
 
-4. If validation or runtime compatibility fails, record the exact command, error, and affected dirty files before editing.
-5. If owner approves another dependency-floor change, move the repo package reference and manifest minimum in that same versioned package pass and follow the private-beta package-version and validation rules.
-
-## Run Steps
-
-### Step 1: Reconcile Loader Evidence
-
-1. Verify the evidence folders listed above still exist or record that only documentation references remain.
-2. Verify the current game version still has a matching RitsuLib variant and that the installed package under test matches the intended beta.96 artifact; if either check fails, record the blocker instead of launching the game. Previous beta.93 clean `v0.107.1` RitsuLib-only loader proof remains under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
-3. Re-audit the recorded logs if needed with `scripts\audit-godot-log.ps1`.
-4. Rerun loader smoke only if runtime compatibility is present and HEAD/package drift makes the old logs stale for the claim being made.
-5. Before any StS1 canary gameplay claim, recapture current-version CanaryOnly loader proof; `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` is retained previous-package/game-version context only.
-6. Before any AdditiveBatch1 gameplay claim, confirm the beta.96 package and STS2-RitsuLib `v0.4.31` / `lib\0.107.1` runtime are installed and recapture current-package enabled-mode proof; `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/` is retained `v0.107.0` context only, beta.88 is previous-package context, beta.93 is previous-package loader/registration context, and `.tools/runtime-evidence/v01071-beta87-additive-batch1-direct-20260619-102309/` is failed blocker evidence only.
-7. If current AdditiveBatch1 loader/registration proof goes stale or cannot be recaptured, record the exact blocker instead of continuing into AdditiveBatch1 gameplay proof.
-8. Keep AdditiveAllDraft and ReplaceUnknownEventsPrototype out of tester/release paths.
-
-### Step 2: Manual Gameplay Evidence
-
-For CanaryOnly events (`Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain`), capture or explicitly block:
-
-- spawn/route status;
-- EN and ZHS rendering;
-- options;
-- reward/effect;
-- no-softlock and exit;
-- save/load;
-- screenshot evidence.
-
-### Step 3: UI And Multiplayer Evidence
-
-1. Capture current Spire Plus Mod Settings UI evidence for beta.96. Prefer a fresh `collect-mod-settings-evidence.ps1 -NoLaunch` folder, then rerun that evidence dir with `-Capture List -RequireSpireForeground` and `-Capture Page -RequireSpireForeground` after manually opening the Mods list and Spire Plus page. The Spire Plus page screenshot must show the Migration Status section, RitsuLib dependency card, evidence-boundary card, and Preview Tools controls.
-2. Capture or block co-op/fail-closed proof.
-3. Confirm loader-gate proof is not being treated as gameplay proof.
-
-### Step 4: Batch 4c Candidate Review
-
-1. Review `docs/features/ritsulib-migration/batch-4c-candidates.md`.
-2. Confirm the list is 5-10 low-risk patch classes only.
-3. Reject any run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, or reward-state candidate.
-4. Record owner decision: accept all, accept subset, request changes, or block. The current static recapture is not that decision.
-5. Do not migrate any candidate without explicit owner acceptance and fresh validation.
-
-### Step 5: Blocker Reporting
-
-If a gate cannot be completed, record:
-
-- exact gate;
-- blocker reason;
-- evidence path;
-- attempted actions;
-- owner action needed;
-- why continuing would create an unsupported claim.
-
-## Success Criteria
-
-- [x] Current STS2-RitsuLib installed locally (`v0.4.31`, `lib\0.107.1`).
-- [x] Historical `v0.106.1` Off loader gate proves 0 Sts1Events registrations.
-- [x] Historical `v0.106.1` CanaryOnly loader gate proves exactly 4 canary registrations in the old source shape.
-- [x] Historical `v0.106.1` AdditiveBatch1 loader gate proves 10 event types through the old 11 registration calls.
-- [x] Current `v0.107.1` game install has STS2-RitsuLib `v0.4.31`; the selected compatibility branch remains `lib\0.107.1`.
-- [x] Final dependency migration decision recorded: current compile/manifest floor is `0.4.31`, and previous package is no longer a Spire Plus project, manifest, package, or current runtime dependency.
-- [x] Installed beta.85 package parity verified after the 2026-06-11 package refresh.
-- [x] Installed beta.86 package parity verified after the 2026-06-18 package/source alignment pass.
-- [x] Installed beta.96 package parity verified after the 2026-06-21 RitsuLib-only settings UI package refresh.
-- [x] Clean `v0.107.0` beta.85 Off loader smoke captured after the prior `v0.4.16` install; retain as previous-package/game-version context.
-- [x] Current HEAD validation refreshed after the beta.96 RitsuLib-only settings UI pass and runtime packet-checker hardening; recheck again before handoff if any later edits appear.
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
-- [x] Current `v0.107.1` clean Off proof recaptured for beta.93/RitsuLib-only at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/`.
-- [x] Current `v0.107.1` clean AdditiveBatch1 proof recaptured for beta.93/RitsuLib-only at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
 - [x] Batch 4c candidate list static review recaptured: 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.
-- [ ] Mod Settings UI evidence captured.
-- [ ] CanaryOnly gameplay matrix completed or blocked with evidence.
-- [ ] Save/load evidence captured or blocked with evidence.
-- [ ] Co-op/fail-closed evidence captured or blocked with evidence.
+- [ ] Current beta.96 loader proof captured.
+- [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
+- [ ] Gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.
 - [ ] Batch 4c owner decision recorded.
-
-## Hard Stops
-
-- No release-ready, live-ready, or runtime-safe claim from loader logs alone.
-- No Batch 4c migration without owner acceptance.
-- No high-risk migration in this run.
-- No package handoff while validation recapture, gameplay proof, handoff status recapture, or owner decision is missing.
