@@ -8,8 +8,9 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 
 /// <summary>
 /// RitsuLib bootstrap: logging, diagnostics, and lifecycle hooks.
-/// Migrated patches use ModPatcher (IPatchMethod); unmigrated patches
-/// remain on raw Harmony.PatchAll().
+/// Migrated patches use ModPatcher (IPatchMethod); remaining legacy Harmony
+/// patches stay behind Harmony.PatchAll() until each batch has owner approval,
+/// source evidence, and focused runtime validation.
 /// </summary>
 internal static class RitsuLibBootstrap
 {
@@ -20,14 +21,18 @@ internal static class RitsuLibBootstrap
         logger.Info($"RitsuLib {GetRitsuLibVersion()} bootstrap starting.");
         SpirePlusDebug.Log("RitsuLib", $"Bootstrap starting. RitsuLib {GetRitsuLibVersion()}.");
 
-        // Apply migrated patches via ModPatcher
+        // RitsuLib ModPatcher owns every migrated patch class. Keeping this
+        // explicit list prevents accidental double-patching through PatchAll().
         var patcher = RitsuLibFramework.CreatePatcher(modId, "SpirePlus");
         RegisterMigratedPatches(patcher);
         patcher.PatchAll();
         logger.Info($"ModPatcher applied {patcher.AppliedPatchCount} patches ({patcher.RegisteredPatchCount} registered).");
         SpirePlusDebug.Log("RitsuLib", $"ModPatcher applied {patcher.AppliedPatchCount} patches.");
 
-        // Apply remaining Harmony-attributed patches via raw Harmony
+        // Legacy Harmony patches remain only for surfaces not yet migrated.
+        // Do not add new framework dependencies here; new migration work should
+        // either use RitsuLib IPatchMethod or stay raw Harmony with a documented
+        // Batch 4c+ approval boundary.
         var harmony = new Harmony(modId);
         harmony.PatchAll();
 

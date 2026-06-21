@@ -401,6 +401,34 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void Sts1EventRegistrationCommentsStayRitsuLibOnlyAndReadable()
+    {
+        var registration = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+
+        AssertSourceContains(
+            registration,
+            "Registers StS1 events through RitsuLib content packs.",
+            "Keep this service on RitsuLib APIs only.",
+            "new event batches should extend the mode-specific registrations below",
+            "StS1 Act 1 events -> Overgrowth + Underdocks",
+            "StS1 Act 2 events -> Hive",
+            "StS1 Act 3 events -> Glory",
+            "RitsuLibFramework.CreateContentPack(modId)",
+            "content.Apply();");
+        Assert.DoesNotContain(string.Concat("ModContent", "Registry"), registration, StringComparison.Ordinal);
+
+        var nonAscii = registration
+            .Select((ch, index) => new { Character = ch, Index = index })
+            .Where(item => item.Character > 127)
+            .ToArray();
+
+        Assert.True(
+            nonAscii.Length == 0,
+            "StS1 RitsuLib registration comments/source should stay ASCII-readable; found non-ASCII code points at indexes: "
+            + string.Join(", ", nonAscii.Take(10).Select(item => item.Index)));
+    }
+
     /// <summary>
     /// All 25 migrated PatchId strings from ExpectedMigratedPatchIds must appear
     /// in RitsuLibBootstrap.cs as IPatchMethod.PatchId implementations.

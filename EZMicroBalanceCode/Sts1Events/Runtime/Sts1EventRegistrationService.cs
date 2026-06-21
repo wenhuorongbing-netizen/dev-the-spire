@@ -10,12 +10,15 @@ using MegaCrit.Sts2.Core.Models.Acts;
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
 /// <summary>
-/// Registers StS1 events with RitsuLib's ModContentRegistry.
+/// Registers StS1 events through RitsuLib content packs.
+///
+/// Keep this service on RitsuLib APIs only. The feature is intentionally gated,
+/// and new event batches should extend the mode-specific registrations below.
 ///
 /// StS2 act mapping (verified from UrdaAct1AncientService, MorviAct2AncientService, LothaAct3AncientService):
-///   StS1 Act 1 events → Overgrowth + Underdocks (both acts)
-///   StS1 Act 2 events → Hive
-///   StS1 Act 3 events → Glory
+///   StS1 Act 1 events -> Overgrowth + Underdocks (both acts)
+///   StS1 Act 2 events -> Hive
+///   StS1 Act 3 events -> Glory
 /// </summary>
 internal static class Sts1EventRegistrationService
 {
@@ -113,7 +116,7 @@ internal static class Sts1EventRegistrationService
 
     /// <summary>
     /// Registers all drafted StS1 events. Used by AdditiveAllDraft and ReplaceUnknownEventsPrototype modes.
-    /// Sts1Duplicator excluded — uses CardSelectCmd/CardPileCmd APIs not yet available.
+    /// Sts1Duplicator is excluded because the needed CardSelectCmd/CardPileCmd APIs are not yet available.
     /// </summary>
     public static void RegisterAll(string modId)
     {
@@ -128,7 +131,7 @@ internal static class Sts1EventRegistrationService
 
         var content = RitsuLibFramework.CreateContentPack(modId);
 
-        // ── Shared events ──────────────────────────────────────────────
+        // Shared events
         content.SharedEvent<Sts1GoldenWing>();
         content.SharedEvent<Sts1LivingWall>();
         content.SharedEvent<Sts1OldBeggar>();
@@ -136,7 +139,7 @@ internal static class Sts1EventRegistrationService
         content.SharedEvent<Sts1GoldenShrine>();
         content.SharedEvent<Sts1BonfireSpirits>();
         content.SharedEvent<Sts1DivineFountain>();
-        // Sts1Duplicator excluded from compilation — uses CardSelectCmd/CardPileCmd APIs not yet available.
+        // Sts1Duplicator is excluded from compilation until the needed card-selection APIs are available.
         content.SharedEvent<Sts1FountainOfCleansing>();
         content.SharedEvent<Sts1TheLab>();
         content.SharedEvent<Sts1FaceTrader>();
@@ -145,7 +148,7 @@ internal static class Sts1EventRegistrationService
         content.SharedEvent<Sts1TheWomanInBlue>();
         content.SharedEvent<Sts1WheelOfChange>();
 
-        // ── StS1 Act 1 → StS2 Overgrowth + Underdocks ─────────────────
+        // StS1 Act 1 -> StS2 Overgrowth + Underdocks
         content.ActEvent<Overgrowth, Sts1BigFish>();
         content.ActEvent<Underdocks, Sts1BigFish>();
         content.ActEvent<Overgrowth, Sts1GoldenIdol>();
@@ -167,7 +170,7 @@ internal static class Sts1EventRegistrationService
         content.ActEvent<Overgrowth, Sts1TheSsssserpent>();
         content.ActEvent<Underdocks, Sts1TheSsssserpent>();
 
-        // ── StS1 Act 2 → StS2 Hive ────────────────────────────────────
+        // StS1 Act 2 -> StS2 Hive
         content.ActEvent<Hive, Sts1Altar>();
         content.ActEvent<Hive, Sts1DrugDealer>();
         content.ActEvent<Hive, Sts1TheLibrary>();
@@ -183,7 +186,7 @@ internal static class Sts1EventRegistrationService
         content.ActEvent<Hive, Sts1TheGhost>();
         content.ActEvent<Hive, Sts1Nloth>();
 
-        // ── StS1 Act 3 → StS2 Glory ───────────────────────────────────
+        // StS1 Act 3 -> StS2 Glory
         content.ActEvent<Glory, Sts1SensoryStone>();
         content.ActEvent<Glory, Sts1MoaiHead>();
         content.ActEvent<Glory, Sts1Transmogrifier>();

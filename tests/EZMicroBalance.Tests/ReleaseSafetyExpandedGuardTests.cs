@@ -210,7 +210,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("beta.19 normal Steam-client startup/log verification reports `Found 30 previous saved-state registrations`", audit, StringComparison.Ordinal);
         Assert.Contains("historical beta.19 loader", audit, StringComparison.Ordinal);
-        Assert.Contains("previous beta.96 Mod Settings UI proof", audit, StringComparison.Ordinal);
+        Assert.Contains("Current beta.99 settings proof is `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }
 
