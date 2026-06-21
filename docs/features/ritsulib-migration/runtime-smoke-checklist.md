@@ -17,16 +17,17 @@ This checklist is for the active package line:
 
 Current beta.99 package parity is recorded in `PROJECT_STATE.md` and
 `docs/reviews/current-validation.md`. Beta.99 RitsuLib Mod Settings clicked UI
-proof and Off loader proof remain pending after the settings-page I18N resource
-migration.
+proof is captured under
+`.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`;
+beta.99 direct Off loader proof remains pending after the settings-page I18N
+resource migration.
 
-The previous beta.96 settings proof is retained at
-`.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
-It proves Settings -> `Mod Settings (RitsuLib)` visibility for Spire Plus only:
-the session showed only `RitsuLib` and `Spire Plus`, opened the Spire Plus page,
-rendered Migration Status, `STS2-RitsuLib >= 0.4.31`, evidence-boundary,
-technical-id, and Preview Tools controls, retained same-session `godot.log`,
-and audited clean.
+The current beta.99 settings proof proves Settings -> `Mod Settings (RitsuLib)`
+visibility for Spire Plus only: the session showed only `RitsuLib` and
+`Spire Plus`, opened the Spire Plus page, rendered Migration Status,
+`STS2-RitsuLib >= 0.4.32`, evidence-boundary, technical-id, and Preview Tools
+controls, retained same-session `godot.log`, audited clean, and passed StS1 Off
+runtime shape verification 21 / 0.
 
 The previous beta.96 Off packet is retained at
 `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
@@ -55,7 +56,7 @@ source-only `-PrintExpected` output, or verification of already-captured logs.
    E-drive paths and restore after evidence capture:
 
 ```powershell
-$evidence = ".tools\runtime-evidence\<new-beta96-proof-dir>"
+$evidence = ".tools\runtime-evidence\<new-beta99-off-proof-dir>"
 $steamUserId = "<steam-user-id>"
 
 .\scripts\spire-plus-live-session.ps1 `
@@ -166,16 +167,16 @@ hashes, and the checklist stay in one evidence folder:
 ```
 
 The helper does not launch the game, navigate UI, audit logs, or mark this row
-passed by itself. The retained previous beta.96 proof folder must include same-session
+passed by itself. A passed settings proof folder must include same-session
 `godot.log`, `godot-log-audit.json`, screenshots, route note, and filled
 checklist.
 
 | # | Step | Expected | Evidence |
 |---|------|----------|----------|
-| 1 | Navigate to Mod Settings | Spire Plus appears in the RitsuLib Mods tree for beta.99 | [PENDING beta.99 recapture; previous beta.96 proof retained] |
-| 2 | Open Spire Plus settings | Settings UI renders without errors and shows the Migration Status section | [PENDING beta.99 recapture] |
-| 3 | Verify RitsuLib-only status | Runtime dependency card shows `STS2-RitsuLib >= 0.4.32` and the evidence-boundary card states that screenshots prove UI visibility only | [PENDING beta.99 recapture] |
-| 4 | Verify feature toggles | Preview Tools controls render for Crystal Sphere peek, mask alpha, transform prediction, always-show prediction, and preview debug logs | [PENDING beta.99 recapture] |
+| 1 | Navigate to Mod Settings | Spire Plus appears in the RitsuLib Mods tree for beta.99 | PASS: `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` |
+| 2 | Open Spire Plus settings | Settings UI renders without errors and shows the Migration Status section | PASS: beta.99 settings proof |
+| 3 | Verify RitsuLib-only status | Runtime dependency card shows `STS2-RitsuLib >= 0.4.32` and the evidence-boundary card states that screenshots prove UI visibility only | PASS: beta.99 settings proof |
+| 4 | Verify feature toggles | Preview Tools controls render for Crystal Sphere peek, mask alpha, transform prediction, always-show prediction, and preview debug logs | PASS: beta.99 settings proof |
 
 ## Basic Gameplay
 
@@ -206,10 +207,10 @@ checklist.
 - Multiplayer disposition confirmed fail-closed.
 - `godot.log` contains 0 release-blocking hits.
 
-Current exit status: beta.99 package parity passes; clicked RitsuLib Mod
-Settings UI proof, Off loader proof, current enabled-mode proof, gameplay,
-save-load, replacement behavior, multiplayer/co-op, independent QA, and tester
-handoff remain pending.
+Current exit status: beta.99 package parity and clicked RitsuLib Mod Settings
+UI proof pass; beta.99 direct Off loader proof, current enabled-mode proof,
+gameplay, save-load, replacement behavior, multiplayer/co-op, independent QA,
+and tester handoff remain pending.
 
 ## Notes
 

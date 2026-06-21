@@ -23,11 +23,11 @@ RitsuLib APIs.
 
 - Current beta.99 package parity is summarized in `PROJECT_STATE.md` and
   `docs/reviews/current-validation.md`.
-- Beta.97 clicked settings proof remains pending after the settings-page I18N
-  resource migration.
-- Previous beta.96 clicked settings proof is retained at
-  `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
-  It proves Settings -> `Mod Settings (RitsuLib)` visibility for Spire Plus.
+- Current beta.99 clicked settings proof is retained at
+  `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
+  It proves Settings -> `Mod Settings (RitsuLib)` visibility for Spire Plus,
+  rendered the current `STS2-RitsuLib >= 0.4.32` settings page, and includes a
+  clean same-session log audit.
 - Previous beta.96 Off loader proof is retained at
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
@@ -50,7 +50,7 @@ runtime/manual gates have current evidence and owner approval.
 1. Keep the official STS2-RitsuLib install under
    `<GameRoot>\mods\STS2-RitsuLib`.
 2. Enable only STS2-RitsuLib and Spire Plus for controlled RitsuLib-only proof.
-3. Recapture beta.99 loader proof after the settings-page I18N resource
+3. Recapture beta.99 direct Off loader proof after the settings-page I18N resource
    migration.
 4. Treat settings screenshots as UI visibility proof only.
 5. Withhold live-ready and release-ready claims until gameplay, save-load,
