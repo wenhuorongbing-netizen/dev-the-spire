@@ -2,7 +2,7 @@
 
 ## Current Target
 
-Date: 2026-06-21
+Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
@@ -41,7 +41,7 @@ The migration is not release-ready. Gameplay, event screenshots, save-load, imag
 
 ## Dependency Recheck
 
-- NuGet flat-container and `dotnet list package --outdated` show `STS2.RitsuLib` `0.4.32` as the latest package.
+- 2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.32` as the latest package. The flat-container index lists 163 versions and ends at `0.4.32`; `dotnet list` found no `STS2.RitsuLib` update and reported only transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
 - Nexus files list the variant-pack main file as `0.4.32`; direct automated Nexus download was blocked by the site challenge in this session.
 - The GitHub release page/API can lag the NuGet/Nexus package version; do not use a lagging GitHub release marker as the dependency-floor source when NuGet and Nexus both expose a newer stable package.
 - The current local runtime is deployed from the official NuGet package via `RitsuLibDeployDir`, producing `mods/STS2-RitsuLib/mod_manifest.json`, root `STS2-RitsuLib.dll`, XML docs, and viewer files.

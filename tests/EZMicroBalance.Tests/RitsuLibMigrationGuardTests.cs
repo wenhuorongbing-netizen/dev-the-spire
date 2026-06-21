@@ -363,7 +363,9 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             migrationGoal,
-            "NuGet flat-container and `dotnet list package --outdated` show `STS2.RitsuLib` `0.4.32` as the latest package",
+            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.32` as the latest package",
+            "The flat-container index lists 163 versions and ends at `0.4.32`",
+            "found no `STS2.RitsuLib` update",
             "Nexus files list the variant-pack main file as `0.4.32`",
             "The GitHub release page/API can lag the NuGet/Nexus package version",
             "do not use a lagging GitHub release marker as the dependency-floor source",
@@ -374,7 +376,11 @@ public sealed class RitsuLibMigrationGuardTests
         AssertSourceContains(
             integrationDoc,
             "## External Version Recheck",
-            "`dotnet list ... package --outdated` and NuGet package search report",
+            "2026-06-22 recheck",
+            "`dotnet list EZMicroBalance.csproj package --outdated --include-transitive`",
+            "found no `STS2.RitsuLib` update",
+            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.32`",
+            "across 163 listed versions",
             "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "NuGet package",

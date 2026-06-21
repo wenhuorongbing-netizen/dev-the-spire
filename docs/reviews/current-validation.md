@@ -1,6 +1,12 @@
 # Current Validation
 
-Date: 2026-06-11; latest addendum: 2026-06-21
+Date: 2026-06-11; latest addendum: 2026-06-22
+
+## June 22 RitsuLib And Source Snapshot Recheck
+
+- `scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.99' -ExpectedRitsuLibVersion '0.4.32' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch` passed 57 checks / 0 mismatches. The only retained warnings are the GDRE 18 failed scripts and one debug-scene parse warning; source identity, installed game identity, package version, and RitsuLib layout all match.
+- `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` found no newer `STS2.RitsuLib`; the only reported update was transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
+- NuGet flat-container `https://api.nuget.org/v3-flatcontainer/sts2.ritsulib/index.json` still reports `0.4.32` as the latest `STS2.RitsuLib` package across 163 listed versions. This recheck does not close gameplay, clicked Ancient UI, save-load, current enabled-mode, replacement, multiplayer, QA, release, or tester handoff gates.
 
 ## June 21 RitsuLib-Only Migration Addendum
 

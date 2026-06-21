@@ -430,6 +430,44 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void CurrentAgentEntryDocsStayRitsuLibOnly()
+    {
+        var retiredFrameworkName = new string(new[] { 'B', 'a', 's', 'e', 'L', 'i', 'b' });
+        var entryDocs = new (string Path, string Text)[]
+        {
+            ("AGENTS.md", ReadRepoText("AGENTS.md")),
+            ("PROJECT_STATE.md", ReadRepoText("PROJECT_STATE.md")),
+            ("README.md", ReadRepoText("README.md")),
+            ("docs/goals/migration.md", ReadRepoText("docs", "goals", "migration.md")),
+            ("docs/integrations/ritsulib.md", ReadRepoText("docs", "integrations", "ritsulib.md")),
+            ("docs/skills/sts2-godot-mod-development.md", ReadRepoText("docs", "skills", "sts2-godot-mod-development.md"))
+        };
+
+        foreach (var (_, text) in entryDocs)
+        {
+            Assert.DoesNotContain(retiredFrameworkName, text, StringComparison.OrdinalIgnoreCase);
+        }
+
+        AssertSourceContains(
+            entryDocs.Single(entry => entry.Path == "AGENTS.md").Text,
+            "STS2-RitsuLib `v0.4.32`",
+            "no newer `STS2.RitsuLib` package",
+            "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
+            "inspect RitsuLib/template APIs",
+            "Install STS2-RitsuLib `v0.4.32`");
+        AssertSourceContains(
+            entryDocs.Single(entry => entry.Path == "PROJECT_STATE.md").Text,
+            "Current dependency configurations are aligned on STS2-RitsuLib `v0.4.32`",
+            "2026-06-22 NuGet flat-container",
+            "2026-06-22 source-workspace recheck passed 57 checks / 0 mismatches");
+        AssertSourceContains(
+            entryDocs.Single(entry => entry.Path == "docs/goals/migration.md").Text,
+            "Spire Plus is a RitsuLib-only mod.",
+            "installed `STS2-RitsuLib` package docs/XML and the public RitsuLib docs",
+            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.32` as the latest package");
+    }
+
+    [Fact]
     public void RitsuLibIntegrationDocsReflectCurrentActiveDependency()
     {
         var docsReadme = ReadRepoText("docs", "README.md");
@@ -457,7 +495,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`EZMicroBalance.csproj` references `STS2.RitsuLib` only",
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
             "Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.",
-            "2026-06-21 recheck",
+            "2026-06-22 recheck",
+            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.32`",
             "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "RegisterModSettings",
