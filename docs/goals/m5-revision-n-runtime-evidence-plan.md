@@ -7,9 +7,9 @@ Full archived record:
 
 - `docs/archive/legacy-planning/m5-revision-n-runtime-evidence-plan-20260619.md`
 
-The archived plan predates the beta.92 RitsuLib-only migration. Current clean
-loader/registration proof is beta.92 on Slay the Spire 2 `v0.107.1` with
-`STS2-RitsuLib` `v0.4.29` / `lib/0.107.1`.
+The archived plan predates the beta.93 RitsuLib-only migration. Current clean
+loader/registration proof is beta.93 on Slay the Spire 2 `v0.107.1` with
+`STS2-RitsuLib` `v0.4.31` / `lib/0.107.1`.
 
 Use `PROJECT_STATE.md`, `docs/goals/migration.md`,
 `docs/release-evidence-status.md`, and `docs/test-ready-development-goal.md`

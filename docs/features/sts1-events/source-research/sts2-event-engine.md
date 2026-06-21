@@ -2,7 +2,7 @@
 
 ## 2026-06-18 Revision M Current Boundary
 
-This source-research note documents event-engine APIs and source patterns for StS1 event implementation. It is not current `v0.107.1` gameplay proof. Current beta.92 proves only RitsuLib-only Off and AdditiveBatch1 loader/registration behavior; beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence. CanaryOnly gameplay/runtime, save-load, replacement, multiplayer, QA, handoff, and release-ready proof still require fresh current evidence.
+This source-research note documents event-engine APIs and source patterns for StS1 event implementation. It is not current `v0.107.1` gameplay proof. Current beta.93 proves only RitsuLib-only Off and AdditiveBatch1 loader/registration behavior; beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence. CanaryOnly gameplay/runtime, save-load, replacement, multiplayer, QA, handoff, and release-ready proof still require fresh current evidence.
 
 ## EventModel Base Class
 

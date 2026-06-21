@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Current beta.92 resource/package coverage treats the StS1 event localization files as no-game file-parity verified, not source-reference complete and not runtime-render verified.
+Current beta.93 resource/package coverage treats the StS1 event localization files as no-game file-parity verified, not source-reference complete and not runtime-render verified.
 
 | File | Language | Current key count | Status |
 |------|----------|-------------------|--------|
@@ -93,4 +93,4 @@ Before claiming localization complete in gameplay, capture:
 4. Evidence that locked/unavailable options fit and display correctly.
 5. `godot.log` and `godot-log-audit.json` for the same run.
 
-Current beta.92 Off/AdditiveBatch1 loader proof is not localization render proof.
+Current beta.93 Off/AdditiveBatch1 loader proof is not localization render proof.

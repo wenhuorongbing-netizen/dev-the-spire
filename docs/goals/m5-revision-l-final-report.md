@@ -9,7 +9,7 @@ Full archived record:
 
 Revision M supersession note, 2026-06-11: this report's beta.84 package/runtime boundary is historical.
 
-Current beta.85 has clean `v0.107.0` default-Off loader proof only; later beta.92
+Current beta.85 has clean `v0.107.0` default-Off loader proof only; later beta.93
 RitsuLib-only docs supersede this as current loader/package truth.
 
 Use `PROJECT_STATE.md`, `docs/goals/migration.md`, and

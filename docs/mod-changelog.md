@@ -36,7 +36,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - The stable manifest id and package folder remain `EZMicroBalance` for compatibility.
 - Added `docs/test-ready-development-goal.md` as the canonical next-development prompt for building the current mod to a source-complete test-ready candidate.
 - Repaired active Simplified Chinese settings, card-reward, event, rest-site, and relic text, and added a guard against known mojibake fragments in every active zhs localization JSON file.
-- Historical normal Steam-client startup/log verification at that time confirmed `Spire Plus (EZMicroBalance)`, config registration, 16 SavedSpireFields, and a clean main-menu load. Current beta.92 startup/log evidence is RitsuLib-only loader proof and does not replace the still-pending live Mod Settings page refresh.
+- Historical normal Steam-client startup/log verification at that time confirmed `Spire Plus (EZMicroBalance)`, config registration, 16 SavedSpireFields, and a clean main-menu load. Current beta.93 startup/log evidence is RitsuLib-only loader proof and does not replace the still-pending live Mod Settings page refresh.
 - Urda and Lotha now use custom Ancient background scenes, separate map/run-history icons, option art, and dialogue/localization for the active test slice.
 - At that point Lotha event art used the local generated mirror-tribunal background and temporary source-derived map/option/power crops; the later GPTimage2/browser art pass superseded the temporary-crop note for the current package.
 - Repaired broken Simplified Chinese Ancient expansion localization JSON so the active zhs files parse again.
@@ -84,7 +84,7 @@ Append only short tester/player-facing entries here when behavior or release val
 - Set `SPIREPLUS_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1` to disable only host-multiplayer A11-A20 selection.
 - `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` is legacy-compatible and no longer required.
 - A20 multiplayer selection is not full A20 co-op support. A20 Branded Form / second-boss enhanced dedicated ability gameplay remains disabled or downgraded in co-op pending live verification.
-- Normal Steam-client Mod Settings has historical RC1 UI evidence that predates the current display-name refresh. Current beta.92 startup/log evidence confirms Spire Plus loads as technical id `EZMicroBalance` with only STS2-RitsuLib as the required runtime dependency. Startup/log checks are not the same as live co-op or gameplay verification.
+- Normal Steam-client Mod Settings has historical RC1 UI evidence that predates the current display-name refresh. Current beta.93 startup/log evidence confirms Spire Plus loads as technical id `EZMicroBalance` with only STS2-RitsuLib as the required runtime dependency. Startup/log checks are not the same as live co-op or gameplay verification.
 
 ## 2026-05-07
 
@@ -102,4 +102,4 @@ Append only short tester/player-facing entries here when behavior or release val
 - A19/A20: boss dedicated ability / Branded Form map hover text remains available; A20 Branded Form gameplay remains single-player gated.
 - Multiplayer A20: host selection is enabled only for development testing when the public Ascension gate is on; logs now warn that A20 Branded Form / second-boss enhanced dedicated ability gameplay is disabled or downgraded in co-op pending live verification.
 - Tests: release artifact/package/runtime-smoke checks are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`; normal developer tests no longer require ignored `publish/` package artifacts. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
-- Status: the 2026-05-24 Steam-client helper startup/log verification under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke` is historical BaseLib-backed loader context only. Current beta.92 startup/log evidence loads only `STS2-RitsuLib` and Spire Plus for the required framework/mod pair; live feature verification, save-load, and live co-op verification remain pending until actually executed.
+- Status: the 2026-05-24 Steam-client helper startup/log verification under `.tools/runtime-evidence/manual-test-handoff-20260524-161744/release/fresh-current-package-loader-smoke` is historical BaseLib-backed loader context only. Current beta.93 startup/log evidence loads only `STS2-RitsuLib` and Spire Plus for the required framework/mod pair; live feature verification, save-load, and live co-op verification remain pending until actually executed.

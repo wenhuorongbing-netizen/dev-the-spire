@@ -155,7 +155,7 @@ Add-ContainsCheck -Name 'matrix_runtime_not_live_proof' -Text $matrix -Needle 'I
 
 Add-ContainsCheck -Name 'fail_closed_current_runtime_pending' -Text $failClosed -Needle 'Current runtime/co-op fail-closed: PENDING'
 Add-ContainsCheck -Name 'fail_closed_source_level_verified_only' -Text $failClosed -Needle 'Source-level fail-closed: VERIFIED by guard tests.'
-Add-ContainsCheck -Name 'fail_closed_current_off_not_coop' -Text $failClosed -Needle 'current beta.92 `v0.107.1` Off and AdditiveBatch1 loader proof is clean, but it is not co-op or gameplay evidence, and CanaryOnly-specific claims require fresh current-version proof.'
+Add-ContainsCheck -Name 'fail_closed_current_off_not_coop' -Text $failClosed -Needle 'current beta.93 `v0.107.1` Off and AdditiveBatch1 loader proof is clean, but it is not co-op or gameplay evidence, and CanaryOnly-specific claims require fresh current-version proof.'
 
 $report = [pscustomobject]@{
     Checks = $checks

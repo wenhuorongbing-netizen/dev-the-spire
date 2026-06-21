@@ -7,7 +7,7 @@ Full archived record:
 
 - `docs/archive/legacy-planning/m5-revision-l-runtime-hard-blocker-20260610.md`
 
-Revision L is superseded by beta.92 RitsuLib-only setup and loader evidence in
+Revision L is superseded by beta.93 RitsuLib-only setup and loader evidence in
 `PROJECT_STATE.md`, `docs/goals/migration.md`, and `docs/test-ready-development-goal.md`.
 
 Retained historical AdditiveBatch1 count boundary: historical log used the then-current 10 event types / 11 registration-call shape; current source expects 10 event types / 14 calls.

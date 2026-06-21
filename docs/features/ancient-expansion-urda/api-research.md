@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-20
 
-Current supersession note: the original May Urda research used BaseLib as the active template dependency. The current Spire Plus migration target is RitsuLib-only: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.29`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.29`, and BaseLib is previous-package/other-mod context only. Reinspect local `source code/` and the installed RitsuLib package before changing Urda behavior.
+Current supersession note: the original May Urda research used BaseLib as the active template dependency. The current Spire Plus migration target is RitsuLib-only: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.31`, and BaseLib is previous-package/other-mod context only. Reinspect local `source code/` and the installed RitsuLib package before changing Urda behavior.
 
 ## 1. Current evidence set
 

@@ -4,13 +4,13 @@
 
 **Open — governance hardened, content incomplete, runtime proof blocked.** Default Off is source-safe; CanaryOnly and AdditiveBatch1 are controlled source-test modes; AdditiveAllDraft and ReplaceUnknownEventsPrototype are disabled unless an explicit unsafe/debug override is set, and remain dev-only/unsafe.
 
-2026-06-20 correction: historical loader proof exists for Off, CanaryOnly, and AdditiveBatch1. Retained beta.85 `v0.107.0` proof covers default-Off plus CanaryOnly loader registration only as previous-package/game-version context, while current beta.92 RitsuLib-only proof covers Off plus AdditiveBatch1 loader/registration shape only. Event gameplay, save-load, screenshot, replacement functional proof, and two-client co-op/fail-closed proof remain pending or blocked.
+2026-06-20 correction: historical loader proof exists for Off, CanaryOnly, and AdditiveBatch1. Retained beta.85 `v0.107.0` proof covers default-Off plus CanaryOnly loader registration only as previous-package/game-version context, while current beta.93 RitsuLib-only proof covers Off plus AdditiveBatch1 loader/registration shape only. Event gameplay, save-load, screenshot, replacement functional proof, and two-client co-op/fail-closed proof remain pending or blocked.
 
 ## Summary
 
 StS1 event port model files (`Sts1Events/Models/`) are compiled into the Spire Plus assembly. The feature module (`Sts1EventsFeatureModule`) is registered in `SpirePlusFeatureRegistry` and gated to Off by default via environment variable `SPIREPLUS_STS1_EVENT_MODE`.
 
-## Current State (updated 2026-06-21 from beta.92 RitsuLib-only loader-gate evidence)
+## Current State (updated 2026-06-21 from beta.93 RitsuLib-only loader-gate evidence)
 
 ### Compile status
 

@@ -47,17 +47,17 @@ public sealed partial class AncientBehaviorGuardTests
             "- [x] The active release surface is one mod: `Spire Plus`.",
             "- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
-            "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.29`.",
+            "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.31`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
-            "- [ ] STS2-RitsuLib appears in Mod Settings for the beta.92 RitsuLib-only package.",
+            "- [ ] STS2-RitsuLib appears in Mod Settings for the beta.93 RitsuLib-only package.",
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.",
-            "- [ ] Current beta.92 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
+            "- [ ] Current beta.93 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [x] Fresh RitsuLib-only Off loader smoke for the current beta.92 ZIP hash is captured after the latest RitsuLib package refresh",
-            "- [x] Fresh RitsuLib-only AdditiveBatch1 registration smoke for the current beta.92 ZIP hash is captured",
-            "- [x] Latest RitsuLib-only Off loader smoke for the current beta.92 package hash is recaptured on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90 loader evidence is historical context only.",
-            "- [x] `godot.log` reviewed after fresh beta.92 RitsuLib-only Off and AdditiveBatch1 isolated startup/log verification.",
+            "- [x] Fresh RitsuLib-only Off loader smoke for the current beta.93 ZIP hash is captured after the latest RitsuLib package refresh",
+            "- [x] Fresh RitsuLib-only AdditiveBatch1 registration smoke for the current beta.93 ZIP hash is captured",
+            "- [x] Latest RitsuLib-only Off loader smoke for the current beta.93 package hash is recaptured on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90 loader evidence is historical context only.",
+            "- [x] `godot.log` reviewed after fresh beta.93 RitsuLib-only Off and AdditiveBatch1 isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -68,11 +68,11 @@ public sealed partial class AncientBehaviorGuardTests
             "- [ ] Worktree is clean.",
             "- [ ] Commit is created.",
             "- [ ] Push to `origin` is performed after validation, packaging, and an intentional commit.",
-            "Current beta.92 RitsuLib-only Off proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta92-ritsulib0429-off-direct-20260621` and closes the package-hash loader smoke for that Off-mode surface.",
-            "Current beta.92 AdditiveBatch1 registration proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta92-ritsulib0429-additivebatch1-direct-20260621`",
+            "Current beta.93 RitsuLib-only Off proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta93-ritsulib0431-off-direct-20260621` and closes the package-hash loader smoke for that Off-mode surface.",
+            "Current beta.93 AdditiveBatch1 registration proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`",
             "loader/registration evidence, not gameplay proof.",
             "Refreshed normal Steam-client Mod Settings UI evidence at `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` shows `Spire Plus`",
-            "current beta.92 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`",
+            "current beta.93 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`",
             "Manual feature results are pending",
             "Unsupported Cases",
             "A11-A20 selection is default-on only for single-player standard lobbies",
@@ -89,7 +89,7 @@ public sealed partial class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.92 package shape; current Off/AdditiveBatch1 loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is loader/registration evidence only.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.93 package shape; current Off/AdditiveBatch1 loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is loader/registration evidence only.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);

@@ -66,7 +66,7 @@ dotnet test EZMicroBalance.sln --no-build
 
 Normal runs skip tests that depend on ignored local `publish/`, installed DLL/PCK, package zip, smoke-log artifacts, or the ignored local `source code/src/Core/**` snapshot.
 
-Current beta.92 validation uses a split no-build lane when the one-shot solution
+Current beta.93 validation uses a split no-build lane when the one-shot solution
 test run is unstable around `ReleaseEvidenceGateTests`: run the
 `ReleaseEvidenceGateTests` class in isolation, then run the complementary
 test-project lane excluding that class. The latest authoritative totals are in

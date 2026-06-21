@@ -3,7 +3,7 @@
 Date: 2026-06-10
 Scope: Mandatory Overnight Run v18, current `v0.107.0` loader reproof after RitsuLib `v0.4.16`.
 
-Superseded note, 2026-06-21: this report remains root-cause history for the failed beta.84 package. Current beta.92 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 loader/registration proof is clean under `.tools/runtime-evidence/v01071-beta92-ritsulib0429-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta92-ritsulib0429-additivebatch1-direct-20260621/`; gameplay, save-load, replacement, multiplayer, and QA proof remain pending. Do not follow the historical BaseLib-backed rerun instruction below as current setup guidance.
+Superseded note, 2026-06-21: this report remains root-cause history for the failed beta.84 package. Current beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 loader/registration proof is clean under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; gameplay, save-load, replacement, multiplayer, and QA proof remain pending. Do not follow the historical BaseLib-backed rerun instruction below as current setup guidance.
 
 ## Exact Gate Id
 
@@ -55,7 +55,7 @@ But the fresh `v0.107.0` loader smoke fails on the beta.84 package and cannot be
 
 1. Do not use beta.84 as current `v0.107.0` loader proof; the smoke is red.
 2. Decide whether to cut a new versioned package from the dirty source API fixes, including the required version bump, publish/package refresh, and validation.
-3. Historical action at capture time: after a fixed package is installed, rerun a controlled `v0.107.0` Off loader smoke with the then-required BaseLib + STS2-RitsuLib + Spire Plus stack. Current beta.92 guidance is RitsuLib-only and lives in `PROJECT_STATE.md` plus `docs/features/sts1-events/README.md`.
+3. Historical action at capture time: after a fixed package is installed, rerun a controlled `v0.107.0` Off loader smoke with the then-required BaseLib + STS2-RitsuLib + Spire Plus stack. Current beta.93 guidance is RitsuLib-only and lives in `PROJECT_STATE.md` plus `docs/features/sts1-events/README.md`.
 4. If Off is clean, capture CanaryOnly and AdditiveBatch1 loader smokes under the same current runtime.
 5. Preserve `godot.log`, audit JSON, session state, restore state, command/env notes, and hash/path prerequisites for each mode.
 

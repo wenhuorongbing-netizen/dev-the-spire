@@ -90,7 +90,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-06-21 beta.92:",
+            "Current package hashes, 2026-06-21 beta.93:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -127,11 +127,11 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
             "Active M5 Revision P truth",
-            "current beta.92 RitsuLib-only loader proof supersedes it",
+            "current beta.93 RitsuLib-only loader proof supersedes it",
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "Current beta.92 RitsuLib-only evidence should be read from the latest validated HEAD");
+            "Current beta.93 RitsuLib-only evidence should be read from the latest validated HEAD");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");

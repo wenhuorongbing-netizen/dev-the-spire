@@ -5,7 +5,7 @@ Scope: Mandatory Overnight Run v13 for `docs/goals/event.md`
 
 Superseded note, 2026-06-11: this report is historical hard-stop evidence only. Current beta.85 `v0.107.0` proof covers default-Off loader startup and patch application only; it does not prove CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Current source registration shape is 57 RegisterAll calls and AdditiveBatch1 10 event types / 14 registration calls; older 10/11 wording and missing-RitsuLib runtime prerequisite text below must stay historical.
 
-Current supersession, 2026-06-21: beta.92 `v0.107.1` proof now covers RitsuLib-only Off and AdditiveBatch1 loader/registration only; it still does not prove gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Treat any BaseLib runtime prerequisite text below as historical, not current instruction.
+Current supersession, 2026-06-21: beta.93 `v0.107.1` proof now covers RitsuLib-only Off and AdditiveBatch1 loader/registration only; it still does not prove gameplay, save-load, replacement, multiplayer, image/render, QA, handoff, or release readiness. Treat any BaseLib runtime prerequisite text below as historical, not current instruction.
 
 ## Evidence Paths
 
@@ -64,4 +64,4 @@ Continuation cannot make O0-O46 all green in the current environment because STS
 
 ## Next Command After Owner Action
 
-Historical next command at the time was to install STS2-RitsuLib and rerun loader smoke with the then-required dependency set. Current beta.92 uses STS2-RitsuLib plus Spire Plus only; use `README.md`, `PROJECT_STATE.md`, and `docs/features/sts1-events/README.md` for current runtime commands.
+Historical next command at the time was to install STS2-RitsuLib and rerun loader smoke with the then-required dependency set. Current beta.93 uses STS2-RitsuLib plus Spire Plus only; use `README.md`, `PROJECT_STATE.md`, and `docs/features/sts1-events/README.md` for current runtime commands.

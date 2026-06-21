@@ -6,7 +6,7 @@ Worktree: dirty, owner-review pending.
 
 Revision M note, 2026-06-11: beta.85 validation keeps the nullable warning blocker closed, but this ledger remains a no-game warning ledger only. Do not use 0 warnings as current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, or release-ready proof.
 
-Current supersession, 2026-06-21: beta.92 has RitsuLib-only Off and AdditiveBatch1 loader/registration proof on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.29`; gameplay, UI, save-load, replacement, co-op, QA, and release-ready proof remain pending. Use `PROJECT_STATE.md` and `docs/test-ready-development-goal.md` for current proof claims.
+Current supersession, 2026-06-21: beta.93 has RitsuLib-only Off and AdditiveBatch1 loader/registration proof on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.31`; gameplay, UI, save-load, replacement, co-op, QA, and release-ready proof remain pending. Use `PROJECT_STATE.md` and `docs/test-ready-development-goal.md` for current proof claims.
 
 ## Summary
 
@@ -79,7 +79,7 @@ The CanaryOnly files and the current AdditiveBatch1 files are warning-clean afte
 ## Governance Decision
 
 - Sts1Events recommendation: staging-only until current-runtime and gameplay evidence exists.
-- Runtime loader proof: historical Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration-call evidence remains diagnostic only. Current beta.92 RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration proof is clean; current source expects AdditiveBatch1=10 event types / 14 registration calls, and beta.92 verifier evidence matches that shape. Retained beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence only.
+- Runtime loader proof: historical Off=0, CanaryOnly=4, and AdditiveBatch1=10 event types / 11 registration-call evidence remains diagnostic only. Current beta.93 RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration proof is clean; current source expects AdditiveBatch1=10 event types / 14 registration calls, and beta.93 verifier evidence matches that shape. Retained beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence only.
 - Nullable warning blocker: closed for the beta.85 runtime-fix validation lane recorded in `PROJECT_STATE.md`.
 - Remaining formalization blockers: recapture any needed current-version CanaryOnly loader proof before Canary gameplay claims, then prove gameplay, EN/ZHS render, save-load, image/render behavior, replacement behavior, multiplayer fail-closed behavior, independent QA, and handoff.
 - Removal option: would clear warning debt but would discard intentionally staged prototype infrastructure; requires owner decision.

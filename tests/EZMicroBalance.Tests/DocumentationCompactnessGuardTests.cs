@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.92 loader truth is RitsuLib-only",
+            "Current beta.93 loader truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -123,8 +123,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "This v5 audit/spec is historical planning context only.",
             "Do not use its O0-O12 overnight gates, old registration assumptions, or old task",
             "Current StS1 event work routes through `docs/goals/event.md`",
-            "current beta.92 proves `v0.107.1` RitsuLib-only Off plus",
-            "AdditiveBatch1 loader/registration with STS2-RitsuLib `0.4.29`",
+            "current beta.93 proves `v0.107.1` RitsuLib-only Off plus",
+            "AdditiveBatch1 loader/registration with STS2-RitsuLib `0.4.31`",
             "This loader evidence is not gameplay, save-load, replacement, multiplayer, QA");
         Assert.Contains(archivedFileName, archiveReadme, StringComparison.Ordinal);
         Assert.Contains(archivedFileName, projectMap, StringComparison.Ordinal);
@@ -296,9 +296,9 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             apiDiscovery,
             "2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape.",
-            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.29`",
+            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.31`",
             "Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
-            "Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.29`",
+            "Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.31`",
             "Current authoritative source is the refreshed local public beta `v0.107.1` assembly/source recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.",
             "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
             "historical context only",
@@ -311,7 +311,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             manualChecklist,
             "- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`",
-            "- Runtime framework: `STS2-RitsuLib` `v0.4.29` with `lib\\0.107.1`",
+            "- Runtime framework: `STS2-RitsuLib` `v0.4.31` with `lib\\0.107.1`",
             "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / BaseLib validation lane are historical only and are not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
@@ -383,8 +383,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.92`",
-            "`STS2-RitsuLib` `0.4.29`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.93`",
+            "`STS2-RitsuLib` `0.4.31`",
             "`lib\\0.107.1`",
             "BaseLib is previous-package or other-mod local context only",
             "`scripts\\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot`",
@@ -448,7 +448,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docRestructureSpec,
             "**RitsuLib integration** (PR5/PR6+)",
-            "Current beta.92 RitsuLib-only compile/manifest/loader target active; later patch migrations gated");
+            "Current beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",
@@ -467,7 +467,7 @@ public sealed partial class DocumentationCompactnessGuardTests
                      "version mismatch blocker",
                      "future migration plan",
                      "RitsuLib Integration - Staging Record",
-                     "Historical upgrade path, now superseded by beta.92",
+                     "Historical upgrade path, now superseded by beta.93",
                      "Current-highest runtime manifest dependency",
                      "Nexus lists RitsuLib file version",
                      "| Just started |"
@@ -559,7 +559,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             AssertSourceContains(
                 activeBoundary,
                 "Status: archived",
-                "beta.92",
+                "beta.93",
                 "RitsuLib-only");
             Assert.DoesNotContain("## Replay Commands", activeBoundary, StringComparison.Ordinal);
             Assert.DoesNotContain("## Commit Slice Sketch", activeBoundary, StringComparison.Ordinal);

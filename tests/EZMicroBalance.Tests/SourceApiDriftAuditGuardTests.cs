@@ -129,7 +129,7 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             project,
-            "STS2.RitsuLib\" Version=\"0.4.29",
+            "STS2.RitsuLib\" Version=\"0.4.31",
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 
