@@ -49,10 +49,10 @@ public sealed partial class AncientBehaviorGuardTests
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
             "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.32`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
-            "- [ ] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package.",
+            "- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package.",
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.",
-            "- [ ] Current beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
+            "- [x] Current beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
             "current-spire-plus-modsettings-20260513-111342",
             "- [ ] Current RitsuLib-only Off loader smoke for the beta.99 ZIP hash is captured after the latest RitsuLib package refresh.",
             "- [x] Previous RitsuLib-only AdditiveBatch1 registration smoke for the beta.93 ZIP hash is captured",
@@ -71,8 +71,8 @@ public sealed partial class AncientBehaviorGuardTests
             "Previous beta.96 RitsuLib-only Off proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta96-ritsulib0431-off-direct-20260621-185056` and closed the package-hash loader smoke for that earlier Off-mode surface.",
             "Previous beta.93 AdditiveBatch1 registration proof has been recaptured under `.tools\\runtime-evidence\\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`",
             "loader/registration evidence, not gameplay proof.",
-            "Previous beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`",
-            "The older `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` screenshot is historical list context only.",
+            "Current beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\mod-settings-beta99-ritsulib-click-20260621-223210`",
+            "The beta.96 UI proof and older `.tools\\runtime-evidence\\current-spire-plus-modsettings-20260513-111342\\02-mod-config-list.png` screenshot are historical list/page context only.",
             "Manual feature results are pending",
             "Unsupported Cases",
             "A11-A20 selection is default-on only for single-player standard lobbies",
@@ -90,7 +90,8 @@ public sealed partial class AncientBehaviorGuardTests
         }
 
         Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.99 package shape.", manualMatrix, StringComparison.Ordinal);
-        Assert.Contains("Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Beta.99 clicked settings UI proof is captured under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210`", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("beta.99 direct Off loader proof remains pending after the RitsuLib settings-page I18N resource migration.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Result: pending.", manualMatrix, StringComparison.Ordinal);

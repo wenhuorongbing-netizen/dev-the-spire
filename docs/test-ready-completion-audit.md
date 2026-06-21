@@ -10,9 +10,10 @@ The beta.88 `v0.107.1` AdditiveBatch1 loader smoke is clean previous-package
 context evidence only. The previous beta.90 RitsuLib-only package is historical
 context after the earlier RitsuLib `0.4.31` update. The current beta.99 package
 is hash-refreshed against STS2-RitsuLib `0.4.32` after the settings-page I18N
-resource migration; beta.99 loader proof and clicked settings UI proof remain
-pending. Previous beta.96 Off proof and beta.93 AdditiveBatch1 registration proof
-remain previous-package context only.
+resource migration, and current clicked RitsuLib settings UI proof is captured
+under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`;
+beta.99 direct Off loader proof remains pending. Previous beta.96 Off proof and
+beta.93 AdditiveBatch1 registration proof remain previous-package context only.
 
 Installed-PCK resource smoke under `.tools/runtime-evidence/current-package-smoke-20260514-015901` remains resource-only evidence. Live gameplay, save-load, death/failure-path, co-op, and clicked Ancient UI remain pending.
 

@@ -296,7 +296,7 @@ public sealed partial class ReleaseCoverageGuardTests
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest package target is beta.99 RitsuLib-only", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.99 loader proof and clicked settings UI proof still need recapture", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.99 clicked RitsuLib settings UI proof are current, while direct beta.99 Off loader proof still needs recapture", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

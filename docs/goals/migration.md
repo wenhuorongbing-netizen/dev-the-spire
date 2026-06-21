@@ -83,7 +83,7 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 
 ## Next Actions
 
-1. Recapture beta.99 loader proof and clicked settings UI proof before making a current runtime claim.
+1. Recapture beta.99 direct Off loader proof before making a current startup/runtime claim; current clicked RitsuLib Mod Settings proof already lives under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
 2. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any Batch 4c or higher-risk patch migration.
