@@ -103,7 +103,7 @@ public sealed partial class ReleasePackageArtifactGuardTests
         Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
-        Assert.Contains("current beta.95 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
+        Assert.Contains("Current beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", docsByPath["docs/release-checklist.md"], StringComparison.Ordinal);
         Assert.DoesNotContain("private beta ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("release ready", combinedDocs, StringComparison.OrdinalIgnoreCase);
@@ -127,9 +127,9 @@ public sealed partial class ReleasePackageArtifactGuardTests
         Assert.Contains("update `docs/release-checklist.md`", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log verification passed for the beta.17 package hash", handoff, StringComparison.Ordinal);
         Assert.Contains("Historical normal Steam-client startup/log evidence confirms the display name", handoff, StringComparison.Ordinal);
-        Assert.Contains("Historical current-display Mod Settings list screenshot shows `Spire Plus`", handoff, StringComparison.Ordinal);
-        Assert.Contains("mod-settings-current-display", handoff, StringComparison.Ordinal);
-        Assert.Contains("current-spire-plus-modsettings-20260513-111342", handoff, StringComparison.Ordinal);
+        Assert.Contains("Current beta.96 Mod Settings evidence", handoff, StringComparison.Ordinal);
+        Assert.Contains("beta96-ritsulib-mod-settings-clicked-ui-20260621-160701", handoff, StringComparison.Ordinal);
+        Assert.Contains("settings-page visibility only", handoff, StringComparison.Ordinal);
         Assert.Contains("Live Ancient reward gameplay, broader save/load, disable-gameplay, and multiplayer checks are still pending", handoff, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", handoff, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", handoff, StringComparison.Ordinal);

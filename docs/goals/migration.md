@@ -6,7 +6,7 @@ Date: 2026-06-21
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.95`
+Current package target: Spire Plus `v0.1.0-private-beta.96`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
@@ -35,9 +35,9 @@ Do not add another shared runtime framework dependency unless the owner explicit
 
 ## Current Conclusion
 
-The code, manifest, package metadata, current setup docs, and controlled loader proof have moved to the RitsuLib-only target. The current manifest/package target is beta.95 after the settings UI status and Mod Info localization migration. Previous beta.93 Off proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. Recapture loader and page-level Mod Settings proof before treating beta.95 as runtime-proven.
+The code, manifest, package metadata, current setup docs, and controlled loader proof have moved to the RitsuLib-only target. The current manifest/package target is beta.96 after the settings UI status and Mod Info localization migration. Previous beta.93 Off proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. Current beta.96 page-level Mod Settings proof is captured under `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`; it proves settings UI visibility only. Recapture loader before treating beta.96 as runtime-proven.
 
-The migration is not release-ready. Gameplay, Mod Settings UI page refresh, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
+The migration is not release-ready. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
 
 ## Dependency Recheck
 
@@ -64,7 +64,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $blocked = -join ([char[]](66,97,115,101,76,105,98)); git grep -n -i $blocked -- ':!docs/archive/**' ':!source code/**' ':!bin/**' ':!obj/**' ':!.tools/**' ':!publish/**'
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.95' -ExpectedRitsuLibVersion '0.4.31' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.96' -ExpectedRitsuLibVersion '0.4.31' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
@@ -82,7 +82,7 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 
 ## Next Actions
 
-1. Refresh Mod Settings UI proof for the current Spire Plus display-name package.
+1. Capture beta.96 loader proof; current beta.96 Mod Settings UI proof does not replace loader proof.
 2. Capture AdditiveBatch1 gameplay proof; current evidence proves loader/registration only.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any Batch 4c or higher-risk patch migration.

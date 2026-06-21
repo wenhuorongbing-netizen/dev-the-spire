@@ -325,9 +325,9 @@ if ($Capture -ne 'None') {
     foreach ($target in $captureTargets) {
         $pngPath = Join-Path $screenshotsDir "mod-settings-$target.png"
         $captureArgs = @('-OutFile', $pngPath, '-RequireSpireForeground')
-        $capture = Invoke-HelperScript -ScriptPath $captureScript -Arguments $captureArgs -OutputPath (Join-Path $screenshotsDir "mod-settings-$target.capture.json")
-        if ($capture.ExitCode -ne 0) {
-            throw "Window capture for $target failed with exit code $($capture.ExitCode). See $($capture.OutputPath)."
+        $captureResult = Invoke-HelperScript -ScriptPath $captureScript -Arguments $captureArgs -OutputPath (Join-Path $screenshotsDir "mod-settings-$target.capture.json")
+        if ($captureResult.ExitCode -ne 0) {
+            throw "Window capture for $target failed with exit code $($captureResult.ExitCode). See $($captureResult.OutputPath)."
         }
 
         $capturedFiles += $pngPath
@@ -340,7 +340,7 @@ $readme = @"
 This folder is a pending evidence scaffold for the RitsuLib migration Mod Settings UI gate. It does not prove gameplay, save-load, co-op, release readiness, or private beta readiness.
 
 Current package version: `$($environment.PackageVersion)`.
-For the beta.95 pass, capture both the Mods list and the Spire Plus page after navigating through RitsuLib's Mod Settings submenu.
+For the beta.96 pass, capture both the Mods list and the Spire Plus page after navigating through RitsuLib's Mod Settings submenu.
 
 Required files before pass:
 - `command.txt`

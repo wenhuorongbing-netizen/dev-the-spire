@@ -383,7 +383,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.95`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.96`",
             "`STS2-RitsuLib` `0.4.31`",
             "`lib\\0.107.1`",
             "previous package is previous-package or other-mod local context only",

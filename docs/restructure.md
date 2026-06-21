@@ -6,7 +6,7 @@ not a release-readiness claim and must not override `PROJECT_STATE.md`,
 
 ## Current Target
 
-Current package/runtime target is Spire Plus `v0.1.0-private-beta.95` on Slay
+Current package/runtime target is Spire Plus `v0.1.0-private-beta.96` on Slay
 the Spire 2 `v0.107.1` with `STS2-RitsuLib` `0.4.31` and the `lib\0.107.1`
 runtime variant. `EZMicroBalance.csproj`, `EZMicroBalance.json`, package
 contents, and current runtime proof must remain RitsuLib-only unless the owner

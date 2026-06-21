@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `DA561EB2FF082EC94649B30B7543D8FD4C03EFAD1E192C3364D8AA85E049EEA0` |
-| DLL | `061CB2BB1B7FCA503BB180224006130317D93535E8FDDB3645D2FDABD77B4FDC` |
-| PCK | `2EF29712BF8EB57E7312687ECA0FF67572C1E287B144CE886D10970B92EBDA81` |
-| Manifest | `7D71C440EE41A1161030AF984E688AE171D7D67466C2A87CBD9514CB0FEC3F25` |
-| README_INSTALL | `19596B981498F3E93211CBF92697C9C4A3C1295F830A4F713F2D9D7A12B2148B` |
+| ZIP | `6E313D383E49B750E3C5809E92D7795CC5E196B5A7511707D2AB4357E24D4265` |
+| DLL | `28D9AA1632B783CE34BC4D4174C5A84DEB26FD74947529656A71757BF660309F` |
+| PCK | `549FD8B2A90B2AF74F8D6C591107F423588EFD868A61D1C901585E6FE188D20C` |
+| Manifest | `A752A38EFF068FDB75B629D4A0DC92153D115EFD76D369B406E3D7077E4E4593` |
+| README_INSTALL | `C8171889B7B03E177CAC6428E4CCA3873BEEDB054180A10A7E6703DEBC72BDFE` |
 
 ## Automation Summary
 
@@ -22,16 +22,16 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.95 publish/package sync, installed package parity, runtime preflight, and source-workspace checks are refreshed; previous beta.93 RitsuLib-only Off/AdditiveBatch1 direct loader smokes remain loader/registration context only. Gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.96 publish/package sync, installed package parity, runtime preflight, and source-workspace checks are refreshed; previous beta.93 RitsuLib-only Off/AdditiveBatch1 direct loader smokes remain loader/registration context only. Gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the previous beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 direct loader smokes audited clean for loader/registration proof, while Mod Settings page refresh, gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the previous beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 direct loader smokes audited clean for loader/registration proof. The beta.96 Mod Settings page row is captured; gameplay, clicked Ancient UI, save-load, preview-tools live behavior, Vakuu, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
 | fresh-current-package-loader-smoke | loader | Partial | Codex/User | Loader/registration proof exists at `.tools\runtime-evidence\v01071-beta93-ritsulib0431-off-direct-20260621` and `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`: clean `godot.log.current-iteration`, clean `godot-log-audit.json`, startup completion, Off packet verifier 43 / 0, retained enabled-mode log verifier 31 / 0, and AdditiveBatch1 packet verifier 61 / 0. To close the formal release-evidence row, add/promote the verifier-required `environment.json`, `package-hashes.json`, and `enabled-mods.txt` alongside this evidence or recapture through the release-evidence collector. |
-| mod-settings-current-display | clicked-ui | Pending | User | Current normal Steam-client Settings -> Mod Settings proof for the beta.95 package: foreground Mods list screenshot showing RitsuLib and Spire Plus, foreground Spire Plus config-page screenshot showing the Migration Status section, RitsuLib runtime dependency card, evidence-boundary card, and Preview Tools controls, route note, clean same-session `godot.log`, clean log audit, and filled `mod-settings-checklist.md`. The 2026-05 list screenshot is historical visible-list context only for this row. |
+| mod-settings-current-display | clicked-ui | Pass | Codex | Current beta.96 normal Steam-client Settings -> `Mod Settings (RitsuLib)` proof is under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`: foreground Mods list screenshot showing RitsuLib and Spire Plus, foreground Spire Plus config-page screenshots showing Migration Status, `STS2-RitsuLib >= 0.4.31`, evidence-boundary, technical-id, and Preview Tools controls, route note, clean same-session `godot.log`, clean log audit, and filled `mod-settings-checklist.md`. This proves settings UI visibility only, not gameplay or release readiness. |
 | ancient-ui-urda | clicked-ui | Pending | User | Urda clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-morvi | clicked-ui | Pending | User | Morvi clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-ui-lotha | clicked-ui | Pending | User | Lotha clicked Ancient screenshot, foreground preflight, route note, log, and log audit. |

@@ -90,7 +90,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-06-21 beta.93:",
+            "Current package hashes, 2026-06-21 beta.96:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",

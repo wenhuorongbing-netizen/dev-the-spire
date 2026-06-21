@@ -219,6 +219,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
     {
         var helper = ReadRepoText("scripts", "spire-plus-live-session.ps1");
         var windowPreflight = ReadRepoText("scripts", "check-spire-window-preflight.ps1");
+        var windowCapture = ReadRepoText("scripts", "capture-spire-window.ps1");
         var scriptsReadme = ReadRepoText("scripts", "README.md");
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
 
@@ -268,6 +269,13 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("Stop-Process", windowPreflight, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Move-Item", windowPreflight, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Remove-Item", windowPreflight, StringComparison.OrdinalIgnoreCase);
+        AssertSourceContains(
+            windowCapture,
+            "SetProcessDpiAwarenessContext",
+            "$dpiAwarenessPerMonitorV2 = [IntPtr](-4)",
+            "per-monitor DPI-aware",
+            "CopyFromScreen reads physical pixels",
+            "CopyFromScreen");
         Assert.Contains("spire-plus-live-session.ps1", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("check-spire-window-preflight.ps1", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("-DisableSpirePlus", scriptsReadme, StringComparison.Ordinal);
@@ -418,10 +426,10 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
-        Assert.Contains("- [ ] STS2-RitsuLib appears in Mod Settings for the beta.95 RitsuLib-only package.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] STS2-RitsuLib appears in Mod Settings for the beta.96 RitsuLib-only package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Current beta.95 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] Current beta.96 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
@@ -430,7 +438,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("current beta.95 list plus Spire Plus config-page proof remains pending under release-evidence row `mod-settings-current-display`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current beta.96 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);

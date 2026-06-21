@@ -81,10 +81,12 @@ public sealed partial class ReleaseEvidenceGateTests
                     var checklist = File.ReadAllText(Path.Combine(evidenceDir, "mod-settings-checklist.md"));
                     Assert.Contains("collect-mod-settings-evidence.ps1 -NoLaunch", readme, StringComparison.Ordinal);
                     Assert.Contains("Current package version:", readme, StringComparison.Ordinal);
-                    Assert.Contains("beta.95 pass", readme, StringComparison.Ordinal);
+                    Assert.Contains("beta.96 pass", readme, StringComparison.Ordinal);
                     Assert.Contains("-Capture List -RequireSpireForeground", readme, StringComparison.Ordinal);
                     Assert.Contains("-Capture Page -RequireSpireForeground", readme, StringComparison.Ordinal);
                     Assert.Contains("Pending scaffold only", result.Output, StringComparison.Ordinal);
+                    Assert.Contains("$captureResult = Invoke-HelperScript", source, StringComparison.Ordinal);
+                    Assert.DoesNotContain("$capture = Invoke-HelperScript", source, StringComparison.Ordinal);
                     Assert.Contains("ritsulib-visible-enabled", checklist, StringComparison.Ordinal);
                     Assert.Contains("spire-plus-list-display-name", checklist, StringComparison.Ordinal);
                     Assert.Contains("spire-plus-config-page-current-name", checklist, StringComparison.Ordinal);

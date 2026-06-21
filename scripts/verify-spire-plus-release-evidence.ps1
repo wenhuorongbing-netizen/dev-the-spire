@@ -268,6 +268,10 @@ $requiredModSettingsRows = @(
     'ritsulib-visible-enabled',
     'spire-plus-list-display-name',
     'spire-plus-config-page-current-name',
+    'ritsulib-migration-status-section',
+    'ritsulib-runtime-dependency-card',
+    'ritsulib-proof-boundary-card',
+    'preview-tools-controls-render',
     'technical-id-compatibility',
     'legacy-mod-surfaces-absent',
     'clean-log-config-registration'

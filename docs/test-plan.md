@@ -143,7 +143,7 @@ After a launched run, check the retained packet without launching the game:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.95 `
+  -ExpectedPackageVersion v0.1.0-private-beta.96 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch
 ```

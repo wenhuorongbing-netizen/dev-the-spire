@@ -34,8 +34,18 @@ public static class SpireCaptureNative {
 
     [DllImport("user32.dll")]
     public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
+
+    [DllImport("user32.dll")]
+    public static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
 }
 "@
+
+# Windows returns logical window bounds to a DPI-unaware PowerShell process while
+# CopyFromScreen reads physical pixels. Mark the helper as per-monitor DPI-aware
+# before reading bounds so evidence screenshots include the full game window on
+# scaled displays such as 150% laptop panels.
+$dpiAwarenessPerMonitorV2 = [IntPtr](-4)
+[void][SpireCaptureNative]::SetProcessDpiAwarenessContext($dpiAwarenessPerMonitorV2)
 
 function Get-ForegroundProcessId {
     $handle = [SpireCaptureNative]::GetForegroundWindow()

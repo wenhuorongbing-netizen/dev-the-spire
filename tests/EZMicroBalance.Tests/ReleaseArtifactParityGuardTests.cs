@@ -336,7 +336,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
         if (!Directory.Exists(evidenceDir))
         {
             Assert.Contains("raw local `.tools` runtime-evidence folders may be pruned", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("Fresh beta.95 loader, gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op evidence must be recaptured before any release-ready claim", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("Gameplay, clicked Ancient UI, save-load, co-op, and independent QA evidence are still required before any live-ready or release-ready claim.", currentDocs, StringComparison.Ordinal);
             Assert.Contains("previous beta.93 Off proof is loader evidence only and does not prove disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
             return;
         }
