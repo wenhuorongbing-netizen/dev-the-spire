@@ -19,8 +19,8 @@ Current beta.99 package parity is recorded in `PROJECT_STATE.md` and
 `docs/reviews/current-validation.md`. Beta.99 RitsuLib Mod Settings clicked UI
 proof is captured under
 `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`;
-beta.99 direct Off loader proof remains pending after the settings-page I18N
-resource migration.
+beta.99 direct Off loader proof is captured under
+`.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 
 The current beta.99 settings proof proves Settings -> `Mod Settings (RitsuLib)`
 visibility for Spire Plus only: the session showed only `RitsuLib` and
@@ -29,9 +29,15 @@ visibility for Spire Plus only: the session showed only `RitsuLib` and
 controls, retained same-session `godot.log`, audited clean, and passed StS1 Off
 runtime shape verification 21 / 0.
 
+The current beta.99 Off proof proves startup/loading and default-Off StS1Events
+behavior only: direct `--force-steam off` reached main menu with exactly
+STS2-RitsuLib and Spire Plus loaded, clean audit, 25/25 Spire Plus patches,
+StS1Events disabled with 0 registration lines, Off verifier 21 / 0, and packet
+verifier 43 / 0.
+
 The previous beta.96 Off packet is retained at
 `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
-It proves startup/loading and default-Off StS1Events behavior only. Earlier
+It is previous-package startup/loading context only. Earlier
 beta.93 AdditiveBatch1 packets remain older package loader/registration context
 only. They do not prove beta.99 enabled-mode gameplay, clicked Ancient UI,
 save-load, replacement behavior, multiplayer/co-op, QA, or tester handoff.
@@ -84,18 +90,18 @@ Ensure `STS2-RitsuLib` is not moved out by any mod-isolation step.
 |---|------|----------|----------|
 | 1 | Install STS2-RitsuLib | `<GameRoot>\mods\STS2-RitsuLib` exists and manifest version satisfies `>= 0.4.32` | PASS: E-drive install is `v0.4.32` in direct NuGet runtime layout |
 | 2 | Install Spire Plus beta.99 | Installed folder, manifest, DLL, PCK, and package hashes match beta.99 handoff docs | PASS: package parity is recorded in `PROJECT_STATE.md` |
-| 3 | Launch beta.99 with only the two allowed mods | Main menu loads without crash | [PENDING beta.99 recapture] |
-| 4 | Check `godot.log` for RitsuLib init | RitsuLib initializes and reports no dependency errors | [PENDING beta.99 recapture] |
-| 5 | Check `godot.log` for Spire Plus init | Single Spire Plus initialization line, technical id `EZMicroBalance`, package `v0.1.0-private-beta.99` | [PENDING beta.99 recapture] |
-| 6 | Check `godot.log` for ModPatcher count | 25 ModPatcher patches applied; remaining raw Harmony patches load without dependency failures | [PENDING beta.99 recapture] |
-| 7 | Check release-blocking signatures | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | [PENDING beta.99 recapture] |
-| 8 | Check saved attached-state registration | RitsuLib saved attached-state registration succeeds | [PENDING beta.99 recapture] |
+| 3 | Launch beta.99 with only the two allowed mods | Main menu loads without crash | PASS: `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` |
+| 4 | Check `godot.log` for RitsuLib init | RitsuLib initializes and reports no dependency errors | PASS: beta.99 Off proof |
+| 5 | Check `godot.log` for Spire Plus init | Single Spire Plus initialization line, technical id `EZMicroBalance`, package `v0.1.0-private-beta.99` | PASS: beta.99 Off proof |
+| 6 | Check `godot.log` for ModPatcher count | 25 ModPatcher patches applied; remaining raw Harmony patches load without dependency failures | PASS: beta.99 Off proof |
+| 7 | Check release-blocking signatures | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | PASS: beta.99 Off proof |
+| 8 | Check saved attached-state registration | RitsuLib saved attached-state registration succeeds | PASS: beta.99 Off proof |
 
 ## StS1Events Runtime Gates
 
 | Mode | Required env | Expected | Evidence |
 | --- | --- | --- | --- |
-| Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 StS1Events registrations, no `[StS1 Events]` registration lines | [PENDING beta.99 recapture; previous beta.96 proof retained] |
+| Off | unset / empty / invalid `SPIREPLUS_STS1_EVENT_MODE` | 0 StS1Events registrations, no `[StS1 Events]` registration lines | PASS: `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` |
 | CanaryOnly | `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly` | 4 canary event types / 6 registration calls: Big Fish and Golden Idol in both Act 1 buckets, plus The Lab and Divine Fountain as shared events | [PENDING beta.99 recapture] |
 | AdditiveBatch1 | `SPIREPLUS_STS1_EVENT_MODE=AdditiveBatch1` | 14 registration calls / 10 event types, no TODO/BLOCKED events | [PENDING beta.99 recapture] |
 | AdditiveAllDraft | `SPIREPLUS_STS1_EVENT_MODE=AdditiveAllDraft` plus `SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES=1` | Not release-safe; dev-only all-draft mode includes TODO/BLOCKED content | [DO NOT USE for tester/release paths] |
@@ -208,9 +214,9 @@ checklist.
 - `godot.log` contains 0 release-blocking hits.
 
 Current exit status: beta.99 package parity and clicked RitsuLib Mod Settings
-UI proof pass; beta.99 direct Off loader proof, current enabled-mode proof,
-gameplay, save-load, replacement behavior, multiplayer/co-op, independent QA,
-and tester handoff remain pending.
+UI proof pass; beta.99 direct Off loader proof passes for startup/default-Off
+only. Current enabled-mode proof, gameplay, save-load, replacement behavior,
+multiplayer/co-op, independent QA, and tester handoff remain pending.
 
 ## Notes
 

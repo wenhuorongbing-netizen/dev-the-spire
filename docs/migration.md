@@ -24,7 +24,7 @@ Spire Plus is on the beta.99 RitsuLib-only target:
   I18N resource migration.
 - Beta.99 clicked RitsuLib Mod Settings UI proof is captured at
   `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
-- Beta.99 direct Off loader proof remains pending.
+- Beta.99 direct Off loader proof is captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` for startup/loading and default-Off StS1Events behavior only.
 - Previous beta.96 RitsuLib-only Off proof is startup/loading evidence only.
   Prior beta.93 RitsuLib-only AdditiveBatch1 proof is previous-package
   registration evidence only. Recapture beta.99 loader proof before making a

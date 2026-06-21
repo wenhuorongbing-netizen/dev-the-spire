@@ -50,10 +50,10 @@ runtime/manual gates have current evidence and owner approval.
 1. Keep the official STS2-RitsuLib install under
    `<GameRoot>\mods\STS2-RitsuLib`.
 2. Enable only STS2-RitsuLib and Spire Plus for controlled RitsuLib-only proof.
-3. Recapture beta.99 direct Off loader proof after the settings-page I18N resource
-   migration.
+3. Treat beta.99 direct Off loader proof as startup/loading and default-Off
+   StS1Events evidence only.
 4. Treat settings screenshots as UI visibility proof only.
-5. Withhold live-ready and release-ready claims until gameplay, save-load,
+5. Withhold live-ready and release-ready claims until enabled-mode, gameplay, save-load,
    co-op, and QA evidence exists.
 
 ## Next Action

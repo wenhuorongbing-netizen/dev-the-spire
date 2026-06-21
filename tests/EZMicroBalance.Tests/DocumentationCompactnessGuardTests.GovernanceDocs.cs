@@ -20,7 +20,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.99 clicked RitsuLib settings UI proof are current, while direct beta.99 Off loader proof still needs recapture", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.99 clicked RitsuLib settings UI proof, and beta.99 direct Off loader proof are current", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta.19 packages have historical loader/startup evidence", projectState, StringComparison.Ordinal);

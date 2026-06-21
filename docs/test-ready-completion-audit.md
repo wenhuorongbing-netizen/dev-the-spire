@@ -12,8 +12,10 @@ context after the earlier RitsuLib `0.4.31` update. The current beta.99 package
 is hash-refreshed against STS2-RitsuLib `0.4.32` after the settings-page I18N
 resource migration, and current clicked RitsuLib settings UI proof is captured
 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`;
-beta.99 direct Off loader proof remains pending. Previous beta.96 Off proof and
-beta.93 AdditiveBatch1 registration proof remain previous-package context only.
+beta.99 direct Off loader proof is captured under
+`.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
+Previous beta.96 Off proof and beta.93 AdditiveBatch1 registration proof remain
+previous-package context only.
 
 Installed-PCK resource smoke under `.tools/runtime-evidence/current-package-smoke-20260514-015901` remains resource-only evidence. Live gameplay, save-load, death/failure-path, co-op, and clicked Ancient UI remain pending.
 
@@ -86,7 +88,7 @@ These do not block the source-complete test-ready package because the goal doc e
 - Natural A11 click-by-click traversal remains pending; saved-map boss-reachability proof exists for the current A11 Act 1 spot-check save.
 - Full Rootblight combat-end behavior, generated-art in-game visual check, and co-op ownership/desync checks are pending.
 - The 2026-05-13 A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. The source/package fix is in place and `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` verifies installed-PCK resource resolution for the custom Urda scene/icon, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
-- Urda, Morvi, Lotha, and Vakuu source/art/localization are implemented, and beta.99 package parity plus previous beta.96 Off loader proof and historical resource smoke exist, but live gameplay, clicked Ancient UI, save-load, death/failure-path, current enabled-mode proof, and co-op checks are pending.
+- Urda, Morvi, Lotha, and Vakuu source/art/localization are implemented, and beta.99 package parity plus beta.99 direct Off loader proof and historical resource smoke exist, but live gameplay, clicked Ancient UI, save-load, death/failure-path, current enabled-mode proof, and co-op checks are pending.
 - Two-client multiplayer matrix is pending.
 - Worktree is not clean and no commit/push has been performed; push is expected after validation and an intentional commit.
 

@@ -11,7 +11,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus Batch 4c owner review
 
 - Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.99 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, source-workspace checks, and RitsuLib settings UI proof passed for the current dependency target; beta.99 direct Off loader proof remains pending after the RitsuLib I18N settings resource migration. Previous beta.96 Off and beta.93 AdditiveBatch1 packet verification remains historical loader/registration evidence only.
+- Latest beta.99 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, source-workspace checks, RitsuLib settings UI proof, and direct Off loader proof passed for the current dependency target. Previous beta.96 Off and beta.93 AdditiveBatch1 packet verification remains historical loader/registration evidence only.
 - Current HEAD validation refreshed after the beta.99 RitsuLib-only settings page I18N pass; recheck again before handoff if any later edits appear.
 - Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 
@@ -27,7 +27,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus Batch 4c owner review
 
 1. Recapture HEAD/worktree and installed game/RitsuLib versions.
 2. Run no-game validation in one controlled lane if source changed.
-3. Recapture beta.99 Off loader proof after the settings-page I18N resource migration.
+3. Capture beta.99 enabled-mode loader/registration proof separately before any current enabled-mode claim.
 4. Capture current StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
 5. Capture gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 
@@ -43,7 +43,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus Batch 4c owner review
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
 - [x] Batch 4c candidate list static review recaptured: 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.
-- [ ] Current beta.99 Off loader proof captured.
+- [x] Current beta.99 Off loader proof captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 - [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
 - [ ] Gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.
 - [ ] Batch 4c owner decision recorded.

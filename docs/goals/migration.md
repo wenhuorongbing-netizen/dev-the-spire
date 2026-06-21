@@ -35,7 +35,7 @@ Do not add another shared runtime framework dependency unless the owner explicit
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.99 after updating to STS2-RitsuLib `0.4.32` and refreshing package hashes. Beta.99 clicked settings UI proof is captured under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean log audit and StS1 Off runtime shape verification 21 / 0; beta.99 direct Off loader proof remains pending. Previous beta.96 Off proof under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, StS1Events disabled with 0 registration lines, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0 for the previous package only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.99 after updating to STS2-RitsuLib `0.4.32` and refreshing package hashes. Beta.99 clicked settings UI proof is captured under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean log audit and StS1 Off runtime shape verification 21 / 0; beta.99 direct Off loader proof is captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` with main-menu load, clean audit, 25/25 Spire Plus patches, StS1Events disabled with 0 registration lines, Off verifier 21 / 0, and Off packet verifier 43 / 0. Previous beta.96 Off proof under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` is previous-package startup context. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0 for the previous package only.
 
 The migration is not release-ready. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
 
@@ -83,8 +83,8 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 
 ## Next Actions
 
-1. Recapture beta.99 direct Off loader proof before making a current startup/runtime claim; current clicked RitsuLib Mod Settings proof already lives under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
-2. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
+1. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
+2. Keep current beta.99 Off proof and clicked RitsuLib Mod Settings proof scoped to startup/settings visibility; they do not prove gameplay or release readiness.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any Batch 4c or higher-risk patch migration.
 5. Recapture git status, pushed HEAD, and validation status before any later handoff.

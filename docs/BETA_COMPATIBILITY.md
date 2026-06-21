@@ -22,8 +22,11 @@ Current evidence:
   It shows Settings -> `Mod Settings (RitsuLib)`, the RitsuLib Mods tree with
   only `RitsuLib` and `Spire Plus`, the Spire Plus settings page, a clean
   same-session log audit, and StS1 Off runtime shape verification 21 / 0.
-- beta.99 direct Off loader proof remains pending after the settings-page I18N
-  resource migration.
+- beta.99 direct Off loader proof is retained at
+  `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
+  It reached main menu with exactly STS2-RitsuLib and Spire Plus loaded, clean
+  audit, 25/25 Spire Plus patches, StS1Events disabled with 0 registration
+  lines, Off verifier 21 / 0, and packet verifier 43 / 0.
 - Previous beta.96 Off loader proof is retained at
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
@@ -31,7 +34,7 @@ Current evidence:
   package loader/registration context. They do not prove beta.99 enabled-mode
   gameplay or tester readiness.
 
-Treat loader and settings evidence as scoped proof only: gameplay, save-load, replacement, multiplayer, independent QA, package handoff, and release-ready compatibility proof remain pending.
+Treat loader and settings evidence as scoped proof only: enabled-mode proof, gameplay, save-load, replacement, multiplayer, independent QA, package handoff, and release-ready compatibility proof remain pending.
 
 ## Compatibility Policy
 
