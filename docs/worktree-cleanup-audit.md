@@ -62,6 +62,7 @@ These paths are active private-beta source, resource, test, script, or documenta
 | Compatibility history compression | Current `docs/BETA_COMPATIBILITY.md` | The active compatibility doc now carries only the current RitsuLib-only package/update policy. Old compatibility tables were removed from the active reading path to avoid future dependency confusion. |
 | Runtime hard-block history compression | Current `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md` | The active RitsuLib runtime blocker doc now carries only the current beta.96/RitsuLib-only boundary, required proof, and next action. The old May 31 environment table was removed from the active reading path. |
 | Root test-plan dependency cleanup | Current `docs/test-plan.md` | The active artifact and manual-load checks now require the RitsuLib-only lane and no longer instruct testers to enable or expect the old dependency package. `check-sts1-event-current-doc-claims.ps1` guards against that wording returning. |
+| Runtime smoke checklist compression | Current `docs/features/ritsulib-migration/runtime-smoke-checklist.md` | The active smoke checklist now starts from beta.96/RitsuLib-only prerequisites, retained Mod Settings UI evidence, verifier commands, and pending runtime gates instead of a long historical smoke table. The claim guard rejects old dependency-package wording in this checklist. |
 
 ## Refactor Cleanup Completed
 
