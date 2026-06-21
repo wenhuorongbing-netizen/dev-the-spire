@@ -46,6 +46,9 @@ References:
   guide exposes `ApplyRequiredPatcher`, `CreatePatcher`, `RegisterPatch`, and
   `PatchAll`. Keep future settings and patch work aligned with those names
   before adding local wrappers.
+- Local NuGet XML confirms `BeginModDataRegistration`, `ModDataStore.Register`,
+  and scoped global initialization for persisted data slots. Spire Plus settings
+  registration now uses that scope before registering the settings page.
 - Do not use a dev build for a tester package unless the owner explicitly
   approves a dev-runtime validation lane.
 - GitHub release: `https://github.com/BAKAOLC/STS2-RitsuLib/releases/tag/v0.4.31`.
@@ -123,6 +126,10 @@ Current manifest dependency:
 - Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, and beta.93 Off/AdditiveBatch1 loader/registration proof is clean previous-package evidence on `v0.107.1` with RitsuLib `v0.4.31`.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
 - Batch 3: persistence sidecar experiments are not currently applicable because current saved-state usage has migrated to RitsuLib `SavedAttachedState`; no additional RitsuLib data-store sidecar is planned for this pass.
+- Settings persistence: preview-tool settings use RitsuLib `ModDataStore` under
+  `BeginModDataRegistration(...)`, then bind the RitsuLib settings UI entries to
+  that store. The entry ids are source constants because settings screenshots
+  and future automation use them as evidence anchors.
 - Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
 - Batch 4b: 16 medium-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
 - Batch 4c: proposal-only candidate list lives in `docs/features/ritsulib-migration/batch-4c-candidates.md`; no migration is approved yet.

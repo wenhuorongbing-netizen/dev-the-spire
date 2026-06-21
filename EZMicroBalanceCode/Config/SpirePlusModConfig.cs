@@ -16,6 +16,13 @@ internal static class SpirePlusModConfig
     private const string RequiredRuntimeDependencyEntryId = "required_runtime_dependency";
     private const string StableManifestIdEntryId = "stable_manifest_id";
     private const string ProofBoundaryEntryId = "proof_boundary";
+    // These RitsuLib setting-entry ids are persisted bindings and evidence anchors.
+    // Rename them only with an explicit migration and package-version pass.
+    private const string EnableCrystalSpherePeekEntryId = "enable_crystal_sphere_peek";
+    private const string CrystalSphereMaskAlphaEntryId = "crystal_sphere_mask_alpha";
+    private const string EnableTransformPredictionEntryId = "enable_transform_prediction";
+    private const string TransformPredictionAlwaysOnEntryId = "transform_prediction_always_on";
+    private const string ShowPreviewDebugLogsEntryId = "show_preview_debug_logs";
     private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.31";
     private const string StableTechnicalId = "EZMicroBalance";
 
@@ -66,9 +73,11 @@ internal static class SpirePlusModConfig
     {
         // RitsuLib setting controls bind to this data key, so the store must
         // exist before the page builder wires UI entries to persisted values.
-        var store = RitsuLibFramework.GetDataStore(modId);
-        store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true);
-        store.InitializeGlobal();
+        using (RitsuLibFramework.BeginModDataRegistration(modId))
+        {
+            var store = RitsuLibFramework.GetDataStore(modId);
+            store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true);
+        }
     }
 
     private static void RegisterSettingsPage(string modId)
@@ -121,13 +130,13 @@ internal static class SpirePlusModConfig
             section.WithTitle(Text("Preview Tools"));
             section.WithDescription(Text("Controls for Crystal Sphere peek and transform prediction."));
             section.AddToggle(
-                "enable_crystal_sphere_peek",
+                EnableCrystalSpherePeekEntryId,
                 Text("Crystal Sphere peek"),
                 Binding(modId, state => state.EnableCrystalSpherePeek, (state, value) => state.EnableCrystalSpherePeek = value),
                 Text("Show the peek overlay for Crystal Sphere when supported."),
                 () => true);
             section.AddSlider(
-                "crystal_sphere_mask_alpha",
+                CrystalSphereMaskAlphaEntryId,
                 Text("Crystal Sphere mask alpha"),
                 Binding(modId, state => state.CrystalSphereMaskAlpha, (state, value) => state.CrystalSphereMaskAlpha = Math.Clamp(value, 0.05, 0.95)),
                 0.05,
@@ -136,19 +145,19 @@ internal static class SpirePlusModConfig
                 value => value.ToString("0.00", CultureInfo.InvariantCulture),
                 Text("Opacity of the Crystal Sphere peek mask."));
             section.AddToggle(
-                "enable_transform_prediction",
+                EnableTransformPredictionEntryId,
                 Text("Transform prediction"),
                 Binding(modId, state => state.EnableTransformPrediction, (state, value) => state.EnableTransformPrediction = value),
                 Text("Show predicted transform outcomes when supported."),
                 () => true);
             section.AddToggle(
-                "transform_prediction_always_on",
+                TransformPredictionAlwaysOnEntryId,
                 Text("Always show transform prediction"),
                 Binding(modId, state => state.TransformPredictionAlwaysOn, (state, value) => state.TransformPredictionAlwaysOn = value),
                 Text("Show transform prediction without requiring a modifier key."),
                 () => EnableTransformPrediction);
             section.AddToggle(
-                "show_preview_debug_logs",
+                ShowPreviewDebugLogsEntryId,
                 Text("Preview debug logs"),
                 Binding(modId, state => state.ShowPreviewDebugLogs, (state, value) => state.ShowPreviewDebugLogs = value),
                 Text("Emit extra preview-tool diagnostics to the log."),

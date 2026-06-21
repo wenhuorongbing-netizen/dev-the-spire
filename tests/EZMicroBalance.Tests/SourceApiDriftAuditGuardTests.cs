@@ -141,16 +141,23 @@ public sealed class SourceApiDriftAuditGuardTests
             "RegisterSettingsPage(modId)",
             "AddMigrationStatusSection(page)",
             "AddPreviewToolsSection(page, modId)",
+            "RitsuLibFramework.BeginModDataRegistration(modId)",
             "RitsuLibFramework.RegisterModSettings",
             "migration_status",
             "required_runtime_dependency",
             "proof_boundary",
             "preview_tools",
+            "EnableCrystalSpherePeekEntryId",
+            "CrystalSphereMaskAlphaEntryId",
+            "EnableTransformPredictionEntryId",
+            "TransformPredictionAlwaysOnEntryId",
+            "ShowPreviewDebugLogsEntryId",
             "RitsuLib setting controls bind to this data key",
             "Keep these entry IDs stable",
             "RitsuLib-only mod surface",
             "STS2-RitsuLib >= 0.4.31",
             "Settings screenshots prove UI visibility only.");
+        Assert.DoesNotContain("store.InitializeGlobal();", settings, StringComparison.Ordinal);
     }
 
 }

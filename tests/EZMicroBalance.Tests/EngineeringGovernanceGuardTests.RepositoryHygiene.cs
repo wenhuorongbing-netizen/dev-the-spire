@@ -179,6 +179,65 @@ public sealed partial class EngineeringGovernanceGuardTests
             "## Rollback");
     }
 
+    [Fact]
+    public void RetiredSharedRuntimeNameDoesNotReappearInTrackedText()
+    {
+        var retiredRuntimeTokens = new[]
+        {
+            string.Concat("Base", "Lib"),
+            string.Concat("base ", "lib"),
+            string.Concat("base-", "lib")
+        };
+        var textExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".cs",
+            ".css",
+            ".cfg",
+            ".editorconfig",
+            ".gitattributes",
+            ".gitignore",
+            ".html",
+            ".json",
+            ".md",
+            ".props",
+            ".ps1",
+            ".sln",
+            ".targets",
+            ".ts",
+            ".txt",
+            ".xml",
+            ".yaml",
+            ".yml"
+        };
+
+        var violations = new List<string>();
+        foreach (var trackedFile in GitLsFiles())
+        {
+            var extension = Path.GetExtension(trackedFile);
+            if (!textExtensions.Contains(extension))
+            {
+                continue;
+            }
+
+            var path = RepoPath(trackedFile.Split('/'));
+            var text = File.ReadAllText(path);
+            foreach (var token in retiredRuntimeTokens)
+            {
+                if (text.Contains(token, StringComparison.OrdinalIgnoreCase))
+                {
+                    violations.Add(trackedFile);
+                    break;
+                }
+            }
+        }
+
+        Assert.True(
+            violations.Count == 0,
+            "Retired shared-runtime guidance must stay out of tracked text files. Use STS2-RitsuLib docs and APIs instead:"
+            + Environment.NewLine
+            + string.Join(Environment.NewLine, violations.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(path => path)));
+    }
+
     private static string[] GitLsFiles(params string[] pathspecs)
     {
         var startInfo = new ProcessStartInfo
