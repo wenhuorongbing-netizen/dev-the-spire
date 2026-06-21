@@ -1,44 +1,56 @@
-# Runtime Hard Block Report — 2026-05-31
+# RitsuLib Runtime Boundary Report
 
-## Decision
+## Current Boundary
 
-2026-06-21 current note: this report is historical `v0.106.1` loader-gate evidence. The current local game install is `v0.107.1`, and official STS2-RitsuLib `v0.4.31` is installed with `lib\0.107.1`. Installed beta.93 package parity passed, beta.93 default-Off proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` are the current RitsuLib-only loader/registration context. Retained beta.85/beta.87 `v0.107.0` proof and beta.88 previous package proof remain previous-package or previous-package context. Current gameplay, save-load, replacement, multiplayer, QA, and release-ready proof remain pending or blocked.
+This file is the active pointer for the old RitsuLib runtime hard-block lane.
+The original May 31 blocker was the absence of a usable RitsuLib runtime
+install. That specific blocker is no longer current.
 
-**Original runtime hard block resolved for historical loader gates; release remains blocked.** The missing-dependency blocker was cleared locally for the historical `v0.106.1` lane: official STS2-RitsuLib `v0.3.10` was installed in the active E-drive game root. After fixing RitsuLib target descriptors, Off and CanaryOnly diagnostic smokes reached main menu with previous package, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches applied. Off proves 0 StS1 registration lines; CanaryOnly proves exactly 4 canary content registrations for that historical lane. Batch 4c, high-risk migration, live-ready, and release-ready remain blocked until current enabled-mode proof, independent QA reruns, and gameplay/UI/save-load/co-op/package handoff gates are addressed.
+Current package line:
+
+- Slay the Spire 2 `v0.107.1`
+- Spire Plus `v0.1.0-private-beta.96`
+- STS2-RitsuLib `v0.4.31`
+- RitsuLib runtime variant `lib\0.107.1`
+- Stable technical manifest id `EZMicroBalance`
+
+Spire Plus is RitsuLib-only for this package line: the project references
+`STS2.RitsuLib` `0.4.31`, the manifest declares `STS2-RitsuLib >= 0.4.31`,
+and current settings/content/patch/saved-marker integration routes through
+RitsuLib APIs.
 
 ## Evidence
 
-| Check | Result |
-| --- | --- |
-| HEAD | `6b149ba0 (HEAD -> main, origin/main, origin/HEAD) sprint 2` |
-| Branch | `main...origin/main` |
-| `D:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | Missing |
-| `D:\Steam\steamapps\common\Slay the Spire 2\mods\previous package` | Missing |
-| `D:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` | Missing |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` | Present (`v0.3.10`, includes `lib\0.106.1`) |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\previous package` | Present |
-| `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance` | Present |
-| `E:\Steam\steam.exe` | Present |
-| `C:\Users\zihao\AppData\Roaming\SlayTheSpire2\logs\godot.log` | Present; copied evidence logs should be used for review |
-| Off target-fix evidence | `.tools\runtime-evidence\ritsulib-off-after-target-fix-20260531-2325\godot.log.after-launch`; clean audit, 25/25 patches, Sts1Events Off |
-| Canary target-fix evidence | `.tools\runtime-evidence\ritsulib-canary-after-target-fix-20260531-2327\godot.log.after-direct-launch`; clean audit, 25/25 patches, 4 canary registrations |
-| Prior controlled loader evidence | `.tools\runtime-evidence\sts1-events-v15-loader-20260531-231135\godot.log.after-launch`; historical failed smoke before target fix |
-| Direct-launch evidence | `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-direct-exe-steam-init-fail.log` |
-| Steam-launch evidence | `.tools\runtime-evidence\ritsulib-runtime-proof-20260531-2304\godot-steam-applaunch.log` |
-| Steam-launch audit | Not clean; 3 Godot ERROR lines |
+- Current beta.96 package parity and source-workspace checks are summarized in
+  `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
+- Current beta.96 clicked settings proof is retained at
+  `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
+  It proves Settings -> `Mod Settings (RitsuLib)` visibility for Spire Plus.
+- Older beta.93 Off/AdditiveBatch1 packets are retained only as older package
+  loader/registration context. They do not prove beta.96 gameplay or tester
+  readiness.
+
+## Still Blocked
+
+The migration is not release-ready. Current hard blocks are beta.96 loader
+proof, gameplay, clicked Ancient UI, save-load, replacement behavior,
+multiplayer/co-op, independent QA, and versioned tester-package handoff.
+
+Batch 4c and any high-risk patch migration remain proposal-only until those
+runtime/manual gates have current evidence and owner approval.
 
 ## Required Runtime Proof
 
-1. Keep the current official STS2-RitsuLib install under the active game root at `<GameRoot>\mods\STS2-RitsuLib`; as of 2026-06-20 this is `v0.4.31` with `lib\0.107.1`.
-2. Enable only STS2-RitsuLib and Spire Plus for current RitsuLib-only proof.
-3. Preserve the beta.93 default-Off loader proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` as current loader proof until the package/source/runtime target changes.
-4. Preserve beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` as current loader/registration proof only; beta.85/beta.87/beta.88 rows are historical context.
-5. Rerun independent QA/Red-Team against the new current evidence.
-6. Refresh a versioned tester package before any handoff if these code changes are shipped.
-7. Continue to withhold live-ready/release-ready claims until gameplay, UI, save-load, and co-op proof exists.
+1. Keep the official STS2-RitsuLib install under
+   `<GameRoot>\mods\STS2-RitsuLib`.
+2. Enable only STS2-RitsuLib and Spire Plus for controlled RitsuLib-only proof.
+3. Recapture beta.96 loader proof if the package, source, game version, or
+   RitsuLib runtime changes.
+4. Treat settings screenshots as UI visibility proof only.
+5. Withhold live-ready and release-ready claims until gameplay, save-load,
+   co-op, and QA evidence exists.
 
 ## Next Action
 
-After coordination clears, capture gameplay, save-load, render, replacement, multiplayer, and QA evidence or record the exact blocker. Do not start Batch 4c before runtime gameplay proof, QA acceptance, and owner acceptance of the worktree/package state.
-
-Latest local prerequisite evidence: `.tools/runtime-evidence/refactor-overnight-20260531/runtime-prereq-paths.txt`.
+After coordination clears, capture beta.96 loader, gameplay, save-load, render,
+replacement, multiplayer, and QA evidence, or record the exact blocker.
