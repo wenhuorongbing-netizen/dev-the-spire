@@ -1,9 +1,9 @@
 param(
     [string]$GameRoot = 'E:\Steam\steamapps\common\Slay the Spire 2',
     [string]$ExpectedGameVersion = 'v0.107.1',
-    [string]$ExpectedRitsuLibVersion = '0.4.31',
+    [string]$ExpectedRitsuLibVersion = '0.4.32',
     [string]$ExpectedRitsuCompatBranch = '0.107.1',
-    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.97',
+    [string]$ExpectedPackageVersion = 'v0.1.0-private-beta.98',
     [string]$ExpectedModId = 'EZMicroBalance',
     [string]$ExpectedRitsuModId = 'STS2-RitsuLib',
     [string]$OutFile,
@@ -87,6 +87,7 @@ $ritsuRoot = Join-Path $resolvedGameRoot 'mods\STS2-RitsuLib'
 $ritsuManifestPath = Join-Path $ritsuRoot 'mod_manifest.json'
 $ritsuCompatPath = Join-Path $ritsuRoot "lib\$ExpectedRitsuCompatBranch\compat-target.txt"
 $ritsuDllPath = Join-Path $ritsuRoot "lib\$ExpectedRitsuCompatBranch\STS2-RitsuLib.dll"
+$ritsuDirectDllPath = Join-Path $ritsuRoot 'STS2-RitsuLib.dll'
 $spirePlusRoot = Join-Path $resolvedGameRoot 'mods\EZMicroBalance'
 $spirePlusManifestPath = Join-Path $spirePlusRoot 'EZMicroBalance.json'
 
@@ -126,13 +127,22 @@ if (Test-Path -LiteralPath $ritsuManifestPath -PathType Leaf) {
     Add-Check -Name 'ritsu_version_matches_expected' -Passed ("$($ritsuManifest.version)" -eq $ExpectedRitsuLibVersion) -Detail "actual=$($ritsuManifest.version)"
 }
 
-Add-Check -Name 'ritsu_compat_target_exists' -Passed (Test-Path -LiteralPath $ritsuCompatPath -PathType Leaf) -Detail $ritsuCompatPath
+$hasRitsuCompatTarget = Test-Path -LiteralPath $ritsuCompatPath -PathType Leaf
+$hasRitsuCompatDll = Test-Path -LiteralPath $ritsuDllPath -PathType Leaf
+$hasRitsuDirectDll = Test-Path -LiteralPath $ritsuDirectDllPath -PathType Leaf
+
+Add-Check -Name 'ritsu_runtime_dll_exists' -Passed ($hasRitsuCompatDll -or $hasRitsuDirectDll) -Detail "variant=$ritsuDllPath direct=$ritsuDirectDllPath"
+Add-Check -Name 'ritsu_direct_or_variant_layout_detected' -Passed ($hasRitsuCompatTarget -or $hasRitsuDirectDll) -Detail "variant_target=$ritsuCompatPath direct=$ritsuDirectDllPath"
+Add-Check -Name 'ritsu_compat_target_exists' -Passed ($hasRitsuCompatTarget -or $hasRitsuDirectDll) -Detail $ritsuCompatPath
 if (Test-Path -LiteralPath $ritsuCompatPath -PathType Leaf) {
     $compatTarget = ([System.IO.File]::ReadAllText($ritsuCompatPath)).Trim()
     Write-Output "ritsu_compat_target=$compatTarget"
     Add-Check -Name 'ritsu_compat_target_matches_expected' -Passed ($compatTarget -eq $ExpectedRitsuCompatBranch) -Detail "actual=$compatTarget"
+} elseif ($hasRitsuDirectDll) {
+    Write-Output "ritsu_runtime_layout=direct-nuget"
+    Write-Output "ritsu_direct_dll=$ritsuDirectDllPath"
 }
-Add-Check -Name 'ritsu_compat_dll_exists' -Passed (Test-Path -LiteralPath $ritsuDllPath -PathType Leaf) -Detail $ritsuDllPath
+Add-Check -Name 'ritsu_compat_dll_exists' -Passed ($hasRitsuCompatDll -or $hasRitsuDirectDll) -Detail $ritsuDllPath
 
 Add-Check -Name 'spire_plus_manifest_exists' -Passed (Test-Path -LiteralPath $spirePlusManifestPath -PathType Leaf) -Detail $spirePlusManifestPath
 if (Test-Path -LiteralPath $spirePlusManifestPath -PathType Leaf) {

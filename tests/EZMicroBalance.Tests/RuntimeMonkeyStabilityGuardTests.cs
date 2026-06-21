@@ -7389,7 +7389,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         const string fixtureSts1EventMode = "Off";
         const string fixturePackageVersion = "v0.1.0-private-beta.96";
         const string fixtureGameVersion = "0.107.1";
-        const string fixtureRitsuLibVersion = "0.4.31";
+        const string fixtureRitsuLibVersion = "0.4.32";
         const string fixtureRitsuCompatBranch = "0.107.1";
         const int fixtureExpectedPatchCount = 25;
 

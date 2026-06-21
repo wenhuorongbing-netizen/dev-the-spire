@@ -274,7 +274,7 @@ public sealed partial class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("Current package hashes, 2026-06-21 beta.97:", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-06-21 beta.98:", issues, StringComparison.Ordinal);
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
@@ -295,8 +295,8 @@ public sealed partial class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package target is beta.97 RitsuLib-only", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.97 loader proof and clicked settings UI proof still need recapture", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.98 RitsuLib-only", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.98 loader proof and clicked settings UI proof still need recapture", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

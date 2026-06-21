@@ -202,6 +202,7 @@ $autoSlayEventRoomHandlerPath = Join-Path $sourceRootFull 'src\Core\AutoSlay\Han
 $ritsuManifestPath = Join-Path $ritsuLibRootFull 'mod_manifest.json'
 $ritsuVariantsManifestPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.manifest'
 $ritsuVariantsJsonPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.json'
+$ritsuDirectDllPath = Join-Path $ritsuLibRootFull 'STS2-RitsuLib.dll'
 $ritsuVariantsPath = if (Test-Path -LiteralPath $ritsuVariantsManifestPath -PathType Leaf) {
     $ritsuVariantsManifestPath
 } elseif (Test-Path -LiteralPath $ritsuVariantsJsonPath -PathType Leaf) {
@@ -423,8 +424,11 @@ Add-Check -Name 'godot_cache_is_git_ignored' -Passed $godotCacheIgnored -Detail 
 Add-Check -Name 'source_root_has_no_tracked_files' -Passed ($sourceRootTrackedFileCount -eq 0) -Detail 'source code/ must not contain tracked original game files'
 Add-Check -Name 'godot_open_command_prepared' -Passed ((Test-Path -LiteralPath $godotExeFull -PathType Leaf) -and (Test-Path -LiteralPath $sourceProjectPath -PathType Leaf)) -Detail "open project reference: $godotOpenProjectCommand"
 
+$hasRitsuVariantsFile = Test-Path -LiteralPath $ritsuVariantsPath -PathType Leaf
+$hasRitsuDirectDll = Test-Path -LiteralPath $ritsuDirectDllPath -PathType Leaf
 Add-Check -Name 'ritsulib_manifest_exists' -Passed (Test-Path -LiteralPath $ritsuManifestPath -PathType Leaf) -Detail "expected RitsuLib manifest at $ritsuManifestPath"
-Add-Check -Name 'ritsulib_variants_exists' -Passed (Test-Path -LiteralPath $ritsuVariantsPath -PathType Leaf) -Detail "expected RitsuLib variants at $ritsuVariantsManifestPath or $ritsuVariantsJsonPath"
+Add-Check -Name 'ritsulib_runtime_layout_exists' -Passed ($hasRitsuVariantsFile -or $hasRitsuDirectDll) -Detail "variant=$ritsuVariantsManifestPath or $ritsuVariantsJsonPath direct=$ritsuDirectDllPath"
+Add-Check -Name 'ritsulib_variants_exists' -Passed ($hasRitsuVariantsFile -or $hasRitsuDirectDll) -Detail "expected RitsuLib variants or direct NuGet runtime DLL"
 Add-Check -Name 'ritsulib_viewer_exists' -Passed (Test-Path -LiteralPath $ritsuViewerPath -PathType Leaf) -Detail 'RitsuLib viewer exists; it is a log viewer, not an unpacker or monkey runner'
 
 $ritsuManifest = $null
@@ -444,6 +448,7 @@ if ($ritsuManifest) {
 
 $ritsuManifestSha256 = Get-HashOrNull -Path $ritsuManifestPath
 $ritsuVariantsSha256 = Get-HashOrNull -Path $ritsuVariantsPath
+$ritsuDirectDllSha256 = Get-HashOrNull -Path $ritsuDirectDllPath
 $ritsuVariantDirectory = ''
 $ritsuVariantAssembly = ''
 $ritsuVariantDllPath = ''
@@ -487,6 +492,8 @@ if ($ritsuVariants -and $ritsuVariants.variants -and $normalizedGameVersion) {
             $ritsuVariantDllSha256 = Get-HashOrNull -Path $ritsuVariantDllPath
         }
     }
+} elseif ($hasRitsuDirectDll) {
+    Add-Check -Name 'ritsulib_direct_runtime_dll_exists' -Passed $true -Detail "direct NuGet runtime DLL at $ritsuDirectDllPath"
 }
 
 $report = [pscustomobject]@{
@@ -519,6 +526,8 @@ $report = [pscustomobject]@{
         ManifestSha256 = $ritsuManifestSha256
         VariantsPath = $ritsuVariantsPath
         VariantsSha256 = $ritsuVariantsSha256
+        DirectRuntimeDllPath = $ritsuDirectDllPath
+        DirectRuntimeDllSha256 = $ritsuDirectDllSha256
         ViewerPath = $ritsuViewerPath
         VariantDirectory = $ritsuVariantDirectory
         VariantAssembly = $ritsuVariantAssembly

@@ -6,11 +6,11 @@ Date: 2026-06-21
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.97`
+Current package target: Spire Plus `v0.1.0-private-beta.98`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
-Runtime dependency target: official `STS2-RitsuLib` `v0.4.31` with `lib/0.107.1`
+Runtime dependency target: official `STS2-RitsuLib` `v0.4.32` installed from the NuGet package deploy target
 
 Recapture `git log -1 --oneline --decorate` and `git status --short --branch` at the start of each continuation and immediately before handoff; older run-start hashes are historical notes, not current status.
 
@@ -26,8 +26,8 @@ Do not add another shared runtime framework dependency unless the owner explicit
 
 ## Success Criteria
 
-- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31`.
-- `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.31` as the shared runtime framework dependency.
+- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.32`.
+- `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.32` as the shared runtime framework dependency.
 - Spire Plus settings, content/model registration, lifecycle hooks, and saved marker fields use RitsuLib or game-native APIs.
 - Active setup docs and developer guides direct agents to RitsuLib documentation and local game source.
 - Current validation includes build, publish/package refresh when artifacts change, installed package parity, focused migration/source guards, and current RitsuLib loader evidence.
@@ -35,20 +35,17 @@ Do not add another shared runtime framework dependency unless the owner explicit
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.97 after the settings page strings moved onto RitsuLib I18N resources. Beta.97 Off loader and clicked settings UI proof remain pending. Previous beta.96 Off proof under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, StS1Events disabled with 0 registration lines, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0 for the previous package only. Previous beta.96 page-level Mod Settings proof is captured under `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`; it proves earlier settings UI visibility only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.98 after updating to STS2-RitsuLib `0.4.32` and refreshing package hashes. Beta.98 Off loader and clicked settings UI proof remain pending. Previous beta.96 Off proof under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, StS1Events disabled with 0 registration lines, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0 for the previous package only. Previous beta.96 page-level Mod Settings proof is captured under `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`; it proves earlier settings UI visibility only.
 
 The migration is not release-ready. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
 
 ## Dependency Recheck
 
-- GitHub release `v0.4.31` is marked Latest.
-- NuGet flat-container includes `0.4.31`.
-- Nexus files now list the variant-pack main file as `0.4.31`; the earlier Nexus `0.4.28` lag is historical only.
-- Use the GitHub latest-release/tag, NuGet, Nexus, and installed variant pack as
-  the dependency-floor evidence. A live 2026-06-21 check showed the GitHub
-  `main` branch manifest can lag the released/tagged version, so it is not the
-  source of truth for the Spire Plus dependency floor.
-- Keep Spire Plus on stable `0.4.31`, not a dev build, unless the owner explicitly approves a separate dev-runtime validation lane.
+- NuGet flat-container and `dotnet list package --outdated` show `STS2.RitsuLib` `0.4.32` as the latest package.
+- Nexus files list the variant-pack main file as `0.4.32`; direct automated Nexus download was blocked by the site challenge in this session.
+- The GitHub release page/API can lag the NuGet/Nexus package version; do not use a lagging GitHub release marker as the dependency-floor source when NuGet and Nexus both expose a newer stable package.
+- The current local runtime is deployed from the official NuGet package via `RitsuLibDeployDir`, producing `mods/STS2-RitsuLib/mod_manifest.json`, root `STS2-RitsuLib.dll`, XML docs, and viewer files.
+- Keep Spire Plus on stable `0.4.32`, not a dev build, unless the owner explicitly approves a separate dev-runtime validation lane.
 
 ## Batch 4c Boundary
 
@@ -68,7 +65,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $blocked = -join ([char[]](66,97,115,101,76,105,98)); git grep -n -i $blocked -- ':!docs/archive/**' ':!source code/**' ':!bin/**' ':!obj/**' ':!.tools/**' ':!publish/**'
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.97' -ExpectedRitsuLibVersion '0.4.31' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.98' -ExpectedRitsuLibVersion '0.4.32' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
@@ -86,7 +83,7 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 
 ## Next Actions
 
-1. Recapture beta.97 loader proof and clicked settings UI proof before making a current runtime claim.
+1. Recapture beta.98 loader proof and clicked settings UI proof before making a current runtime claim.
 2. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any Batch 4c or higher-risk patch migration.

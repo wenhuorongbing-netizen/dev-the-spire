@@ -90,7 +90,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         AssertSourceContains(
             docs,
-            "- Current runtime dependency: `STS2-RitsuLib v0.4.31` with `lib\\0.107.1`.",
+            "- Current runtime dependency: `STS2-RitsuLib v0.4.32` in direct NuGet runtime layout.",
             "Current source snapshot: `source code\\release_info.json` matches the installed",
             "`v0.107.1` game identity after the 2026-06-20 GDRE refresh",
             "commit `59260271`",

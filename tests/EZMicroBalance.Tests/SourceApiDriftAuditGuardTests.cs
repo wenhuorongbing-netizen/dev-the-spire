@@ -129,7 +129,7 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             project,
-            "STS2.RitsuLib\" Version=\"0.4.31",
+            "STS2.RitsuLib\" Version=\"0.4.32",
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 
@@ -167,7 +167,7 @@ public sealed class SourceApiDriftAuditGuardTests
             "SPIREPLUS-MIGRATION_STATUS.title",
             "SPIREPLUS-PREVIEW_TOOLS.title",
             "RitsuLib-only mod surface",
-            "STS2-RitsuLib >= 0.4.31",
+            "STS2-RitsuLib >= 0.4.32",
             "Settings screenshots prove UI visibility only.");
         Assert.DoesNotContain("private static ModSettingsText Text(string value)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("Math.Clamp(value, 0.05, 0.95)", settings, StringComparison.Ordinal);

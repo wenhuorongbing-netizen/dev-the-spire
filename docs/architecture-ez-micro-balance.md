@@ -32,7 +32,7 @@ Manifest:
   "dependencies": [
     {
       "id": "STS2-RitsuLib",
-      "min_version": "0.4.31"
+      "min_version": "0.4.32"
     }
   ],
   "affects_gameplay": true

@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.97 package truth is RitsuLib-only",
+            "Current beta.98 package truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -296,9 +296,9 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             apiDiscovery,
             "2026-06-20 dependency supersession: the May discovery notes below recorded the then-active previous package project shape.",
-            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.31`",
+            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.32`",
             "Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
-            "Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.31`",
+            "Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.32`",
             "Current authoritative source is the refreshed local public beta `v0.107.1` assembly/source recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.",
             "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
             "historical context only",
@@ -311,7 +311,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             manualChecklist,
             "- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`",
-            "- Runtime framework: `STS2-RitsuLib` `v0.4.31` with `lib\\0.107.1`",
+            "- Runtime framework: `STS2-RitsuLib` `v0.4.32` in direct NuGet runtime layout",
             "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / previous package validation lane are historical only and are not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
@@ -383,9 +383,9 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.97`",
-            "`STS2-RitsuLib` `0.4.31`",
-            "`lib\\0.107.1`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.98`",
+            "`STS2-RitsuLib` `0.4.32`",
+            "direct NuGet runtime layout",
             "previous package is previous-package or other-mod local context only",
             "`scripts\\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot`",
             "Use `docs/goals/event.md`",
@@ -448,7 +448,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docRestructureSpec,
             "**RitsuLib integration** (PR5/PR6+)",
-            "Current beta.97 RitsuLib-only compile/manifest/package/settings target active",
+            "Current beta.98 RitsuLib-only compile/manifest/package/settings target active",
             "beta.96 and beta.93 loader/settings proof retained only as previous-package evidence");
         AssertSourceContains(
             integration,
@@ -457,8 +457,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`EZMicroBalance.csproj` references `STS2.RitsuLib` only",
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
             "Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.",
-            "2026-06-21 web recheck",
-            "GitHub latest-release API and the `v0.4.31` tag remain the GitHub version",
+            "2026-06-21 recheck",
+            "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "RegisterModSettings",
             "ApplyRequiredPatcher",

@@ -1114,8 +1114,8 @@
                 : "这是 Spire Plus 私测包：先古奖励、高进阶测试和预览工具都在同一个 Mod 里。";
             } else if (hoverType === "previous-package") {
               phrase = lang === 'en'
-                ? "STS2-RitsuLib 0.4.31 is required. Install it first, then enable Spire Plus."
-                : "需要先安装 STS2-RitsuLib 0.4.31，再启用 Spire Plus。";
+                ? "STS2-RitsuLib 0.4.32 is required. Install it first, then enable Spire Plus."
+                : "需要先安装 STS2-RitsuLib 0.4.32，再启用 Spire Plus。";
             } else if (hoverType === "releases") {
               phrase = lang === 'en'
                 ? "Previous private-test archives live on the release page."

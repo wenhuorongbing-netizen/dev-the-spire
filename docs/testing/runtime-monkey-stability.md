@@ -14,7 +14,7 @@ need their own evidence rows.
 ## Current Source And Tooling State
 
 - Current installed game: `E:\Steam\steamapps\common\Slay the Spire 2`.
-- Current runtime dependency: `STS2-RitsuLib v0.4.31` with `lib\0.107.1`.
+- Current runtime dependency: `STS2-RitsuLib v0.4.32` in direct NuGet runtime layout.
 - Local Godot editor: `.tools\godot-4.5.1-mono\Godot_v4.5.1-stable_mono_win64`.
 - Local recovered game project: `source code\project.godot`.
 - Installed RitsuLib includes a local log viewer under
@@ -343,9 +343,9 @@ After the packet is captured, verify it with:
   -EvidenceDir "<evidence>" `
   -MinRuns 1000 `
   -ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA `
-  -ExpectedPackageVersion v0.1.0-private-beta.97 `
+  -ExpectedPackageVersion v0.1.0-private-beta.98 `
   -ExpectedGameVersion 0.107.1 `
-  -ExpectedRitsuLibVersion 0.4.31 `
+  -ExpectedRitsuLibVersion 0.4.32 `
   -ExpectedRitsuCompatBranch 0.107.1 `
   -ExpectedPatchCount 25 `
   -OutFile "<evidence>\autoslay-packet-check.json" `
@@ -565,9 +565,9 @@ After a launched run, verify the retained packet without launching anything:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.97 `
+  -ExpectedPackageVersion v0.1.0-private-beta.98 `
   -ExpectedGameVersion 0.107.1 `
-  -ExpectedRitsuLibVersion 0.4.31 `
+  -ExpectedRitsuLibVersion 0.4.32 `
   -ExpectedRitsuCompatBranch 0.107.1 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch

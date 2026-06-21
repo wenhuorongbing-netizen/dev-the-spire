@@ -47,17 +47,17 @@ public sealed partial class AncientBehaviorGuardTests
             "- [x] The active release surface is one mod: `Spire Plus`.",
             "- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
-            "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.31`.",
+            "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.32`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
-            "- [ ] STS2-RitsuLib appears in Mod Settings for the beta.97 RitsuLib-only package.",
+            "- [ ] STS2-RitsuLib appears in Mod Settings for the beta.98 RitsuLib-only package.",
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.",
-            "- [ ] Current beta.97 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
+            "- [ ] Current beta.98 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [ ] Current RitsuLib-only Off loader smoke for the beta.97 ZIP hash is captured after the latest RitsuLib package refresh.",
+            "- [ ] Current RitsuLib-only Off loader smoke for the beta.98 ZIP hash is captured after the latest RitsuLib package refresh.",
             "- [x] Previous RitsuLib-only AdditiveBatch1 registration smoke for the beta.93 ZIP hash is captured",
-            "- [ ] Latest RitsuLib-only Off loader smoke for the current beta.97 package hash is recaptured on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90/beta.96 loader evidence is historical or previous-package context only.",
-            "- [ ] `godot.log` reviewed after fresh beta.97 RitsuLib-only Off isolated startup/log verification.",
+            "- [ ] Latest RitsuLib-only Off loader smoke for the current beta.98 package hash is recaptured on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90/beta.96 loader evidence is historical or previous-package context only.",
+            "- [ ] `godot.log` reviewed after fresh beta.98 RitsuLib-only Off isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
             "- [ ] Save/load-sensitive behavior is tested.",
@@ -89,7 +89,7 @@ public sealed partial class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.97 package shape.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.98 package shape.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);

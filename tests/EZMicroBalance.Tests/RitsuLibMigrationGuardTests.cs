@@ -324,7 +324,7 @@ public sealed class RitsuLibMigrationGuardTests
             "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.97 package parity passes", proposal, StringComparison.Ordinal);
+        Assert.Contains("installed beta.98 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);
@@ -363,29 +363,28 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             migrationGoal,
-            "GitHub release `v0.4.31` is marked Latest",
-            "NuGet flat-container includes `0.4.31`",
-            "Nexus files now list the variant-pack main file as `0.4.31`",
-            "the earlier Nexus `0.4.28` lag is historical only",
-            "GitHub latest-release/tag, NuGet, Nexus, and installed variant pack",
-            "`main` branch manifest can lag",
-            "source of truth for the Spire Plus dependency floor",
-            "Keep Spire Plus on stable `0.4.31`, not a dev build");
+            "NuGet flat-container and `dotnet list package --outdated` show `STS2.RitsuLib` `0.4.32` as the latest package",
+            "Nexus files list the variant-pack main file as `0.4.32`",
+            "The GitHub release page/API can lag the NuGet/Nexus package version",
+            "do not use a lagging GitHub release marker as the dependency-floor source",
+            "official NuGet package via `RitsuLibDeployDir`",
+            "dependency-floor source",
+            "Keep Spire Plus on stable `0.4.32`, not a dev build");
 
         AssertSourceContains(
             integrationDoc,
             "## External Version Recheck",
-            "RitsuLib GitHub release `v0.4.31` is marked Latest",
-            "GitHub latest-release API and the `v0.4.31` tag remain the GitHub version",
+            "`dotnet list ... package --outdated` and NuGet package search report",
+            "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "NuGet package",
-            "Nexus files page now lists the variant-pack main",
-            "the earlier Nexus `0.4.28` lag is historical only",
+            "Nexus files page",
+            "GitHub is not the dependency-floor source",
             "Major Update #2",
             "`v0.107.1`",
             "Workshop and RNG-system changes are dependency-sensitive",
             "rerun the source-workspace checker",
-            "variant check before claiming compatibility");
+            "RitsuLib variant check before claiming compatibility");
     }
 
     /// <summary>

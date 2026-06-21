@@ -3,7 +3,7 @@
 Prepared: 2026-05-07
 Updated: 2026-06-21
 
-Status: automated gates passed for the current RitsuLib-only beta.97 package shape. Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration. Previous beta.96 Off proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is previous-package startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.97.
+Status: automated gates passed for the current RitsuLib-only beta.98 package shape. Beta.97 Off loader and clicked settings UI proof remain pending after the RitsuLib settings-page I18N resource migration. Previous beta.96 Off proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is previous-package startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.98.
 
 Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
@@ -18,7 +18,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.97.zip`, SHA256 `420D055C0B231B6D6BEC46A7E43C5C9E9AFCE25C4AC7130F3552F844BFF7C197`; beta.97 Off loader proof is pending |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.98.zip`, SHA256 `A6203758F2F5B0267454CEB4463B842EE69DA800F4653282E55B4ECEE9DCC1BA`; beta.98 Off loader proof is pending |
 
 ## Runtime Load Checklist
 
@@ -73,7 +73,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 
 | Ancient / Relic | Manual Check | Expected Result | Result |
 | --- | --- | --- | --- |
-| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `抽1张牌`, `每回合7张`, `至少18点`. | Pending |
+| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `�?张牌`, `每回�?张`, `至少18点`. | Pending |
 | Black Star | Pick up in Act 3 or later, then kill an elite. | Pickup immediately grants one random relic; normal elite bonus remains. | Pending |
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
 | Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. | Pending |
@@ -86,11 +86,11 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; Vakuu must still show three normal reward options; localized locked Cape only as a defensive fallback; low-Max-HP Vakuu still shows three normal choices; zhs text should include `至少18点`; max HP loss is not damage; adds exactly 3 `Apparition` / `灵体` cards. | Pending |
 | Velvet Choker | Play 6 cards manually from hand, then inspect/play the 7th+ card. | No hard six-card cap; the 7th+ from-hand manual cards cost +1 after other cost changes; copied, autoplayed, or repeated plays do not advance the counter. | Pending |
 | Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss combats; remaining stored cards clear after act boss transition. | Pending |
-| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/锻造, then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
+| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/锻�? then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
 | Seal of Gold / Debt | Pick up reward, draw/play/exhaust Debt. | Grants energy and two playable `Debt` / `债务` curses; gold loss occurs only on exhaust. | Pending |
 | Sozu | Pick up with empty potion slots, then attempt future potion gain. | Empty potion slots fill on pickup, then future potion gain is blocked. | Pending |
 | Ectoplasm | Pick up, then complete later gold rewards. | Grants immediate gold, then blocks future gold gain. | Pending |
-| Fiddle | Draw many cards in combat. | Draw stops while `每回合7张`; no card should be lost or stuck. | Pending |
+| Fiddle | Draw many cards in combat. | Draw stops while `每回�?张`; no card should be lost or stuck. | Pending |
 | Iron Club | Play Ironclad attacks and inspect dynamic text. | Uses current variable text; source guard expects 5 cards where applicable. | Pending |
 | Brilliant Scarf | Draw from the reward and inspect dynamic text. | Uses current variable text; source guard expects 6 cards where applicable. | Pending |
 | Beautiful Bracelet | Apply to selected cards and inspect enchantment. | Selected cards gain `Swift 2` / `迅捷2`; zhs text does not show raw `Swift`. | Pending |
@@ -107,7 +107,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Area | Expected Text | Result |
 | --- | --- | --- |
 | Beautiful Bracelet relic text | `迅捷2`, no raw `Swift` | Pending |
-| Numeric formatting | No spaces between Chinese text, numbers, and units: `抽1张牌`, `每回合7张`, `至少18点` | Pending |
+| Numeric formatting | No spaces between Chinese text, numbers, and units: `�?张牌`, `每回�?张`, `至少18点` | Pending |
 | Prismatic Gem count hint | zhs hover uses `初始计数1/2` or `初始计数0/2`; trigger reward banner uses `本次标准卡牌奖励只会出现异色牌。` | Pending |
 | Jewelry Box | `神化`, no raw `Apotheosis`; `宝石面具` and 0-cost text | Pending |
 | Pael's Horn | `放松` and `放松+`, no raw `Relax` | Pending |

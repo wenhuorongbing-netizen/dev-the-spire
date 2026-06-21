@@ -4,7 +4,7 @@ This guide explains how to clone this private repository on another Windows mach
 
 ## 2026-06-21 Current Boundary
 
-Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on STS2-RitsuLib `v0.4.31` / `lib\0.107.1` only. Current beta.97 package parity is refreshed, while beta.97 Off loader and clicked settings proof remain pending after the settings-page I18N resource migration. Previous beta.96 Off proof is `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` for previous-package context only. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
+Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on STS2-RitsuLib `v0.4.32` in direct NuGet runtime layout only. Current beta.98 package parity is refreshed, while beta.98 Off loader and clicked settings proof remain pending after the settings-page I18N resource migration. Previous beta.96 Off proof is `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` for previous-package context only. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
 ## Baseline
 
@@ -13,8 +13,8 @@ Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire 
 - Legacy scaffold id: `EzDailyContent`
 - Game: Slay the Spire 2 public/main branch
 - Current local version: `v0.107.1`, installed/source-refreshed locally on `2026-06-20`
-- RitsuLib runtime: `STS2-RitsuLib` `v0.4.31` with `lib\0.107.1`
-- Spire Plus package: `v0.1.0-private-beta.97`
+- RitsuLib runtime: `STS2-RitsuLib` `v0.4.32` direct NuGet runtime layout
+- Spire Plus package: `v0.1.0-private-beta.98`
 - Build command: `dotnet build`
 - Publish command: `dotnet publish`
 
@@ -50,9 +50,9 @@ Install Slay the Spire 2 through Steam and record the game root, for example:
 D:\Steam\steamapps\common\Slay the Spire 2
 ```
 
-## 5. Install STS2-RitsuLib v0.4.31
+## 5. Install STS2-RitsuLib v0.4.32
 
-Install STS2-RitsuLib `v0.4.31` runtime files into:
+Install STS2-RitsuLib `v0.4.32` runtime files into:
 
 ```text
 <GameRoot>\mods\STS2-RitsuLib
@@ -63,9 +63,8 @@ Required files:
 ```text
 mod_manifest.json
 STS2-RitsuLib.dll
-STS2-RitsuLib.pck
-ritsulib-variants.manifest
-lib\0.107.1\STS2-RitsuLib.dll
+STS2-RitsuLib.xml
+viewer\
 ```
 
 Do not commit STS2-RitsuLib runtime binaries into this repository.

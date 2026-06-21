@@ -9,19 +9,19 @@ install. That specific blocker is no longer current.
 Current package line:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.97`
-- STS2-RitsuLib `v0.4.31`
+- Spire Plus `v0.1.0-private-beta.98`
+- STS2-RitsuLib `v0.4.32`
 - RitsuLib runtime variant `lib\0.107.1`
 - Stable technical manifest id `EZMicroBalance`
 
 Spire Plus is RitsuLib-only for this package line: the project references
-`STS2.RitsuLib` `0.4.31`, the manifest declares `STS2-RitsuLib >= 0.4.31`,
+`STS2.RitsuLib` `0.4.32`, the manifest declares `STS2-RitsuLib >= 0.4.32`,
 and current settings/content/patch/saved-marker integration routes through
 RitsuLib APIs.
 
 ## Evidence
 
-- Current beta.97 package parity is summarized in `PROJECT_STATE.md` and
+- Current beta.98 package parity is summarized in `PROJECT_STATE.md` and
   `docs/reviews/current-validation.md`.
 - Beta.97 clicked settings proof remains pending after the settings-page I18N
   resource migration.
@@ -32,13 +32,13 @@ RitsuLib APIs.
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 packets are retained only as older package
-  loader/registration context. They do not prove beta.97 enabled-mode gameplay
+  loader/registration context. They do not prove beta.98 enabled-mode gameplay
   or tester readiness.
 
 ## Still Blocked
 
 The migration is not release-ready. Current hard blocks are gameplay, clicked
-Ancient UI, save-load, replacement behavior, current beta.97 enabled-mode
+Ancient UI, save-load, replacement behavior, current beta.98 enabled-mode
 registration/gameplay proof, multiplayer/co-op, independent QA, and versioned
 tester-package handoff.
 
@@ -50,7 +50,7 @@ runtime/manual gates have current evidence and owner approval.
 1. Keep the official STS2-RitsuLib install under
    `<GameRoot>\mods\STS2-RitsuLib`.
 2. Enable only STS2-RitsuLib and Spire Plus for controlled RitsuLib-only proof.
-3. Recapture beta.97 loader proof after the settings-page I18N resource
+3. Recapture beta.98 loader proof after the settings-page I18N resource
    migration.
 4. Treat settings screenshots as UI visibility proof only.
 5. Withhold live-ready and release-ready claims until gameplay, save-load,

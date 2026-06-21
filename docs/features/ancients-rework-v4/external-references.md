@@ -20,7 +20,7 @@ Notes:
 
 Notes:
 
-- Historical May 2026 work referenced `previous package` `3.1.4`; the current repo references `STS2.RitsuLib` `0.4.31` and has only STS2-RitsuLib as the shared runtime dependency.
+- Historical May 2026 work referenced `previous package` `3.1.4`; the current repo references `STS2.RitsuLib` `0.4.32` and has only STS2-RitsuLib as the shared runtime dependency.
 - The previous package page shows `CustomAncientModel`, `IsValidForAct(ActModel act)`, `CustomScenePath`, map/run-history icon paths, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()`.
 - Prefer current local compile-time API evidence over tutorial assumptions when they conflict. Do not reintroduce previous package as a Spire Plus dependency without an explicit owner decision, migration document, build, package, and runtime proof.
 

@@ -74,7 +74,7 @@ Use this protocol for A11-A20 live evidence, especially Rootblight/Blight Sprout
 
 Execute with `SPIREPLUS_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
 
-- [ ] Game loads with STS2-RitsuLib v0.4.31 and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
+- [ ] Game loads with STS2-RitsuLib v0.4.32 and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
 - [ ] Starting a normal run with only diagnostics enabled does not add Rootblight.
 - [ ] `godot.log` records run Ascension, act index, debug/public gate state, Rootblight level/card counts, room type, round, and combat Blight Sprout counts.
 - [ ] Diagnostics logs appear from the run/combat hook path without mutating gameplay beyond the selected Ascension level.
@@ -88,7 +88,7 @@ Execute only after Rootblight MVP is implemented.
 
 - [x] Build succeeds after implementation.
 - [x] Publish succeeds after localization/resources changed.
-- [ ] Game loads with STS2-RitsuLib v0.4.31 and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
+- [ ] Game loads with STS2-RitsuLib v0.4.32 and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
 - [ ] Starting a normal run with the debug/internal gate disabled does not add Rootblight.
 - [ ] Existing Ancient reward rebalance behavior still loads and does not throw.
 - [ ] `godot.log` has no Spire Plus Ascension errors under technical id `EZMicroBalance`.
