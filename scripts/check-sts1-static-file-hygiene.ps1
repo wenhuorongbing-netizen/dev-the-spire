@@ -70,6 +70,7 @@ $explicitRelativePaths = @(
     'docs\goals\refactor.md',
     'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md',
     'docs\integrations\ritsulib.md',
+    'docs\features\ritsulib-migration\README.md',
     'docs\features\ritsulib-migration\monthly-dev-spec.md',
     'docs\features\ritsulib-migration\batch-4c-candidates.md',
     'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md',
@@ -169,6 +170,7 @@ foreach ($path in $uniquePaths) {
 }
 
 Add-Check -Name 'sts1_hygiene_scanned_files_present' -Passed ($uniquePaths.Count -gt 0) -Detail "scanned $($uniquePaths.Count) files"
+Add-Check -Name 'sts1_hygiene_scans_ritsu_migration_readme' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\README.md')) -Detail 'RitsuLib migration README must be included in static-file hygiene scope'
 Add-Check -Name 'sts1_hygiene_scans_ritsu_monthly_spec' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\monthly-dev-spec.md')) -Detail 'RitsuLib monthly dev spec must be included in static-file hygiene scope'
 Add-Check -Name 'sts1_hygiene_scans_ritsu_batch4c' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\batch-4c-candidates.md')) -Detail 'RitsuLib Batch 4c proposal must be included in static-file hygiene scope'
 Add-Check -Name 'sts1_hygiene_scans_ritsu_runtime_checklist' -Passed ($uniquePaths -contains (Resolve-RepoPath 'docs\features\ritsulib-migration\runtime-smoke-checklist.md')) -Detail 'RitsuLib runtime smoke checklist must be included in static-file hygiene scope'

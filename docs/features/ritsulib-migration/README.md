@@ -1,0 +1,68 @@
+# RitsuLib Migration
+
+This is the single entry point for RitsuLib migration work. Start here, then
+read only the support file that matches the task.
+
+## Current Boundary
+
+- Spire Plus is RitsuLib-only for beta.99.
+- Compile dependency: NuGet `STS2.RitsuLib` `0.4.32`.
+- Runtime dependency: manifest `STS2-RitsuLib >= 0.4.32`.
+- Installed game target: Slay the Spire 2 `v0.107.1`.
+- Current proof: beta.99 package parity, RitsuLib settings UI visibility, and
+  direct Off loader startup/default-Off evidence.
+- Not proved: beta.99 enabled-mode registration, gameplay, clicked Ancient UI,
+  save-load, replacement behavior, co-op, independent QA, release readiness, or
+  tester handoff.
+
+## Read Order
+
+1. `PROJECT_STATE.md` for the current status and blockers.
+2. `docs/goals/migration.md` for migration success criteria and validation
+   commands.
+3. `docs/integrations/ritsulib.md` for dependency/version/API evidence.
+4. `docs/reviews/current-validation.md` for the latest validation record.
+5. `runtime-smoke-checklist.md` only when preparing or reviewing runtime
+   evidence.
+6. `batch-4c-candidates.md` only when the owner explicitly asks about the next
+   patch migration batch.
+
+Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.
+
+## RitsuLib-First Rules
+
+- Use local game source under `source code/src/Core/` as primary game API
+  evidence before changing gameplay, save/load, reward, map, combat, or UI
+  behavior.
+- Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs to confirm the
+  RitsuLib API shape before adding wrappers.
+- Register mod content through `RitsuLibFramework.CreateContentPack(...)` and
+  `SpirePlusContentRegistrationService`.
+- Register settings data before the settings page: `BeginModDataRegistration`
+  / `ModDataStore.Register` first, then `RegisterModSettings`.
+- Keep settings entry ids stable; screenshots and future automation use them as
+  evidence anchors.
+- Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
+  flow through game saved properties; use `ModDataStore` for global mod
+  settings.
+- Migrate Harmony patches to RitsuLib `IPatchMethod` only with owner-approved
+  scope, source evidence, tests, and fresh validation.
+
+## Support Files
+
+| File | Role |
+| --- | --- |
+| `monthly-dev-spec.md` | Compact boundary stub retained for guarded historical references. Not a default entry point. |
+| `runtime-smoke-checklist.md` | Runtime evidence checklist and verifier command source. |
+| `next-overnight-run.md` | Future controlled runtime QA run order. |
+| `batch-4c-candidates.md` | Proposal-only list for the next possible low-risk patch migration batch. |
+| `runtime-hard-block-report-20260531.md` | Current pointer for the old runtime hard-block lane; the original blocker is historical. |
+
+## Stop Lines
+
+- Do not add another shared runtime framework dependency without owner approval
+  and a same-pass package/docs/guard update.
+- Do not treat loader proof or settings screenshots as gameplay, save-load,
+  multiplayer, QA, release, or handoff proof.
+- Do not migrate Batch 4c or high-risk run/map/reward/save/multiplayer patches
+  without explicit owner approval.

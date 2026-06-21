@@ -440,6 +440,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             ("README.md", ReadRepoText("README.md")),
             ("docs/goals/migration.md", ReadRepoText("docs", "goals", "migration.md")),
             ("docs/integrations/ritsulib.md", ReadRepoText("docs", "integrations", "ritsulib.md")),
+            ("docs/features/ritsulib-migration/README.md", ReadRepoText("docs", "features", "ritsulib-migration", "README.md")),
             ("docs/skills/sts2-godot-mod-development.md", ReadRepoText("docs", "skills", "sts2-godot-mod-development.md"))
         };
 
@@ -474,13 +475,16 @@ public sealed partial class DocumentationCompactnessGuardTests
         var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
         var docRestructureSpec = ReadRepoText("docs", "doc-restructure-spec.md");
         var integration = ReadRepoText("docs", "integrations", "ritsulib.md");
+        var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
 
         AssertSourceContains(
             docsReadme,
+            "`features/ritsulib-migration/README.md`",
             "`integrations/ritsulib.md`",
             "Current RitsuLib integration record: compile package, manifest dependency, installed runtime variant, loader evidence, and remaining proof gates.");
         AssertSourceContains(
             projectMap,
+            "`docs/features/ritsulib-migration/README.md`",
             "`docs/integrations/`",
             "Runtime integration records for active dependencies such as RitsuLib.");
         AssertSourceContains(
@@ -504,6 +508,15 @@ public sealed partial class DocumentationCompactnessGuardTests
             "The current public Slay the Spire 2 update target remains Major Update #2",
             "Current compile dependency:",
             "Current manifest dependency:");
+        AssertSourceContains(
+            migrationReadme,
+            "# RitsuLib Migration",
+            "This is the single entry point for RitsuLib migration work.",
+            "Spire Plus is RitsuLib-only for beta.99.",
+            "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
+            "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
+            "Register settings data before the settings page: `BeginModDataRegistration`",
+            "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
 
         foreach (var staleInstruction in new[]
                  {

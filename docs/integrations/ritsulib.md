@@ -118,7 +118,7 @@ Current manifest dependency:
 
 ## RitsuLib API Adoption Plan
 
-- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.99 package parity is current on `v0.107.1` with RitsuLib `v0.4.32`, beta.99 loader recapture is pending, and beta.96/beta.93 loader proof remains previous-package evidence.
+- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.99 package parity and direct Off loader proof are current on `v0.107.1` with RitsuLib `v0.4.32`, beta.99 enabled-mode recapture is pending, and beta.96/beta.93 loader proof remains previous-package evidence.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
 - Batch 3: persistence sidecar experiments are not currently applicable because current saved-state usage has migrated to RitsuLib `SavedAttachedState`; no additional RitsuLib data-store sidecar is planned for this pass.
 - Settings persistence: preview-tool settings use RitsuLib `ModDataStore` under

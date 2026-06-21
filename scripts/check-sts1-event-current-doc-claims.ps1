@@ -431,6 +431,7 @@ $activeReview = Read-RepoText 'docs\review.md'
 $toReview = Read-RepoText 'docs\toreview.md'
 $legacyV5MonthlySpec = Read-RepoText 'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md'
 $ritsuIntegrationDoc = Read-RepoText 'docs\integrations\ritsulib.md'
+$ritsuMigrationReadme = Read-RepoText 'docs\features\ritsulib-migration\README.md'
 $ritsuMonthlyDevSpec = Read-RepoText 'docs\features\ritsulib-migration\monthly-dev-spec.md'
 $ritsuBatch4cCandidates = Read-RepoText 'docs\features\ritsulib-migration\batch-4c-candidates.md'
 $ritsuRuntimeHardBlock = Read-RepoText 'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md'
@@ -520,6 +521,7 @@ $currentClaimFiles = @(
     'docs\goals\refactor.md',
     'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md',
     'docs\integrations\ritsulib.md',
+    'docs\features\ritsulib-migration\README.md',
     'docs\features\ritsulib-migration\monthly-dev-spec.md',
     'docs\features\ritsulib-migration\batch-4c-candidates.md',
     'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md',
@@ -598,6 +600,7 @@ Add-Check -Name 'current_claim_scan_includes_goal_debug_doc' -Passed ($currentCl
 Add-Check -Name 'current_claim_scan_includes_goal_refactor_doc' -Passed ($currentClaimFiles -contains 'docs\goals\refactor.md') -Detail 'goal refactor doc must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_legacy_v5_monthly_spec' -Passed ($currentClaimFiles -contains 'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md') -Detail 'legacy v5 monthly spec must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_integration' -Passed ($currentClaimFiles -contains 'docs\integrations\ritsulib.md') -Detail 'RitsuLib integration doc must be in stale claim scan scope'
+Add-Check -Name 'current_claim_scan_includes_ritsu_migration_readme' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\README.md') -Detail 'RitsuLib migration README must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_monthly_spec' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\monthly-dev-spec.md') -Detail 'RitsuLib monthly spec must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_batch4c' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\batch-4c-candidates.md') -Detail 'Batch 4c proposal must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_runtime_checklist' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\runtime-smoke-checklist.md') -Detail 'RitsuLib runtime smoke checklist must be in stale claim scan scope'
@@ -652,6 +655,7 @@ foreach ($entryDoc in @(
     @{ Name = 'root_readme_retired_framework_literal_absent'; Text = $rootReadme },
     @{ Name = 'goal_migration_retired_framework_literal_absent'; Text = $goalMigrationDoc },
     @{ Name = 'ritsu_integration_retired_framework_literal_absent'; Text = $ritsuIntegrationDoc },
+    @{ Name = 'ritsu_migration_readme_retired_framework_literal_absent'; Text = $ritsuMigrationReadme },
     @{ Name = 'repo_skill_retired_framework_literal_absent'; Text = $repoSts2Skill }
 )) {
     Add-Check -Name $entryDoc.Name -Passed ($entryDoc.Text.IndexOf($retiredFrameworkName, [System.StringComparison]::OrdinalIgnoreCase) -lt 0) -Detail 'current entry docs must not mention the retired framework by name'
@@ -785,6 +789,9 @@ Add-ContainsCheck -Name 'historical_refactor_qa_round2_revision_m_note' -Text $h
 Add-ContainsCheck -Name 'historical_refactor_qa_round2_no_current_proof' -Text $historicalRefactorQaRound2Review -Needle 'Do not use its `CONDITIONAL PASS`, Off/CanaryOnly/AdditiveBatch1 `PASS`, RitsuLib `v0.3.10`, beta.84, warning-count, dirty-worktree, mod-isolation, or package status as current `event.md` proof.'
 Add-ContainsCheck -Name 'ritsu_integration_beta96_off_nonclaim' -Text $ritsuIntegrationDoc -Needle 'Previous beta.96 direct Off proof is previous-package context only.'
 Add-ContainsCheck -Name 'ritsu_integration_beta99_latest_recheck' -Text $ritsuIntegrationDoc -Needle 'The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.32`'
+Add-ContainsCheck -Name 'ritsu_migration_readme_single_entry_point' -Text $ritsuMigrationReadme -Needle 'This is the single entry point for RitsuLib migration work.'
+Add-ContainsCheck -Name 'ritsu_migration_readme_read_order' -Text $ritsuMigrationReadme -Needle 'Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.'
+Add-ContainsCheck -Name 'ritsu_migration_readme_api_rules' -Text $ritsuMigrationReadme -Needle 'Register settings data before the settings page: `BeginModDataRegistration`'
 Add-ContainsCheck -Name 'ritsu_integration_batch4c_proposal_only' -Text $ritsuIntegrationDoc -Needle 'Batch 4c: proposal-only candidate list'
 Add-ContainsCheck -Name 'ritsu_monthly_current_off_nonclaim' -Text $ritsuMonthlyDevSpec -Needle 'Beta.99 direct Off loader smoke is current under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` for startup/loading and default-Off StS1Events behavior; beta.99 clicked RitsuLib settings UI proof is current'
 Add-ContainsCheck -Name 'ritsu_monthly_no_advance_from_off_alone' -Text $ritsuMonthlyDevSpec -Needle 'do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof from the Off smoke alone.'
@@ -1206,6 +1213,7 @@ Add-ContainsCheck -Name 'static_file_hygiene_scans_goal_debug_doc' -Text $static
 Add-ContainsCheck -Name 'static_file_hygiene_scans_goal_refactor_doc' -Text $staticFileHygieneScript -Needle "'docs\goals\refactor.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_legacy_v5_monthly_spec' -Text $staticFileHygieneScript -Needle "'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_integration' -Text $staticFileHygieneScript -Needle "'docs\integrations\ritsulib.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_migration_readme' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\README.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_monthly_spec' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\monthly-dev-spec.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_batch4c' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\batch-4c-candidates.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_runtime_checklist' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\runtime-smoke-checklist.md'"

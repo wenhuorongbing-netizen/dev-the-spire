@@ -177,7 +177,7 @@ Start at `docs/README.md`.
 | Runtime monkey / AutoSlay stability methodology | `docs/testing/runtime-monkey-stability.md` |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
-| RitsuLib migration | `docs/features/ritsulib-migration/monthly-dev-spec.md` |
+| RitsuLib migration | `docs/features/ritsulib-migration/README.md` |
 | RitsuLib migration runtime smoke | `docs/features/ritsulib-migration/runtime-smoke-checklist.md` |
 | RitsuLib migration next run | `docs/features/ritsulib-migration/next-overnight-run.md` |
 | Debug governance | `docs/goals/debug.md` |

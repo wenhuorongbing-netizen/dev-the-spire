@@ -19,6 +19,7 @@
 - `docs/month-plan/commit-boundaries.md`
 - `docs/test-ready-development-goal.md`
 - `docs/features/ancient-expansion-v2.2/README.md`
+- `docs/features/ritsulib-migration/README.md` (single active RitsuLib migration entry point; support files remain guarded but are not default reading path)
 - `website/README.md`
 
 Current support docs, not default reading path:
@@ -47,6 +48,7 @@ Current support docs, not default reading path:
 - `docs/features/ancient-expansion-v2.2/` (current roadmap/prototype docs; Urda, Morvi, Lotha, and the single-player Vakuu fight are source-active/live-pending)
 - `docs/features/ancients-rework-v4/reference-inputs/` (traceability input only; do not implement from it without checking current issues/goal/source-design)
 - `docs/features/preview-tools/` (Crystal Sphere peek and transform preview integrated into Spire Plus)
+- `docs/features/ritsulib-migration/` (RitsuLib-only migration entry and guarded runtime/migration support files)
 
 ## C. Style / agent docs
 

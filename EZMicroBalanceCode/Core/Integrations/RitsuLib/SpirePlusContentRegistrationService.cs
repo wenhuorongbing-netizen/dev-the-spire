@@ -25,6 +25,9 @@ internal static class SpirePlusContentRegistrationService
         var logger = RitsuLibFramework.CreateLogger(modId);
         logger.Info("[Spire Plus] Registering native content with RitsuLib...");
 
+        // Keep all RitsuLib content registration in one service so future model
+        // additions use the same CreateContentPack path and do not drift back
+        // into manifest-only or ad hoc registration.
         var content = RitsuLibFramework.CreateContentPack(modId);
 
         RegisterAncients(content);
@@ -195,6 +198,9 @@ internal static class SpirePlusContentRegistrationService
         content.Enchantment<RoyalDecreeEnchantment>();
     }
 
+    // Public-entry strings already include the Spire Plus namespace. Passing
+    // them through RitsuLib preserves the public id used by localization,
+    // saves, screenshots, and package evidence.
     private static ModelPublicEntryOptions FullEntry(string publicEntry) =>
         ModelPublicEntryOptions.FromFullPublicEntry(publicEntry);
 }
