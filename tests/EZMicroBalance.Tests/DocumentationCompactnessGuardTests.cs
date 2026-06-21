@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Previous beta.93 loader truth is RitsuLib-only",
+            "Current beta.96 Off loader truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");

@@ -22,9 +22,12 @@ Current evidence:
   `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
   It shows Settings -> `Mod Settings (RitsuLib)`, the RitsuLib Mods tree with
   only `RitsuLib` and `Spire Plus`, and the Spire Plus settings page.
-- Older beta.93 Off/AdditiveBatch1 loader packets are retained only as older
-  package loader/registration context. They do not prove beta.96 gameplay or
-  tester readiness.
+- beta.96 Off loader proof is retained at
+  `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
+  It proves startup/loading and default-Off StS1Events behavior only.
+- Older beta.93 AdditiveBatch1 loader packets are retained only as older
+  package loader/registration context. They do not prove beta.96 enabled-mode
+  gameplay or tester readiness.
 
 Treat loader and settings evidence as scoped proof only: gameplay, save-load, replacement, multiplayer, independent QA, package handoff, and release-ready compatibility proof remain pending.
 

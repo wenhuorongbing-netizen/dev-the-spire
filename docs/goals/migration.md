@@ -35,7 +35,7 @@ Do not add another shared runtime framework dependency unless the owner explicit
 
 ## Current Conclusion
 
-The code, manifest, package metadata, current setup docs, and controlled loader proof have moved to the RitsuLib-only target. The current manifest/package target is beta.96 after the settings UI status and Mod Info localization migration. Previous beta.93 Off proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. Current beta.96 page-level Mod Settings proof is captured under `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`; it proves settings UI visibility only. Recapture loader before treating beta.96 as runtime-proven.
+The code, manifest, package metadata, current setup docs, and controlled loader proof have moved to the RitsuLib-only target. The current manifest/package target is beta.96 after the settings UI status and Mod Info localization migration. Current beta.96 Off proof under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, StS1Events disabled with 0 registration lines, and Off packet verifier 43 / 0. Previous beta.93 AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, registered 10 event types through 14 calls, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0 for the previous package only. Current beta.96 page-level Mod Settings proof is captured under `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`; it proves settings UI visibility only. Recapture loader only if the package, source, game, or RitsuLib runtime changes.
 
 The migration is not release-ready. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
 
@@ -86,8 +86,8 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 
 ## Next Actions
 
-1. Capture beta.96 loader proof; current beta.96 Mod Settings UI proof does not replace loader proof.
-2. Capture AdditiveBatch1 gameplay proof; current evidence proves loader/registration only.
+1. Recapture beta.96 loader proof only if package, source, game, or RitsuLib runtime changes; current beta.96 Mod Settings UI proof does not replace loader proof.
+2. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any Batch 4c or higher-risk patch migration.
 5. Recapture git status, pushed HEAD, and validation status before any later handoff.

@@ -3,7 +3,7 @@
 Prepared: 2026-05-07
 Updated: 2026-06-21
 
-Status: automated gates passed for the current RitsuLib-only beta.96 package shape; previous beta.93 Off/AdditiveBatch1 loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.96.
+Status: automated gates passed for the current RitsuLib-only beta.96 package shape; current beta.96 Off loader proof reaches main menu with exactly STS2-RitsuLib and Spire Plus loaded, but it is startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only. Earlier normal Steam-client startup/log verification, page-level Mod Settings UI, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.96.
 
 Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
@@ -18,15 +18,15 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.96.zip`, SHA256 `6E313D383E49B750E3C5809E92D7795CC5E196B5A7511707D2AB4357E24D4265`; previous beta.93 Off/AdditiveBatch1 loader proof is clean for startup/registration only |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.96.zip`, SHA256 `6E313D383E49B750E3C5809E92D7795CC5E196B5A7511707D2AB4357E24D4265`; current beta.96 Off loader proof is clean for startup/loading only |
 
 ## Runtime Load Checklist
 
 | Step | Expected Result | Result |
 | --- | --- | --- |
 | Confirm STS2-RitsuLib and `EZMicroBalance` are installed in the game `mods` folder | `STS2-RitsuLib\mod_manifest.json`, `STS2-RitsuLib\lib\0.107.1\STS2-RitsuLib.dll`, `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
-| Launch Slay the Spire 2 public/main branch | Game reaches main menu | Previous direct beta.93 loader proof passed; beta.96 normal user-profile proof still pending |
-| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Pending fresh current-package screenshot proof |
+| Launch Slay the Spire 2 public/main branch | Game reaches main menu | Current direct beta.96 Off loader proof passed; normal Steam-client gameplay proof still pending |
+| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Current beta.96 RitsuLib Mod Settings proof captured |
 | Open Compendium -> Card Library | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
 | Start a run with Spire Plus enabled | No startup exception in `godot.log` for `EZMicroBalance`. Natural route-click first-node path remains pending. | Pending gameplay proof |
 | Disable Spire Plus and restart | Spire Plus patches do not apply while disabled or plugged off | Pending gameplay proof |

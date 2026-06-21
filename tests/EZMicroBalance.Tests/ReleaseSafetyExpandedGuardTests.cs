@@ -434,7 +434,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
 
-        Assert.Contains("Previous beta.93 RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Current beta.96 RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-spire-plus-modsettings-20260513-111342", currentDocs, StringComparison.Ordinal);
@@ -448,7 +448,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed migration baseline must be read directly from `git log -1 --oneline --decorate`", projectState, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision Q truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("previous beta.93 RitsuLib-only loader proof supersedes it", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current beta.96 has clean RitsuLib-only Off loader proof on `v0.107.1`", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

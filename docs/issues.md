@@ -34,10 +34,10 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 loader fixed / gameplay pending: beta.93 Off and AdditiveBatch1 proof is clean on `v0.107.1` with RitsuLib `v0.4.31` / `lib\0.107.1`.
+- `RITSULIB-RUNTIME-SMOKE` P0 Off loader fixed / gameplay pending: beta.96 Off proof is clean on `v0.107.1` with RitsuLib `v0.4.31` / `lib\0.107.1`; beta.93 AdditiveBatch1 proof remains previous-package registration context.
   Only STS2-RitsuLib is the shared runtime dependency; earlier smokes are previous-version or previous-package context.
-  previous beta.93 RitsuLib-only AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
-  Current Spire Plus package no longer depends on previous package. Gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
+  Current beta.96 RitsuLib-only Off loader proof exists at `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
+  Current Spire Plus package no longer depends on previous package. Current enabled-mode proof, gameplay/UI/save-load/co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.

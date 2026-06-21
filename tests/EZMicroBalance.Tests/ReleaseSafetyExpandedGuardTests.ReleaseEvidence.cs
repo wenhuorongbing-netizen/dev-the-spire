@@ -23,7 +23,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "current-doc claims 1314 / 0",
             "static suite 15 / 0",
             "beta.96 RitsuLib-only source/build/publish/package refresh",
-            "previous beta.93 Off and AdditiveBatch1 loader/registration proof",
+            "current beta.96 Off loader proof, previous beta.93 AdditiveBatch1 loader/registration proof",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",
             "window-preflight-smoke-20260513-135402",

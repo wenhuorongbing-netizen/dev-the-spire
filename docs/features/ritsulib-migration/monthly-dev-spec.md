@@ -7,14 +7,14 @@ Status: compact active boundary for RitsuLib-only migration work. Historical pla
 - Current target: Spire Plus `v0.1.0-private-beta.96`, Slay the Spire 2 `v0.107.1`, STS2-RitsuLib `v0.4.31`, runtime variant `lib\0.107.1`.
 - Spire Plus uses NuGet `STS2.RitsuLib` `0.4.31` and manifest dependency `STS2-RitsuLib >= 0.4.31`.
 - 25 patch classes use RitsuLib `IPatchMethod`; 146 raw `[HarmonyPatch]` declarations remain.
-- Previous beta.93 Off loader smoke is clean with exactly STS2-RitsuLib and Spire Plus loaded.
-- Previous beta.93 AdditiveBatch1 enabled-mode smoke is clean with 10 event types / 14 registration calls and retained verifier reports.
+- Current beta.96 Off loader smoke is clean with exactly STS2-RitsuLib and Spire Plus loaded, 25/25 patches applied, StS1Events disabled with 0 registration lines, and packet verification 43 / 0.
+- Previous beta.93 AdditiveBatch1 enabled-mode smoke is clean with 10 event types / 14 registration calls and retained verifier reports for previous-package registration context only.
 - Handoff must recapture HEAD and worktree status after any later edits.
-- Live-ready and release-ready remain blocked by beta.96 loader proof, gameplay, clicked Ancient UI, save-load, replacement behavior, co-op, QA, and tester handoff.
+- Live-ready and release-ready remain blocked by gameplay, clicked Ancient UI, save-load, replacement behavior, current beta.96 enabled-mode registration/gameplay proof, co-op, QA, and tester handoff.
 
 ## Evidence Rules
 
-- Use retained Off proof only for older package loader/registration context; do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof from the Off smoke alone.
+- Use the current beta.96 Off proof only for startup/loading and default-Off StS1Events context; do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof from the Off smoke alone.
 - Use the retained CanaryOnly enabled-mode smoke at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` only as beta.85 / `v0.107.0` previous-package proof; recapture before making a current-version CanaryOnly claim.
 - Use the retained AdditiveBatch1 enabled-mode smoke at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` only as beta.93 / `v0.107.1` 10 event types / 14 registration-call proof; recapture it after any package/source change before using it for a new claim.
 - Only after those enabled-mode smokes match current source shape, capture CanaryOnly gameplay evidence for Big Fish, Golden Idol, The Lab, and Divine Fountain.
@@ -27,6 +27,6 @@ Batch 4c is proposal-only. Review `docs/features/ritsulib-migration/batch-4c-can
 ## Next Actions
 
 1. Keep docs and tests pointed at RitsuLib-only APIs.
-2. Capture beta.96 loader proof when a controlled runtime lane is assigned.
-3. Capture gameplay/save-load/co-op evidence after loader proof.
+2. Recapture beta.96 loader proof only if package, source, game version, or RitsuLib runtime changes.
+3. Capture current enabled-mode, gameplay/save-load/co-op evidence after loader proof.
 4. Record owner decision for Batch 4c before any source migration.

@@ -26,15 +26,19 @@ RitsuLib APIs.
 - Current beta.96 clicked settings proof is retained at
   `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
   It proves Settings -> `Mod Settings (RitsuLib)` visibility for Spire Plus.
-- Older beta.93 Off/AdditiveBatch1 packets are retained only as older package
-  loader/registration context. They do not prove beta.96 gameplay or tester
-  readiness.
+- Current beta.96 Off loader proof is retained at
+  `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
+  It proves startup/loading and default-Off StS1Events behavior only.
+- Older beta.93 AdditiveBatch1 packets are retained only as older package
+  loader/registration context. They do not prove beta.96 enabled-mode gameplay
+  or tester readiness.
 
 ## Still Blocked
 
-The migration is not release-ready. Current hard blocks are beta.96 loader
-proof, gameplay, clicked Ancient UI, save-load, replacement behavior,
-multiplayer/co-op, independent QA, and versioned tester-package handoff.
+The migration is not release-ready. Current hard blocks are gameplay, clicked
+Ancient UI, save-load, replacement behavior, current beta.96 enabled-mode
+registration/gameplay proof, multiplayer/co-op, independent QA, and versioned
+tester-package handoff.
 
 Batch 4c and any high-risk patch migration remain proposal-only until those
 runtime/manual gates have current evidence and owner approval.
@@ -52,5 +56,5 @@ runtime/manual gates have current evidence and owner approval.
 
 ## Next Action
 
-After coordination clears, capture beta.96 loader, gameplay, save-load, render,
-replacement, multiplayer, and QA evidence, or record the exact blocker.
+After coordination clears, capture current enabled-mode, gameplay, save-load,
+render, replacement, multiplayer, and QA evidence, or record the exact blocker.

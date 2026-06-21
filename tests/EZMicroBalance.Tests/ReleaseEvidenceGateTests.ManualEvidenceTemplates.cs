@@ -255,7 +255,7 @@ public sealed partial class ReleaseEvidenceGateTests
         Assert.Contains(ManifestVersion(), projectState, StringComparison.Ordinal);
         Assert.Contains("Current installed game is `v0.107.1`.", projectState, StringComparison.Ordinal);
         Assert.Contains("Older beta.85/beta.86/beta.87/beta.88/beta.90 rows are previous-package or previous-game-version context only.", projectState, StringComparison.Ordinal);
-        Assert.Contains("Previous beta.93 RitsuLib-only Off proof", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current beta.96 RitsuLib-only Off proof", projectState, StringComparison.Ordinal);
         Assert.Contains("Previous beta.93 RitsuLib-only AdditiveBatch1 proof", projectState, StringComparison.Ordinal);
         Assert.Contains("applied 25/25 Spire Plus ModPatcher patches", projectState, StringComparison.Ordinal);
         Assert.Contains("Found 30 previous saved-state registrations", projectState, StringComparison.OrdinalIgnoreCase);

@@ -70,7 +70,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 
 ## Runtime evidence summary
 - previous package `v3.2.1` compatibility with `v0.106.1` is the historical validated target. Historical 22-field loader evidence: `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` loaded only previous package plus Spire Plus, registered config, reported `Found 22 previous saved-state registrations`, reached main menu, and had no release-blocking signatures. This is historical evidence only.
-- Current source defines 30 SavedAttachedState fields. Historical 22-field and 16-field startup rows remain useful records only. Beta.85/beta.86/beta.87 `v0.107.0`, beta.88 previous package `v0.107.1`, beta.90 RitsuLib-only loader rows, and beta.93 RitsuLib-only loader rows are previous-context evidence; beta.96 package parity is current RitsuLib-only evidence, and gameplay proof still needs manual verification.
+- Current source defines 30 SavedAttachedState fields. Historical 22-field and 16-field startup rows remain useful records only. Beta.85/beta.86/beta.87 `v0.107.0`, beta.88 previous package `v0.107.1`, beta.90 RitsuLib-only loader rows, and beta.93 AdditiveBatch1 loader/registration rows are previous-context evidence; beta.96 package parity and beta.96 Off loader proof are current RitsuLib-only evidence, and gameplay proof still needs manual verification.
 - Historical beta.19 loader evidence: `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` loaded only previous package plus Spire Plus, registered `EZMicroBalance`, reported `v0.1.0-private-beta.19` and `Found 30 previous saved-state registrations`, reached startup completion, matched its beta.19 package hash, audited clean, stopped the game, and restored the isolated mod setup.
 - Historical display-name list evidence under `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342` shows `Spire Plus`; older page-level Mod Settings evidence predates the display-name refresh. Fresh beta.96 RitsuLib Mod Settings page proof is captured under `.tools\runtime-evidence\beta96-ritsulib-mod-settings-clicked-ui-20260621-160701`.
 - Historical package resource evidence under `.tools\runtime-evidence\current-package-smoke-20260514-015901` verified an earlier 22-field package and headless installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures. This is resource-load evidence, not clicked live Ancient UI proof.
@@ -98,8 +98,8 @@ Historical environment rows below are retained for setup history. Prefer this ov
   The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`.
   Current loader context:
   - beta.96 package parity is current package context.
-  - beta.93 RitsuLib-only Off proof is clean previous-package context under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-off-direct-20260621`.
-  - The beta.93 proof loaded exactly `STS2-RitsuLib` and `EZMicroBalance`, audited clean, and passed Off packet verifier 43 / 0.
+  - beta.96 RitsuLib-only Off proof is current startup/loading context under `.tools\runtime-evidence\v01071-beta96-ritsulib0431-off-direct-20260621-185056`.
+  - The beta.96 Off proof loaded exactly `STS2-RitsuLib` and `EZMicroBalance`, audited clean, logged StS1Events disabled with 0 registration lines, and passed Off packet verifier 43 / 0.
   - beta.93 RitsuLib-only AdditiveBatch1 proof is clean previous-package context under `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621`, with 10 event types / 14 registration calls, enabled-mode verifier 31 / 0, and packet verifier 61 / 0.
   - Retained beta.87 direct AdditiveBatch1 proof is clean historical `v0.107.0` context with 10 event types / 14 calls.
   - beta.85/beta.86 Off and CanaryOnly rows remain previous-package loader context.

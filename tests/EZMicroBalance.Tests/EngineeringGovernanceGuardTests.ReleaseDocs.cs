@@ -17,7 +17,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`.",
             "| Row ID | Kind | Status | Owner | Evidence Needed |",
             "The beta.19 loader smoke is historical startup evidence only",
-            "gameplay, clicked Ancient UI, save-load, preview-tools live behavior, Vakuu, co-op, and full release-evidence packaging rows remain pending",
+            "gameplay, clicked Ancient UI, save-load, preview-tools live behavior, current enabled-mode proof, Vakuu, co-op, and full release-evidence packaging rows remain pending",
             "| fresh-current-package-loader-smoke | loader | Partial |",
             "| ancient-ui-urda | clicked-ui | Pending |",
             "| ancient-ui-morvi | clicked-ui | Pending |",
@@ -110,7 +110,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "This is not live evidence.",
             "HEAD | `25f99fb",
             "Total patch declarations | 135",
-            "Fresh current-package loader smoke | Historical beta.85 `v0.107.0` Off loader smoke was clean for startup only; previous beta.93 RitsuLib-only Off/AdditiveBatch1 proof supersedes it for startup/registration, while live gameplay/manual runs are still pending",
+            "Fresh current-package loader smoke | Historical beta.85 `v0.107.0` Off loader smoke was clean for startup only; current beta.96 RitsuLib-only Off proof supersedes it for startup, previous beta.93 AdditiveBatch1 remains previous-package registration context, and live gameplay/manual runs are still pending",
             "README_INSTALL | `F933C266CBA1A6B1C81A2AC3D4BF1AA30A407BF6676703E95F1EB86724126C04`");
 
         AssertSourceContains(

@@ -22,12 +22,13 @@ Spire Plus is on the beta.96 RitsuLib-only target:
   framework dependency.
 - Current package parity and clicked RitsuLib Mod Settings UI proof exist for
   beta.96.
-- Prior beta.93 RitsuLib-only Off and AdditiveBatch1 proof is loader and
-  registration evidence only. Recapture beta.96 loader proof before making a
-  current runtime-ready claim.
+- Current beta.96 RitsuLib-only Off proof is startup/loading evidence only.
+  Prior beta.93 RitsuLib-only AdditiveBatch1 proof is previous-package
+  registration evidence only. Recapture beta.96 loader proof only after package,
+  source, game, or RitsuLib runtime drift.
 
 Gameplay, event screenshots, save-load, image/render, replacement functional
-proof, co-op/fail-closed proof, independent QA, beta.96 loader proof, and
+proof, co-op/fail-closed proof, independent QA, current enabled-mode proof, and
 tester-package handoff remain pending; handoff must recapture HEAD and worktree
 status after any later edits.
 
