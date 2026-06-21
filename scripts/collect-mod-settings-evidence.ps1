@@ -237,6 +237,10 @@ Template reference for `mod-settings-checklist.md`. Fill the working `mod-settin
 | ritsulib-visible-enabled | STS2-RitsuLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |
 | spire-plus-list-display-name | The Mods list shows the player-facing name Spire Plus for the current package. |  |  |
 | spire-plus-config-page-current-name | Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text. |  |  |
+| ritsulib-migration-status-section | The Spire Plus config page shows the Migration Status section from the RitsuLib-only settings surface. |  |  |
+| ritsulib-runtime-dependency-card | The Migration Status section shows `STS2-RitsuLib >= 0.4.31` as the required runtime dependency. |  |  |
+| ritsulib-proof-boundary-card | The page states that settings screenshots prove UI visibility only and do not prove gameplay or release readiness. |  |  |
+| preview-tools-controls-render | The Preview Tools section renders Crystal Sphere peek, mask alpha, transform prediction, always-show prediction, and preview debug log controls. |  |  |
 | technical-id-compatibility | EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name. |  |  |
 | legacy-mod-surfaces-absent | Legacy EzDailyContent and standalone EZFuturePeek mod surfaces are absent or disabled. |  |  |
 | clean-log-config-registration | The same-session godot.log includes current package/config registration evidence and the clean log audit has no release-blocking signatures. |  |  |
@@ -256,6 +260,7 @@ Required before pass:
 - language used;
 - screenshot filenames for the Mod Settings list and Spire Plus page;
 - confirmation that STS2-RitsuLib and Spire Plus are enabled;
+- confirmation that the Migration Status section, runtime dependency card, evidence-boundary card, and Preview Tools controls are visible;
 - confirmation that legacy EzDailyContent and standalone EZFuturePeek surfaces are absent or disabled.
 '@
 Set-TextIfMissing -Path (Join-Path $evidenceFull 'route-note.md') -Text $routeNote
@@ -284,6 +289,8 @@ $manualRows = [ordered]@{
                 'STS2-RitsuLib appears and is enabled.',
                 'Spire Plus appears as the player-facing name in the current package.',
                 'Spire Plus settings page opens and renders without errors.',
+                'Migration Status shows the RitsuLib-only surface, runtime dependency, and proof boundary.',
+                'Preview Tools controls render on the same page.',
                 'EZMicroBalance is used only as technical compatibility id where applicable.',
                 'Legacy EzDailyContent and standalone EZFuturePeek surfaces are absent or disabled.',
                 'Same-session godot.log and clean audit are retained.'
@@ -331,6 +338,9 @@ $readme = @"
 # Mod Settings Current Display Evidence
 
 This folder is a pending evidence scaffold for the RitsuLib migration Mod Settings UI gate. It does not prove gameplay, save-load, co-op, release readiness, or private beta readiness.
+
+Current package version: `$($environment.PackageVersion)`.
+For the beta.95 pass, capture both the Mods list and the Spire Plus page after navigating through RitsuLib's Mod Settings submenu.
 
 Required files before pass:
 - `command.txt`

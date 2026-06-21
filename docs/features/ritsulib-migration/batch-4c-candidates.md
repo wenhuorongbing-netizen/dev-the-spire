@@ -12,7 +12,7 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - STS2-RitsuLib `v0.4.31` is installed on the E-drive game root with the `0.107.1` runtime variant.
 - Historical `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes reached main menu with clean audits.
 - Spire Plus applied 25/25 migrated ModPatcher patches in those historical loader smokes.
-- The current local game install is `v0.107.1`; installed beta.93 package parity passes. Previous beta.93 Off and AdditiveBatch1 loader proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
+- The current local game install is `v0.107.1`; installed beta.95 package parity passes. Previous beta.93 Off and AdditiveBatch1 loader proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
 - Previous beta.93 AdditiveBatch1 retained log and packet verifiers passed with 10 event types / 14 registration lines and exact tuple parity. This is loader/registration proof only and is not Batch 4c approval, gameplay proof, or handoff proof. Retained beta.85/beta.87 `v0.107.0` smokes remain previous-package/game-version context.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
@@ -71,7 +71,7 @@ Before any Batch 4c source migration:
 5. `git diff --check` passes.
 6. `scripts/generate-patch-inventory.ps1 -Check` passes after any migration.
 7. A loader smoke is rerun if the migrated patch registration path changes.
-8. Current `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute for any new loader smoke required by changed patch registration paths or for gameplay proof.
+8. Previous `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute for any new loader smoke required by changed patch registration paths or for gameplay proof.
 9. Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite the retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
 
 Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

@@ -4,10 +4,10 @@ Date: 2026-06-11; latest addendum: 2026-06-21
 
 ## June 21 RitsuLib-Only Migration Addendum
 
-- Current migration target is Spire Plus `v0.1.0-private-beta.94` on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.31` / `lib\0.107.1`. Spire Plus no longer has a project, manifest, package, or current runtime dependency on previous package; previous package remains only previous-package/other-mod local context.
-- The ignored local `source code/` snapshot was refreshed from the installed game PCK/DLL with GDRE Tools `v2.5.0`. The beta.94 source-workspace run passed 60 checks / 0 mismatches, with only retained GDRE warnings for 18 failed scripts and one debug-scene parse warning.
-- Build, publish, package refresh, installed package parity, runtime preflight, and source-workspace parity passed for beta.94. Previous beta.93 RitsuLib-only Off proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, and packet verifier 43 / 0. Previous beta.93 RitsuLib-only AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu with exactly the same two mods, clean audit, 10 event types through 14 calls, enabled-mode verifier 31 / 0, and packet verifier 61 / 0.
-- Beta.94 still needs loader proof, clicked UI proof, gameplay, save-load, replacement, multiplayer, QA, release, and tester handoff rows.
+- Current migration target is Spire Plus `v0.1.0-private-beta.95` on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.31` / `lib\0.107.1`. Spire Plus no longer has a project, manifest, package, or current runtime dependency on previous package; previous package remains only previous-package/other-mod local context.
+- The ignored local `source code/` snapshot was refreshed from the installed game PCK/DLL with GDRE Tools `v2.5.0`. The beta.95 source-workspace run passed 60 checks / 0 mismatches, with only retained GDRE warnings for 18 failed scripts and one debug-scene parse warning.
+- Build, publish, package refresh, installed package parity, runtime preflight, and source-workspace parity passed for beta.95. Previous beta.93 RitsuLib-only Off proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, clean audit, and packet verifier 43 / 0. Previous beta.93 RitsuLib-only AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu with exactly the same two mods, clean audit, 10 event types through 14 calls, enabled-mode verifier 31 / 0, and packet verifier 61 / 0.
+- Beta.95 still needs loader proof, clicked UI proof, gameplay, save-load, replacement, multiplayer, QA, release, and tester handoff rows.
 
 ## June 19 v0.107.1 Preflight Drift Addendum
 

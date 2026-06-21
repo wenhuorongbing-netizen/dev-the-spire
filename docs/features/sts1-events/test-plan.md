@@ -170,7 +170,7 @@ Before event screenshots or gameplay proof can count as current evidence:
 
 1. Preserve beta.85 Off and CanaryOnly proof as previous-package loader context only.
 2. Run `.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch` and stop before launching if the installed game, RitsuLib, repo/installed Spire Plus package manifests, or source-only expected shapes do not match the documented post-pause package target.
-3. Treat `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` as previous beta.93 `v0.107.1` AdditiveBatch1 loader smoke only: 10 event types / 14 registration calls, retained log verifier 31 / 0, retained packet verifier 61 / 0. It still does not prove beta.94 loader behavior or gameplay.
+3. Treat `.tools\runtime-evidence\v01071-beta93-ritsulib0431-additivebatch1-direct-20260621` as previous beta.93 `v0.107.1` AdditiveBatch1 loader smoke only: 10 event types / 14 registration calls, retained log verifier 31 / 0, retained packet verifier 61 / 0. It still does not prove beta.95 loader behavior or gameplay.
 4. The first beta.86 Steam-client AdditiveBatch1 attempt at `.tools\runtime-evidence\v01070-beta86-additive-batch1-20260618-031043` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not propagate the transient PowerShell environment. Use direct launch with a temporary `steam_appid.txt` when validating enabled modes if Steam is already running.
 5. Only after the relevant enabled-mode smoke is clean, capture event encounters, result logs, pre/post state, save/load, EN/ZHS render, and image/license disposition.
 
@@ -184,9 +184,9 @@ $evidence = '.tools\runtime-evidence\sts1-canary-v01071-YYYYMMDD-HHMMSS'
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.94 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.95 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.94 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.95 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 
@@ -198,9 +198,9 @@ $evidence = '.tools\runtime-evidence\sts1-additive-batch1-v01071-YYYYMMDD-HHMMSS
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.94 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.95 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.94 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.95 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.31 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 

@@ -248,6 +248,7 @@ function New-ManualRows {
                 'Open Settings -> Mod Settings through the normal Steam-client path with the current package installed.',
                 'Capture a foreground Mods list screenshot showing STS2-RitsuLib and Spire Plus, with EZMicroBalance only as the compatibility id/folder where visible.',
                 'Open the Spire Plus config page and capture a foreground page screenshot showing the current display name, not historical EZ Micro Balance page text.',
+                'Confirm the page shows the Migration Status section, RitsuLib runtime dependency card, evidence-boundary card, and Preview Tools controls.',
                 'Attach the same-session godot.log plus clean log audit, including config registration for mod EZMicroBalance.'
             )
         },
@@ -639,6 +640,10 @@ foreach ($row in $manualRows) {
             '| ritsulib-visible-enabled | STS2-RitsuLib appears in Settings -> Mod Settings and is enabled for the session. |  |  |',
             '| spire-plus-list-display-name | The Mods list shows the player-facing name Spire Plus for the current package. |  |  |',
             '| spire-plus-config-page-current-name | Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text. |  |  |',
+            '| ritsulib-migration-status-section | The Spire Plus config page shows the Migration Status section from the RitsuLib-only settings surface. |  |  |',
+            '| ritsulib-runtime-dependency-card | The Migration Status section shows `STS2-RitsuLib >= 0.4.31` as the required runtime dependency. |  |  |',
+            '| ritsulib-proof-boundary-card | The page states that settings screenshots prove UI visibility only and do not prove gameplay or release readiness. |  |  |',
+            '| preview-tools-controls-render | The Preview Tools section renders Crystal Sphere peek, mask alpha, transform prediction, always-show prediction, and preview debug log controls. |  |  |',
             '| technical-id-compatibility | EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name. |  |  |',
             '| legacy-mod-surfaces-absent | Legacy EzDailyContent and standalone EZFuturePeek mod surfaces are absent or disabled. |  |  |',
             '| clean-log-config-registration | The same-session godot.log includes current package/config registration evidence and the clean log audit has no release-blocking signatures. |  |  |',

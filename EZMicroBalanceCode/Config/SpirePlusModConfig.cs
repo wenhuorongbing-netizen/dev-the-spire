@@ -10,6 +10,12 @@ internal static class SpirePlusModConfig
 {
     private const string SettingsKey = "spire-plus-settings";
     private const string SettingsFileName = "spire-plus-settings.json";
+    private const string MigrationStatusSectionId = "migration_status";
+    private const string PreviewToolsSectionId = "preview_tools";
+    private const string RitsuLibSummaryEntryId = "ritsulib_only_summary";
+    private const string RequiredRuntimeDependencyEntryId = "required_runtime_dependency";
+    private const string StableManifestIdEntryId = "stable_manifest_id";
+    private const string ProofBoundaryEntryId = "proof_boundary";
     private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.31";
     private const string StableTechnicalId = "EZMicroBalance";
 
@@ -52,79 +58,101 @@ internal static class SpirePlusModConfig
     {
         registeredModId = modId;
 
+        RegisterSettingsStore(modId);
+        RegisterSettingsPage(modId);
+    }
+
+    private static void RegisterSettingsStore(string modId)
+    {
+        // RitsuLib setting controls bind to this data key, so the store must
+        // exist before the page builder wires UI entries to persisted values.
         var store = RitsuLibFramework.GetDataStore(modId);
         store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true);
         store.InitializeGlobal();
+    }
 
+    private static void RegisterSettingsPage(string modId)
+    {
         RitsuLibFramework.RegisterModSettings(modId, page =>
         {
             page.WithModDisplayName(Text("Spire Plus"));
             page.WithTitle(Text("Spire Plus"));
             page.WithDescription(Text("RitsuLib settings page for Spire Plus private beta testing."));
 
-            page.AddSection("migration_status", section =>
-            {
-                section.WithTitle(Text("Migration Status"));
-                section.WithDescription(Text("Read-only status for the current RitsuLib-only settings surface."));
-                section.AddParagraph(
-                    "ritsulib_only_summary",
-                    Text("RitsuLib-only mod surface"),
-                    Text("This page is registered through RitsuLib. Spire Plus uses RitsuLib for settings persistence, content registration, patch metadata, and saved marker state."));
-                section.AddInfoCard(
-                    "required_runtime_dependency",
-                    Text("Runtime dependency"),
-                    Text(RequiredRuntimeDependency),
-                    Text("Install the runtime pack under the game mods/STS2-RitsuLib folder before enabling Spire Plus."));
-                section.AddInfoCard(
-                    "stable_manifest_id",
-                    Text("Technical id"),
-                    Text(StableTechnicalId),
-                    Text("This id remains only for the manifest, install folder, saves, and compatibility. Player-facing UI should say Spire Plus."));
-                section.AddInfoCard(
-                    "proof_boundary",
-                    Text("Evidence boundary"),
-                    Text("Settings screenshots prove UI visibility only."),
-                    Text("Gameplay, clicked Ancient screens, save/load, co-op, and release readiness still need separate evidence."));
-            });
+            AddMigrationStatusSection(page);
+            AddPreviewToolsSection(page, modId);
+        });
+    }
 
-            page.AddSection("preview_tools", section =>
-            {
-                section.WithTitle(Text("Preview Tools"));
-                section.WithDescription(Text("Controls for Crystal Sphere peek and transform prediction."));
-                section.AddToggle(
-                    "enable_crystal_sphere_peek",
-                    Text("Crystal Sphere peek"),
-                    Binding(modId, state => state.EnableCrystalSpherePeek, (state, value) => state.EnableCrystalSpherePeek = value),
-                    Text("Show the peek overlay for Crystal Sphere when supported."),
-                    () => true);
-                section.AddSlider(
-                    "crystal_sphere_mask_alpha",
-                    Text("Crystal Sphere mask alpha"),
-                    Binding(modId, state => state.CrystalSphereMaskAlpha, (state, value) => state.CrystalSphereMaskAlpha = Math.Clamp(value, 0.05, 0.95)),
-                    0.05,
-                    0.95,
-                    0.05,
-                    value => value.ToString("0.00", CultureInfo.InvariantCulture),
-                    Text("Opacity of the Crystal Sphere peek mask."));
-                section.AddToggle(
-                    "enable_transform_prediction",
-                    Text("Transform prediction"),
-                    Binding(modId, state => state.EnableTransformPrediction, (state, value) => state.EnableTransformPrediction = value),
-                    Text("Show predicted transform outcomes when supported."),
-                    () => true);
-                section.AddToggle(
-                    "transform_prediction_always_on",
-                    Text("Always show transform prediction"),
-                    Binding(modId, state => state.TransformPredictionAlwaysOn, (state, value) => state.TransformPredictionAlwaysOn = value),
-                    Text("Show transform prediction without requiring a modifier key."),
-                    () => EnableTransformPrediction);
-                section.AddToggle(
-                    "show_preview_debug_logs",
-                    Text("Preview debug logs"),
-                    Binding(modId, state => state.ShowPreviewDebugLogs, (state, value) => state.ShowPreviewDebugLogs = value),
-                    Text("Emit extra preview-tool diagnostics to the log."),
-                    () => true);
-            });
+    private static void AddMigrationStatusSection(ModSettingsPageBuilder page)
+    {
+        // Keep these entry IDs stable. The manual screenshot checklist and
+        // future automation use them to prove the RitsuLib-only settings page.
+        page.AddSection(MigrationStatusSectionId, section =>
+        {
+            section.WithTitle(Text("Migration Status"));
+            section.WithDescription(Text("Read-only status for the current RitsuLib-only settings surface."));
+            section.AddParagraph(
+                RitsuLibSummaryEntryId,
+                Text("RitsuLib-only mod surface"),
+                Text("This page is registered through RitsuLib. Spire Plus uses RitsuLib for settings persistence, content registration, patch metadata, and saved marker state."));
+            section.AddInfoCard(
+                RequiredRuntimeDependencyEntryId,
+                Text("Runtime dependency"),
+                Text(RequiredRuntimeDependency),
+                Text("Install the runtime pack under the game mods/STS2-RitsuLib folder before enabling Spire Plus."));
+            section.AddInfoCard(
+                StableManifestIdEntryId,
+                Text("Technical id"),
+                Text(StableTechnicalId),
+                Text("This id remains only for the manifest, install folder, saves, and compatibility. Player-facing UI should say Spire Plus."));
+            section.AddInfoCard(
+                ProofBoundaryEntryId,
+                Text("Evidence boundary"),
+                Text("Settings screenshots prove UI visibility only."),
+                Text("Gameplay, clicked Ancient screens, save/load, co-op, and release readiness still need separate evidence."));
+        });
+    }
+
+    private static void AddPreviewToolsSection(ModSettingsPageBuilder page, string modId)
+    {
+        page.AddSection(PreviewToolsSectionId, section =>
+        {
+            section.WithTitle(Text("Preview Tools"));
+            section.WithDescription(Text("Controls for Crystal Sphere peek and transform prediction."));
+            section.AddToggle(
+                "enable_crystal_sphere_peek",
+                Text("Crystal Sphere peek"),
+                Binding(modId, state => state.EnableCrystalSpherePeek, (state, value) => state.EnableCrystalSpherePeek = value),
+                Text("Show the peek overlay for Crystal Sphere when supported."),
+                () => true);
+            section.AddSlider(
+                "crystal_sphere_mask_alpha",
+                Text("Crystal Sphere mask alpha"),
+                Binding(modId, state => state.CrystalSphereMaskAlpha, (state, value) => state.CrystalSphereMaskAlpha = Math.Clamp(value, 0.05, 0.95)),
+                0.05,
+                0.95,
+                0.05,
+                value => value.ToString("0.00", CultureInfo.InvariantCulture),
+                Text("Opacity of the Crystal Sphere peek mask."));
+            section.AddToggle(
+                "enable_transform_prediction",
+                Text("Transform prediction"),
+                Binding(modId, state => state.EnableTransformPrediction, (state, value) => state.EnableTransformPrediction = value),
+                Text("Show predicted transform outcomes when supported."),
+                () => true);
+            section.AddToggle(
+                "transform_prediction_always_on",
+                Text("Always show transform prediction"),
+                Binding(modId, state => state.TransformPredictionAlwaysOn, (state, value) => state.TransformPredictionAlwaysOn = value),
+                Text("Show transform prediction without requiring a modifier key."),
+                () => EnableTransformPrediction);
+            section.AddToggle(
+                "show_preview_debug_logs",
+                Text("Preview debug logs"),
+                Binding(modId, state => state.ShowPreviewDebugLogs, (state, value) => state.ShowPreviewDebugLogs = value),
+                Text("Emit extra preview-tool diagnostics to the log."),
+                () => true);
         });
     }
 

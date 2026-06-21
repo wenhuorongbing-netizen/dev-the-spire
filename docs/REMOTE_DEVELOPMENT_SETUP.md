@@ -14,7 +14,7 @@ Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire 
 - Game: Slay the Spire 2 public/main branch
 - Current local version: `v0.107.1`, installed/source-refreshed locally on `2026-06-20`
 - RitsuLib runtime: `STS2-RitsuLib` `v0.4.31` with `lib\0.107.1`
-- Spire Plus package: `v0.1.0-private-beta.94`
+- Spire Plus package: `v0.1.0-private-beta.95`
 - Build command: `dotnet build`
 - Publish command: `dotnet publish`
 

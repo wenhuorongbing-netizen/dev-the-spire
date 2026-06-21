@@ -80,12 +80,18 @@ public sealed partial class ReleaseEvidenceGateTests
                     var readme = File.ReadAllText(Path.Combine(evidenceDir, "README.md"));
                     var checklist = File.ReadAllText(Path.Combine(evidenceDir, "mod-settings-checklist.md"));
                     Assert.Contains("collect-mod-settings-evidence.ps1 -NoLaunch", readme, StringComparison.Ordinal);
+                    Assert.Contains("Current package version:", readme, StringComparison.Ordinal);
+                    Assert.Contains("beta.95 pass", readme, StringComparison.Ordinal);
                     Assert.Contains("-Capture List -RequireSpireForeground", readme, StringComparison.Ordinal);
                     Assert.Contains("-Capture Page -RequireSpireForeground", readme, StringComparison.Ordinal);
                     Assert.Contains("Pending scaffold only", result.Output, StringComparison.Ordinal);
                     Assert.Contains("ritsulib-visible-enabled", checklist, StringComparison.Ordinal);
                     Assert.Contains("spire-plus-list-display-name", checklist, StringComparison.Ordinal);
                     Assert.Contains("spire-plus-config-page-current-name", checklist, StringComparison.Ordinal);
+                    Assert.Contains("ritsulib-migration-status-section", checklist, StringComparison.Ordinal);
+                    Assert.Contains("ritsulib-runtime-dependency-card", checklist, StringComparison.Ordinal);
+                    Assert.Contains("ritsulib-proof-boundary-card", checklist, StringComparison.Ordinal);
+                    Assert.Contains("preview-tools-controls-render", checklist, StringComparison.Ordinal);
                     Assert.Contains("legacy-mod-surfaces-absent", checklist, StringComparison.Ordinal);
                     Assert.Contains("clean-log-config-registration", checklist, StringComparison.Ordinal);
                     Assert.Contains("Fill this checklist with live results before marking this row pass.", checklist, StringComparison.Ordinal);
@@ -314,7 +320,7 @@ public sealed partial class ReleaseEvidenceGateTests
                         "mod-settings-current-display",
                         "mod-settings-checklist.md",
                         "mod-settings-checklist-template.md",
-                        ["ritsulib-visible-enabled", "spire-plus-list-display-name", "spire-plus-config-page-current-name", "technical-id-compatibility", "legacy-mod-surfaces-absent", "clean-log-config-registration"]);
+                        ["ritsulib-visible-enabled", "spire-plus-list-display-name", "spire-plus-config-page-current-name", "ritsulib-migration-status-section", "ritsulib-runtime-dependency-card", "ritsulib-proof-boundary-card", "preview-tools-controls-render", "technical-id-compatibility", "legacy-mod-surfaces-absent", "clean-log-config-registration"]);
                     AssertChecklistTemplate(
                         rows,
                         evidenceDir,
