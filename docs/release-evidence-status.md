@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `5E9B851F2EF5B42318C10B51DF6C37C9B80A4177A1FD17FADD35AEAD62BAEEF9` |
-| DLL | `117E93620EBA698CECF4C30788092C231848A6432DD92083CE27421B4B892AAF` |
-| PCK | `A26F9EF87C50CA6137F5CC64DF75DB0230F70D0811DCED743945F559006384DF` |
-| Manifest | `B4D37895DCD097524AA7C14458C68CACE5A76EDE8F2E7E55B082285B1A30CC82` |
-| README_INSTALL | `E26CFEE8D47B307C6F1911796A737689FD49FC574EF0B4CB4EDF0955BE97673E` |
+| ZIP | `56636753F598B360B3798ED681ED84C3CA08CEC173E7EBA70134F4BC68EF964A` |
+| DLL | `92EE170B2EE9D8F17CEDF246042C0EC524D9B9E05B40B1314BFF930EC68099B9` |
+| PCK | `D3218EC382F1B9CD86E3CFF5F50D5F45A06D4A173BB529B27F17BF7A15A030DF` |
+| Manifest | `6D7CED263561DE0D2B5E1ED6CEB7B1747CB14F4F5503509B391351681B5AD5D8` |
+| README_INSTALL | `587496387BB66B8FCE5F1449348E80F3E61E7AA3094CC90626AD30075867066E` |
 
 ## Automation Summary
 
@@ -26,7 +26,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the current beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 direct loader smokes audited clean for loader/registration proof, while Mod Settings page refresh, gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; the previous beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 direct loader smokes audited clean for loader/registration proof, while Mod Settings page refresh, gameplay, clicked UI, save-load, preview-tools, Vakuu, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |

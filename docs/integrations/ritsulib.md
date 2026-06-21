@@ -2,7 +2,7 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the shared runtime framework dependency. Runtime loader-gate validation exists for the current Slay the Spire 2 `v0.107.1` environment with official `STS2-RitsuLib` `v0.4.31` and `lib\0.107.1`. Older beta.85/beta.86/beta.87/beta.88/beta.90 packets are previous-package or previous-game-version loader evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the shared runtime framework dependency. Runtime loader-gate validation exists for the previous beta.93 package on the current Slay the Spire 2 `v0.107.1` environment with official `STS2-RitsuLib` `v0.4.31` and `lib\0.107.1`. Older beta.85/beta.86/beta.87/beta.88/beta.90 packets are previous-package or previous-game-version loader evidence only; beta.94 package parity is current package evidence and still needs loader/UI recapture.
 
 - Compile package: `STS2.RitsuLib` `0.4.31` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.31`.
@@ -11,11 +11,11 @@ Compile and manifest dependency are active. `EZMicroBalance.csproj` references `
 - Current local installed game: Slay the Spire 2 `v0.107.1`.
 - Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.
 
-The current `v0.107.1` game install uses matching RitsuLib `lib\0.107.1` runtime files. Installed beta.93 package parity is recorded on 2026-06-21, and fresh current-package direct proof covers RitsuLib-only Off at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` plus RitsuLib-only AdditiveBatch1 at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`. Both reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, applied 25/25 Spire Plus ModPatcher patches, audited clean, and passed retained packet verifiers; the AdditiveBatch1 proof registered 10 event types through 14 calls. Older loader packets remain previous-package or previous-game-version context. The prior beta.84 package-parity Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is retained as root-cause evidence for stale Spire Plus API targets.
+The current `v0.107.1` game install uses matching RitsuLib `lib\0.107.1` runtime files. Installed beta.94 package parity is recorded on 2026-06-21. Previous beta.93 direct proof covers RitsuLib-only Off at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` plus RitsuLib-only AdditiveBatch1 at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`. Both reached main menu with exactly `STS2-RitsuLib` and `EZMicroBalance` loaded, applied 25/25 Spire Plus ModPatcher patches, audited clean, and passed retained packet verifiers; the AdditiveBatch1 proof registered 10 event types through 14 calls. Older loader packets remain previous-package or previous-game-version context. The prior beta.84 package-parity Off smoke under `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` is retained as root-cause evidence for stale Spire Plus API targets.
 
-Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.93 proof includes `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
+Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Previous beta.93 proof includes `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; beta.94 proof must be recaptured after the settings UI package bump. Gameplay, event screenshots, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
 
-Package metadata decision: the beta.93 dependency-floor pass intentionally bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.31` and set the package version to `v0.1.0-private-beta.93` for the Slay the Spire 2 `v0.107.1` compatibility recapture.
+Package metadata decision: the beta.93 dependency-floor pass intentionally bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.31` for the Slay the Spire 2 `v0.107.1` compatibility recapture. The beta.94 pass keeps that dependency floor and bumps the package version to `v0.1.0-private-beta.94` for the settings UI status and Mod Info localization migration.
 
 ## What Is RitsuLib
 
@@ -73,7 +73,7 @@ The installed official `STS2-RitsuLib.0.4.31.variant-pack.zip` contains game-ver
 
 | Variant Directory | Game Version | DLL Size | Compatibility |
 | --- | --- | ---: | --- |
-| `lib/0.107.1/` | Slay the Spire 2 `v0.107.1` | 5.3 MB | Selected compatibility branch for current local `v0.107.1`; beta.93 Off and AdditiveBatch1 loader/registration proof is clean |
+| `lib/0.107.1/` | Slay the Spire 2 `v0.107.1` | 5.3 MB | Selected compatibility branch for current local `v0.107.1`; beta.93 Off and AdditiveBatch1 loader/registration proof is clean previous-package evidence |
 
 Each variant directory contains `STS2-RitsuLib.dll`, `.pdb`, `.xml`, and `compat-target.txt`.
 
@@ -104,7 +104,7 @@ Current manifest dependency:
 
 ## RitsuLib API Adoption Plan
 
-- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, and current beta.93 Off/AdditiveBatch1 loader/registration proof is clean on `v0.107.1` with RitsuLib `v0.4.31`.
+- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, and beta.93 Off/AdditiveBatch1 loader/registration proof is clean previous-package evidence on `v0.107.1` with RitsuLib `v0.4.31`.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
 - Batch 3: persistence sidecar experiments are not currently applicable because current saved-state usage has migrated to RitsuLib `SavedAttachedState`; no additional RitsuLib data-store sidecar is planned for this pass.
 - Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.

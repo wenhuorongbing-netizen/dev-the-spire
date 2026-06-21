@@ -4,7 +4,7 @@
 
 **Open — governance hardened, content incomplete, runtime proof blocked.** Default Off is source-safe; CanaryOnly and AdditiveBatch1 are controlled source-test modes; AdditiveAllDraft and ReplaceUnknownEventsPrototype are disabled unless an explicit unsafe/debug override is set, and remain dev-only/unsafe.
 
-2026-06-20 correction: historical loader proof exists for Off, CanaryOnly, and AdditiveBatch1. Retained beta.85 `v0.107.0` proof covers default-Off plus CanaryOnly loader registration only as previous-package/game-version context, while current beta.93 RitsuLib-only proof covers Off plus AdditiveBatch1 loader/registration shape only. Event gameplay, save-load, screenshot, replacement functional proof, and two-client co-op/fail-closed proof remain pending or blocked.
+2026-06-20 correction: historical loader proof exists for Off, CanaryOnly, and AdditiveBatch1. Retained beta.85 `v0.107.0` proof covers default-Off plus CanaryOnly loader registration only as previous-package/game-version context, while previous beta.93 RitsuLib-only proof covers Off plus AdditiveBatch1 loader/registration shape only. Event gameplay, save-load, screenshot, replacement functional proof, and two-client co-op/fail-closed proof remain pending or blocked.
 
 ## Summary
 

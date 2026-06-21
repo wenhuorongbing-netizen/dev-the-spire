@@ -10,7 +10,11 @@ internal static class SpirePlusModConfig
 {
     private const string SettingsKey = "spire-plus-settings";
     private const string SettingsFileName = "spire-plus-settings.json";
+    private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.31";
+    private const string StableTechnicalId = "EZMicroBalance";
 
+    // RitsuLib owns the persisted settings store. The fallback is only used while
+    // the framework is unavailable during early startup or when a store read fails.
     private static readonly SettingsState FallbackState = new();
     private static string? registeredModId;
 
@@ -56,7 +60,32 @@ internal static class SpirePlusModConfig
         {
             page.WithModDisplayName(Text("Spire Plus"));
             page.WithTitle(Text("Spire Plus"));
-            page.WithDescription(Text("Preview tools and diagnostics for Spire Plus private beta testing."));
+            page.WithDescription(Text("RitsuLib settings page for Spire Plus private beta testing."));
+
+            page.AddSection("migration_status", section =>
+            {
+                section.WithTitle(Text("Migration Status"));
+                section.WithDescription(Text("Read-only status for the current RitsuLib-only settings surface."));
+                section.AddParagraph(
+                    "ritsulib_only_summary",
+                    Text("RitsuLib-only mod surface"),
+                    Text("This page is registered through RitsuLib. Spire Plus uses RitsuLib for settings persistence, content registration, patch metadata, and saved marker state."));
+                section.AddInfoCard(
+                    "required_runtime_dependency",
+                    Text("Runtime dependency"),
+                    Text(RequiredRuntimeDependency),
+                    Text("Install the runtime pack under the game mods/STS2-RitsuLib folder before enabling Spire Plus."));
+                section.AddInfoCard(
+                    "stable_manifest_id",
+                    Text("Technical id"),
+                    Text(StableTechnicalId),
+                    Text("This id remains only for the manifest, install folder, saves, and compatibility. Player-facing UI should say Spire Plus."));
+                section.AddInfoCard(
+                    "proof_boundary",
+                    Text("Evidence boundary"),
+                    Text("Settings screenshots prove UI visibility only."),
+                    Text("Gameplay, clicked Ancient screens, save/load, co-op, and release readiness still need separate evidence."));
+            });
 
             page.AddSection("preview_tools", section =>
             {

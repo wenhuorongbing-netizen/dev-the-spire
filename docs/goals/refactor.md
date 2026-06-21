@@ -6,7 +6,7 @@ Date: 2026-06-21
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.93`
+Current package target: Spire Plus `v0.1.0-private-beta.94`
 
 Runtime dependency target: STS2-RitsuLib `v0.4.31` / `lib\0.107.1`, Slay the Spire 2 `v0.107.1`. previous package is not a current Spire Plus dependency.
 
@@ -30,8 +30,8 @@ clean-audit blocker was previous package `v3.2.1` patch drift for the older depe
 dependency floor is now aligned on STS2-RitsuLib `v0.4.31`, and Spire Plus no longer has a project,
 manifest, package, or current runtime dependency on previous package.
 
-Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, and beta.93 is the current RitsuLib-only loader/registration proof.
-Current beta.93 RitsuLib-only Off proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/`, and current beta.93 RitsuLib-only AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
+Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, and beta.93 is previous-package RitsuLib-only loader/registration proof after the beta.94 UI/localization package bump.
+Previous beta.93 RitsuLib-only Off proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/`, and previous beta.93 RitsuLib-only AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
 
 This is still source/static/no-game governance plus loader/registration proof. Do not claim enabled-mode safe beyond the retained loader evidence. Gameplay, Mod Settings UI page proof,
 save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA,
@@ -41,9 +41,9 @@ release readiness, and tester-package handoff remain pending.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Runtime dependency blocker | Closed for loader/registration | STS2-RitsuLib `v0.4.31` with `lib\0.107.1` is installed for Slay the Spire 2 `v0.107.1`; beta.93 Off and AdditiveBatch1 direct proof reached main menu with clean retained verifiers and only STS2-RitsuLib as the shared runtime dependency. |
+| Runtime dependency blocker | Closed for previous-package loader/registration | STS2-RitsuLib `v0.4.31` with `lib\0.107.1` is installed for Slay the Spire 2 `v0.107.1`; beta.93 Off and AdditiveBatch1 direct proof reached main menu with clean retained verifiers and only STS2-RitsuLib as the shared runtime dependency. Recapture beta.94 loader proof after this UI/localization package bump. |
 | CanaryOnly proof | Historical loader pass | CanaryOnly beta.85 / v0.107.0 smoke remains previous-package loader proof only: 4 event types / 6 registration calls. |
-| AdditiveBatch1 proof | Current loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. |
+| AdditiveBatch1 proof | Previous-package loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. |
 | AutoSlay/runtime evidence governance | Current no-game hardening | Packet/analyzer guards reject malformed, escaped, noncanonical, missing, or blank retained artifact paths before owner routing; this protects future runtime packets from stale or shadow evidence. |
 | Batch 4c | Proposal only / static review recaptured | The 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration. |
 | Documentation compactness | In progress | Player-facing naming guard coverage may be split into source-preserving partial files when the assertions remain unchanged and focused tests pass. |
@@ -61,7 +61,7 @@ release readiness, and tester-package handoff remain pending.
 
 - Do not perform Batch 4c migration without explicit owner approval.
 - Do not migrate high-risk run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, or reward-state patches.
-- Do not bump package/dependency versions without an owner-approved package pass.
+- Package version bumps must be paired with build, publish, package refresh, package docs, and validation status.
 - Do not use AllDraft or Replacement as tester/release paths without fresh targeted validation.
 - Do not claim private beta, live gameplay, release readiness, full parity, or handoff readiness from loader/registration proof.
 - Do not implement Ascension 21-30 or a custom character this cycle.

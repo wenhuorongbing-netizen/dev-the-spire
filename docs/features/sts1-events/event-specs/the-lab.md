@@ -90,7 +90,7 @@ public sealed class Sts1TheLab : EventModel
 
 ## Manual Evidence Checklist
 
-- [ ] Current beta.93 `v0.107.1` AdditiveBatch1 loader proof exists; recapture CanaryOnly if the claim depends on CanaryOnly specifically.
+- [ ] Previous beta.93 `v0.107.1` AdditiveBatch1 loader proof exists; recapture CanaryOnly if the claim depends on CanaryOnly specifically.
 - [ ] Debug-spawn or naturally encounter The Lab.
 - [ ] Verify only the Open option is visible.
 - [ ] Select Open at A0-A14 and verify 3 potions are procured, subject to potion-slot behavior.

@@ -194,7 +194,7 @@ $rowContentNeedles = @(
     [pscustomobject]@{ GateId = 'O6'; Field = 'evidence'; Needle = 'git diff --check is static and rerun during coordination pause' },
     [pscustomobject]@{ GateId = 'O7'; Field = 'next_action'; Needle = 'Refresh patch inventory after coordination pause' },
     [pscustomobject]@{ GateId = 'O8'; Field = 'next_action'; Needle = 'Refresh classifier after coordination pause' },
-    [pscustomobject]@{ GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA 5E9B851F2EF5B42318C10B51DF6C37C9B80A4177A1FD17FADD35AEAD62BAEEF9' },
+    [pscustomobject]@{ GateId = 'O9'; Field = 'evidence'; Needle = 'ZIP SHA 56636753F598B360B3798ED681ED84C3CA08CEC173E7EBA70134F4BC68EF964A' },
     [pscustomobject]@{ GateId = 'O10'; Field = 'next_action'; Needle = 'Owner/agent must classify exact scope before commit or handoff' },
     [pscustomobject]@{ GateId = 'O11'; Field = 'requirement'; Needle = 'Status board current and no generic Done' },
     [pscustomobject]@{ GateId = 'O12'; Field = 'requirement'; Needle = 'Act mapping' },

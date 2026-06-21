@@ -235,7 +235,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Current beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("current beta.90 loader smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
@@ -313,8 +313,8 @@ public sealed partial class ReleaseArtifactParityGuardTests
             Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
             Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("SavedAttachedState", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("previous previous-package package", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("Current beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("previous beta.93 Off proof is loader evidence only and does not prove disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
             Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
             Assert.DoesNotContain("refreshed runtime smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
@@ -335,9 +335,9 @@ public sealed partial class ReleaseArtifactParityGuardTests
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         if (!Directory.Exists(evidenceDir))
         {
-            Assert.Contains("raw local `.tools` runtime-evidence folders were pruned", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("Fresh gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op evidence must be recaptured before any release-ready claim", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("current beta.93 Off proof is loader evidence only and does not prove disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("raw local `.tools` runtime-evidence folders may be pruned", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("Fresh beta.94 loader, gameplay, clicked UI, save-load, preview-tools, Vakuu, and co-op evidence must be recaptured before any release-ready claim", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("previous beta.93 Off proof is loader evidence only and does not prove disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
             return;
         }
 

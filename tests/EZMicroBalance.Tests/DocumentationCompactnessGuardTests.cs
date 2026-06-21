@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.93 loader truth is RitsuLib-only",
+            "Previous beta.93 loader truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -123,7 +123,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "This v5 audit/spec is historical planning context only.",
             "Do not use its O0-O12 overnight gates, old registration assumptions, or old task",
             "Current StS1 event work routes through `docs/goals/event.md`",
-            "current beta.93 proves `v0.107.1` RitsuLib-only Off plus",
+            "previous beta.93 proves `v0.107.1` RitsuLib-only Off plus",
             "AdditiveBatch1 loader/registration with STS2-RitsuLib `0.4.31`",
             "This loader evidence is not gameplay, save-load, replacement, multiplayer, QA");
         Assert.Contains(archivedFileName, archiveReadme, StringComparison.Ordinal);
@@ -383,7 +383,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.93`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.94`",
             "`STS2-RitsuLib` `0.4.31`",
             "`lib\\0.107.1`",
             "previous package is previous-package or other-mod local context only",
@@ -448,7 +448,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docRestructureSpec,
             "**RitsuLib integration** (PR5/PR6+)",
-            "Current beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated");
+            "Previous beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",

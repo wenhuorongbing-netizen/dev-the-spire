@@ -17,4 +17,4 @@ Retained owner boundary:
 | `v0.1.0-private-beta.85` package | Accept as loader-smoke package, not gameplay/release proof |
 | CanaryOnly/AdditiveBatch1 | May run only after process coordination |
 
-Use current beta.93 docs for dependency, package, and handoff decisions.
+Use previous beta.93 docs for dependency, package, and handoff decisions.

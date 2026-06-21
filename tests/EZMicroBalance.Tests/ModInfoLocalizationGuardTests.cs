@@ -32,6 +32,7 @@ public sealed class ModInfoLocalizationGuardTests
             "LocManager.Instance?.Language",
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",
             "Spire Plus 是用于私测的《杀戮尖塔 2》单体玩法扩展",
+            "设计目标是让风险读得懂",
             "Spire Plus is a single Slay the Spire 2 gameplay expansion",
             "Seedbed shows that style",
             "Planting removes a card from this combat before it reaches hand",
@@ -43,8 +44,8 @@ public sealed class ModInfoLocalizationGuardTests
 
         AssertNoMojibake(patchSource);
         Assert.DoesNotContain("鏄", patchSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("鐗堟湰", patchSource, StringComparison.Ordinal);
-        Assert.DoesNotContain("浣滆", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("閺", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("娴", patchSource, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -65,7 +66,7 @@ public sealed class ModInfoLocalizationGuardTests
         Assert.Contains("no cleanse, downgrade, worsen, or split", manifestDescription, StringComparison.Ordinal);
         Assert.Contains("The Mod Settings panel localizes this description by client language.", manifestDescription, StringComparison.Ordinal);
         Assert.DoesNotContain("鏄", manifestDescription, StringComparison.Ordinal);
-        Assert.DoesNotContain("鐗堟湰", manifestDescription, StringComparison.Ordinal);
+        Assert.DoesNotContain("閺", manifestDescription, StringComparison.Ordinal);
         AssertNoMojibake(manifestDescription);
         Assert.False(root.TryGetProperty("description_zhs", out _), "The game manifest schema does not read description_zhs; use the UI patch instead.");
     }

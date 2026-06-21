@@ -143,7 +143,7 @@ After a launched run, check the retained packet without launching the game:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.93 `
+  -ExpectedPackageVersion v0.1.0-private-beta.94 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch
 ```
@@ -217,7 +217,7 @@ The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
 Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes.
-Installed beta.93 package parity is restored, and current beta.93 `v0.107.1` RitsuLib-only direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed retained log/packet verifiers with 10 event types / 14 registration calls.
+Installed beta.93 package parity is restored, and previous beta.93 `v0.107.1` RitsuLib-only direct AdditiveBatch1 proof under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed retained log/packet verifiers with 10 event types / 14 registration calls.
 This is loader/registration proof only; gameplay, clicked UI, save-load, replacement behavior, co-op, QA, and handoff rows remain open.
 The earlier beta.86 Steam-client attempt under `.tools/runtime-evidence/v01070-beta86-additive-batch1-20260618-031043/` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not inherit the transient environment.
 The beta.85 Off/CanaryOnly smokes remain previous-package context, beta.87 direct proof remains previous-game-version context, and the beta.85 AdditiveBatch1 13/14 mismatch remains root-cause history only.
@@ -225,8 +225,8 @@ Current RitsuLib logs are class-only for some checks, so gameplay evidence still
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
 - Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with the then-current previous package Spire Plus package.
-- Historical Steam-client loader evidence under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reports `v0.1.0-private-beta.19`, `Found 30 previous saved-state registrations`, only previous package plus Spire Plus loaded, clean log audit, stopped game, and restored mod isolation for the beta.19 package. Current beta.93 RitsuLib-only Off/AdditiveBatch1 loader evidence is under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; retained beta.85 `v0.107.0` evidence is previous-package/game-version context. Older beta.17, beta.13, `20260523-current`, 16-field, and 22-field startup/log passes are historical.
-- Historical previous package-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus. Current beta.93 startup/log shape is RitsuLib-only; actual disable-mod gameplay remains pending. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
+- Historical Steam-client loader evidence under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reports `v0.1.0-private-beta.19`, `Found 30 previous saved-state registrations`, only previous package plus Spire Plus loaded, clean log audit, stopped game, and restored mod isolation for the beta.19 package. Previous beta.93 RitsuLib-only Off/AdditiveBatch1 loader evidence is under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; retained beta.85 `v0.107.0` evidence is previous-package/game-version context. Older beta.17, beta.13, `20260523-current`, 16-field, and 22-field startup/log passes are historical.
+- Historical previous package-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus. Previous beta.93 startup/log shape is RitsuLib-only; actual disable-mod gameplay remains pending. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
 - Current Mod Settings UI list evidence, historical Mod Settings page evidence, A11 map/save-load spot checks, saved-map boss-reachability proof, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks have evidence.
 - The A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. Urda now uses custom Ancient icon/background-scene paths and the current package resolves Ancient scene/art resources in headless installed-PCK verification, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
 - Use `scripts/spire-plus-live-session.ps1` to prepare and restore normal Steam-client local test sessions. Use `-PreserveNewCurrentRunsOnRestore` so test-created `current_run*` files are preserved in the evidence folder before original current-run files are restored.

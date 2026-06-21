@@ -3,7 +3,7 @@
 Audited: 2026-06-11
 Scope: 4 canary events registered in `Sts1EventRegistrationMode.CanaryOnly`
 
-This file is source/API evidence only. It does not prove current `v0.107.1` encounter gameplay, save-load, EN/ZHS rendering, image/license status, replacement-pool behavior, multiplayer disposition, or full StS1 wiki parity. Current beta.93 AdditiveBatch1 loader/registration proof covers these event types only as part of the RitsuLib-only batch; current CanaryOnly runtime/gameplay proof still requires fresh evidence.
+This file is source/API evidence only. It does not prove current `v0.107.1` encounter gameplay, save-load, EN/ZHS rendering, image/license status, replacement-pool behavior, multiplayer disposition, or full StS1 wiki parity. Previous beta.93 AdditiveBatch1 loader/registration proof covers these event types only as part of the RitsuLib-only batch; current CanaryOnly runtime/gameplay proof still requires fresh evidence.
 
 Current canary source state:
 

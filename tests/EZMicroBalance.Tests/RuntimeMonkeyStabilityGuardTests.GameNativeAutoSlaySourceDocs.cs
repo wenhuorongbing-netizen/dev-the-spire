@@ -97,7 +97,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "branch `v0.107.1`",
             "main assembly hash `-1555940892`",
             "current-source parity",
-            "The current beta.93 local state is expected to pass",
+            "The previous beta.93 local state is expected to pass",
             "`source_release_identity_matches_installed_game`",
             "18 failed scripts and one parse warning",
             "recovery-quality warnings, not source version, commit, branch, hash, or origin",

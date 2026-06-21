@@ -21,7 +21,7 @@ Blocked in this thread:
 
 A same-repository coordination note from the migration validation lane instructed this thread to pause starting new `dotnet test`, build, release-evidence validation, and related processes in `D:\Game\FOTN\dev-the-spire`. Multiple same-repo threads were overlapping or killing `testhost` processes, making validation nondeterministic.
 
-Historical capture-time project state was beta.85 on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.16`. Current beta.93 supersedes it for loader/registration truth; retained beta.85 evidence remains previous-package/game-version context only and still does not cover event gameplay, save-load, replacement, multiplayer, image/render, or QA.
+Historical capture-time project state was beta.85 on Slay the Spire 2 `v0.107.0` with RitsuLib `v0.4.16`. Previous beta.93 supersedes it for loader/registration truth; retained beta.85 evidence remains previous-package/game-version context only and still does not cover event gameplay, save-load, replacement, multiplayer, image/render, or QA.
 
 ## Evidence
 

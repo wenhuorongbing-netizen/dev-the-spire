@@ -2,7 +2,7 @@
 
 ## 2026-06-18 Current Override
 
-This file is historical restructure planning only. Do not use the delete/consolidation tables below as current guidance for `docs/goals/event.md`, `docs/goals/debug.md`, `docs/goals/refactor.md`, or the StS1 event audit docs. Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; current beta.93 proves only RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration behavior, beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence, and current CanaryOnly gameplay/runtime, save-load, replacement, multiplayer, QA, and handoff proof remain pending or blocked.
+This file is historical restructure planning only. Do not use the delete/consolidation tables below as current guidance for `docs/goals/event.md`, `docs/goals/debug.md`, `docs/goals/refactor.md`, or the StS1 event audit docs. Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance; previous beta.93 proves only RitsuLib-only `v0.107.1` Off and AdditiveBatch1 loader/registration behavior, beta.85/beta.87/beta.88/beta.90 rows remain previous-context evidence, and current CanaryOnly gameplay/runtime, save-load, replacement, multiplayer, QA, and handoff proof remain pending or blocked.
 
 ## Problem
 
@@ -26,7 +26,7 @@ The project has 4 active work streams. All docs should route through these:
 | --- | --- | --- | --- |
 | 1 | **Ancient expansion** (Urda/Morvi/Lotha/Vakuu) | `features/ancient-expansion-v2.2/`, `features/ancient-expansion-urda/`, `features/ancients-rework-v4/` | Active |
 | 2 | **Ascension 11-20** | `features/ascension-11-20/` | Active |
-| 3 | **RitsuLib integration** (PR5/PR6+) | `integrations/ritsulib.md`, `migration.md` | Current beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated |
+| 3 | **RitsuLib integration** (PR5/PR6+) | `integrations/ritsulib.md`, `migration.md` | Previous beta.93 RitsuLib-only compile/manifest/loader target active; later patch migrations gated |
 | 4 | **Release readiness** | `release-*.md`, `test-*.md`, `private-beta-*.md` | Validation pending |
 
 ## Target Structure

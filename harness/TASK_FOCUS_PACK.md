@@ -4,7 +4,7 @@
 
 - M5 Revision P: keep beta.93 RitsuLib-only current-loader truth accurate, prepare owner-ready validation/runtime plans, and avoid overlapping validation or runtime processes.
 - The previous beta.85 `v0.107.0` Revision M target and beta.88 previous package Revision N target are historical. Current local truth is beta.93 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.31` / `lib/0.107.1` and only STS2-RitsuLib as the shared runtime dependency.
-- Current beta.93 Off and AdditiveBatch1 proof is clean for loader/registration only. Broader gameplay/live/release proof is still pending.
+- Previous beta.93 Off and AdditiveBatch1 proof is clean for loader/registration only. Broader gameplay/live/release proof is still pending.
 
 ## Acceptance Criteria
 
@@ -43,4 +43,4 @@
 - Stale beta.85/beta.87/beta.88 language can cause overclaims if it is not read through the beta.93 RitsuLib-only override.
 - Existing validation records were produced by other lanes and must not be represented as commands run in this paused pass.
 - Dirty worktree scope can change while same-repo threads are active; recapture status before owner or handoff decisions.
-- Current beta.93 loader proof still does not cover gameplay, UI, save-load, co-op, independent QA, or release handoff.
+- Previous beta.93 loader proof still does not cover gameplay, UI, save-load, co-op, independent QA, or release handoff.

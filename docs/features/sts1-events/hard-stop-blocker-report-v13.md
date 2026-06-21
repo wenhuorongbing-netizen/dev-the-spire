@@ -64,4 +64,4 @@ Continuation cannot make O0-O46 all green in the current environment because STS
 
 ## Next Command After Owner Action
 
-Historical next command at the time was to install STS2-RitsuLib and rerun loader smoke with the then-required dependency set. Current beta.93 uses STS2-RitsuLib and Spire Plus only; use `README.md`, `PROJECT_STATE.md`, and `docs/features/sts1-events/README.md` for current runtime commands.
+Historical next command at the time was to install STS2-RitsuLib and rerun loader smoke with the then-required dependency set. Previous beta.93 uses STS2-RitsuLib and Spire Plus only; use `README.md`, `PROJECT_STATE.md`, and `docs/features/sts1-events/README.md` for current runtime commands.

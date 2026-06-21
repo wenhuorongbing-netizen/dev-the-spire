@@ -102,7 +102,7 @@ Historical limits after batch 2, superseded by later finish evidence below:
 
 Timestamp: 2026-05-05 17:14:30 +02:00.
 
-Additional local APIs inspected in the May previous package pass. Current beta.93 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `previous saved-state API` notes are retained only to explain the historical implementation and migration risk:
+Additional local APIs inspected in the May previous package pass. Previous beta.93 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `previous saved-state API` notes are retained only to explain the historical implementation and migration risk:
 
 - `SereTalon` now uses a scoped Spire Plus pickup patch because the rebalance requires a four-Curse choice screen. Use `CardSelectCmd.FromSimpleGrid` because the three-card choose screen cannot show four Curses.
 - Add-to-deck feedback should not rely on `CardPileCmd.Add(...)` alone. Local Core reward/shop flows animate existing UI cards separately, so Spire Plus direct-gain paths use `SpirePlusFeedback.PreviewDeckAdds(...)`: it keeps `CardCmd.PreviewCardPileAdd(...)`, adds the vanilla deck-movement SFX, and uses a very weak short screen shake as a small confirmation cue.
@@ -174,7 +174,7 @@ Additional local APIs inspected:
 
 Chosen state strategy:
 
-- Keep the long-lived normal reward counter; historical May code used `previous saved-state API<PrismaticGem,int>`, while current beta.93 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
+- Keep the long-lived normal reward counter; historical May code used `previous saved-state API<PrismaticGem,int>`, while previous beta.93 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
 - Add a per-screen state keyed by the active `CardReward` instance with `ConditionalWeakTable<CardReward, RewardScreenState>`.
 - Patch `CardReward.Populate()` only to expose the active reward screen through a thread-local stack while `CardFactory.CreateForReward(...)` and `Hook.TryModifyCardRewardOptions(...)` run.
 - The first Prismatic Gem evaluation for a `CardReward` decides the screen: eligible normal rewards increment the saved counter once and store whether this screen should replace all slots; ineligible rewards store a non-trigger decision and do not increment.
@@ -183,7 +183,7 @@ Chosen state strategy:
 
 Runtime-risk notes:
 
-- `JeweledMaskFreePower` was compile-verified in the historical previous package pass; current beta.93 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
+- `JeweledMaskFreePower` was compile-verified in the historical previous package pass; previous beta.93 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
 - `Crossbow`, `ToastyMittens`, and `ChoicesParadox` use generated combat cards and selection screens; manual testing should verify skipped generated cards do not linger in combat state.
 - `MeatCleaver` patches the built-in `CookRestSiteOption`; manual testing should verify no other source creates the rest-site Cleaver option without Meat Cleaver.
 - `PrismaticGem` should be manually tested across two normal monster card rewards and a non-normal reward (elite, boss, event, or colorless-only) to confirm the saved counter only affects the intended reward type.

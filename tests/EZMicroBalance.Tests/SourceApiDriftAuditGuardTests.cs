@@ -125,6 +125,7 @@ public sealed class SourceApiDriftAuditGuardTests
     {
         var project = ReadRepoText("EZMicroBalance.csproj");
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var settings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
 
         AssertSourceContains(
             project,
@@ -134,6 +135,13 @@ public sealed class SourceApiDriftAuditGuardTests
 
         Assert.Contains("SpirePlusModConfig.Register(ModId)", mainFile, StringComparison.Ordinal);
         Assert.Contains("SpirePlusContentRegistrationService.Register(ModId)", mainFile, StringComparison.Ordinal);
+        AssertSourceContains(
+            settings,
+            "RitsuLibFramework.RegisterModSettings",
+            "migration_status",
+            "RitsuLib-only mod surface",
+            "STS2-RitsuLib >= 0.4.31",
+            "Settings screenshots prove UI visibility only.");
     }
 
 }

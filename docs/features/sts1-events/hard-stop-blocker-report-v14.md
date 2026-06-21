@@ -48,7 +48,7 @@ Continuation cannot make O0-O50 all green in the current environment. STS2-Ritsu
 
 ## Next Owner Actions
 
-1. Historical action at capture time: rerun loader smoke with the then-required previous package + STS2-RitsuLib + Spire Plus stack. Current beta.93 action: use the RitsuLib-only runtime commands from `PROJECT_STATE.md` and `docs/features/sts1-events/README.md`.
+1. Historical action at capture time: rerun loader smoke with the then-required previous package + STS2-RitsuLib + Spire Plus stack. Previous beta.93 action: use the RitsuLib-only runtime commands from `PROJECT_STATE.md` and `docs/features/sts1-events/README.md`.
 2. Capture Off and CanaryOnly `godot.log` evidence before attempting AdditiveBatch1 or replacement-pool proof.
 3. Provide an art/license strategy for StS1 event images.
 4. Rerun independent QA only after runtime evidence exists.

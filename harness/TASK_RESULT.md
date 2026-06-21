@@ -9,7 +9,7 @@
 - The current local game is Slay the Spire 2 `v0.107.1` with installed STS2-RitsuLib `v0.4.31` and `lib\0.107.1`.
 - Spire Plus beta.93 is RitsuLib-only: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.31`, and current package/runtime proof loads exactly STS2-RitsuLib and Spire Plus.
 - The refreshed ignored `source code/` snapshot matches installed game `v0.107.1` release info, commit `59260271`, branch `v0.107.1`, and main assembly hash `-1555940892`; the source-workspace checker passes 58 checks / 0 mismatches with two retained GDRE warnings.
-- Current beta.93 Off and AdditiveBatch1 proof is clean for loader/registration only under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
+- Previous beta.93 Off and AdditiveBatch1 proof is clean for loader/registration only under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
 - Previous beta.85/beta.87 `v0.107.0`, beta.88 previous package, and beta.90 RitsuLib-only logs are retained as history only. They do not define current dependency truth.
 - Gameplay, clicked UI, save-load, replacement, co-op, independent QA, and tester handoff remain pending.
 

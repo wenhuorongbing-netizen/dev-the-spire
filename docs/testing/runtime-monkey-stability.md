@@ -55,7 +55,7 @@ source-contract checks only; game-native monkey proof still requires a launched
 AutoSlay-backed packet.
 
 Use `-RequireCurrentSourceSnapshot -FailOnMismatch` when a task requires
-current-source parity. The current beta.93 local state is expected to pass
+current-source parity. The previous beta.93 local state is expected to pass
 `source_version_matches_installed_game`, `source_commit_matches_installed_game`,
 `source_branch_matches_installed_game`,
 `source_main_assembly_hash_matches_installed_game`, and
@@ -343,7 +343,7 @@ After the packet is captured, verify it with:
   -EvidenceDir "<evidence>" `
   -MinRuns 1000 `
   -ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA `
-  -ExpectedPackageVersion v0.1.0-private-beta.93 `
+  -ExpectedPackageVersion v0.1.0-private-beta.94 `
   -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.31 `
   -ExpectedRitsuCompatBranch 0.107.1 `
@@ -565,7 +565,7 @@ After a launched run, verify the retained packet without launching anything:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.93 `
+  -ExpectedPackageVersion v0.1.0-private-beta.94 `
   -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.31 `
   -ExpectedRitsuCompatBranch 0.107.1 `

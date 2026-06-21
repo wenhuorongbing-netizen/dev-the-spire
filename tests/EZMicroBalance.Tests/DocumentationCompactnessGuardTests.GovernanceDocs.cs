@@ -19,8 +19,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "PROJECT_STATE.md should remain a compact first-read current-state file; archive historical pass logs instead.");
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
-        Assert.Contains("Active M5 Revision P truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("the runtime blocker is resolved for loader/patch application only", projectState, StringComparison.Ordinal);
+        Assert.Contains("Active M5 Revision Q truth", projectState, StringComparison.Ordinal);
+        Assert.Contains("the runtime blocker is resolved for the previous beta.93 loader/patch-application package only", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta.19 packages have historical loader/startup evidence", projectState, StringComparison.Ordinal);
@@ -126,12 +126,12 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
-            "Active M5 Revision P truth",
-            "current beta.93 RitsuLib-only loader proof supersedes it",
+            "Active M5 Revision Q truth",
+            "previous beta.93 RitsuLib-only loader proof supersedes it",
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
-            "Current beta.93 RitsuLib-only evidence should be read from the latest validated HEAD");
+            "Previous beta.93 RitsuLib-only evidence should be read from the latest validated HEAD");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],
             "current package evidence derived from the manifest/versioned artifacts");
