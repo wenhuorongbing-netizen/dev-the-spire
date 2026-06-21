@@ -152,11 +152,17 @@ public sealed class SourceApiDriftAuditGuardTests
             "EnableTransformPredictionEntryId",
             "TransformPredictionAlwaysOnEntryId",
             "ShowPreviewDebugLogsEntryId",
+            "DefaultCrystalSphereMaskAlpha",
+            "CrystalSphereMaskAlphaMin",
+            "CrystalSphereMaskAlphaMax",
+            "CrystalSphereMaskAlphaStep",
+            "NormalizeCrystalSphereMaskAlpha",
             "RitsuLib setting controls bind to this data key",
             "Keep these entry IDs stable",
             "RitsuLib-only mod surface",
             "STS2-RitsuLib >= 0.4.31",
             "Settings screenshots prove UI visibility only.");
+        Assert.DoesNotContain("Math.Clamp(value, 0.05, 0.95)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("store.InitializeGlobal();", settings, StringComparison.Ordinal);
     }
 

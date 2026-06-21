@@ -25,6 +25,10 @@ internal static class SpirePlusModConfig
     private const string ShowPreviewDebugLogsEntryId = "show_preview_debug_logs";
     private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.31";
     private const string StableTechnicalId = "EZMicroBalance";
+    private const double DefaultCrystalSphereMaskAlpha = 0.32;
+    private const double CrystalSphereMaskAlphaMin = 0.05;
+    private const double CrystalSphereMaskAlphaMax = 0.95;
+    private const double CrystalSphereMaskAlphaStep = 0.05;
 
     // RitsuLib owns the persisted settings store. The fallback is only used while
     // the framework is unavailable during early startup or when a store read fails.
@@ -40,7 +44,7 @@ internal static class SpirePlusModConfig
     public static double CrystalSphereMaskAlpha
     {
         get => State.CrystalSphereMaskAlpha;
-        set => UpdateState(state => state.CrystalSphereMaskAlpha = Math.Clamp(value, 0.05, 0.95));
+        set => UpdateState(state => state.CrystalSphereMaskAlpha = NormalizeCrystalSphereMaskAlpha(value));
     }
 
     public static bool EnableTransformPrediction
@@ -138,10 +142,10 @@ internal static class SpirePlusModConfig
             section.AddSlider(
                 CrystalSphereMaskAlphaEntryId,
                 Text("Crystal Sphere mask alpha"),
-                Binding(modId, state => state.CrystalSphereMaskAlpha, (state, value) => state.CrystalSphereMaskAlpha = Math.Clamp(value, 0.05, 0.95)),
-                0.05,
-                0.95,
-                0.05,
+                Binding(modId, state => state.CrystalSphereMaskAlpha, (state, value) => state.CrystalSphereMaskAlpha = NormalizeCrystalSphereMaskAlpha(value)),
+                CrystalSphereMaskAlphaMin,
+                CrystalSphereMaskAlphaMax,
+                CrystalSphereMaskAlphaStep,
                 value => value.ToString("0.00", CultureInfo.InvariantCulture),
                 Text("Opacity of the Crystal Sphere peek mask."));
             section.AddToggle(
@@ -211,13 +215,16 @@ internal static class SpirePlusModConfig
         Action<SettingsState, TValue> setter) =>
         new ModSettingsValueBinding<SettingsState, TValue>(modId, SettingsKey, SaveScope.Global, getter, setter);
 
+    private static double NormalizeCrystalSphereMaskAlpha(double value) =>
+        Math.Clamp(value, CrystalSphereMaskAlphaMin, CrystalSphereMaskAlphaMax);
+
     private static ModSettingsText Text(string value) => ModSettingsText.Literal(value);
 
     private sealed class SettingsState
     {
         public bool EnableCrystalSpherePeek { get; set; } = true;
 
-        public double CrystalSphereMaskAlpha { get; set; } = 0.32;
+        public double CrystalSphereMaskAlpha { get; set; } = DefaultCrystalSphereMaskAlpha;
 
         public bool EnableTransformPrediction { get; set; } = true;
 
