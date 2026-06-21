@@ -1052,11 +1052,14 @@ $planExpectedPatchCount = if ($null -ne $plan) { Get-JsonIntValue -Object $plan 
 $effectiveExpectedPatchCount = if ($ExpectedPatchCount -gt 0) { $ExpectedPatchCount } else { $planExpectedPatchCount }
 $planScenario = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue '') } else { '' }
 $planCommandSelectionMode = if ($null -ne $plan) { [string](Get-JsonValue -Object $plan -Name 'CommandSelectionMode' -DefaultValue '') } else { '' }
+$planCaptureWindowAfterCommand = if ($null -ne $plan) { Get-JsonBoolValue -Object $plan -Name 'CaptureWindowAfterCommand' -DefaultValue $false } else { $false }
 $planPlannedCommandsProperty = Get-JsonArrayProperty -Object $plan -Name 'PlannedCommands'
 $planPlannedCommands = @($planPlannedCommandsProperty.Value)
 $summaryResults = @()
 $expectedRunnerScriptPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'run-spire-plus-monkey-stability.ps1'))
 $expectedRunnerScriptSha256 = Get-FileSha256OrEmpty -Path $expectedRunnerScriptPath
+$expectedWindowCaptureScriptPath = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'capture-spire-window.ps1'))
+$expectedWindowCaptureScriptSha256 = Get-FileSha256OrEmpty -Path $expectedWindowCaptureScriptPath
 if ($expectedIterationCount -le 0 -and $planIterations -gt 0) {
     $expectedIterationCount = $planIterations
 }
@@ -1104,6 +1107,18 @@ if ($null -ne $plan) {
     Add-Check -Name 'plan_runner_script_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($planRunnerScriptSha256)) -Detail 'RunnerScriptSha256 must bind the packet to the current runner script content'
     if ($planRunnerScriptExists -and -not [string]::IsNullOrWhiteSpace($planRunnerScriptSha256)) {
         Add-Check -Name 'plan_runner_script_hash_matches_current_runner' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $planRunnerScriptPath), $expectedRunnerScriptSha256, [System.StringComparison]::OrdinalIgnoreCase) -and [string]::Equals($planRunnerScriptSha256, $expectedRunnerScriptSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'RunnerScriptSha256 must match the current repo monkey runner SHA256'
+    }
+    if ($planCaptureWindowAfterCommand) {
+        $planWindowCaptureScriptPath = Resolve-ChildOrAbsolutePath -BaseDir $resolvedEvidenceDir -Path ([string](Get-JsonValue -Object $plan -Name 'WindowCaptureScriptPath' -DefaultValue ''))
+        $planWindowCaptureScriptSha256 = [string](Get-JsonValue -Object $plan -Name 'WindowCaptureScriptSha256' -DefaultValue '')
+        $planWindowCaptureScriptExists = $planWindowCaptureScriptPath -and (Test-Path -LiteralPath $planWindowCaptureScriptPath -PathType Leaf)
+        Add-Check -Name 'plan_window_capture_script_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($planWindowCaptureScriptPath)) -Detail 'WindowCaptureScriptPath must bind screenshot-enabled packets to scripts/capture-spire-window.ps1'
+        Add-Check -Name 'plan_window_capture_script_path_matches_current_helper' -Passed ($planWindowCaptureScriptPath -and [System.StringComparer]::OrdinalIgnoreCase.Equals($planWindowCaptureScriptPath, $expectedWindowCaptureScriptPath)) -Detail 'WindowCaptureScriptPath must match the current repo window capture helper'
+        Add-Check -Name 'plan_window_capture_script_exists' -Passed $planWindowCaptureScriptExists -Detail 'WindowCaptureScriptPath must point at an existing script file'
+        Add-Check -Name 'plan_window_capture_script_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($planWindowCaptureScriptSha256)) -Detail 'WindowCaptureScriptSha256 must bind the screenshot helper content'
+        if ($planWindowCaptureScriptExists -and -not [string]::IsNullOrWhiteSpace($planWindowCaptureScriptSha256)) {
+            Add-Check -Name 'plan_window_capture_script_hash_matches_current_helper' -Passed ([string]::Equals((Get-FileSha256OrEmpty -Path $planWindowCaptureScriptPath), $expectedWindowCaptureScriptSha256, [System.StringComparison]::OrdinalIgnoreCase) -and [string]::Equals($planWindowCaptureScriptSha256, $expectedWindowCaptureScriptSha256, [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'WindowCaptureScriptSha256 must match the current repo window capture helper SHA256'
+        }
     }
     if (-not [string]::IsNullOrWhiteSpace($ExpectedPackageVersion)) {
         Add-Check -Name 'plan_expected_package_version_matches' -Passed ([string]::Equals([string](Get-JsonValue -Object $plan -Name 'ExpectedPackageVersion' -DefaultValue ''), $ExpectedPackageVersion, [System.StringComparison]::Ordinal)) -Detail "monkey-plan ExpectedPackageVersion must match '$ExpectedPackageVersion'"
@@ -1263,6 +1278,7 @@ if ($null -ne $summary) {
     $summaryStaleProcessObservedCount = Get-JsonIntValue -Object $summary -Name 'StaleProcessObservedCount' -DefaultValue -1
     $summaryLogStallIterationCount = Get-JsonIntValue -Object $summary -Name 'LogStallIterationCount' -DefaultValue -1
     $summaryCommandAckMissingCount = Get-JsonIntValue -Object $summary -Name 'CommandAckMissingCount' -DefaultValue -1
+    $summaryWindowCaptureMissingCount = Get-JsonIntValue -Object $summary -Name 'WindowCaptureMissingCount' -DefaultValue -1
     $expectedSummaryPassed = $summaryResults.Count -gt 0 -and $failedSummaryResults.Count -eq 0 -and $summaryCompletedIterations -eq $summaryRequestedIterations
 
     Add-Check -Name 'summary_hang_probe_schema_version' -Passed ((Get-JsonIntValue -Object $summary -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'summary HangProbeSchemaVersion must be 1'
@@ -1324,12 +1340,14 @@ if ($null -ne $summary) {
     Add-Check -Name 'summary_stale_process_observed_count_zero' -Passed ($summaryStaleProcessObservedCount -eq 0) -Detail 'StaleProcessObservedCount must be 0 because pre-existing SlayTheSpire2 processes can contaminate the shared godot.log'
     Add-Check -Name 'summary_log_stall_iteration_count_zero' -Passed ($summaryLogStallIterationCount -eq 0) -Detail 'LogStallIterationCount must be 0'
     Add-Check -Name 'summary_command_ack_missing_count_zero' -Passed ($summaryCommandAckMissingCount -eq 0) -Detail 'CommandAckMissingCount must be 0'
+    Add-Check -Name 'summary_window_capture_missing_count_zero' -Passed (-not $planCaptureWindowAfterCommand -or $summaryWindowCaptureMissingCount -eq 0) -Detail 'WindowCaptureMissingCount must be 0 when screenshot capture is requested'
     Add-Check -Name 'summary_godot_log_before_missing_count_matches_results' -Passed ($summaryGodotLogBeforeMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('godot_log_before_missing'))) -Detail 'GodotLogBeforeMissingCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_current_iteration_log_missing_count_matches_results' -Passed ($summaryCurrentIterationLogMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('current_iteration_log_missing'))) -Detail 'CurrentIterationLogMissingCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_unresponsive_iteration_count_matches_results' -Passed ($summaryUnresponsiveIterationCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('process_unresponsive'))) -Detail 'UnresponsiveIterationCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_stale_process_observed_count_matches_results' -Passed ($summaryStaleProcessObservedCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('stale_process_observed'))) -Detail 'StaleProcessObservedCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_log_stall_iteration_count_matches_results' -Passed ($summaryLogStallIterationCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('startup_log_stalled', 'runtime_log_stalled'))) -Detail 'LogStallIterationCount must match summary Results FailureReasonCodes'
     Add-Check -Name 'summary_command_ack_missing_count_matches_results' -Passed ($summaryCommandAckMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('command_ack_missing'))) -Detail 'CommandAckMissingCount must match summary Results FailureReasonCodes'
+    Add-Check -Name 'summary_window_capture_missing_count_matches_results' -Passed (-not $planCaptureWindowAfterCommand -or $summaryWindowCaptureMissingCount -eq (Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes @('window_capture_missing'))) -Detail 'WindowCaptureMissingCount must match summary Results FailureReasonCodes when screenshot capture is requested'
     $summaryMaxMainMenuElapsedSeconds = Get-JsonDoubleValue -Object $summary -Name 'MaxMainMenuElapsedSeconds' -DefaultValue -1
     $summaryMaxSecondsWithoutLogGrowth = Get-JsonIntValue -Object $summary -Name 'MaxSecondsWithoutLogGrowth' -DefaultValue -1
     $summaryMaxConsecutiveUnresponsiveSamples = Get-JsonIntValue -Object $summary -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1
@@ -1567,6 +1585,11 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $resultLiveSessionSelectedGameProcessPathFull = ConvertTo-NormalizedPathOrEmpty -Path $resultLiveSessionSelectedGameProcessPath
             $resultGameProcessPathFull = ConvertTo-NormalizedPathOrEmpty -Path $resultGameProcessPath
             $expectedSteamLaunchArgumentList = @('-applaunch', '2868840')
+            $resultWindowCaptureRequired = Get-JsonBoolValue -Object $iterationResult -Name 'WindowCaptureRequired' -DefaultValue $false
+            $resultWindowCaptureSucceeded = Get-JsonBoolValue -Object $iterationResult -Name 'WindowCaptureSucceeded' -DefaultValue $false
+            $resultWindowCapturePath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'WindowCapturePath' -DefaultValue ''))
+            $resultWindowCaptureOutputPath = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $iterationResult -Name 'WindowCaptureOutputPath' -DefaultValue ''))
+            $resultWindowCaptureSha256 = [string](Get-JsonValue -Object $iterationResult -Name 'WindowCaptureSha256' -DefaultValue '')
 
             Add-Check -Name "${iterationName}_live_session_prepare_output_under_iteration_dir" -Passed ($resultPrepareOutputPath -and (Test-PathUnderDirectory -Path $resultPrepareOutputPath -Directory $iterationDir)) -Detail 'LiveSessionPrepareOutputPath must stay inside the current iteration directory'
             Add-Check -Name "${iterationName}_live_session_prepare_output_leaf_expected" -Passed ($resultPrepareOutputPath -and ([System.IO.Path]::GetFileName($resultPrepareOutputPath) -eq 'prepare-output.json')) -Detail 'LiveSessionPrepareOutputPath must end with prepare-output.json'
@@ -1574,6 +1597,20 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_live_session_prepare_output_sha256_recorded" -Passed (-not [string]::IsNullOrWhiteSpace($resultPrepareOutputSha256)) -Detail 'LiveSessionPrepareOutputSha256 must be retained'
             if ($prepareOutputExists) {
                 Add-Check -Name "${iterationName}_live_session_prepare_output_sha256_matches_retained_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultPrepareOutputSha256, (Get-FileSha256OrEmpty -Path $prepareOutputPath))) -Detail 'LiveSessionPrepareOutputSha256 must match retained prepare-output.json'
+            }
+
+            if ($planCaptureWindowAfterCommand) {
+                Add-Check -Name "${iterationName}_window_capture_required_matches_plan" -Passed $resultWindowCaptureRequired -Detail 'WindowCaptureRequired must be true when monkey-plan requested command-after screenshots'
+                Add-Check -Name "${iterationName}_window_capture_succeeded" -Passed $resultWindowCaptureSucceeded -Detail 'WindowCaptureSucceeded must be true when screenshot capture is requested'
+                Add-Check -Name "${iterationName}_window_capture_path_under_iteration_dir" -Passed ($resultWindowCapturePath -and (Test-PathUnderDirectory -Path $resultWindowCapturePath -Directory $iterationDir)) -Detail 'WindowCapturePath must stay inside the current iteration directory'
+                Add-Check -Name "${iterationName}_window_capture_leaf_expected" -Passed ($resultWindowCapturePath -and ([System.IO.Path]::GetFileName($resultWindowCapturePath) -eq 'window-after-command.png')) -Detail 'WindowCapturePath must end with window-after-command.png'
+                Add-Check -Name "${iterationName}_window_capture_file_exists" -Passed ($resultWindowCapturePath -and (Test-Path -LiteralPath $resultWindowCapturePath -PathType Leaf)) -Detail 'requires retained command-after screenshot PNG'
+                Add-Check -Name "${iterationName}_window_capture_hash_recorded" -Passed (Test-Sha256Text -Value $resultWindowCaptureSha256) -Detail 'WindowCaptureSha256 must be retained as a valid SHA256'
+                if ($resultWindowCapturePath -and (Test-Path -LiteralPath $resultWindowCapturePath -PathType Leaf)) {
+                    Add-Check -Name "${iterationName}_window_capture_hash_matches_file" -Passed ([System.StringComparer]::OrdinalIgnoreCase.Equals($resultWindowCaptureSha256, (Get-FileSha256OrEmpty -Path $resultWindowCapturePath))) -Detail 'WindowCaptureSha256 must match retained window-after-command.png'
+                }
+                Add-Check -Name "${iterationName}_window_capture_output_under_iteration_dir" -Passed ($resultWindowCaptureOutputPath -and (Test-PathUnderDirectory -Path $resultWindowCaptureOutputPath -Directory $iterationDir)) -Detail 'WindowCaptureOutputPath must stay inside the current iteration directory'
+                Add-Check -Name "${iterationName}_window_capture_output_exists" -Passed ($resultWindowCaptureOutputPath -and (Test-Path -LiteralPath $resultWindowCaptureOutputPath -PathType Leaf)) -Detail 'requires retained window capture helper output'
             }
 
             Add-Check -Name "${iterationName}_live_session_session_state_under_iteration_dir" -Passed ($resultSessionStatePath -and (Test-PathUnderDirectory -Path $resultSessionStatePath -Directory $iterationDir)) -Detail 'LiveSessionSessionStatePath must stay inside the current iteration directory'

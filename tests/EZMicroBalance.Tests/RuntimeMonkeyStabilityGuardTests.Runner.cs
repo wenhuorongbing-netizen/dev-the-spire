@@ -113,6 +113,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "MaxConsecutiveUnresponsiveSamples",
             "shared godot.log cannot be trusted for this iteration",
             "CommandAckPatterns",
+            "[switch]$CaptureWindowAfterCommand",
+            "capture-spire-window.ps1",
+            "CaptureWindowAfterCommand",
             "check-local-godot-source-workspace.ps1",
             "SourceWorkspaceCheckPath",
             "SourceWorkspaceCheckSha256",
@@ -160,7 +163,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "UnresponsiveIterationCount",
             "StaleProcessObservedCount",
             "LogStallIterationCount",
-            "CommandAckMissingCount");
+            "CommandAckMissingCount",
+            "WindowCaptureRequired",
+            "WindowCaptureSucceeded",
+            "WindowCapturePath",
+            "WindowCaptureSha256",
+            "window_capture_missing",
+            "WindowCaptureMissingCount");
     }
 
     [Fact]
@@ -194,7 +203,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "summary_scenario_tag_counts_match_results",
             "summary_owner_area_counts_match_results",
             "summary_command_counts_match_results",
-            "summary_vakuu_fight_iteration_count_matches_results");
+            "summary_vakuu_fight_iteration_count_matches_results",
+            "plan_window_capture_script_path_matches_current_helper",
+            "summary_window_capture_missing_count_matches_results",
+            "window_capture_hash_matches_file");
     }
 
     [Fact]

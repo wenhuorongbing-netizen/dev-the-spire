@@ -66,6 +66,8 @@ param(
 
     [switch]$NoDevConsoleCommands,
 
+    [switch]$CaptureWindowAfterCommand,
+
     [switch]$FailOnFirstFailure
 )
 
@@ -77,6 +79,7 @@ $runtimeRoot = Join-Path $repoRoot '.tools\runtime-evidence'
 $liveSessionScript = Join-Path $PSScriptRoot 'spire-plus-live-session.ps1'
 $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $consoleCommandScript = Join-Path $PSScriptRoot 'send-spire-dev-console-command.ps1'
+$windowCaptureScript = Join-Path $PSScriptRoot 'capture-spire-window.ps1'
 $sts1ModeVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
 $sourceWorkspaceCheckerScript = Join-Path $PSScriptRoot 'check-local-godot-source-workspace.ps1'
 $godotLogPath = Join-Path $env:APPDATA 'SlayTheSpire2\logs\godot.log'
@@ -202,6 +205,50 @@ function Get-FileSha256OrEmpty {
     }
 
     return (Get-FileHash -Algorithm SHA256 -LiteralPath $Path).Hash.ToLowerInvariant()
+}
+
+function Get-PowerShellExecutable {
+    $processPath = (Get-Process -Id $PID).Path
+    if ($processPath -and (Test-Path -LiteralPath $processPath -PathType Leaf)) {
+        return $processPath
+    }
+
+    if ($PSVersionTable.PSEdition -eq 'Core') {
+        return 'pwsh'
+    }
+
+    return 'powershell.exe'
+}
+
+function Invoke-WindowCapture {
+    param(
+        [Parameter(Mandatory = $true)][string]$ScriptPath,
+        [Parameter(Mandatory = $true)][string]$OutFile,
+        [Parameter(Mandatory = $true)][string]$OutputPath
+    )
+
+    $powerShellExe = Get-PowerShellExecutable
+    $arguments = @(
+        '-NoProfile',
+        '-ExecutionPolicy',
+        'Bypass',
+        '-File',
+        $ScriptPath,
+        '-OutFile',
+        $OutFile,
+        '-RequireSpireForeground'
+    )
+    $output = & $powerShellExe @arguments 2>&1
+    $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
+    @($output | ForEach-Object { $_.ToString() }) |
+        Set-Content -LiteralPath $OutputPath -Encoding UTF8
+
+    return [pscustomobject]@{
+        ExitCode = $exitCode
+        OutputPath = $OutputPath
+        ScreenshotPath = $OutFile
+        Succeeded = $exitCode -eq 0 -and (Test-Path -LiteralPath $OutFile -PathType Leaf)
+    }
 }
 
 function Test-Sha256Text {
@@ -986,6 +1033,10 @@ function Get-FailureReasonCodes {
         Add-FailureCode -Codes $codes -Code 'main_window_missing'
     }
 
+    if ([bool]$Result.WindowCaptureRequired -and -not [bool]$Result.WindowCaptureSucceeded) {
+        Add-FailureCode -Codes $codes -Code 'window_capture_missing'
+    }
+
     if ([string]::IsNullOrWhiteSpace([string]$Result.LiveSessionPrepareOutputSha256) -or
         -not (Test-Path -LiteralPath ([string]$Result.LiveSessionPrepareOutputPath) -PathType Leaf)) {
         Add-FailureCode -Codes $codes -Code 'live_session_prepare_output_missing'
@@ -1568,6 +1619,8 @@ $sourceWorkspaceSummary = [ordered]@{
 $random = [System.Random]::new($RandomSeed)
 $runnerScriptPath = [System.IO.Path]::GetFullPath($PSCommandPath)
 $runnerScriptSha256 = Get-FileSha256OrEmpty -Path $runnerScriptPath
+$windowCaptureScriptPath = [System.IO.Path]::GetFullPath($windowCaptureScript)
+$windowCaptureScriptSha256 = Get-FileSha256OrEmpty -Path $windowCaptureScriptPath
 $plannedCommands = for ($i = 1; $i -le $Iterations; $i++) {
     $command = ''
     $commandIndex = -1
@@ -1626,6 +1679,9 @@ $plan = [ordered]@{
     UnresponsiveSampleThreshold = $UnresponsiveSampleThreshold
     NoLogGrowthTimeoutSeconds = $NoLogGrowthTimeoutSeconds
     PostCommandSeconds = $PostCommandSeconds
+    CaptureWindowAfterCommand = [bool]$CaptureWindowAfterCommand
+    WindowCaptureScriptPath = $windowCaptureScriptPath
+    WindowCaptureScriptSha256 = $windowCaptureScriptSha256
     ExpectedPackageVersion = $ExpectedPackageVersion
     ExpectedGameVersion = $ExpectedGameVersion
     ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
@@ -1689,6 +1745,7 @@ $plan = [ordered]@{
         'godot.log stops growing before main menu for the configured no-growth timeout',
         'required DevConsole command acknowledgement line is absent from godot.log',
         'godot.log missing or empty',
+        'command-after window screenshot missing when -CaptureWindowAfterCommand is requested',
         'audit-godot-log reports release-blocking signature hits',
         'expected package/game/RitsuLib/patch-count markers are absent from godot.log',
         'StS1 mode verifier reports that actual godot.log mode/package/game/Ritsu shape does not match this run',
@@ -1814,6 +1871,13 @@ try {
             GameProcessStartTimeUtc = $null
             GameProcessPath = ''
             MainWindowObserved = $false
+            WindowCaptureRequired = [bool]$CaptureWindowAfterCommand
+            WindowCaptureSucceeded = -not [bool]$CaptureWindowAfterCommand
+            WindowCapturePath = Join-Path $iterationDir 'window-after-command.png'
+            WindowCaptureOutputPath = Join-Path $iterationDir 'window-after-command.capture.json'
+            WindowCaptureSha256 = ''
+            WindowCaptureExitCode = $null
+            WindowCaptureError = ''
             MainMenuDetectedAt = $null
             MainMenuElapsedSeconds = 0
             GodotLogBeforeCopied = $false
@@ -2052,6 +2116,26 @@ try {
 
                 $result.ResponsivenessProbePassed = $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed
 
+                if ($CaptureWindowAfterCommand) {
+                    if (-not (Test-Path -LiteralPath $windowCaptureScript -PathType Leaf)) {
+                        $result.WindowCaptureError = "Missing window capture helper: $windowCaptureScript"
+                    } elseif (-not [bool]$result.MainWindowObserved) {
+                        $result.WindowCaptureError = 'SlayTheSpire2 main window was not observed after main menu.'
+                    } else {
+                        $capture = Invoke-WindowCapture `
+                            -ScriptPath $windowCaptureScript `
+                            -OutFile ([string]$result.WindowCapturePath) `
+                            -OutputPath ([string]$result.WindowCaptureOutputPath)
+                        $result.WindowCaptureExitCode = [int]$capture.ExitCode
+                        $result.WindowCaptureSucceeded = [bool]$capture.Succeeded
+                        if ([bool]$capture.Succeeded) {
+                            $result.WindowCaptureSha256 = Get-FileSha256OrEmpty -Path ([string]$result.WindowCapturePath)
+                        } else {
+                            $result.WindowCaptureError = "Window capture failed with exit code $($capture.ExitCode)."
+                        }
+                    }
+                }
+
                 $launchLog = [string]$result.GodotLogAfterLaunchPath
                 $result.LogCopied = Copy-CurrentGodotLog -Destination $launchLog
                 if ($result.LogCopied) {
@@ -2134,7 +2218,7 @@ try {
         Save-Json -InputObject @($probeSamples) -Path $result.RuntimeProbeSamplesPath
         $result.RuntimeProbeSamplesSha256 = Get-FileSha256OrEmpty -Path ([string]$result.RuntimeProbeSamplesPath)
 
-        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and -not [string]::IsNullOrWhiteSpace([string]$result.RuntimeProbeSamplesSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSessionStateSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionRestoreStateSha256) -and [int]$result.LiveSessionRestoreSchemaVersion -gt 0 -and [bool]$result.LiveSessionStoppedSelectedGameProcess -and [bool]$result.LiveSessionRestoreItemCountsMatch -and ([int]$result.LiveSessionPreservedNewCurrentRunCount -eq 0 -or [bool]$result.LiveSessionPreservedNewCurrentRunsManifestBound) -and [int]$result.LiveSessionPostRestoreSlayProcessCount -eq 0 -and [int]$result.LiveSessionPostRestoreGodotProcessCount -eq 0 -and [bool]$result.LiveSessionSettingsRestoredFromBackup -and [bool]$result.LiveSessionSettingsBackupRestoredFromBackup -and
+        $result.Passed = $result.MainMenuReached -and $result.MainMenuObservationPassed -and $result.RuntimeObservationPassed -and $result.MainWindowObserved -and (-not [bool]$result.WindowCaptureRequired -or [bool]$result.WindowCaptureSucceeded) -and -not [bool]$result.StaleProcessObserved -and [int]$result.StaleProcessCount -eq 0 -and $result.CommandAckObserved -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionPrepareOutputSha256) -and [int]$result.LiveSessionLaunchedProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionLaunchedAt) -and [bool]$result.LiveSessionPidAttributionPassed -and [int]$result.LiveSessionSelectedGameProcessId -gt 0 -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessStartTimeUtc) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSelectedGameProcessPath) -and [bool]$result.GameProcessStartTimeAfterLiveSessionLaunch -and [bool]$result.GameProcessIdMatchesLiveSession -and [bool]$result.GameProcessStartTimeMatchesLiveSession -and [bool]$result.GameProcessPathMatchesLiveSession -and -not [string]::IsNullOrWhiteSpace([string]$result.GameProcessPath) -and $result.GodotLogBeforeCopied -and $result.LogCopied -and $result.CurrentIterationLogCopied -and $result.AuditClean -and $result.ExpectationPassed -and $result.Sts1ModeVerifierPassed -and $result.RestoreSucceeded -and -not [string]::IsNullOrWhiteSpace([string]$result.RuntimeProbeSamplesSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionSessionStateSha256) -and -not [string]::IsNullOrWhiteSpace([string]$result.LiveSessionRestoreStateSha256) -and [int]$result.LiveSessionRestoreSchemaVersion -gt 0 -and [bool]$result.LiveSessionStoppedSelectedGameProcess -and [bool]$result.LiveSessionRestoreItemCountsMatch -and ([int]$result.LiveSessionPreservedNewCurrentRunCount -eq 0 -or [bool]$result.LiveSessionPreservedNewCurrentRunsManifestBound) -and [int]$result.LiveSessionPostRestoreSlayProcessCount -eq 0 -and [int]$result.LiveSessionPostRestoreGodotProcessCount -eq 0 -and [bool]$result.LiveSessionSettingsRestoredFromBackup -and [bool]$result.LiveSessionSettingsBackupRestoredFromBackup -and
             ($devConsoleCommandsDisabled -or [string]::IsNullOrWhiteSpace([string]$planned.Command) -or $result.ConsoleCommandSent)
 
         Save-Json -InputObject $result -Path (Join-Path $iterationDir 'iteration-result.json')
@@ -2208,6 +2292,7 @@ try {
                 $codes -contains 'startup_log_stalled' -or $codes -contains 'runtime_log_stalled'
             }).Count
         CommandAckMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'command_ack_missing' }).Count
+        WindowCaptureMissingCount = @($results | Where-Object { @($_.FailureReasonCodes) -contains 'window_capture_missing' }).Count
         CommandCounts = $commandCounts
         ScenarioTagCounts = $scenarioTagCounts
         OwnerAreaCounts = $ownerAreaCounts
