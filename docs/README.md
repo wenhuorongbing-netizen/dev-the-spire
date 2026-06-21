@@ -57,7 +57,7 @@ These files are current support records but are not part of the default next-dev
 | `test-ready-completion-audit.md` | Source/test-ready completion audit from the previous pass. |
 | `test-plan.md` | Automated, release-artifact, localization, manual, save/load, and disable checks. |
 | `testing/runtime-monkey-stability.md` | Runtime long-run stability lane for restore-safe launch loops, log auditing, timeout detection, and future monkey input expansion. |
-| `BETA_COMPATIBILITY.md` | Version compatibility policy and compatibility log. |
+| `BETA_COMPATIBILITY.md` | Current RitsuLib-only compatibility policy and update procedure. |
 | `archive/implementation-records/rc1-live-validation-log-20260508-20260513.md` | Historical RC1 source/live-validation notes for older packages. Current evidence is summarized in `release-evidence-status.md` and `dev-environment.md`. |
 | `archive/implementation-records/dev-environment-runtime-smoke-history-20260526.md` | Historical runtime-smoke detail moved out of `dev-environment.md`; use only when investigating old launch/helper behavior. |
 | `archive/implementation-records/website-localization-qa-20260522.md` | Historical website localization/render QA journal moved out of the public website source. |

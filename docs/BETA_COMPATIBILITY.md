@@ -2,62 +2,70 @@
 
 ## 2026-06-21 Current Compatibility Boundary
 
-The `v0.106.1` baseline below is historical tested-baseline context. Current local installed game is Slay the Spire 2 `v0.107.1` with Spire Plus depending on RitsuLib `v0.4.31` / `lib\0.107.1` only; previous package remains installed locally only as previous-package/other-mod context. Beta.85 default-Off proof at `.tools/runtime-evidence/v01070-beta85-current-package-runtime-fix-20260611-0510/`, beta.85 CanaryOnly proof at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`, beta.87 AdditiveBatch1 proof at `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`, beta.88 previous package proof, and beta.90 RitsuLib-only proof are previous-package contexts. Previous beta.93 Off proof exists at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/`, and previous beta.93 AdditiveBatch1 loader/registration proof exists at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` for `v0.107.1` with 25/25 Spire Plus patches, clean audits, 10 event types, and 14 registration calls. Treat these as loader proof only: gameplay, save-load, replacement, multiplayer, independent QA, clean-worktree, package handoff, and release-ready compatibility proof remain pending or blocked.
+Current compatibility work targets:
 
-## Tested Baseline
+- Slay the Spire 2 `v0.107.1`
+- Spire Plus `v0.1.0-private-beta.96`
+- STS2-RitsuLib `v0.4.31` with selected runtime variant `lib\0.107.1`
+- Stable technical manifest id `EZMicroBalance`
 
-- Game: Slay the Spire 2
-- Branch target: public beta
-- Verified version: `v0.106.1`
-- Version date: `2026-05-21T16:17:40-07:00` upstream build, installed/tested locally on `2026-05-22`
-- previous package runtime: `v3.1.4`
-- previous package runtime path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\previous package`
-- Project previous package: `previous package` `3.1.4`
-- Template package: `Alchyr.Sts2.Templates` `2.3.9`
-- Build: `dotnet build` succeeds.
-- Publish: `dotnet publish` succeeds.
-- Legacy manual verification: previous package and `EzDailyContent` appeared and were enabled in Mod Settings on `v0.104.0`.
-- Historical static/package verification: `source code/` was refreshed from the v0.106.1 installed PCK/DLL, project build/test/publish/package passed with previous package v3.1.4, and package hashes were synced for that historical release-doc lane. Current `v0.107.1` / STS2-RitsuLib `v0.4.31` status is summarized in the override above.
-- Historical normal Steam-client startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with exactly previous package and Spire Plus loaded, `Registered config for mod EZMicroBalance`, `Found 22 previous saved-state registrations`, `Time to main menu: 13,539ms`, and 0 `ERROR` / release-blocking signature hits. That 22-field smoke is historical. The 2026-05-25 Steam-client loader evidence under `.tools\runtime-evidence\beta19-loader-smoke-20260525-213336` covers the beta.19 package hash with exactly previous package plus Spire Plus loaded and a clean log audit. Current Mod Settings UI list screenshot shows `Spire Plus`; gameplay matrix remains pending.
+Spire Plus is RitsuLib-only for the current package line. The project
+references `STS2.RitsuLib` `0.4.31`, and `EZMicroBalance.json` declares
+only `STS2-RitsuLib >= 0.4.31` as the shared runtime dependency.
+
+Current evidence:
+
+- beta.96 build, publish, package refresh, installed package parity, runtime
+  preflight, and source-workspace parity are recorded in `PROJECT_STATE.md`
+  and `docs/reviews/current-validation.md`.
+- beta.96 clicked settings proof is retained at
+  `.tools/runtime-evidence/beta96-ritsulib-mod-settings-clicked-ui-20260621-160701/`.
+  It shows Settings -> `Mod Settings (RitsuLib)`, the RitsuLib Mods tree with
+  only `RitsuLib` and `Spire Plus`, and the Spire Plus settings page.
+- Older beta.93 Off/AdditiveBatch1 loader packets are retained only as older
+  package loader/registration context. They do not prove beta.96 gameplay or
+  tester readiness.
+
+Treat loader and settings evidence as scoped proof only: gameplay, save-load, replacement, multiplayer, independent QA, package handoff, and release-ready compatibility proof remain pending.
 
 ## Compatibility Policy
 
-- Full compatibility is only confirmed for the tested public beta version above. Current `v0.107.1` compatibility evidence covers beta.93 Off plus AdditiveBatch1 loader/registration proof only; retained `v0.107.0` compatibility evidence is limited to the beta.85 default-Off/CanaryOnly loader context and beta.87 AdditiveBatch1 loader/registration proof noted here. Gameplay, save-load, replacement, multiplayer, QA, release, and handoff compatibility proof remain pending.
-- Do not claim compatibility with future public beta versions until retested.
-- Re-run build, publish, and manual game verification after game, STS2-RitsuLib, template, or SDK changes.
-- Keep runtime STS2-RitsuLib and NuGet STS2-RitsuLib package versions aligned.
-- Record any future failures with exact game version, STS2-RitsuLib version, selected compat branch, and log excerpts.
+- Do not claim compatibility with a new Slay the Spire 2 build until the local
+  game source snapshot, installed STS2-RitsuLib runtime variant, build,
+  publish, package parity, and at least one controlled loader/settings proof
+  have been refreshed for that exact target.
+- Do not add another shared runtime framework dependency without explicit owner
+  approval and a new migration record.
+- Keep runtime STS2-RitsuLib, NuGet `STS2.RitsuLib`, manifest dependency
+  minimum, package metadata, and tester instructions aligned.
+- Preserve `EZMicroBalance` only as the technical manifest id, install folder,
+  saved-field namespace, and compatibility surface. Player-facing docs and UI
+  should say `Spire Plus`.
 
 ## Update Procedure
 
-1. Record new game version and date.
-2. Check `dotnet list EZMicroBalance.csproj package --include-transitive`.
-3. Verify runtime STS2-RitsuLib files under `mods/STS2-RitsuLib`, including `lib\0.107.1`.
+1. Record the exact Slay the Spire 2 version and date.
+2. Run `dotnet list EZMicroBalance.csproj package --include-transitive`.
+3. Verify runtime STS2-RitsuLib files under `mods/STS2-RitsuLib`, including
+   the selected `lib\<game-version>` variant.
 4. Run `dotnet build`.
 5. Run `dotnet publish`.
-6. Launch game.
-7. Confirm STS2-RitsuLib appears and is enabled.
-8. Confirm Spire Plus appears with manifest id `EZMicroBalance` and is enabled.
-9. Test current feature surface.
-10. Update this file and `docs/dev-environment.md`.
+6. Refresh the package and installed package parity.
+7. Launch the game with only STS2-RitsuLib and Spire Plus enabled for the
+   controlled compatibility lane.
+8. Confirm STS2-RitsuLib appears and is enabled.
+9. Confirm Spire Plus appears with manifest id `EZMicroBalance` and is enabled.
+10. Open Settings -> `Mod Settings (RitsuLib)` and confirm the Spire Plus page.
+11. Test the current feature surface.
+12. Update this file, `PROJECT_STATE.md`, `docs/dev-environment.md`, and
+    release evidence docs with the exact evidence boundary.
 
 ## Known Compatibility Risks
 
 | Risk | Impact | Mitigation |
-|---|---:|---|
-| Public beta API changes | High | Keep feature surface small and retest after updates. |
-| STS2-RitsuLib runtime/package mismatch | High | Align runtime release, NuGet package, and selected compat branch. |
-| Template behavior changes | Medium | Re-check generated template examples before major work. |
+| --- | ---: | --- |
+| Slay the Spire 2 API changes | High | Refresh local source, rerun source-workspace checks, and revalidate loader/settings proof. |
+| STS2-RitsuLib runtime/package mismatch | High | Align runtime release, NuGet package, manifest minimum, and selected compat branch. |
+| Unverified gameplay path | High | Keep compatibility claims scoped until gameplay, save-load, and co-op rows have direct evidence. |
+| Template/tooling behavior changes | Medium | Re-check template examples and generated output before major packaging work. |
 | Localization packaging changes | Medium | Run publish and inspect PCK/output after localization changes. |
-| Relic/power hooks change | Medium | Keep first relic/power simple and document hook assumptions. |
-
-## Compatibility Log
-
-| Date | Game version | previous package | Result | Notes |
-|---|---|---|---|---|
-| 2026-05-02 | `v0.104.0`, `2026.04.23` | `v3.1.0` | PASS | Build, publish, and Mod Settings verification succeeded. |
-| 2026-05-05 | `v0.104.0`, `2026.04.23` | `v3.1.0` | PARTIAL | `EZMicroBalance` build, publish, tests, and isolated `--force-steam off` smoke passed; normal Steam-client Mod Settings and manual gameplay matrix remain pending. |
-| 2026-05-08 | `v0.105.0`, `2026.05.07` | `v3.1.2` | PARTIAL | Source refreshed from the then-current PCK, build/publish/tests pass, isolated previous package + Spire Plus `--force-steam off` smoke reached main menu, and normal Steam-client Mod Settings passed after the no-op Spire Plus config page; manual gameplay matrix remains pending. |
-| 2026-05-13 | `v0.105.0`, `2026.05.07` | `v3.1.2` | PARTIAL | Current-at-that-time package controlled smoke, normal Steam-client isolated startup/log pass, and refreshed Mod Settings UI list screenshot with Spire Plus under technical id `EZMicroBalance`, 16 previous saved-state registrations, and 0 release-blocking log hits; manual gameplay matrix remains pending. |
-| 2026-05-17 | `v0.105.1` observed in latest live log | `v3.1.2` | PARTIAL | Source/build/package refreshed after static review fixes; no fresh live loader smoke or gameplay matrix was run for this exact package. |
-| 2026-05-22 | `v0.106.1`, `2026-05-21T16:17:40-07:00` | `v3.1.4` | PARTIAL | `source code/` cleaned and regenerated from current PCK/DLL; Core API diffs recorded; project build, default tests, publish, package refresh, and beta.19 30-field loader smoke passed. Gameplay matrix remains pending. |
