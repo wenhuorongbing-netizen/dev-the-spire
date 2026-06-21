@@ -48,7 +48,7 @@ Required artifact checks after publish:
 - DLL exists in the game `mods/<ModId>/` folder.
 - PCK exists when `has_pck` is `true`.
 - Manifest id matches the intended stable id.
-- Dependencies include `BaseLib`.
+- Dependencies include `previous package`.
 - `affects_gameplay` remains `true` for Spire Plus.
 - `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes after package staging, versioned package directory, and zip artifacts are refreshed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 
@@ -64,13 +64,13 @@ Required artifact checks after publish:
 1. Launch Slay the Spire 2 public beta.
 2. Open Settings.
 3. Open Mod Settings.
-4. Confirm BaseLib appears.
-5. Confirm BaseLib is enabled.
+4. Confirm previous package appears.
+5. Confirm previous package is enabled.
 6. Confirm Spire Plus appears under its release mod id `EZMicroBalance`.
 7. Confirm Spire Plus can be enabled.
 8. Open the card encyclopedia / Card Library and confirm card lists render, sort, and filter without errors.
 9. Start a run and reach Ancient rewards.
-10. Inspect `godot.log` for `EZMicroBalance`, `BaseLib`, old scaffold mod names, `error`, and `exception`; specifically confirm no `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` appears after opening the card encyclopedia.
+10. Inspect `godot.log` for `EZMicroBalance`, `previous package`, old scaffold mod names, `error`, and `exception`; specifically confirm no `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` appears after opening the card encyclopedia.
 
 ## Runtime Monkey Stability Lane
 
@@ -212,7 +212,7 @@ Required for:
 
 ## Current Status
 
-The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings verification on public beta `v0.104.0` (`2026.04.23`) with BaseLib `v3.1.0`.
+The prior legacy `EzDailyContent` setup passed build, publish, and Mod Settings verification on public beta `v0.104.0` (`2026.04.23`) with previous package `v3.1.0`.
 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
@@ -224,14 +224,14 @@ The beta.85 Off/CanaryOnly smokes remain previous-package context, beta.87 direc
 Current RitsuLib logs are class-only for some checks, so gameplay evidence still has to prove actual event behavior directly.
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.
-- Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with the then-current BaseLib-backed Spire Plus package.
-- Historical Steam-client loader evidence under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reports `v0.1.0-private-beta.19`, `Found 30 SavedSpireFields`, only BaseLib plus Spire Plus loaded, clean log audit, stopped game, and restored mod isolation for the beta.19 package. Current beta.93 RitsuLib-only Off/AdditiveBatch1 loader evidence is under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; retained beta.85 `v0.107.0` evidence is previous-package/game-version context. Older beta.17, beta.13, `20260523-current`, 16-field, and 22-field startup/log passes are historical.
-- Historical BaseLib-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus. Current beta.93 startup/log shape is RitsuLib-only; actual disable-mod gameplay remains pending. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
+- Historical package smoke/log/resource evidence under `.tools/runtime-evidence/current-package-smoke-20260514-015901` covers the earlier 22-field package, installed-PCK loading for Urda/Morvi/Lotha scenes plus 43 Ancient textures, and a clean normal Steam helper startup with the then-current previous package Spire Plus package.
+- Historical Steam-client loader evidence under `.tools/runtime-evidence/beta19-loader-smoke-20260525-213336` reports `v0.1.0-private-beta.19`, `Found 30 previous saved-state registrations`, only previous package plus Spire Plus loaded, clean log audit, stopped game, and restored mod isolation for the beta.19 package. Current beta.93 RitsuLib-only Off/AdditiveBatch1 loader evidence is under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; retained beta.85 `v0.107.0` evidence is previous-package/game-version context. Older beta.17, beta.13, `20260523-current`, 16-field, and 22-field startup/log passes are historical.
+- Historical previous package-only plug-off evidence under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` loaded `1 mods (1 total)` and did not initialize Spire Plus. Current beta.93 startup/log shape is RitsuLib-only; actual disable-mod gameplay remains pending. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
 - Current Mod Settings UI list evidence, historical Mod Settings page evidence, A11 map/save-load spot checks, saved-map boss-reachability proof, Act 2/3 A11 map-surface observation, and targeted A14 Rootblight hover/starter-notice checks have evidence.
 - The A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. Urda now uses custom Ancient icon/background-scene paths and the current package resolves Ancient scene/art resources in headless installed-PCK verification, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
 - Use `scripts/spire-plus-live-session.ps1` to prepare and restore normal Steam-client local test sessions. Use `-PreserveNewCurrentRunsOnRestore` so test-created `current_run*` files are preserved in the evidence folder before original current-run files are restored.
 - Run `scripts/check-spire-window-preflight.ps1 -RequireSpireForeground` before screenshot evidence so covered desktop captures are rejected before they can be counted.
-- No-launch validation confirmed helper restore behavior under `.tools/runtime-evidence/live-helper-preserve-current-run-smoke-20260513-133431`; the old BaseLib-only plug-off helper path was no-launch checked under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-142957` as historical tooling context.
+- No-launch validation confirmed helper restore behavior under `.tools/runtime-evidence/live-helper-preserve-current-run-smoke-20260513-133431`; the old previous package-only plug-off helper path was no-launch checked under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-142957` as historical tooling context.
 - Rootblight combat-end notices are source-hardened with a top-level overlay path, but private beta status is not complete until the manual feature matrix has runtime gameplay, broader save/load, full Rootblight combat-end/co-op behavior, and multiplayer results.
 
 Ascension 11-20 is now an active development track.

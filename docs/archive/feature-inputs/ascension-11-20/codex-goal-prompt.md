@@ -18,7 +18,7 @@ Current project:
 - Active private beta mod: EZ Micro Balance
 - Manifest id: EZMicroBalance
 - Game target: Slay the Spire 2 public beta v0.105.0, installed/tested locally on 2026-05-08
-- BaseLib runtime: v3.1.2
+- previous framework runtime: v3.1.2
 - Build baseline: EZMicroBalance.sln builds
 - Publish baseline: EZMicroBalance.sln publishes
 - Existing Ancient reward rebalance work is the current completed feature area
@@ -39,7 +39,7 @@ Hard rules:
 - Do not guess StS2 APIs.
 - Do not copy decompiled method bodies into the repository.
 - Do not copy official game assets into the repository.
-- Prefer BaseLib/template APIs over Harmony.
+- Prefer previous framework/template APIs over Harmony.
 - Use Harmony only when no safer API exists and after documenting evidence.
 - Keep implementation isolated under EZMicroBalanceCode.
 - Keep resources/localization under EZMicroBalance.
@@ -64,7 +64,7 @@ Allowed:
 - Read AGENTS.md.
 - Read EZMicroBalance.sln / csproj / current code structure.
 - Read docs/features/ascension-11-20/source-design.md.
-- Inspect BaseLib and StS2 signatures/classes/namespaces/high-level relationships.
+- Inspect previous framework and StS2 signatures/classes/namespaces/high-level relationships.
 - Inspect decompiled signatures only; do not copy method bodies.
 - Run dotnet build.
 - Create/update design/research docs only.
@@ -89,7 +89,7 @@ Research questions to answer with evidence:
 9. How card reward generation and card reward option lists work.
 10. How card enchantments/modifiers are represented.
 11. How boss order, double boss flow, and boss reward screens are represented.
-12. What BaseLib APIs can safely cover.
+12. What previous framework APIs can safely cover.
 13. What Harmony patch points are candidate-only.
 14. Which patch points are forbidden until proven.
 15. How multiplayer state/player targeting is represented.

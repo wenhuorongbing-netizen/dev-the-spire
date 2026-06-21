@@ -441,15 +441,15 @@ For failed direct smoke evidence roots, the analyzer recognizes
 incomplete. A failed or dirty DirectSmoke summary without retained
 `godot.log.current-iteration` or `godot-log-audit.json` fails closed as
 `RuntimeHarness` evidence before owner routing. When those artifacts are
-present, it binds the audit back to the current slice and routes BaseLib
+present, it binds the audit back to the current slice and routes previous package
 dirty-audit signatures such as
-`BaseLib patch failure` and `[ERROR] [BaseLib]` to `PackageRuntimeDrift`, not to
+`dependency patch failure` and `[ERROR] [previous package]` to `PackageRuntimeDrift`, not to
 StS1 event source. Nonzero DirectSmoke mode or packet verifier mismatch counts
 are reported as `direct_smoke_verifier_mismatch` under `PackageRuntimeDrift`.
-The JSON report's `BaseLibPatchFailures` array records
+The JSON report's `dependency patch failures` array records
 patch-level details such as `AdjustCustomMessageKeys::Fuckery()` undefined
 target-method failures, `NRelicCollectionCategory::LoadRelics` instruction
-matcher failures, and the BaseLib applied/failed patch summary so dependency
+matcher failures, and the previous package applied/failed patch summary so dependency
 compatibility work can start from the exact failed patch signatures. Descriptive
 startup text that merely mentions
 `SPIREPLUS_ALLOW_UNVERIFIED_COOP_*` must not count as an enabled co-op override;

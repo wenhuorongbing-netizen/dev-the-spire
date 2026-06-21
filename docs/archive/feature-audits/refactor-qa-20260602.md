@@ -44,7 +44,7 @@ This 2026-06-02 QA report is historical `v0.106.1` loader-gate context only. Do 
 | Path | Claim | Actual (this audit) |
 |---|---|---|
 | `E:\...\mods\STS2-RitsuLib` | True (v0.3.10) | **True** — verified `mod_manifest.json` version `0.3.10`, DLL at `lib\0.106.1\STS2-RitsuLib.dll` |
-| `E:\...\mods\BaseLib` | True | **True** |
+| `E:\...\mods\previous framework` | True | **True** |
 | `E:\...\mods\EZMicroBalance` | True | **True** |
 
 **Verdict:** All runtime paths verified on disk. No discrepancies.
@@ -53,14 +53,14 @@ This 2026-06-02 QA report is historical `v0.106.1` loader-gate context only. Do 
 
 | Claim | Verified? | Source |
 |---|---|---|
-| Reached main menu | YES | `godot.log.after-launch` line 163+ shows BaseLib post-mod init; `Finished mod initialization for 'Spire Plus'` on line 145. |
-| BaseLib 3.1.4 loaded | YES | Line 41: `BaseLib, Version=3.1.4.0` |
+| Reached main menu | YES | `godot.log.after-launch` line 163+ shows previous framework post-mod init; `Finished mod initialization for 'Spire Plus'` on line 145. |
+| previous framework 3.1.4 loaded | YES | Line 41: `previous framework, Version=3.1.4.0` |
 | RitsuLib 0.3.10 loaded | YES | Line 62: `Version: 0.3.10 [compat branch: 0.106.1]` |
 | Spire Plus loaded | YES | Line 155: `Spire Plus [EZMicroBalance] (v0.1.0-private-beta.84)` |
 | 25/25 ModPatcher patches | YES | Line 98: `ModPatcher applied 25 patches (25 registered).` |
 | Sts1Events disabled/Off | YES | Line 133: `bootstrap gate: disabled (StS1 events default Off)` |
 | 0 StS1 registration lines | YES | Grep confirms 0 `Registered shared event` lines in off-mode log. |
-| 30 SavedSpireFields | YES | Line 166: `Found 30 SavedSpireFields.` |
+| 30 previous saved-state registrations | YES | Line 166: `Found 30 previous saved-state registrations.` |
 | Clean audit (0 release-blocking hits) | **YES with caveat** | Audit JSON reports all signature counts at 0. See §3.1. |
 
 ### 2.4 Runtime Smoke Evidence — CanaryOnly Mode
@@ -68,13 +68,13 @@ This 2026-06-02 QA report is historical `v0.106.1` loader-gate context only. Do 
 | Claim | Verified? | Source |
 |---|---|---|
 | Reached main menu | YES | `godot.log.after-direct-launch` shows full mod init chain through line 134+. |
-| BaseLib 3.1.4 loaded | YES | Line 41: `BaseLib, Version=3.1.4.0` |
+| previous framework 3.1.4 loaded | YES | Line 41: `previous framework, Version=3.1.4.0` |
 | RitsuLib 0.3.10 loaded | YES | Line 62: `Version: 0.3.10 [compat branch: 0.106.1]` |
 | Spire Plus loaded | YES | Line 144: `Spire Plus [EZMicroBalance] (v0.1.0-private-beta.84)` |
 | 25/25 ModPatcher patches | YES | Line 98: `ModPatcher applied 25 patches (25 registered).` |
 | Sts1Events enabled/CanaryOnly | YES | Line 122: `StS1 events CanaryOnly mode: registering 4 canary events.` |
 | Exactly 4 canary registrations | YES | Lines 156-159: `Sts1BigFish`, `Sts1GoldenIdol`, `Sts1TheLab`, `Sts1DivineFountain` |
-| 30 SavedSpireFields | YES | Line 155: `Found 30 SavedSpireFields.` |
+| 30 previous saved-state registrations | YES | Line 155: `Found 30 previous saved-state registrations.` |
 | Clean audit (0 release-blocking hits) | YES | Audit JSON reports all signature counts at 0. No `[ERROR]` line in this log (the `ritsulib-variants.json` error only appears when the game reads the mod directory; direct-launch path may differ). |
 
 ### 2.5 Warning Triage Matrix
@@ -178,7 +178,7 @@ No versioned tester package (`SpirePlus-v0.1.0-private-beta.N.zip`) was created 
 | CanaryOnly=4 proof | Absent | Verified: exactly 4 canary events (BigFish, GoldenIdol, TheLab, DivineFountain) |
 | RitsuLib bootstrap | Not proven | Proven: 0.3.10, 249 framework patches, variant 0.106.1 |
 | ModPatcher | Not proven | Proven: 25/25 applied, 0 failed |
-| SavedSpireFields | Not proven | Proven: 30 in both modes |
+| previous saved-state registrations | Not proven | Proven: 30 in both modes |
 | Warning triage | Referenced but matrix didn't exist | Full per-file matrix written with fix pattern |
 | Sts1Events gate bug | `SPIREPLUS_STS1_EVENT_MODE` was generic disable override | Fixed; guard tests pass 31/31 |
 | Diagnostics architecture | Not audited | All 5 components audited and compliant |

@@ -26,7 +26,7 @@ public sealed partial class ReleaseEvidenceGateTests
             var loaderEvidenceDir = Path.Combine(evidenceDir, "release", "fresh-current-package-loader-smoke");
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot.log"), "Stale loader log for an older package hash.");
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), """{ "Clean": true }""");
-            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "BaseLib\r\nSpire Plus\r\n");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "ExternalMod\r\nSpire Plus\r\n");
 
             var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();
             var loaderRow = manifestNode["Rows"]!.AsArray()

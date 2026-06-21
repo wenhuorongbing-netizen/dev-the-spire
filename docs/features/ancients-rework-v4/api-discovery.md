@@ -2,20 +2,20 @@
 
 Last updated: 2026-06-20
 
-2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.31`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.31`, and BaseLib is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
+2026-06-20 dependency supersession: the May discovery notes below recorded the then-active previous package project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.31`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.31`, and previous package is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
 
 ## Reference Check
 
 Live pages rechecked on 2026-05-05:
 
 - RitsuLib Ancient tutorial: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/04-ritsulib/04-07-add-ancient/`
-- BaseLib Ancient tutorial: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-baselib/03-07-add-ancient/`
+- previous package Ancient tutorial: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-previous-package/03-07-add-ancient/`
 
 Tutorial mismatch:
 
 - RitsuLib guidance uses `ModAncientEventTemplate`, registration attributes such as `RegisterActAncient` / `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `Alchyr.Sts2.BaseLib` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31` and no BaseLib package.
-- The BaseLib tutorial aligned with the historical May project dependency and remains useful only as legacy API context. Current implementation work should prefer local game source plus RitsuLib APIs when they cover the needed hook or registration shape.
+- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `previous package` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31` and no previous package.
+- The previous package tutorial aligned with the historical May project dependency and remains useful only as legacy API context. Current implementation work should prefer local game source plus RitsuLib APIs when they cover the needed hook or registration shape.
 - Phase 1 does not add a custom Ancient. It patches an existing game Ancient relic reward, so the tutorial pages are context for Ancient option structure rather than the direct implementation API.
 
 ## Local Compile-time Evidence
@@ -24,7 +24,7 @@ Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
 - Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`
-- Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.31`
+- Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.31`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:
@@ -102,7 +102,7 @@ Historical limits after batch 2, superseded by later finish evidence below:
 
 Timestamp: 2026-05-05 17:14:30 +02:00.
 
-Additional local APIs inspected in the May BaseLib pass. Current beta.93 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `SavedSpireField` notes are retained only to explain the historical implementation and migration risk:
+Additional local APIs inspected in the May previous package pass. Current beta.93 code has migrated the persistent counters below to RitsuLib `SavedAttachedState<...,int>`; the `previous saved-state API` notes are retained only to explain the historical implementation and migration risk:
 
 - `SereTalon` now uses a scoped Spire Plus pickup patch because the rebalance requires a four-Curse choice screen. Use `CardSelectCmd.FromSimpleGrid` because the three-card choose screen cannot show four Curses.
 - Add-to-deck feedback should not rely on `CardPileCmd.Add(...)` alone. Local Core reward/shop flows animate existing UI cards separately, so Spire Plus direct-gain paths use `SpirePlusFeedback.PreviewDeckAdds(...)`: it keeps `CardCmd.PreviewCardPileAdd(...)`, adds the vanilla deck-movement SFX, and uses a very weak short screen shake as a small confirmation cue.
@@ -138,7 +138,7 @@ Timestamp: 2026-05-05 18:10:54 +02:00.
 
 Additional local APIs inspected:
 
-- BaseLib `SavedSpireField<TKey,TVal>` subclasses `SpireField<TKey,TVal>` and exports/imports through `SavedProperties`. `SavedSpireFieldPatch` patches `SavedProperties.FromInternal(...)` and `FillInternal(...)`, and BaseLib post-mod initialization registers static `SavedSpireField<,>` fields before saved-property net IDs are finalized. Supported saved value types include `int` and `List<SerializableCard>`, so save-backed counters on vanilla relic instances are safe here.
+- previous package `previous saved-state API<TKey,TVal>` subclasses `SpireField<TKey,TVal>` and exports/imports through `SavedProperties`. `previous saved-state APIPatch` patches `SavedProperties.FromInternal(...)` and `FillInternal(...)`, and previous package post-mod initialization registers static `previous saved-state API<,>` fields before saved-property net IDs are finalized. Supported saved value types include `int` and `List<SerializableCard>`, so save-backed counters on vanilla relic instances are safe here.
 - `CardReward` stores reward slots as `List<CardCreationResult>`, calls `CardFactory.CreateForReward(...)`, then applies `Hook.TryModifyCardRewardOptions(...)`. `CardCreationResult.ModifyCard(CardModel, RelicModel)` replaces a single populated reward result while recording the modifying relic.
 - `CardFactory.CreateForReward(Player, int, CardCreationOptions)` sets `CardCreationFlags.IsCardReward` for reward cards and calls `Hook.TryModifyCardRewardOptions(...)` after all reward cards are created. `CardCreationOptions.ForRoom(...)` marks Monster/Elite/Boss as `CardCreationSource.Encounter`; only normal monster rewards use `CardRarityOddsType.RegularEncounter`.
 - `CardCreationFlags` includes `NoCardPoolModifications`, `NoCardModelModifications`, `NoModifyHooks`, and `IsCardReward`. The Prismatic Gem patch skips no-pool/no-model modification rewards, custom pools, filtered pools, colorless pools, non-encounter sources, and non-regular encounter odds.
@@ -153,10 +153,10 @@ Additional local APIs inspected:
 
 Implemented after blocker finish:
 
-- `PrismaticGem`: save-backed standard card reward counter using the then-active `SavedSpireField<PrismaticGem,int>` implementation, now migrated to RitsuLib `SavedAttachedState<PrismaticGem,int>`; Every second standard card reward contains only off-color cards, preserving each slot's original type and rarity when available. Fallbacks relax rarity first, then type, then both before failing. If no replacement set can be built, the saved counter is restored to its pre-trigger value. The vanilla pool broadening is skipped.
+- `PrismaticGem`: save-backed standard card reward counter using the then-active `previous saved-state API<PrismaticGem,int>` implementation, now migrated to RitsuLib `SavedAttachedState<PrismaticGem,int>`; Every second standard card reward contains only off-color cards, preserving each slot's original type and rarity when available. Fallbacks relax rarity first, then type, then both before failing. If no replacement set can be built, the saved counter is restored to its pre-trigger value. The vanilla pool broadening is skipped.
 - `VelvetChoker`: no hard six-card cap; every player turn counts non-autoplay first manual card-play series from hand, and the seventh and later from-hand plays cost +1 after other cost changes. X-cost cards require the extra energy without increasing captured X.
 - `DistinguishedCape`: pickup uses `lose 30% of current Max HP, at least 18`; current max HP must be greater than the calculated cost before the trade can be selected. When the player cannot pay, an otherwise rolled Cape is replaced by a payable Vakuu Pool 2 option, with a locked localized Cape fallback if replacement ever fails. It then loses max HP and adds three `Apparition` cards. The current-HP clamp is not implemented as damage.
-- `PaelsTooth`: save-backed non-boss combat counter using the then-active `SavedSpireField<PaelsTooth,int>` implementation, now migrated to RitsuLib `SavedAttachedState<PaelsTooth,int>`; pickup still uses the vanilla saved removed-card list. Every second non-boss combat offers the stored removed cards, returns the chosen card upgraded through command APIs, and removes that saved entry. Boss combat and act transition clear remaining saved cards.
+- `PaelsTooth`: save-backed non-boss combat counter using the then-active `previous saved-state API<PaelsTooth,int>` implementation, now migrated to RitsuLib `SavedAttachedState<PaelsTooth,int>`; pickup still uses the vanilla saved removed-card list. Every second non-boss combat offers the stored removed cards, returns the chosen card upgraded through command APIs, and removes that saved entry. Boss combat and act transition clear remaining saved cards.
 - `Quality Blade` / name-TBD: resolved locally as generated `SovereignBlade` from `ForgeCmd.Forge(...)`, not permanent `RefineBlade`. Forged temporary `SovereignBlade` cards with `CreatedThroughForge` now gain `Exhaust`; permanent `RefineBlade` and non-forged copies are not altered.
 - Chinese localization: Simplified Chinese `zhs` flat-table overrides were added for changed relics, cards, Prismatic Gem count/reward hints, and rest-site Cleaver / 切肉 UI. English relic text was also updated for `PrismaticGem`, `PaelsTooth`, `BloodSoakedRose`, `DistinguishedCape`, and `VelvetChoker`. v4.3 zhs player-facing text removes spaces between Chinese text, numbers, and units.
 
@@ -174,7 +174,7 @@ Additional local APIs inspected:
 
 Chosen state strategy:
 
-- Keep the long-lived normal reward counter; historical May code used `SavedSpireField<PrismaticGem,int>`, while current beta.93 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
+- Keep the long-lived normal reward counter; historical May code used `previous saved-state API<PrismaticGem,int>`, while current beta.93 code uses RitsuLib `SavedAttachedState<PrismaticGem,int>`.
 - Add a per-screen state keyed by the active `CardReward` instance with `ConditionalWeakTable<CardReward, RewardScreenState>`.
 - Patch `CardReward.Populate()` only to expose the active reward screen through a thread-local stack while `CardFactory.CreateForReward(...)` and `Hook.TryModifyCardRewardOptions(...)` run.
 - The first Prismatic Gem evaluation for a `CardReward` decides the screen: eligible normal rewards increment the saved counter once and store whether this screen should replace all slots; ineligible rewards store a non-trigger decision and do not increment.
@@ -183,7 +183,7 @@ Chosen state strategy:
 
 Runtime-risk notes:
 
-- `JeweledMaskFreePower` was compile-verified in the historical BaseLib pass; current beta.93 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
+- `JeweledMaskFreePower` was compile-verified in the historical previous package pass; current beta.93 registers the custom enchantment through the RitsuLib/template path, but it still needs manual runtime verification across a Jeweled Mask pickup save/load cycle.
 - `Crossbow`, `ToastyMittens`, and `ChoicesParadox` use generated combat cards and selection screens; manual testing should verify skipped generated cards do not linger in combat state.
 - `MeatCleaver` patches the built-in `CookRestSiteOption`; manual testing should verify no other source creates the rest-site Cleaver option without Meat Cleaver.
 - `PrismaticGem` should be manually tested across two normal monster card rewards and a non-normal reward (elite, boss, event, or colorless-only) to confirm the saved counter only affects the intended reward type.

@@ -4,16 +4,16 @@ Reviewed source baseline: `a2183ee`. Existing automated/source guards are useful
 
 | Tier | Test row | Current status | Evidence required | Notes |
 | --- | --- | --- | --- | --- |
-| 0 Environment | Clean BaseLib + EZMB only | Existing controlled smoke evidence, refresh required | Installed mod list, clean main-menu load, `godot.log` | Re-run after final package refresh. |
+| 0 Environment | Clean previous framework + EZMB only | Existing controlled smoke evidence, refresh required | Installed mod list, clean main-menu load, `godot.log` | Re-run after final package refresh. |
 | 0 Environment | Installed hash check | Existing handoff hashes, refresh required after packaging | DLL/manifest/PCK/zip SHA256 | Current docs-only audit does not publish. |
 | 0 Environment | Clean log audit | Existing logs partial; refresh required | `audit-godot-log.ps1` output or manual grep | Include Windows and Mac path variants. |
-| 0 Environment | SavedSpireField count | Source says 16; older 13-field smoke stale | Log/source evidence matching current source | Must account for MorviStateKey plus Urda/Morvi deck mirror keys. |
+| 0 Environment | previous saved-state API count | Source says 16; older 13-field smoke stale | Log/source evidence matching current source | Must account for MorviStateKey plus Urda/Morvi deck mirror keys. |
 | 0 Environment | Windows/macOS command variants | Windows documented; Mac not live-proven | Tester commands and results | See platform matrix. |
 | 1 Single-player smoke | A0 first combat | Existing smoke evidence in handoff | Clean log, first combat entry/exit | Re-run after final artifact refresh. |
 | 1 Single-player smoke | A10 first combat | Existing smoke evidence in handoff | Clean log, first combat entry/exit | Re-run after final artifact refresh. |
 | 1 Single-player smoke | A20 first combat | Existing smoke evidence in handoff | Clean log, selector/first combat evidence | Does not prove full A20 boss flow. |
 | 1 Single-player smoke | Mod Settings | Existing normal Steam evidence | Screenshot/log note | Re-run if package changes. |
-| 1 Single-player smoke | No errors | Partial | Clean `godot.log` | Must include BaseLib + EZMB only. |
+| 1 Single-player smoke | No errors | Partial | Clean `godot.log` | Must include previous framework + EZMB only. |
 | 2 Active Urda | Seedbed | Pending | Select Urda Seedbed, accept 1-4 alternatives, verify max HP, deck, upgraded first Seedling, no reroll exploit | Include save/load during reward screen. |
 | 2 Active Urda | Humus Pact | Pending | Three composts, gold gains, removal selector, upgraded payoff reward, pending clears once | Include resolver cancel/fail and save/load. |
 | 2 Active Urda | Molting / Withered Husk | Pending | Starter removal, two Husks, exhaust block, Act 2 cleanup | Include deck save/load before Act 2. |

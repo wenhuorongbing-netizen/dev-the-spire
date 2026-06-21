@@ -841,9 +841,9 @@ EZMB_FORCE_MORVI_BLESSING=morvi_debt_settlement
 
 ---
 
-## 3.3 状态模型太脆：字符串状态 + SavedSpireField 多，但没有 typed codec
+## 3.3 状态模型太脆：字符串状态 + previous saved-state API 多，但没有 typed codec
 
-`AncientSavedStateFields.cs` 现在有很多 `SavedSpireField`，包括 Urda/Morvi/Lotha 的 player state、deck state、card marker。 这说明项目已经在认真做存档。但问题是：很多状态最终仍是 `string`。
+`AncientSavedStateFields.cs` 现在有很多 `previous saved-state API`，包括 Urda/Morvi/Lotha 的 player state、deck state、card marker。 这说明项目已经在认真做存档。但问题是：很多状态最终仍是 `string`。
 
 Urda 是典型例子。`UrdaBlessingService.State.cs` 用 `AncientPlayerState.Get(...)` 取出 string，然后用 `;` 分隔，按 index 解析一长串字段；写入时又 `string.Join(ProgressSeparator, ...)` 拼接几十个字段。
 
@@ -911,7 +911,7 @@ Urda 早期和当前 reward flow 都有类似：把 `CardReward` 对象作为 ke
 建议把状态分层：
 
 ```text
-PersistentState：必须保存到 SavedSpireField
+PersistentState：必须保存到 previous saved-state API
 RuntimeSessionState：可以 WeakTable，但不保证 save/load
 UiRenderState：只用于显示
 ```
@@ -1353,7 +1353,7 @@ Phase 2：UrdaState codec
 - UrdaStateCodec
 
 替换 UrdaBlessingService.State.cs 中 index-heavy parse/string.Join 逻辑。
-保留 SavedSpireField<string>，但通过 codec 读写。
+保留 previous saved-state API<string>，但通过 codec 读写。
 支持：
 - empty state
 - malformed state
@@ -1489,20 +1489,20 @@ Behavior tests beyond source-string guard
 ## 结论先说
 
 **不建议“全量迁移到 RitsuLib”。**
-建议走 **BaseLib + RitsuLib 混合架构、逐步吸收 RitsuLib 的框架能力**。
+建议走 **previous framework + RitsuLib 混合架构、逐步吸收 RitsuLib 的框架能力**。
 
 更具体一点：
 
 ```text
-不要迁移掉 BaseLib。
-不要把现有 CustomCardModel / CustomAncientModel / SavedSpireField / BaseLib config 全部推倒。
+不要迁移掉 previous framework。
+不要把现有 CustomCardModel / CustomAncientModel / previous saved-state API / previous framework config 全部推倒。
 先引入 RitsuLib 作为“架构层工具”：FeatureRegistry、生命周期事件、数据存储、settings、diagnostics、内容注册规范。
 优先迁移新架构层和高风险状态系统，不迁移已经能工作的卡牌/遗物/Ancient 基础模型。
 ```
 
-原因是：RitsuLib 官方说明自己不是 BaseLib 的替代品，而是和 BaseLib 并存的一层工具集，提供内容注册、模型身份、生命周期、持久化、设置 UI、本地化、音频、UI 扩展与兼容辅助 API。它中文 README 也明确说“不替代游戏原生 API，也不要求放弃 BaseLib”。
+原因是：RitsuLib 官方说明自己不是 previous framework 的替代品，而是和 previous framework 并存的一层工具集，提供内容注册、模型身份、生命周期、持久化、设置 UI、本地化、音频、UI 扩展与兼容辅助 API。它中文 README 也明确说“不替代游戏原生 API，也不要求放弃 previous framework”。
 
-你这个项目现在最大的问题不是“用了 BaseLib 所以 bug 多”，而是：
+你这个项目现在最大的问题不是“用了 previous framework 所以 bug 多”，而是：
 
 ```text
 功能面太大 + static service 太多 + 状态模型太脆 + reward/combat/death/multiplayer 缺统一管线。
@@ -1535,46 +1535,46 @@ MainFile -> 直接调用所有 initializer
 [ ] multiplayer ownership 没有统一策略
 ```
 
-再看状态层。`AncientSavedStateFields.cs` 里已经有 Urda/Morvi/Lotha 的 `SavedSpireField<Player, string>`、deck state、card marker 等。 Urda 的 state 现在通过 `UrdaBlessingService.State.cs` 解析一个很长的 `;` 分隔字符串，然后按 index 读写几十个字段。 这就是典型的“能用，但维护成本高、迁移困难、save-load 容易出错”的状态模型。
+再看状态层。`AncientSavedStateFields.cs` 里已经有 Urda/Morvi/Lotha 的 `previous saved-state API<Player, string>`、deck state、card marker 等。 Urda 的 state 现在通过 `UrdaBlessingService.State.cs` 解析一个很长的 `;` 分隔字符串，然后按 index 读写几十个字段。 这就是典型的“能用，但维护成本高、迁移困难、save-load 容易出错”的状态模型。
 
 这些问题与 OOP / 架构确实有关。
 
 ---
 
-# 2. BaseLib 现在给你解决了什么
+# 2. previous framework 现在给你解决了什么
 
-BaseLib 仍然是你当前项目的核心依赖。`EZMicroBalance.csproj` 现在引用的是 `Alchyr.Sts2.BaseLib` 3.1.4。
+previous framework 仍然是你当前项目的核心依赖。`EZMicroBalance.csproj` 现在引用的是 `previous framework package` 3.1.4。
 
-BaseLib Wiki 对它的定位是：帮助并标准化内容添加，可通过 NuGet 作为依赖使用。([Alchyr][1]) 它的 feature list 包括 CustomModel 类、自动 ID prefix、Custom Enums / Keywords、GeneratedNodePool、SpireField、UI 扩展等。([Alchyr][2])
+previous framework Wiki 对它的定位是：帮助并标准化内容添加，可通过 NuGet 作为依赖使用。([Alchyr][1]) 它的 feature list 包括 CustomModel 类、自动 ID prefix、Custom Enums / Keywords、GeneratedNodePool、SpireField、UI 扩展等。([Alchyr][2])
 
-对你现在的项目，BaseLib 主要负责这些：
+对你现在的项目，previous framework 主要负责这些：
 
 ```text
 CustomCardModel
 CustomAncientModel
 CustomRelicModel
 CustomPower / temporary power
-SpireField / SavedSpireField
+SpireField / previous saved-state API
 Mod Settings
 Localization / dynamic vars
 Godot scene / UI support
 ```
 
-BaseLib 也明确提供 SpireField / SavedSpireField：SpireField 本质上是给已有 game class 附加字段，SavedSpireField 只适用于游戏本身会保存/加载的模型，主要是 CardModel 和 RelicModel，文档还特别提醒 Player 上的 SavedSpireField 未来才推荐，目前 Player 类保存并不完全适合。([Alchyr][3])
+previous framework 也明确提供 SpireField / previous saved-state API：SpireField 本质上是给已有 game class 附加字段，previous saved-state API 只适用于游戏本身会保存/加载的模型，主要是 CardModel 和 RelicModel，文档还特别提醒 Player 上的 previous saved-state API 未来才推荐，目前 Player 类保存并不完全适合。([Alchyr][3])
 
 这点对你很关键，因为你当前有很多：
 
 ```csharp
-SavedSpireField<Player, string>
+previous saved-state API<Player, string>
 ```
 
-这可能是你 save/load 风险的来源之一。BaseLib Wiki 自己的说法也支持我们要谨慎看待 Player 级 SavedSpireField。([Alchyr][3])
+这可能是你 save/load 风险的来源之一。previous framework Wiki 自己的说法也支持我们要谨慎看待 Player 级 previous saved-state API。([Alchyr][3])
 
 ---
 
 # 3. RitsuLib 能帮你解决什么
 
-RitsuLib 的 README 说它给 STS2 mod 作者提供稳定 API，覆盖内容注册、模型身份、生命周期 hooks、持久化、settings UI、本地化、音频、UI 扩展和兼容 helpers，并且设计为和 BaseLib 等库并存。
+RitsuLib 的 README 说它给 STS2 mod 作者提供稳定 API，覆盖内容注册、模型身份、生命周期 hooks、持久化、settings UI、本地化、音频、UI 扩展和兼容 helpers，并且设计为和 previous framework 等库并存。
 
 RitsuLib 文档首页总结它是 registry-first 的内容、生命周期 hooks、persistence、settings UI、localization、audio、UI helpers。([RitsuLib][4]) 它的文档导航也显示有 Content Packs / Registries、Lifecycle Events、Persistence、Mod Settings、Patching、Diagnostics 等专题。([RitsuLib][5])
 
@@ -1691,11 +1691,11 @@ RitsuLib lifecycle events 覆盖 run flow、combat、cards、rewards、inventory
 
 ## 好处 D：Settings 和 diagnostics 更适合大型 mod
 
-RitsuLib 提供 settings UI 注册入口。 BaseLib 也提供 Mod Configuration，支持 bool、enum、int/float slider、string、Color、method button 等自动 UI。([Alchyr][8]) 两者都能用，但 RitsuLib 额外把 settings 和 data store / lifecycle 统一在同一框架语义里，更适合你这种多模块 Spire Plus。
+RitsuLib 提供 settings UI 注册入口。 previous framework 也提供 Mod Configuration，支持 bool、enum、int/float slider、string、Color、method button 等自动 UI。([Alchyr][8]) 两者都能用，但 RitsuLib 额外把 settings 和 data store / lifecycle 统一在同一框架语义里，更适合你这种多模块 Spire Plus。
 
 ## 好处 E：跨版本 / compat 意识更强
 
-RitsuLib README 说明它有当前 API 包和 `Compat.<api-version>` 包，玩家还可用 variant pack，根 DLL 是 loader，真正 API-specific build 在 `lib/<api-version>/`。 你的项目刚经历 v0.105 -> v0.106 / BaseLib 3.1.4 API drift，这种 compat packaging 思路值得吸收。
+RitsuLib README 说明它有当前 API 包和 `Compat.<api-version>` 包，玩家还可用 variant pack，根 DLL 是 loader，真正 API-specific build 在 `lib/<api-version>/`。 你的项目刚经历 v0.105 -> v0.106 / previous framework 3.1.4 API drift，这种 compat packaging 思路值得吸收。
 
 ---
 
@@ -1703,10 +1703,10 @@ RitsuLib README 说明它有当前 API 包和 `Compat.<api-version>` 包，玩�
 
 ## 风险 A：又引入一个运行时依赖
 
-你现在已经需要 BaseLib。迁移 RitsuLib 后，玩家还要安装：
+你现在已经需要 previous framework。迁移 RitsuLib 后，玩家还要安装：
 
 ```text
-BaseLib
+previous framework
 STS2-RitsuLib
 Spire Plus
 ```
@@ -1714,7 +1714,7 @@ Spire Plus
 依赖越多，测试矩阵越大：
 
 ```text
-BaseLib 版本
+previous framework 版本
 RitsuLib 版本
 游戏 v0.106.x
 manifest dependency 格式
@@ -1726,20 +1726,20 @@ Windows/Mac 安装路径
 
 你当前已经有很多 live pending。`PROJECT_STATE.md` 明确说 gameplay、clicked UI、save-load、route-click、death/failure-path、disable-gameplay、co-op verification 都 pending。 如果现在全量迁移，会把“旧 bug”和“迁移 bug”混在一起，定位更难。
 
-## 风险 C：BaseLib 仍不可替代
+## 风险 C：previous framework 仍不可替代
 
-BaseLib Wiki 列的 CustomModel、CustomCardModel、CustomAncientModel、SpireField、dynamic vars、config、UI helper 等已经深度用于你项目。([Alchyr][1]) RitsuLib README 也明确它是和 BaseLib 并存，不要求放弃 BaseLib。
+previous framework Wiki 列的 CustomModel、CustomCardModel、CustomAncientModel、SpireField、dynamic vars、config、UI helper 等已经深度用于你项目。([Alchyr][1]) RitsuLib README 也明确它是和 previous framework 并存，不要求放弃 previous framework。
 
 所以“迁移到 RitsuLib”不能理解成：
 
 ```text
-删除 BaseLib。
+删除 previous framework。
 ```
 
 而应该理解成：
 
 ```text
-BaseLib 做内容模型底层。
+previous framework 做内容模型底层。
 RitsuLib 做模块、生命周期、持久化、诊断、设置、注册规范。
 ```
 
@@ -1751,9 +1751,9 @@ RitsuLib 文档发布时间很新，docs 里版本显示 v0.2.31 / v0.2.32。([R
 
 # 6. 我的建议：三层混合架构
 
-## Layer 1：继续保留 BaseLib
+## Layer 1：继续保留 previous framework
 
-继续使用 BaseLib 处理：
+继续使用 previous framework 处理：
 
 ```text
 CustomCardModel
@@ -1763,7 +1763,7 @@ CustomPower
 Card dynamic vars
 Existing localization pipeline
 Existing config page where already working
-SpireField / SavedSpireField for CardModel / RelicModel markers
+SpireField / previous saved-state API for CardModel / RelicModel markers
 ```
 
 不要动这些已经能跑的东西。
@@ -1802,7 +1802,7 @@ SpirePlusStateCodec
 
 ## Milestone 0：调研/POC，不改 gameplay
 
-目标：验证 RitsuLib 能正常加载，并不破坏当前 BaseLib 3.1.4 / v0.106。
+目标：验证 RitsuLib 能正常加载，并不破坏当前 previous framework 3.1.4 / v0.106。
 
 任务：
 
@@ -1820,11 +1820,11 @@ SpirePlusStateCodec
 验收：
 
 ```text
-[ ] BaseLib + RitsuLib + Spire Plus 都加载
+[ ] previous framework + RitsuLib + Spire Plus 都加载
 [ ] 0 MissingMethodException
 [ ] 0 TypeLoadException
 [ ] Mod Settings 正常
-[ ] SavedSpireFields 数不异常
+[ ] previous saved-state registrations 数不异常
 [ ] godot.log 有 RitsuLib lifecycle test log
 ```
 
@@ -1862,7 +1862,7 @@ SpirePlusFeatureRegistry
 ```text
 [ ] 新增 UrdaRunStateV1 class
 [ ] 新增 UrdaStateCodec
-[ ] 继续保留旧 SavedSpireField string，作为 compatibility bridge
+[ ] 继续保留旧 previous saved-state API string，作为 compatibility bridge
 [ ] 新状态优先读 RitsuLib RunSidecar / profile/run store
 [ ] 旧状态能迁移
 [ ] tests 覆盖 empty/malformed/old/current roundtrip
@@ -1892,12 +1892,12 @@ RitsuLib lifecycle docs 明确列了这些事件。([RitsuLib][6])
 
 ## Milestone 4：Settings 迁移/统一
 
-BaseLib config 现在可用，不急着删。RitsuLib 和 BaseLib 都能做 settings。BaseLib config docs支持自动 UI 和静态属性访问。([Alchyr][8])
+previous framework config 现在可用，不急着删。RitsuLib 和 previous framework 都能做 settings。previous framework config docs支持自动 UI 和静态属性访问。([Alchyr][8])
 
 建议：
 
 ```text
-短期：保留 BaseLib config。
+短期：保留 previous framework config。
 中期：若 RitsuLib settings 更适合多模块分组，再迁移。
 ```
 
@@ -1921,16 +1921,16 @@ MultiplayerPolicy
 ## 不建议
 
 ```text
-全量迁移，删除 BaseLib。
+全量迁移，删除 previous framework。
 ```
 
 理由：
 
 ```text
-[ ] BaseLib 是当前内容模型基础。
-[ ] RitsuLib 官方也不是 BaseLib 替代品。
+[ ] previous framework 是当前内容模型基础。
+[ ] RitsuLib 官方也不是 previous framework 替代品。
 [ ] 当前 live bug 还没关，全量迁移会扩大风险。
-[ ] 大量现有 card/relic/power/ancient 已依赖 BaseLib。
+[ ] 大量现有 card/relic/power/ancient 已依赖 previous framework。
 ```
 
 ## 建议
@@ -2032,10 +2032,10 @@ EZMicroBalanceCode/Core/Ritsu/
 目标：RitsuLib 迁移可行性 POC + 架构决策，不要全量迁移，不要改 gameplay。
 
 用户确认：
-- BaseLib 继续保留。
+- previous framework 继续保留。
 - Morvi/Lotha/Urda 默认开启不要改。
 - 当前问题是架构、状态、reward/combat/death/multiplayer 耦合太多。
-- RitsuLib 不是 BaseLib 替代品，而是可能作为架构层工具。
+- RitsuLib 不是 previous framework 替代品，而是可能作为架构层工具。
 
 必须先读：
 1. PROJECT_STATE.md
@@ -2049,7 +2049,7 @@ EZMicroBalanceCode/Core/Ritsu/
 9. source code/src/Core/**
 10. sourcecodeonlyaianalysis/**
 11. RitsuLib README / docs / source if local or web-accessible
-12. BaseLib Wiki / source
+12. previous framework Wiki / source
 
 任务：
 
@@ -2064,11 +2064,11 @@ Phase 1：研究并写文档
 - work-log.md
 
 必须回答：
-- BaseLib 保留哪些？
+- previous framework 保留哪些？
 - RitsuLib 接管哪些？
 - 哪些不能迁移？
 - 引入新 runtime dependency 的安装/多人风险？
-- v0.106 / BaseLib 3.1.4 / RitsuLib 当前版本兼容性？
+- v0.106 / previous framework 3.1.4 / RitsuLib 当前版本兼容性？
 - 是否使用 RitsuLib DataStore 解决 string state？
 - 是否使用 lifecycle events 减少 Harmony patch？
 - 是否使用 RitsuLib settings？
@@ -2097,12 +2097,12 @@ Phase 4：State codec spec
 - UrdaStateV1
 - MorviStateV1
 - LothaStateV1
-- RitsuLib DataStore vs BaseLib SavedSpireField decision
+- RitsuLib DataStore vs previous framework previous saved-state API decision
 - migration strategy from existing string fields
 
 Phase 5：风险和测试
 添加测试计划：
-- BaseLib + RitsuLib + Spire Plus clean load
+- previous framework + RitsuLib + Spire Plus clean load
 - Mod Settings
 - package hash
 - multiplayer both clients same deps
@@ -2131,7 +2131,7 @@ Phase 5：风险和测试
 
 # 最终一句话
 
-**需要迁移，但不是从 BaseLib 迁走，而是迁到“BaseLib + RitsuLib + 自建 domain architecture”的混合架构。**
+**需要迁移，但不是从 previous framework 迁走，而是迁到“previous framework + RitsuLib + 自建 domain architecture”的混合架构。**
 
 RitsuLib 最适合帮你解决：
 
@@ -2139,7 +2139,7 @@ RitsuLib 最适合帮你解决：
 注册、生命周期、持久化、settings、diagnostics、compat。
 ```
 
-BaseLib 继续负责：
+previous framework 继续负责：
 
 ```text
 CustomCardModel、CustomAncientModel、SpireField、内容模型、现有 config。
@@ -2159,14 +2159,14 @@ reward pipeline、extra-play context、death protection、multiplayer policy、s
 再做 typed state codec。
 再逐步替换低风险 lifecycle hook。
 不要全量迁移。
-不要删除 BaseLib。
+不要删除 previous framework。
 ```
 
-[1]: https://alchyr.github.io/BaseLib-Wiki/ "Home | BaseLib Wiki"
-[2]: https://alchyr.github.io/BaseLib-Wiki/docs/Features.html "Features List | BaseLib Wiki"
-[3]: https://alchyr.github.io/BaseLib-Wiki/docs/utilities/spirefield.html "SpireField | BaseLib Wiki"
+[1]: https://alchyr.github.io/previous framework-Wiki/ "Home | previous framework Wiki"
+[2]: https://alchyr.github.io/previous framework-Wiki/docs/Features.html "Features List | previous framework Wiki"
+[3]: https://alchyr.github.io/previous framework-Wiki/docs/utilities/spirefield.html "SpireField | previous framework Wiki"
 [4]: https://sts2-ritsulib.ritsukage.com/ "RitsuLib - RitsuLib"
 [5]: https://sts2-ritsulib.ritsukage.com/guide/ "Documentation - RitsuLib"
 [6]: https://sts2-ritsulib.ritsukage.com/guide/lifecycle-events "Lifecycle Events - RitsuLib"
 [7]: https://sts2-ritsulib.ritsukage.com/guide/persistence-guide "Persistence - RitsuLib"
-[8]: https://alchyr.github.io/BaseLib-Wiki/docs/utilities/config.html "Mod Configuration | BaseLib Wiki"
+[8]: https://alchyr.github.io/previous framework-Wiki/docs/utilities/config.html "Mod Configuration | previous framework Wiki"

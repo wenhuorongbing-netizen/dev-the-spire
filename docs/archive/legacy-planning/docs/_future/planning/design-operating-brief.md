@@ -1,4 +1,4 @@
-﻿# Design Operating Brief
+# Design Operating Brief
 
 ## Purpose
 Future gameplay work in this workspace should use `D:\Game\FOTN\knowledge` as a source-governed game design skill pack. The working goal is to support Slay the Spire 2 balance changes and new character design for `EzDailyContent` after setup and manual game verification are complete.
@@ -77,6 +77,6 @@ Before implementing any gameplay feature after setup:
 - A build/publish validation plan.
 
 ## Current Status
-- Manual in-game verification succeeded: BaseLib and EzDailyContent appeared in Slay the Spire 2 Mod Settings and were enabled.
+- Manual in-game verification succeeded: previous framework and EzDailyContent appeared in Slay the Spire 2 Mod Settings and were enabled.
 - No concrete balance changes, cards, powers, relics, patches, or new character behavior should be implemented yet.
 - This brief only establishes future design operating rules.

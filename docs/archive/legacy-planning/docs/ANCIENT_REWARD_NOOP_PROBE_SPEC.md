@@ -1,4 +1,4 @@
-﻿# Ancient Reward No-Op Logging Probe Specification
+# Ancient Reward No-Op Logging Probe Specification
 
 This document is a design spec only. It does not authorize implementation.
 
@@ -75,11 +75,11 @@ Current answer: LIKELY for this exact probe point, but not fully proven.
 
 Reason:
 - The candidate method is nonpublic/protected.
-- No public BaseLib hook for observing existing basegame Ancient option generation has been found locally.
+- No public previous framework hook for observing existing basegame Ancient option generation has been found locally.
 - A no-op observation of the returned `IReadOnlyList<EventOption>` would likely require a Harmony postfix or equivalent instrumentation.
 
 Still UNKNOWN:
-- Whether BaseLib has a diagnostic hook or source-level example that avoids project-level Harmony.
+- Whether previous framework has a diagnostic hook or source-level example that avoids project-level Harmony.
 - Whether another lower-risk public method can provide the same evidence.
 
 Rule:
@@ -146,7 +146,7 @@ Implementation, if later approved, must obey this checklist:
 - If logging throws, fail without changing the generated options.
 - Run `dotnet build`.
 - Run `dotnet publish` only if implementation/package changes require it.
-- Verify Mod Settings still show BaseLib and EzDailyContent enabled.
+- Verify Mod Settings still show previous framework and EzDailyContent enabled.
 
 No-op proof required:
 - Before/after option count unchanged.
@@ -193,7 +193,7 @@ Do not create implementation folders or files from this spec.
 - Run `dotnet build`.
 - Run `dotnet publish` if DLL/published artifacts must be updated.
 - Launch Slay the Spire 2.
-- Confirm BaseLib and EzDailyContent are enabled.
+- Confirm previous framework and EzDailyContent are enabled.
 - Reach an Ancient event.
 - Confirm logs contain probe entries.
 - Confirm reward options still appear and can be selected normally.
@@ -206,7 +206,7 @@ If a later probe implementation causes issues:
 - Revert the probe implementation commit.
 - Run `dotnet build`.
 - Run `dotnet publish`.
-- Relaunch and confirm BaseLib and EzDailyContent load.
+- Relaunch and confirm previous framework and EzDailyContent load.
 - Record failure in `docs/ANCIENT_REWARD_API_RESEARCH_NOTES.md`.
 
 ## 13. Risks

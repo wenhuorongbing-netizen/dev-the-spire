@@ -19,7 +19,7 @@ Best release test setup:
 - Same game branch and game version/date.
 - Same Spire Plus package hash. The technical package folder/id remains `EZMicroBalance`.
 - Same STS2-RitsuLib runtime version and files under `<GameRoot>\mods\STS2-RitsuLib`, including the selected `lib\0.107.1` variant for the current game.
-- Same enabled mod set: STS2-RitsuLib plus Spire Plus only unless a row explicitly tests compatibility.
+- Same enabled mod set: STS2-RitsuLib and Spire Plus only unless a row explicitly tests compatibility.
 
 Same-PC multi-open is not reliable for real Steam multiplayer and should not be the primary release test. It can be useful for rough local investigation only if Steam permits it, but it does not replace the two-PC matrix.
 
@@ -222,7 +222,7 @@ Run this section only after default fail-closed behavior passes.
 
 **⚠️ Dependency Compatibility Gate — must pass BEFORE any A11-A20 testing:**
 
-1. Disable ALL mods except STS2-RitsuLib + Spire Plus. The Spire Plus technical folder/id is `EZMicroBalance`. Explicitly disable/remove BaseLib unless another row intentionally tests previous-package compatibility; also disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
+1. Disable ALL mods except STS2-RitsuLib + Spire Plus. The Spire Plus technical folder/id is `EZMicroBalance`. Explicitly disable/remove previous package unless another row intentionally tests previous-package compatibility; also disable/remove DamageMeter, RouteSuggest, AnimeWaifuSilent, AncientWaifus, BetterSpire2Lite, Act4Heart, ModConfig, QuickLink, SpeedX, The-Watcher, and all skin/character/replacement mods.
 2. Start singleplayer A0 with Defect (or any character that starts with an active relic like Cracked Core). Enter first combat.
 3. Expected: draw cards normally, energy not stuck at 0, no `Creature.get_ShowsInfiniteHp` in `godot.log`.
 4. Start singleplayer A10. Same expectations.

@@ -18,12 +18,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var currentLogPath = Path.Combine(workdir, "godot.log.current-iteration");
             var currentLog = """
                 [INFO] [EZMicroBalance] [Patcher - SpirePlus] Patch application complete: 25 applied, 0 ignored, 0 failed, 25 total
-                [ERROR] [BaseLib] HarmonyLib.HarmonyException: Patching exception in method null
-                 ---> System.ArgumentException: Undefined target method for patch method static System.Void BaseLib.Patches.Networking.AdjustCustomMessageKeys::Fuckery()
+                [ERROR] [ExternalMod] HarmonyLib.HarmonyException: Patching exception in method null
+                 ---> System.ArgumentException: Undefined target method for patch method static System.Void ExternalMod.Patches.Networking.AdjustCustomMessageKeys::Fuckery()
                    at HarmonyLib.PatchClassProcessor.Patch()
-                [ERROR] [BaseLib] HarmonyLib.HarmonyException: Patching exception in method System.Void MegaCrit.Sts2.Core.Nodes.Screens.RelicCollection.NRelicCollectionCategory::LoadRelics(MegaCrit.Sts2.Core.Entities.Relics.RelicRarity relicRarity, MegaCrit.Sts2.Core.Nodes.Screens.RelicCollection.NRelicCollection collection, MegaCrit.Sts2.Core.Localization.LocString header, System.Collections.Generic.HashSet`1<MegaCrit.Sts2.Core.Models.RelicModel> seenRelics, MegaCrit.Sts2.Core.Unlocks.UnlockState unlockState, System.Collections.Generic.HashSet`1<MegaCrit.Sts2.Core.Models.RelicModel> allUnlockedRelics)
+                [ERROR] [ExternalMod] HarmonyLib.HarmonyException: Patching exception in method System.Void MegaCrit.Sts2.Core.Nodes.Screens.RelicCollection.NRelicCollectionCategory::LoadRelics(MegaCrit.Sts2.Core.Entities.Relics.RelicRarity relicRarity, MegaCrit.Sts2.Core.Nodes.Screens.RelicCollection.NRelicCollection collection, MegaCrit.Sts2.Core.Localization.LocString header, System.Collections.Generic.HashSet`1<MegaCrit.Sts2.Core.Models.RelicModel> seenRelics, MegaCrit.Sts2.Core.Unlocks.UnlockState unlockState, System.Collections.Generic.HashSet`1<MegaCrit.Sts2.Core.Models.RelicModel> allUnlockedRelics)
                  ---> System.Exception: Failed to find match:
-                [INFO] [BaseLib] Applied 241 patches successfully, 2 failed
+                [INFO] [ExternalMod] Applied 241 patches successfully, 2 failed
                 [INFO] [StS1 Events] Registering AdditiveBatch1 events
                 """;
             File.WriteAllText(Path.Combine(workdir, "godot.log.before"), "");
@@ -61,15 +61,15 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("DirectSmoke", iteration.GetProperty("RunnerKind").GetString());
             Assert.Equal("direct-smoke", iteration.GetProperty("ScenarioTag").GetString());
             Assert.Equal("PackageRuntimeDrift", iteration.GetProperty("OwnerAreaFromLog").GetString());
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "audit:BaseLib patch failure");
+            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "audit:dependency framework patch failure");
             Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "audit:Godot ERROR line");
-            var baseLibPatchFailures = iteration.GetProperty("BaseLibPatchFailures").EnumerateArray().ToArray();
-            Assert.Contains(baseLibPatchFailures, item => item.GetProperty("FailureKind").GetString() == "Undefined target method"
-                && item.GetProperty("PatchMethod").GetString() == "static System.Void BaseLib.Patches.Networking.AdjustCustomMessageKeys::Fuckery()");
-            Assert.Contains(baseLibPatchFailures, item => item.GetProperty("FailureKind").GetString() == "Instruction matcher failed"
+            var externalModFailures = iteration.GetProperty("ExternalModFailures").EnumerateArray().ToArray();
+            Assert.Contains(externalModFailures, item => item.GetProperty("FailureKind").GetString() == "Undefined target method"
+                && item.GetProperty("PatchMethod").GetString() == "static System.Void ExternalMod.Patches.Networking.AdjustCustomMessageKeys::Fuckery()");
+            Assert.Contains(externalModFailures, item => item.GetProperty("FailureKind").GetString() == "Instruction matcher failed"
                 && item.GetProperty("TargetMethod").GetString()!.Contains("NRelicCollectionCategory::LoadRelics", StringComparison.Ordinal));
-            Assert.Contains(baseLibPatchFailures, item => item.GetProperty("FailureKind").GetString() == "Patch summary"
-                && item.GetProperty("Summary").GetString() == "BaseLib applied 241 patches successfully, 2 failed");
+            Assert.Contains(externalModFailures, item => item.GetProperty("FailureKind").GetString() == "Patch summary"
+                && item.GetProperty("Summary").GetString() == "Dependency framework applied 241 patches successfully, 2 failed");
             Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "iteration_result_missing_or_invalid");
             Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "current_iteration_log_offset_binding_missing");
             Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "coop_override_enabled_runtime_failure");

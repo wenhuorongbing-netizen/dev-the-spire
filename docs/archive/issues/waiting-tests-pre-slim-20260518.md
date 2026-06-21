@@ -1,4 +1,4 @@
-﻿# Issues Waiting for Live/Manual Verification
+# Issues Waiting for Live/Manual Verification
 
 These issues are source-complete or source-patched and awaiting live/manual test evidence. They were moved out of `docs/issues.md` so implementation tracking stays focused.
 
@@ -43,7 +43,7 @@ Implementation notes (2026-05-09):
 - Important Rootblight card names and Draw Pile text now use `[gold]...[/gold]`.
 - Rootblight previews are implemented with `HoverTipFactory.FromCard<T>()`, following the source-backed official Soul preview pattern.
 - Automated guards cover duplicate Exhaust prevention, `[gold]` terms, preview source shape, localization parity, and package artifact freshness.
-- Normal Steam-client BaseLib+EZMB-only A14 English hover screenshots under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and ZHS hover screenshots under `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` verified Rootblight I/II/III and Blight Sprout show one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews.
+- Normal Steam-client previous framework+EZMB-only A14 English hover screenshots under `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010` and ZHS hover screenshots under `.tools\runtime-evidence\rootblight-a14-ui-eng-20260509-033516` verified Rootblight I/II/III and Blight Sprout show one visible Exhaust keyword, no raw `[gold]` tags, and expected Rootblight previews.
 
 Required source research:
 
@@ -379,7 +379,7 @@ Pending items deliberately left out of the current fix pass or requiring user de
 
 Priority: P0
 
-Status: diagnostics patch exists and is default-off; unsolved until live co-op retest. Controlled BaseLib+EZMB loader smoke is clean on BaseLib `v3.1.2`; host/client co-op Neow HP still needs live retest.
+Status: diagnostics patch exists and is default-off; unsolved until live co-op retest. Controlled previous framework+EZMB loader smoke is clean on previous framework `v3.1.2`; host/client co-op Neow HP still needs live retest.
 
 Area: multiplayer A11-A20 run start / Neow initialization / player HP
 
@@ -482,7 +482,7 @@ Observed log evidence:
 - Latest `godot.log` shows host multiplayer A20 run start reached `NGame.StartNewMultiplayerRun(...)` with Ascension 20.
 - Act 1 map generation applied A11/A12/A16 metadata, then failed in `AscensionMapService.MarkBossSeals(...)`.
 - Fatal mod stack: `System.TypeLoadException: Could not load type 'MegaCrit.Sts2.Core.Models.Encounters.DoormakerBoss'` from `BossSealCatalog..cctor()`.
-- The same local log also contains unrelated local-mod/BaseLib compatibility errors, but the A20 run-start abort is the `DoormakerBoss` type-load failure in EZ Micro Balance.
+- The same local log also contains unrelated local-mod/previous framework compatibility errors, but the A20 run-start abort is the `DoormakerBoss` type-load failure in EZ Micro Balance.
 
 Root cause:
 
@@ -502,7 +502,7 @@ Root cause:
 Manual retest:
 
 - Republish or confirm the installed `EZMicroBalance.dll` timestamp is newer than this fix.
-- Host multiplayer with BaseLib and EZ Micro Balance only if possible.
+- Host multiplayer with previous framework and EZ Micro Balance only if possible.
 - Select A20, let the client join, ready both players, and start the run.
 - Confirm the run leaves the lobby and reaches the Act 1 map instead of black-screening.
 - Inspect `godot.log` for no `EZMicroBalance` `TypeLoadException`, especially no `DoormakerBoss`, `Doormaker`, `HungerPower`, `ScrutinyPower`, or `GraspPower` load errors.
@@ -555,12 +555,12 @@ Current source fix:
 
 RC1 live evidence:
 
-- Normal Steam-client BaseLib+EZMB-only run selected A11 through the original single-player Ascension arrows (`.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\08-character-select-a11.png`).
+- Normal Steam-client previous framework+EZMB-only run selected A11 through the original single-player Ascension arrows (`.tools\runtime-evidence\rc1-a11-map-save-20260508-110008\08-character-select-a11.png`).
 - The Act 1 map screenshot (`11-a11-act1-map-after-neow-continue.png`) renders the widened map with normal route nodes.
 - `a11-map-save-load-godot-live.log` records `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`.
 - `a11-save-map-dimensions.json` records `MapHeight: 17`, `BossRow: 17`, `RouteRowCount: 16`, `ColumnCount: 8`, and columns `0,1,2,3,4,5,6,7`.
 - After selecting the first monster node, the game wrote `current_run.save`; Save & Quit -> Continue loaded back into the A11 combat, and the map reopened with `columns=8; rows=17`.
-- A later normal Steam-client BaseLib+EZMB-only run selected A11 through the original UI and used DevConsole `act 2` / `act 3` only to observe later-act map surfaces. Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
+- A later normal Steam-client previous framework+EZMB-only run selected A11 through the original UI and used DevConsole `act 2` / `act 3` only to observe later-act map surfaces. Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
 - `a11-act23-godot-live.log` records Act 2 `Ascension A11 applied ... inserted 1 late route row(s); actIndex=1; columns=8; rows=16` and Act 3 `Ascension A11 applied ... inserted 2 late route row(s); actIndex=2; columns=8; rows=16`, with 0 `ERROR` lines and 0 release-blocking signatures.
 - Act 2 screenshot `25-a11-act2-map-clean.png` and Act 3 screenshot `27-a11-act3-map-clean.png` render normal route nodes without an A11-specific marker or hover tooltip.
 
@@ -700,7 +700,7 @@ Implementation notes:
 
 Manual retest:
 
-- Host a multiplayer lobby with BaseLib and Spire Plus / `EZMicroBalance` enabled.
+- Host a multiplayer lobby with previous framework and Spire Plus / `EZMicroBalance` enabled.
 - Confirm A11-A20 selection is available by default with no Ascension env var.
 - Set `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1` and confirm A1-A10 behavior is restored for comparison.
 - Clear the disable variable and confirm the lobby can select A11-A20 again.
@@ -774,28 +774,28 @@ Area: runtime test hygiene / installed-package validation
 Findings from uploaded player log `godot2026-05-10T06.07.51.log`:
 
 - Runtime version is `v0.105.1` (not the `v0.105.0` baseline used by some earlier notes).
-- Loaded mods is `Loaded 18 mods (19 total)` rather than a clean BaseLib + EZMicroBalance check.
+- Loaded mods is `Loaded 18 mods (19 total)` rather than a clean previous framework + EZMicroBalance check.
 - Non-EZMB mods report manifest/API/runtime issues before gameplay:
   - `RouteSuggestConfig.json` has no `mod id` entry.
   - `mods\sts2-heybox-support\mod_mainfest.json` has no `mod id` entry.
   - Heybox reports `ModManager.GetModNameList Method NotFound`.
   - SpeedX reports undefined target patch on `NRewardsScreen`.
   - Act4Heart reports `ConfigMessage.get_ShouldBuffer` `TypeLoadException` (`No implementation found`).
-- BaseLib `v3.1.2` and EZ Micro Balance initialize, but BaseLib reports `Found 12 SavedSpireFields`.
-- Current package expectation is 16 `SavedSpireFields` after the Urda/Morvi deck mirror state fields. The older A1.05.08 expectation was 13 fields. This uploaded log therefore cannot prove package/runtime consistency.
+- previous framework `v3.1.2` and EZ Micro Balance initialize, but previous framework reports `Found 12 previous saved-state registrations`.
+- Current package expectation is 16 `previous saved-state registrations` after the Urda/Morvi deck mirror state fields. The older A1.05.08 expectation was 13 fields. This uploaded log therefore cannot prove package/runtime consistency.
 - Gameplay conclusions from this file are invalid until the environment is cleaned and installed artifact hash is verified.
 
 Manual retest gates:
 
 1. Move all mods out of `<GameRoot>\mods` except:
-   - `BaseLib`
+   - `previous framework`
    - `EZMicroBalance`
 2. Launch normal Steam-client test run and verify log contains:
    - `Loaded 2 mods` (or `Loaded 2 mods (2 total)` depending on launch order), and
-   - `Found 20 SavedSpireFields` for the current post-Morvi source/package.
+   - `Found 20 previous saved-state registrations` for the current post-Morvi source/package.
 3. Re-run install hash check using `scripts/check-installed-ezmb-package.ps1`.
 4. Do not use the polluted `godot2026-05-10T06.07.51.log` as release evidence again.
-5. If a clean hash-matching log reports anything other than the current source/package field count, investigate `AncientSavedStateFields` registration and BaseLib SavedSpireField discovery mismatch before any gameplay assertion.
+5. If a clean hash-matching log reports anything other than the current source/package field count, investigate `AncientSavedStateFields` registration and previous framework previous saved-state API discovery mismatch before any gameplay assertion.
 
 ### ISSUE-2026-05-10-A12-A16-MARKER-VARIETY-DETERMINISTIC-MIGHT-VANGUARD
 
@@ -893,13 +893,13 @@ Source finding:
 
 - The visible popup corresponds to `NETWORK_ERROR.VERSION_MISMATCH`.
 - `JoinFlow.Begin(...)` throws this same failure both when the handshake version string differs and when the version string matches but `ModelIdSerializationCache.Hash` differs.
-- `ModelIdSerializationCache.Hash` is derived from base-game and loaded-mod `AbstractModel` IDs plus epoch IDs, so it can differ if the game build, loaded gameplay mods, BaseLib/EZMB binaries, or mod model graph differ.
+- `ModelIdSerializationCache.Hash` is derived from base-game and loaded-mod `AbstractModel` IDs plus epoch IDs, so it can differ if the game build, loaded gameplay mods, previous framework/EZMB binaries, or mod model graph differ.
 
 Current local evidence:
 
 - Latest local Windows `godot.log` shows a failed join with matching handshake version `v0.105.1`.
 - The actual failure was `ModelDb hash mismatch. Host: 3593977223 Ours: 150743674`.
-- That local run loaded `15 mods (21 total)`, which invalidates it as BaseLib+EZMB-only multiplayer evidence and strongly suggests a loaded-model mismatch surface.
+- That local run loaded `15 mods (21 total)`, which invalidates it as previous framework+EZMB-only multiplayer evidence and strongly suggests a loaded-model mismatch surface.
 
 Manual evidence required:
 
@@ -908,8 +908,8 @@ Manual evidence required:
 - Record both `Loaded X mods (Y total)` lines.
 - Record both `ModelIdSerializationCache initialized... Hash: ...` lines.
 - Record client-side `Got initial game info message. Version: ... Hash: ...` plus the exact subsequent failure line.
-- Repeat with only `BaseLib` and `EZMicroBalance` installed/enabled on both machines.
-- Verify BaseLib version/hash and EZMB DLL/PCK/JSON hashes match on both machines before concluding macOS runtime incompatibility.
+- Repeat with only `previous framework` and `EZMicroBalance` installed/enabled on both machines.
+- Verify previous framework version/hash and EZMB DLL/PCK/JSON hashes match on both machines before concluding macOS runtime incompatibility.
 
 ## Resolved / Player-Verified
 

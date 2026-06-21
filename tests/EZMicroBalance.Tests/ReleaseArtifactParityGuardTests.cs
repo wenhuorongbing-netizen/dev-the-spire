@@ -242,7 +242,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
     }
 
     [ReleaseArtifactFact]
-    public void RecentRuntimeLogMustNotContainV105ApiDriftOrBaseLibDependencyFailures()
+    public void RecentRuntimeLogMustNotContainV105ApiDriftOrExternalModDependencyFailures()
     {
         var logPath = CurrentGodotLogPath();
         var logsDir = Path.GetDirectoryName(logPath);
@@ -267,9 +267,9 @@ public sealed partial class ReleaseArtifactParityGuardTests
         var forbiddenSignatures = new[]
         {
             "Creature.get_ShowsInfiniteHp",
-            "BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay",
+            "ExternalMod.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay",
             "DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp",
-            "Undefined target method for patch method static System.Void BaseLib.Patches.Features",
+            "Undefined target method for patch method static System.Void ExternalMod.Patches.Features",
         };
 
         var matches = new List<string>();
@@ -284,8 +284,8 @@ public sealed partial class ReleaseArtifactParityGuardTests
         Assert.True(
             matches.Count == 0,
             $"Recent runtime log {Path.GetFileName(recentLog)} contains forbidden v0.105.0 API drift or dependency failure signatures: {string.Join("; ", matches)}. " +
-            "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible BaseLib version. " +
-            "Disable all mods except STS2-RitsuLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance. See ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
+            "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible ExternalMod version. " +
+            "Disable all mods except STS2-RitsuLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance. See ISSUE-2026-05-08-V105-EXTERNALMOD-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
     }
 
     [ReleaseArtifactFact]
@@ -313,7 +313,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
             Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
             Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("SavedAttachedState", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("previous BaseLib-backed package", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("previous previous-package package", currentDocs, StringComparison.Ordinal);
             Assert.Contains("Current beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
             Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
@@ -346,15 +346,15 @@ public sealed partial class ReleaseArtifactParityGuardTests
         Assert.True(root.GetProperty("DisableSpirePlus").GetBoolean());
         Assert.True(root.GetProperty("MovedEzmb").GetBoolean());
         Assert.True(root.GetProperty("ReachedMainMenu").GetBoolean());
-        Assert.True(root.GetProperty("ContainsBaseLibInitialization").GetBoolean());
+        Assert.True(root.GetProperty("ContainsExternalModInitialization").GetBoolean());
         Assert.False(root.GetProperty("ContainsSpirePlusInitialization").GetBoolean());
         Assert.False(root.GetProperty("ContainsEzmbError").GetBoolean());
-        Assert.Equal(["BaseLib"], root.GetProperty("AllowedModIds").EnumerateArray().Select(value => value.GetString() ?? string.Empty).ToArray());
+        Assert.Equal(["ExternalMod"], root.GetProperty("AllowedModIds").EnumerateArray().Select(value => value.GetString() ?? string.Empty).ToArray());
         Assert.Contains(root.GetProperty("LoadedLines").EnumerateArray().Select(value => value.GetString() ?? string.Empty), line => line.Contains("Loaded 1 mods (1 total)", StringComparison.Ordinal));
 
         var log = ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "godot.log");
         Assert.Contains("Loaded 1 mods (1 total)", log, StringComparison.Ordinal);
-        Assert.Contains("Finished mod initialization for 'BaseLib' (BaseLib)", log, StringComparison.Ordinal);
+        Assert.Contains("Finished mod initialization for 'ExternalMod' (ExternalMod)", log, StringComparison.Ordinal);
         Assert.DoesNotContain("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", log, StringComparison.Ordinal);
         Assert.DoesNotContain("Registered config for mod EZMicroBalance", log, StringComparison.Ordinal);
         Assert.DoesNotContain("EZMicroBalance.dll", log, StringComparison.Ordinal);

@@ -1,4 +1,4 @@
-﻿# Ceremonial Beast Character Draft
+# Ceremonial Beast Character Draft
 
 ## Status
 Design draft only. Do not implement during setup.
@@ -202,4 +202,4 @@ If the 12-card slice works, expand the pool by adding one risk card, one draw ca
 - No implementation exists.
 - No playtest has been run.
 - No numeric tuning has been validated.
-- Exact STS2 terminology for Strength, Dexterity, Vulnerable, Weak, Retain, Exhaust, and X-cost should be verified against BaseLib/template APIs before code.
+- Exact STS2 terminology for Strength, Dexterity, Vulnerable, Weak, Retain, Exhaust, and X-cost should be verified against previous framework/template APIs before code.

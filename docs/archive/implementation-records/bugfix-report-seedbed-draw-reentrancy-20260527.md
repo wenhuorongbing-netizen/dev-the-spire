@@ -48,6 +48,6 @@ The immediate mutation was possible because that helper lacked the draw-in-progr
 ## Follow-up Recommendations
 - Reinstall cleanly from current publish output (v0.1.0-private-beta.84), then rerun:
   - dotnet test with SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1,
-  - live runtime smoke run with only BaseLib + Spire Plus active.
+  - live runtime smoke run with only previous framework + Spire Plus active.
 - Keep runtime evidence and docs aligned before any release/publish handoff.
 - Preserve the invariant by extending draw-depth queue gating to any future seedbed-like hand-entry mutation paths.

@@ -1,4 +1,4 @@
-﻿# Ancient Reward Balance Map
+# Ancient Reward Balance Map
 
 This document separates observed facts from assumptions. It is not an implementation plan.
 
@@ -12,10 +12,10 @@ This document separates observed facts from assumptions. It is not an implementa
 | Gate Item | Status | Notes |
 |---|---|---|
 | Exact Ancient model class or registry location | PARTIAL | `AncientEventModel` confirmed; exact basegame data source/population path still required |
-| Exact reward option model or pool type | PARTIAL | `EventOption` confirmed; BaseLib custom `OptionPools` confirmed; basegame pool type still required |
+| Exact reward option model or pool type | PARTIAL | `EventOption` confirmed; previous framework custom `OptionPools` confirmed; basegame pool type still required |
 | Exact reward generation timing | PARTIAL | Relevant signatures confirmed; exact call order still required |
 | Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` text/resolution members confirmed; UI binding still required |
-| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Custom Ancient support found; no explicit existing-reward mutation API found locally |
+| Whether previous framework can modify existing Ancient rewards | NO DIRECT API FOUND | Custom Ancient support found; no explicit existing-reward mutation API found locally |
 | Whether Harmony is required | UNKNOWN | Required before implementation |
 | No-op logging probe point | OBSERVED WORKING NO-OP PROBE | `AncientEventModel.GenerateInitialOptionsWrapper()` logging probe observed in game; reward tuning still not approved |
 | Rollback plan | UNKNOWN | Required before implementation |
@@ -42,7 +42,7 @@ This taxonomy is provisional until real Ancient reward abstractions are confirme
 - Prefer clarity and choice quality over raw power.
 - Avoid context-sensitive tuning until context availability is proven.
 - Avoid text/effect changes until preview and resolution relationship is known.
-- Avoid Harmony until BaseLib and template options are ruled out.
+- Avoid Harmony until previous framework and template options are ruled out.
 
 ## Evaluation Rubric
 
@@ -93,7 +93,7 @@ Assumptions are not implementation evidence.
 |---|---|---|---|
 | Ancient rewards may come from a reward pool | Choice systems commonly use pools | Inspect StS2 reward generation model | Wrong tuning layer |
 | Some rewards may be tunable without UI changes | MVP should prefer simple changes | Confirm preview/effect relationship | Text and behavior desync |
-| BaseLib may expose Ancient APIs | BaseLib package exists and includes modding abstractions | Inspect BaseLib docs/source/API | Unnecessary Harmony patch |
+| previous framework may expose Ancient APIs | previous framework package exists and includes modding abstractions | Inspect previous framework docs/source/API | Unnecessary Harmony patch |
 | Harmony may be needed | Existing basegame rewards may not be mutable through API | Rule out supported API first | Unsafe patching if assumed too early |
 
 ## Research Evidence Log
@@ -101,8 +101,8 @@ Assumptions are not implementation evidence.
 | Date | Evidence Type | Source | Finding | Confidence | Follow-up |
 |---|---|---|---|---|---|
 | TODO | TODO | TODO | TODO | TODO | TODO |
-| 2026-05-02 | Local reflection/XML | `sts2.dll`, `BaseLib.dll`, `BaseLib.xml` | `AncientEventModel`, `EventOption`, BaseLib `CustomAncientModel`, `OptionPools`, and `AncientOption` signatures confirmed | Medium-high | Inspect call flow and BaseLib source/examples |
-| 2026-05-03 | Manual game verification | `godot.log` and in-game Ancient event observation | `AncientRewardNoopProbe` log entries appeared; BaseLib and EzDailyContent were enabled; Ancient options appeared and selected normally; no probe exception or visible behavior change was observed | Medium | Use probe logs to build observed Ancient reward catalog before selecting MVP |
+| 2026-05-02 | Local reflection/XML | `sts2.dll`, `previous framework.dll`, `previous framework.xml` | `AncientEventModel`, `EventOption`, previous framework `CustomAncientModel`, `OptionPools`, and `AncientOption` signatures confirmed | Medium-high | Inspect call flow and previous framework source/examples |
+| 2026-05-03 | Manual game verification | `godot.log` and in-game Ancient event observation | `AncientRewardNoopProbe` log entries appeared; previous framework and EzDailyContent were enabled; Ancient options appeared and selected normally; no probe exception or visible behavior change was observed | Medium | Use probe logs to build observed Ancient reward catalog before selecting MVP |
 | 2026-05-03 | Probe log catalog observation | User-provided `AncientRewardNoopProbe` lines | Neow, Pael, and Tanx runtime types observed; each generated 3 `EventOption` options; all observed options had `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, and `ShouldSaveChoiceToHistory=True` | Medium | Continue collecting observed options; do not infer effects from TextKey alone |
 
 ## Candidate Reward Evaluation
@@ -120,7 +120,7 @@ Selection requires:
 - Known model/pool type.
 - Known generation timing.
 - Known preview/resolution relationship.
-- Known BaseLib vs Harmony implementation path.
+- Known previous framework vs Harmony implementation path.
 - Known test procedure.
 - Known rollback plan.
 
@@ -160,7 +160,7 @@ Current status:
 - Identify exact reward option model or pool type.
 - Identify exact reward generation timing.
 - Identify preview and resolution relationship.
-- Determine whether BaseLib can modify existing Ancient rewards.
+- Determine whether previous framework can modify existing Ancient rewards.
 - Determine whether Harmony is required.
 - Identify safest no-op logging probe point.
 - Select one-Ancient MVP target.

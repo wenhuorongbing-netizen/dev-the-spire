@@ -8,7 +8,7 @@ No caller-provided final-output path was found in the visible environment variab
 
 - Verified the existing `publish/SpirePlus-v0.1.0-private-beta.0.zip` package and installed `EZMicroBalance` artifacts.
 - Checked Ancient UI/art resource coverage and installed-PCK resource loading for Urda, Morvi, Lotha, and Vakuu option art.
-- Ran a bounded normal Steam-client startup/log smoke through repository helpers with only BaseLib plus Spire Plus / `EZMicroBalance` enabled.
+- Ran a bounded normal Steam-client startup/log smoke through repository helpers with only previous framework plus Spire Plus / `EZMicroBalance` enabled.
 - Did not implement gameplay features, did not run gameplay/manual matrix checks, and did not collect save/load, co-op, clicked Ancient UI, or Mod Settings screenshot evidence in this pass.
 
 ## Artifact And Resource Evidence
@@ -31,14 +31,14 @@ No caller-provided final-output path was found in the visible environment variab
 - Preflight: `scripts/check-spire-window-preflight.ps1` recorded no Slay the Spire 2 process before launch.
 - Launch: `scripts/spire-plus-live-session.ps1 -Mode Prepare -EvidenceDir .tools/runtime-evidence/current-package-smoke-20260514-015901 -MoveOtherMods -MoveCurrentRuns -Launch`.
 - Positive log evidence:
-  - BaseLib `177 patches successfully, 0 failed`
+  - previous framework `177 patches successfully, 0 failed`
   - `Registered config for mod EZMicroBalance`
   - `Finished mod initialization for 'Spire Plus' (EZMicroBalance)`
   - `Loaded 2 mods (2 total)`
-  - `Found 22 SavedSpireFields`
+  - `Found 22 previous saved-state registrations`
   - `Time to main menu: 14,045ms`
 - `scripts/audit-godot-log.ps1 -FailOnHit` reported `Clean: true`.
-- Manual log scan found 0 hits for Spire Plus / `EZMicroBalance` errors, missing resource paths, Ancient scene failures, BaseLib patch failures, `NullReferenceException`, `InvalidOperationException`, `TargetInvocationException`, `ERROR`, `ERR_`, failed resource loading, resource-file-not-found, and cannot-open-file signatures.
+- Manual log scan found 0 hits for Spire Plus / `EZMicroBalance` errors, missing resource paths, Ancient scene failures, previous framework patch failures, `NullReferenceException`, `InvalidOperationException`, `TargetInvocationException`, `ERROR`, `ERR_`, failed resource loading, resource-file-not-found, and cannot-open-file signatures.
 - Restore: `scripts/spire-plus-live-session.ps1 -Mode Restore -EvidenceDir .tools/runtime-evidence/current-package-smoke-20260514-015901 -StopGameOnRestore -PreserveNewCurrentRunsOnRestore`.
 - Restore stopped one `SlayTheSpire2` process, restored 24 moved mod entries, restored 2 current-run files, preserved Steam-rehydrated test current-run files under evidence, and restored settings to the original hash.
 - Final process check found 0 `SlayTheSpire2` processes.

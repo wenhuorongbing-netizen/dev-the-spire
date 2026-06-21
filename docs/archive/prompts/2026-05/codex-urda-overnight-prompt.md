@@ -1,4 +1,4 @@
-﻿# Archived prompt (2026-05)
+# Archived prompt (2026-05)
 
 - Original path: 'docs/codex-urda-overnight-prompt.md'
 - Archived path: 'docs/archive/prompts/2026-05/codex-urda-overnight-prompt.md'
@@ -51,13 +51,13 @@ Must read first:
 13. EZMicroBalance/localization/**
 14. tests/EZMicroBalance.Tests/**
 15. source code/src/Core/** �?current v0.105.0 source is primary evidence.
-16. BaseLib / template references if local.
+16. previous framework / template references if local.
 
 Hard rules:
 
 - Local `source code/src/Core/` is primary evidence.
 - Before patching Ancient offers, reward screens, cards, combat, map, save/load, or hooks, inspect local source and write evidence to `docs/features/ancient-expansion-urda/api-research.md`.
-- Prefer BaseLib/template APIs.
+- Prefer previous framework/template APIs.
 - Use Harmony only when no safer API exists.
 - Prefer command APIs over direct state mutation.
 - Do not copy large decompiled source bodies into docs.
@@ -117,14 +117,14 @@ Architecture tasks:
 1. Urda Ancient registration
    - Register `EZMB_URDA` as an Act 1 Ancient or equivalent Ancient-offer entity using source-proven APIs.
    - Choosing Urda should offer 4 active Urda blessings.
-   - If the game architecture does not allow adding a new Ancient directly through BaseLib/template APIs, implement the narrowest safe patch and document the source evidence.
+   - If the game architecture does not allow adding a new Ancient directly through previous framework/template APIs, implement the narrowest safe patch and document the source evidence.
    - If direct new Ancient registration is unsafe, implement a debug/test-accessible Urda offer path and mark public Ancient registration blocked.
 
 2. Blessing representation
    - Use Blessing Relic models or source-proven blessing model abstractions.
    - Each blessing must have stable id, EN/ZHS name, EN/ZHS description, and runtime state.
    - Chosen blessing persists through save/load.
-   - Blessing state must use SavedSpireField or source-proven save APIs.
+   - Blessing state must use previous saved-state API or source-proven save APIs.
 
 3. Offer safety
    - Only active implemented blessings appear.
@@ -369,7 +369,7 @@ Validation commands:
 
 Runtime smoke if safe:
 
-- normal Steam-client launch with only BaseLib + EZMicroBalance
+- normal Steam-client launch with only previous framework + EZMicroBalance
 - Mod Settings still shows EZ Micro Balance
 - Start a new run and verify Urda can be reached/selected
 - select at least one implemented Urda blessing

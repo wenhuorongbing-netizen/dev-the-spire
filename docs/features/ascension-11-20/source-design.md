@@ -6,7 +6,7 @@ Document type: Feature GDD / local source design
 Project: Spire Plus workspace (`EZMicroBalance` manifest id), with legacy EzDailyContent scaffold preserved for traceability
 Original target game: Slay the Spire 2 public beta v0.104.0, 2026.04.23
 Current implementation target: Slay the Spire 2 public beta v0.107.1 runtime, with historical v0.106.1 source-refreshed context from 2026-05-22 and retained v0.107.0 loader context from beta.85/beta.87
-Current dependency baseline: STS2-RitsuLib v0.4.31 / lib 0.107.1; BaseLib is historical/previous-package context only
+Current dependency baseline: STS2-RitsuLib v0.4.31 / lib 0.107.1; previous package is historical/previous-package context only
 Status: design source only; not implementation proof
 
 ## 1. One-line Goal
@@ -348,7 +348,7 @@ Research must answer before coding each system:
 ### Phase 0: Research and architecture only
 
 - Create API research notes.
-- Inspect game/BaseLib signatures only.
+- Inspect game/previous package signatures only.
 - No gameplay mutation.
 - Produce patch-point proof table.
 

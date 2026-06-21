@@ -11,7 +11,7 @@ Status: eleven-blessing source gameplay slice implemented, live checks pending.
 - `SPIREPLUS_FORCE_ANCIENT=URDA` focuses Urda when needed. Legacy `EZMB_FORCE_ANCIENT=URDA` still works and is no longer required.
 - `SPIREPLUS_FORCE_URDA_BLESSING=<blessing-id>` (default-off). Legacy `EZMB_FORCE_URDA_BLESSING` still works.
 - `EZMB_URDA_DIAGNOSTICS=1` (default-off).
-- STS2-RitsuLib and Spire Plus enabled, with no Spire Plus BaseLib dependency.
+- STS2-RitsuLib and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
 - Ancient Expansion v2.2 current Urda source pool contains eleven blessing ids, including Elite Root; each should remain hidden when `SPIREPLUS_DISABLE_URDA=1` or legacy `EZMB_DISABLE_URDA=1`.
 
 ## 1. Baseline checks

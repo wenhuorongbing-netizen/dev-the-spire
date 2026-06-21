@@ -1,4 +1,4 @@
-﻿# New Character Roadmap
+# New Character Roadmap
 
 This document is a future roadmap only. It does not authorize implementation.
 
@@ -33,7 +33,7 @@ It depends on:
 The future character must account for:
 - Ancient reward eligibility and power level.
 - Ascension 11-30 difficulty pressure.
-- BaseLib version compatibility.
+- previous framework version compatibility.
 - Public beta API instability.
 - Save/load behavior.
 - Mod Settings visibility.

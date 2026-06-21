@@ -1,4 +1,4 @@
-﻿# Archived Goal Input: Co-op Preview Plan
+# Archived Goal Input: Co-op Preview Plan
 
 Archived from docs/goal.md on 2026-05-25 because active goal guard files must stay compact.
 
@@ -365,7 +365,7 @@ save/load 鍜?co-op 瑕侀澶栧悓姝?```
 5. actual transform 鍚庨獙璇?prediction
 ```
 
-杩欎竴姝ラ渶瑕佹繁鍏ョ爺绌?vanilla multiplayer message system銆侭aseLib 鏈韩涓昏璐熻矗 Mod 妗嗘灦銆侀厤缃€佽祫婧愬拰妯″瀷娉ㄥ唽锛涘浜哄悓姝ヨ璐寸潃 STS2 鐨?`PlayerChoiceSynchronizer`銆乣RunLocationTargetedMessageBuffer`銆乣NetMessageBus`銆乣StartRunLobby` 绛夋簮鐮佽蛋锛屼笉鑳藉彧闈?BaseLib 閰嶇疆灞傝В鍐炽€倂0.106 婧愮爜瀹¤涔熸彁閱掞細澶氫汉 join銆丮odelDb hash銆丼tartRunLobby ascension cap 绛夐兘蹇呴』鍜?vanilla 婧愮爜涓€鑷达紝涓嶈兘鐢ㄦ棫鍋囪銆?
+杩欎竴姝ラ渶瑕佹繁鍏ョ爺绌?vanilla multiplayer message system銆侭aseLib 鏈韩涓昏璐熻矗 Mod 妗嗘灦銆侀厤缃€佽祫婧愬拰妯″瀷娉ㄥ唽锛涘浜哄悓姝ヨ璐寸潃 STS2 鐨?`PlayerChoiceSynchronizer`銆乣RunLocationTargetedMessageBuffer`銆乣NetMessageBus`銆乣StartRunLobby` 绛夋簮鐮佽蛋锛屼笉鑳藉彧闈?previous framework 閰嶇疆灞傝В鍐炽€倂0.106 婧愮爜瀹¤涔熸彁閱掞細澶氫汉 join銆丮odelDb hash銆丼tartRunLobby ascension cap 绛夐兘蹇呴』鍜?vanilla 婧愮爜涓€鑷达紝涓嶈兘鐢ㄦ棫鍋囪銆?
 ### Phase 4锛氭仮澶?reward mutation 鐨勫浜烘敮鎸?
 绛?transform preview 绋冲畾鍚庯紝鍐嶉€愪釜鎭㈠锛?
 ```text
@@ -405,7 +405,7 @@ save/load restore
    - SeedBankRewardStorageIsGatedInMultiplayer
    - FissionRewardMutationIsGatedInMultiplayer
    - CardRewardMutationsRequireMultiplayerPolicy
-12. 璺?BaseLib + Spire Plus 鍙屽鎴风 Aroma of Chaos 娴嬭瘯銆?13. 杈撳嚭 host/client 涓や唤 godot.log銆?```
+12. 璺?previous framework + Spire Plus 鍙屽鎴风 Aroma of Chaos 娴嬭瘯銆?13. 杈撳嚭 host/client 涓や唤 godot.log銆?```
 
 ---
 

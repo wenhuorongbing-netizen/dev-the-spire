@@ -883,7 +883,7 @@ foreach ($row in $manualRows) {
             '',
             '| Scenario ID | Expected behavior | Live result | Evidence file(s) |',
             '| --- | --- | --- | --- |',
-            '| coop-host-join-clean-logs | Host and client load exactly STS2-RitsuLib plus Spire Plus with matching package hashes and clean logs. |  |  |',
+            '| coop-host-join-clean-logs | Host and client load exactly STS2-RitsuLib and Spire Plus with matching package hashes and clean logs. |  |  |',
             '| coop-a11-a20-selection | A11-A20 selection/start-run behavior is recorded on host and client; selection visibility alone is not gameplay support. |  |  |',
             '| coop-ancients | Urda, Morvi, Lotha, and gated Vakuu have explicit host/client disposition notes for reward state and relic visibility. |  |  |',
             '| coop-root-eyes | Root Eyes map preview either stays gated in co-op or shows host/client-consistent map state with no desync. |  |  |',

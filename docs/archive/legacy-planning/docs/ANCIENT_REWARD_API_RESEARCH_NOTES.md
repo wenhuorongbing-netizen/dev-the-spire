@@ -1,23 +1,23 @@
-﻿# Ancient Reward API Research Notes
+# Ancient Reward API Research Notes
 
 Date: 2026-05-02
 
 Scope: local metadata/signature research only. No gameplay implementation was performed.
 
 ## Summary
-Local inspection found evidence for the core Ancient event model and option representation used by StS2, plus BaseLib APIs for defining custom Ancients and their option pools.
+Local inspection found evidence for the core Ancient event model and option representation used by StS2, plus previous framework APIs for defining custom Ancients and their option pools.
 
 The research does not yet prove a verified non-mutating way to tune existing basegame Ancient rewards. The implementation gate remains closed.
 
 An approved no-op logging probe has been implemented for research only. It observes Ancient option generation metadata and must not mutate rewards, options, UI text, player state, run state, room state, act state, save data, or RNG state.
 
-Manual verification reported on 2026-05-03: `AncientRewardNoopProbe` log entries appeared in `godot.log`; BaseLib and EzDailyContent were enabled; Ancient options appeared normally; option selection worked normally; the game did not crash; no `AncientRewardNoopProbe` exception appeared; no visible gameplay behavior changed. Exact log lines were not copied into this document.
+Manual verification reported on 2026-05-03: `AncientRewardNoopProbe` log entries appeared in `godot.log`; previous framework and EzDailyContent were enabled; Ancient options appeared normally; option selection worked normally; the game did not crash; no `AncientRewardNoopProbe` exception appeared; no visible gameplay behavior changed. Exact log lines were not copied into this document.
 
 Most important finding:
 - StS2 Ancient events are represented by `MegaCrit.Sts2.Core.Models.AncientEventModel`.
 - Ancient reward/choice UI options are represented at the event layer by `MegaCrit.Sts2.Core.Events.EventOption`.
-- BaseLib `CustomAncientModel` extends `AncientEventModel` and exposes `OptionPools`, `AncientOption`, and `WeightedList` helpers for custom Ancient option generation.
-- BaseLib metadata shows internal Harmony patches that add custom Ancients to act/model pools, but no direct local evidence was found for mutating existing basegame Ancient rewards.
+- previous framework `CustomAncientModel` extends `AncientEventModel` and exposes `OptionPools`, `AncientOption`, and `WeightedList` helpers for custom Ancient option generation.
+- previous framework metadata shows internal Harmony patches that add custom Ancients to act/model pools, but no direct local evidence was found for mutating existing basegame Ancient rewards.
 
 ## Confirmed Facts
 
@@ -28,10 +28,10 @@ Most important finding:
 | Event options are represented by `EventOption` | Reflection over `sts2.dll` | `MegaCrit.Sts2.Core.Events.EventOption` with `TextKey`, `Title`, `Description`, `OnChosen`, `Relic`, `Chosen()` | High | Fact | Medium; UI relationship still needs verification | Inspect event layout/button binding |
 | Ancient generation is tied to event start flow | Reflection over `sts2.dll` | `EventModel.BeginEvent(...)`, `EventModel.GenerateInitialOptionsWrapper()`, `EventModel.GenerateInitialOptions()`, `AncientEventModel.GenerateInitialOptionsWrapper()` | Medium | Fact for method existence; hypothesis for exact call order | High if patching wrong method | Verify call order with no-op probe or decompilation structure |
 | Act model owns Ancient lists/subsets | Reflection over `sts2.dll` | `ActModel.AllAncients`, `ActModel.Ancient`, `_sharedAncientSubset`, `GetUnlockedAncients(...)`, `SetSharedAncientSubset(...)`, `PullAncient()` | High | Fact for member existence | Medium; registry source still unknown | Inspect how basegame act data populates these members |
-| BaseLib supports custom Ancient models | Reflection and XML docs from `C:/Users/Jack/.nuget/packages/alchyr.sts2.baselib/3.1.0/lib/net9.0/BaseLib.dll` and `BaseLib.xml` | `BaseLib.Abstracts.CustomAncientModel : AncientEventModel` | High | Fact | Low for custom Ancient support; medium for tuning scope | Inspect examples/source for intended usage |
-| BaseLib custom Ancient options are relic-model based | Reflection over `BaseLib.dll` | `BaseLib.Utils.AncientOption.ModelForOption : RelicModel`, `AllVariants : IEnumerable<RelicModel>` | High | Fact | Medium; basegame options may still vary | Compare with basegame Ancient option construction |
-| BaseLib custom option pools are weighted | Reflection/XML over `BaseLib.dll`/`BaseLib.xml` | `BaseLib.Utils.OptionPools`, `WeightedList<AncientOption>`, `OptionPools.Roll(Rng)` | High | Fact for BaseLib custom pool API | Medium; not proven for basegame pool internals | Inspect basegame model behavior |
-| BaseLib uses internal Harmony to add custom Ancients | Reflection over `BaseLib.dll` attributes | `HarmonyPatch(ActModel, GenerateRooms)` prefix in `BaseLib.Patches.Content.AddCustomAncientsToPool`; `HarmonyPatch(ModelDb, AllSharedAncients)` postfix in `CustomAncientExistence` | High | Fact | Medium; does not prove mod-level patch need | Inspect whether public API can avoid our own patches |
+| previous framework supports custom Ancient models | Reflection and XML docs from `C:/Users/Jack/.nuget/packages/previous-framework-package/3.1.0/lib/net9.0/previous framework.dll` and `previous framework.xml` | `previous framework.Abstracts.CustomAncientModel : AncientEventModel` | High | Fact | Low for custom Ancient support; medium for tuning scope | Inspect examples/source for intended usage |
+| previous framework custom Ancient options are relic-model based | Reflection over `previous framework.dll` | `previous framework.Utils.AncientOption.ModelForOption : RelicModel`, `AllVariants : IEnumerable<RelicModel>` | High | Fact | Medium; basegame options may still vary | Compare with basegame Ancient option construction |
+| previous framework custom option pools are weighted | Reflection/XML over `previous framework.dll`/`previous framework.xml` | `previous framework.Utils.OptionPools`, `WeightedList<AncientOption>`, `OptionPools.Roll(Rng)` | High | Fact for previous framework custom pool API | Medium; not proven for basegame pool internals | Inspect basegame model behavior |
+| previous framework uses internal Harmony to add custom Ancients | Reflection over `previous framework.dll` attributes | `HarmonyPatch(ActModel, GenerateRooms)` prefix in `previous framework.Patches.Content.AddCustomAncientsToPool`; `HarmonyPatch(ModelDb, AllSharedAncients)` postfix in `CustomAncientExistence` | High | Fact | Medium; does not prove mod-level patch need | Inspect whether public API can avoid our own patches |
 
 ## Hypotheses
 
@@ -39,50 +39,50 @@ Most important finding:
 |---|---|---|---|---|
 | `AncientEventModel.GenerateInitialOptionsWrapper()` may be a no-op logging probe candidate | It exists as a nonpublic Ancient-specific wrapper returning `IReadOnlyList<EventOption>` | Medium | Nonpublic method may be fragile or too late/early | Confirm call order via decompiled structure or a separately approved no-op probe |
 | `EventOption.TextKey`, `Title`, and `Description` drive preview text | These properties exist on `EventOption`; `EventModel` has `GetOptionTitle` and `GetOptionDescription` | Medium | UI may use additional layout state | Inspect `NEventLayout`/button binding or test in game |
-| Existing basegame Ancient reward tuning may require Harmony | No direct BaseLib API for mutating existing Ancient rewards was found in local XML/reflection | Low-medium | Could miss source-only extension points or intended APIs | Inspect BaseLib source/examples before deciding |
-| Additive custom Ancient work may not require our own Harmony patches | BaseLib provides `CustomAncientModel` and internal patches for adding custom Ancients | Medium | Does not solve existing reward tuning | Confirm with BaseLib examples and a separate approved implementation plan |
+| Existing basegame Ancient reward tuning may require Harmony | No direct previous framework API for mutating existing Ancient rewards was found in local XML/reflection | Low-medium | Could miss source-only extension points or intended APIs | Inspect previous framework source/examples before deciding |
+| Additive custom Ancient work may not require our own Harmony patches | previous framework provides `CustomAncientModel` and internal patches for adding custom Ancients | Medium | Does not solve existing reward tuning | Confirm with previous framework examples and a separate approved implementation plan |
 
 ## Unknowns
 
 | Unknown | Current Status | Why It Remains Unknown |
 |---|---|---|
 | Exact basegame Ancient registry data source | UNKNOWN | `ActModel` members are known, but the data source/population path was not fully traced |
-| Exact basegame reward pool type | UNKNOWN | BaseLib custom pool type is known; basegame pool representation is not yet proven |
+| Exact basegame reward pool type | UNKNOWN | previous framework custom pool type is known; basegame pool representation is not yet proven |
 | Exact reward generation call order | PARTIAL | Relevant method signatures are known, but method body/call order was not copied or fully traced |
 | Exact UI preview to reward resolution relationship | PARTIAL | `EventOption` properties are known, but UI binding and choice resolution path need verification |
-| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local XML/reflection showed custom Ancient support, not explicit existing-reward mutation support |
-| Whether Harmony is required for existing reward tuning | UNKNOWN | Cannot decide until BaseLib source/examples and basegame call flow are checked |
+| Whether previous framework can modify existing Ancient rewards | NO DIRECT API FOUND | Local XML/reflection showed custom Ancient support, not explicit existing-reward mutation support |
+| Whether Harmony is required for existing reward tuning | UNKNOWN | Cannot decide until previous framework source/examples and basegame call flow are checked |
 | No-op logging probe point | OBSERVED WORKING NO-OP PROBE | `AncientEventModel.GenerateInitialOptionsWrapper()` has been manually observed in game as a working no-op probe. This does not approve reward tuning. |
 | One-Ancient MVP target | UNKNOWN | No observed reward catalog exists yet |
 | Repeatable test procedure | UNKNOWN | In-game route to specific Ancient rewards is not documented yet |
 
-## BaseLib Findings
+## previous framework Findings
 
 Sources:
-- `C:/Users/Jack/.nuget/packages/alchyr.sts2.baselib/3.1.0/lib/net9.0/BaseLib.dll`
-- `C:/Users/Jack/.nuget/packages/alchyr.sts2.baselib/3.1.0/lib/net9.0/BaseLib.xml`
+- `C:/Users/Jack/.nuget/packages/previous-framework-package/3.1.0/lib/net9.0/previous framework.dll`
+- `C:/Users/Jack/.nuget/packages/previous-framework-package/3.1.0/lib/net9.0/previous framework.xml`
 
 Relevant signatures:
-- `BaseLib.Abstracts.CustomAncientModel : MegaCrit.Sts2.Core.Models.AncientEventModel`
+- `previous framework.Abstracts.CustomAncientModel : MegaCrit.Sts2.Core.Models.AncientEventModel`
 - `CustomAncientModel.IsValidForAct(ActModel act)`
 - `CustomAncientModel.ShouldForceSpawn(ActModel act, AncientEventModel rngChosenAncient)`
 - `CustomAncientModel.GenerateInitialOptions() : IReadOnlyList<EventOption>` nonpublic
-- `CustomAncientModel.OptionPools : BaseLib.Utils.OptionPools`
+- `CustomAncientModel.OptionPools : previous framework.Utils.OptionPools`
 - `CustomAncientModel.MakePool(RelicModel[] options) : WeightedList<AncientOption>`
 - `CustomAncientModel.MakePool(AncientOption[] options) : WeightedList<AncientOption>`
 - `CustomAncientModel.AncientOption<T>(int weight, Func<T, RelicModel> relicPrep, Func<T, IEnumerable<RelicModel>> makeAllVariants)`
-- `BaseLib.Utils.AncientOption`
-- `BaseLib.Utils.AncientOption<T>`
-- `BaseLib.Utils.OptionPools.Roll(Rng rng) : List<AncientOption>`
-- `BaseLib.Utils.WeightedList<T>.GetRandom(Rng rng)`
+- `previous framework.Utils.AncientOption`
+- `previous framework.Utils.AncientOption<T>`
+- `previous framework.Utils.OptionPools.Roll(Rng rng) : List<AncientOption>`
+- `previous framework.Utils.WeightedList<T>.GetRandom(Rng rng)`
 
-BaseLib patch metadata:
-- `BaseLib.Patches.Content.AddCustomAncientsToPool` has `HarmonyPatch(ActModel, GenerateRooms)` and a Harmony prefix method.
-- `BaseLib.Patches.Content.CustomAncientExistence` has `HarmonyPatch(ModelDb, AllSharedAncients)` and a Harmony postfix method.
+previous framework patch metadata:
+- `previous framework.Patches.Content.AddCustomAncientsToPool` has `HarmonyPatch(ActModel, GenerateRooms)` and a Harmony prefix method.
+- `previous framework.Patches.Content.CustomAncientExistence` has `HarmonyPatch(ModelDb, AllSharedAncients)` and a Harmony postfix method.
 
 Interpretation:
-- BaseLib clearly supports adding custom Ancient models and options.
-- BaseLib likely manages custom Ancient pool insertion through its own patches.
+- previous framework clearly supports adding custom Ancient models and options.
+- previous framework likely manages custom Ancient pool insertion through its own patches.
 - Local metadata does not prove an API for modifying existing basegame Ancient reward options.
 
 ## StS2 Assembly Findings
@@ -127,7 +127,7 @@ These are candidates only. They are not approved implementation points.
 |---|---|---|---|---|
 | Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` | Reflection signature: `protected instance virtual final IReadOnlyList<EventOption> MegaCrit.Sts2.Core.Models.AncientEventModel.GenerateInitialOptionsWrapper()` | Could log generated options without mutating them | Nonpublic and beta-fragile; call order not verified | Explicit approval, no-op-only patch plan, rollback; see `docs/ANCIENT_REWARD_NOOP_PROBE_SPEC.md` |
 | Postfix on `EventModel.SetEventState(...)`, filtered to `AncientEventModel` | Nonpublic method receives event options | Could observe final current options | Broad base event method; filtering mistake could affect all events | Prefer Ancient-specific point first |
-| Logging through BaseLib diagnostics if available | BaseLib includes diagnostics/logging-related types | Could avoid direct game patching | Not yet tied to Ancient generation | Inspect BaseLib logging examples |
+| Logging through previous framework diagnostics if available | previous framework includes diagnostics/logging-related types | Could avoid direct game patching | Not yet tied to Ancient generation | Inspect previous framework logging examples |
 
 ## Implemented No-Op Probe
 
@@ -175,8 +175,8 @@ What remains UNKNOWN:
 - Exact call order around `GenerateInitialOptionsWrapper()`.
 - Whether this is the lowest-risk long-term observation point.
 - Whether all logged getters are permanently side-effect free across public beta updates.
-- Whether BaseLib has a better public diagnostic hook.
-- Whether BaseLib can modify existing basegame Ancient rewards.
+- Whether previous framework has a better public diagnostic hook.
+- Whether previous framework can modify existing basegame Ancient rewards.
 - Whether Harmony is required for future reward tuning.
 - One-Ancient MVP target.
 - Repeatable Ancient reward test path is PARTIAL: probe logs have been collected for Neow, Pael, and Tanx, but a route to reliably reproduce specific Ancients is not fully documented.
@@ -184,7 +184,7 @@ What remains UNKNOWN:
 Manual verification status:
 - Status: observed in game as a working no-op probe.
 - Evidence: user reported `AncientRewardNoopProbe` entries in `godot.log`.
-- BaseLib: enabled.
+- previous framework: enabled.
 - EzDailyContent: enabled.
 - Ancient options: appeared normally.
 - Option selection: worked normally.
@@ -225,14 +225,14 @@ Observed option rows:
 
 Do not infer reward effects, reward strength, or final implementation path from these `TextKey` values.
 One-Ancient MVP target remains UNKNOWN.
-BaseLib existing reward modification remains NO DIRECT API FOUND / UNKNOWN.
+previous framework existing reward modification remains NO DIRECT API FOUND / UNKNOWN.
 Harmony requirement for reward tuning remains UNKNOWN.
 
 Manual game test steps:
 1. Run `dotnet build`.
 2. Run `dotnet publish`.
 3. Launch Slay the Spire 2 public beta `v0.104.0`.
-4. Confirm BaseLib is enabled in Mod Settings.
+4. Confirm previous framework is enabled in Mod Settings.
 5. Confirm EzDailyContent is enabled in Mod Settings.
 6. Reach an Ancient event.
 7. Confirm the Ancient options appear normally.
@@ -252,7 +252,7 @@ Remain forbidden:
 - Any mutation before a no-op probe confirms timing.
 
 ## Next Research Tasks
-1. Inspect BaseLib source/examples for intended `CustomAncientModel` usage.
+1. Inspect previous framework source/examples for intended `CustomAncientModel` usage.
 2. Inspect StS2 call flow around `AncientEventModel.GenerateInitialOptionsWrapper()` without copying method bodies.
 3. Inspect how `NAncientEventLayout` binds `EventOption.Title`, `Description`, and `Chosen()`.
 4. Determine whether basegame Ancient options are generated from relic models, event options, or another data source.

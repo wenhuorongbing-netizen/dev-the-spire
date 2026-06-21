@@ -1,4 +1,4 @@
-﻿# Ancient Reward Research Plan
+# Ancient Reward Research Plan
 
 This is a research-gated plan for Ancient reward optimization.
 
@@ -7,7 +7,7 @@ No gameplay implementation is allowed from this document alone.
 ## Purpose
 Prevent random guessing, unproven Harmony patching, and premature Ancient reward implementation.
 
-The project must identify the real Slay the Spire 2 Ancient reward model, reward pool, generation timing, UI preview behavior, and BaseLib support before writing gameplay code.
+The project must identify the real Slay the Spire 2 Ancient reward model, reward pool, generation timing, UI preview behavior, and previous framework support before writing gameplay code.
 
 ## Hard Research Rules
 - Do not implement gameplay during research.
@@ -25,13 +25,13 @@ The project must identify the real Slay the Spire 2 Ancient reward model, reward
 ## 1. What We Know
 - Target game branch: public beta.
 - Verified game version: `v0.104.0`, date `2026.04.23`.
-- BaseLib runtime version: `v3.1.0`.
-- BaseLib package version: `Alchyr.Sts2.BaseLib` `3.1.0`.
+- previous framework runtime version: `v3.1.0`.
+- previous framework package version: `previous framework package` `3.1.0`.
 - ModAnalyzers package version: `Alchyr.Sts2.ModAnalyzers` `0.1.9`.
 - Manifest id: `EzDailyContent`.
 - `dotnet build` succeeds.
 - `dotnet publish` succeeds.
-- Manual game verification succeeded: BaseLib and EzDailyContent appear and are enabled in Mod Settings.
+- Manual game verification succeeded: previous framework and EzDailyContent appear and are enabled in Mod Settings.
 - No concrete gameplay features have been implemented.
 - The first feature target is Ancient reward optimization.
 
@@ -41,11 +41,11 @@ Every item in this list blocks implementation until resolved.
 | Required Fact | Current Status | Research Task |
 |---|---|---|
 | Exact Ancient model class or registry location | PARTIAL | Model class is `MegaCrit.Sts2.Core.Models.AncientEventModel`; act-level Ancient members include `ActModel.AllAncients`, `_sharedAncientSubset`, `GetUnlockedAncients`, `SetSharedAncientSubset`, and `PullAncient`. Exact basegame data source/population path remains UNKNOWN. |
-| Exact reward option model or pool type | PARTIAL | Event-layer option model is `MegaCrit.Sts2.Core.Events.EventOption`; BaseLib custom Ancient pools use `BaseLib.Utils.OptionPools`, `WeightedList<AncientOption>`, and `RelicModel`. Exact basegame reward pool type remains UNKNOWN. |
+| Exact reward option model or pool type | PARTIAL | Event-layer option model is `MegaCrit.Sts2.Core.Events.EventOption`; previous framework custom Ancient pools use `previous framework.Utils.OptionPools`, `WeightedList<AncientOption>`, and `RelicModel`. Exact basegame reward pool type remains UNKNOWN. |
 | Exact reward generation timing | PARTIAL | Relevant signatures exist: `EventModel.BeginEvent`, `EventModel.GenerateInitialOptionsWrapper`, `EventModel.GenerateInitialOptions`, and `AncientEventModel.GenerateInitialOptionsWrapper`. Exact call order remains UNKNOWN. |
 | Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` has `TextKey`, `Title`, `Description`, `OnChosen`, `Relic`, and `Chosen()`. Exact UI binding path remains UNKNOWN. |
-| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local BaseLib XML/reflection shows custom Ancient support, not an explicit API for mutating existing basegame Ancient rewards. Inspect source/examples before deciding. |
-| Whether Harmony is required | UNKNOWN | Determine whether BaseLib/template APIs are sufficient |
+| Whether previous framework can modify existing Ancient rewards | NO DIRECT API FOUND | Local previous framework XML/reflection shows custom Ancient support, not an explicit API for mutating existing basegame Ancient rewards. Inspect source/examples before deciding. |
+| Whether Harmony is required | UNKNOWN | Determine whether previous framework/template APIs are sufficient |
 | No-op logging probe point | OBSERVED WORKING NO-OP PROBE | Postfix on `AncientEventModel.GenerateInitialOptionsWrapper()` with reflected signature `protected instance virtual final IReadOnlyList<EventOption>` has been observed in game as a working no-op probe. This does not approve reward tuning. |
 | Rollback plan for first implementation | PARTIAL | Finalize once implementation path and touched files are known |
 | One-Ancient MVP target | UNKNOWN | Select after catalog and balance map have observed facts |
@@ -66,17 +66,17 @@ Use decompilation for structure and API shape only. Do not copy implementation b
 | Run context | `Run`, `Act`, `Character`, `Deck`, `Player` | Whether act, character, deck context is available through verified read-only access | Add context note |
 | Save/load | `Save`, `Load`, `Serialize`, `Deserialize` | Whether reward choices/effects affect persistent state | Add persistence risk |
 
-## 4. What Must Be Inspected in BaseLib Docs or Source
-Prefer official BaseLib APIs or template-supported workflows over Harmony patches.
+## 4. What Must Be Inspected in previous framework Docs or Source
+Prefer official previous framework APIs or template-supported workflows over Harmony patches.
 
 | Topic | Files or APIs to Inspect | Evidence Needed | Output |
 |---|---|---|---|
-| `CustomAncientModel` scope | BaseLib source/docs/API metadata | Whether it creates new Ancients only or can override/tune existing ones | Decide additive vs tuning path |
-| Existing Ancient modification API | BaseLib registration and extension APIs | Whether basegame Ancient reward pools can be modified directly | Decide if Harmony can be avoided |
-| Reward registration API | BaseLib examples and analyzers | Supported registration shape and required localization/assets | API usage note |
-| Pool modification API | BaseLib pool helpers if present | Whether weights, filters, or replacements are exposed | Pool tuning feasibility |
+| `CustomAncientModel` scope | previous framework source/docs/API metadata | Whether it creates new Ancients only or can override/tune existing ones | Decide additive vs tuning path |
+| Existing Ancient modification API | previous framework registration and extension APIs | Whether basegame Ancient reward pools can be modified directly | Decide if Harmony can be avoided |
+| Reward registration API | previous framework examples and analyzers | Supported registration shape and required localization/assets | API usage note |
+| Pool modification API | previous framework pool helpers if present | Whether weights, filters, or replacements are exposed | Pool tuning feasibility |
 | Analyzer expectations | `Alchyr.Sts2.ModAnalyzers` diagnostics | Required patterns and forbidden patterns | Implementation checklist |
-| Logging utilities | BaseLib or template logging support | Preferred mod logging path | No-op probe plan |
+| Logging utilities | previous framework or template logging support | Preferred mod logging path | No-op probe plan |
 
 ## 5. What Must Be Tested in Game
 These tests are research tests, not implementation tests.
@@ -96,12 +96,12 @@ The following names and concepts are hypotheses until proven by inspection.
 | Hypothesis | Status | Do Not Assume |
 |---|---|---|
 | `CustomAncientModel` can tune existing Ancient rewards | UNPROVEN | Evidence confirms custom Ancient support, not existing basegame reward mutation |
-| Ancient rewards are generated from weighted pools | PARTIAL | BaseLib custom Ancient options use weighted pools; basegame pool type remains UNKNOWN |
+| Ancient rewards are generated from weighted pools | PARTIAL | previous framework custom Ancient options use weighted pools; basegame pool type remains UNKNOWN |
 | Reward options are relic-like | UNPROVEN | Do not use relic hooks unless model evidence supports it |
 | Reward effects resolve through command APIs | UNPROVEN | Do not call command APIs until reward resolution is known |
 | Act number is available during reward generation | UNPROVEN | Do not design act-sensitive MVP until context evidence exists |
 | Character/deck context is available | UNPROVEN | Do not design character-sensitive MVP until context evidence exists |
-| Harmony patching will be required | UNPROVEN | Do not create patches until BaseLib path is ruled out |
+| Harmony patching will be required | UNPROVEN | Do not create patches until previous framework path is ruled out |
 
 ## 7. Forbidden Patch Points Until Proven
 These patch areas are forbidden until exact evidence shows they are necessary and non-mutating.
@@ -119,7 +119,7 @@ These patch areas are forbidden until exact evidence shows they are necessary an
 Allowed later only with evidence:
 - Narrow prefix/postfix at exact reward generation boundary.
 - Narrow no-op logging probe that does not mutate behavior.
-- Narrow replacement through BaseLib-supported API.
+- Narrow replacement through previous framework-supported API.
 
 ## 8. Evidence Required Before Implementation
 Implementation is blocked until all entries are filled with evidence.
@@ -130,8 +130,8 @@ Implementation is blocked until all entries are filled with evidence.
 | Exact reward option model or pool type | Class/namespace/type shape and source of evidence | UNKNOWN |
 | Exact reward generation timing | Method/event where choices are generated | UNKNOWN |
 | Exact UI preview / reward resolution relationship | How display text maps to applied effect | UNKNOWN |
-| Whether BaseLib can modify existing Ancient rewards | API evidence or explicit absence | UNKNOWN |
-| Whether Harmony is required | Decision after BaseLib/template review | UNKNOWN |
+| Whether previous framework can modify existing Ancient rewards | API evidence or explicit absence | UNKNOWN |
+| Whether Harmony is required | Decision after previous framework/template review | UNKNOWN |
 | No-op logging probe point | Exact method/API and why no mutation occurs | OBSERVED WORKING NO-OP PROBE for logging metadata only; not evidence for reward tuning |
 | Rollback plan | Touched files, feature flag if any, revert path | UNKNOWN |
 | One-Ancient MVP target | Observed reward, rationale, proposed minimal change | UNKNOWN |
@@ -144,14 +144,14 @@ Key local findings:
 - StS2 model class: `MegaCrit.Sts2.Core.Models.AncientEventModel`.
 - StS2 event option class: `MegaCrit.Sts2.Core.Events.EventOption`.
 - StS2 act-level Ancient members: `ActModel.AllAncients`, `_sharedAncientSubset`, `GetUnlockedAncients`, `SetSharedAncientSubset`, and `PullAncient`.
-- BaseLib custom Ancient class: `BaseLib.Abstracts.CustomAncientModel : AncientEventModel`.
-- BaseLib custom option helpers: `BaseLib.Utils.OptionPools`, `BaseLib.Utils.AncientOption`, `BaseLib.Utils.WeightedList<T>`.
-- BaseLib internal patches add custom Ancients through `ActModel.GenerateRooms` and `ModelDb.AllSharedAncients`.
+- previous framework custom Ancient class: `previous framework.Abstracts.CustomAncientModel : AncientEventModel`.
+- previous framework custom option helpers: `previous framework.Utils.OptionPools`, `previous framework.Utils.AncientOption`, `previous framework.Utils.WeightedList<T>`.
+- previous framework internal patches add custom Ancients through `ActModel.GenerateRooms` and `ModelDb.AllSharedAncients`.
 - Manual verification reported on 2026-05-03: `AncientRewardNoopProbe` entries appeared in `godot.log`, Ancient options appeared and selected normally, no probe exception appeared, and no visible gameplay behavior changed.
 - Probe log catalog entries reported on 2026-05-03: Neow, Pael, and Tanx each generated 3 `EventOption` options; all observed options had `RelicIsNull=False`, `IsLocked=False`, `IsProceed=False`, and `ShouldSaveChoiceToHistory=True`.
 
 Remaining blocker:
-- No local evidence yet proves that BaseLib can modify existing basegame Ancient reward options without a project-level Harmony patch.
+- No local evidence yet proves that previous framework can modify existing basegame Ancient reward options without a project-level Harmony patch.
 - One-Ancient MVP target remains UNKNOWN.
 - Reward tuning gate remains closed.
 

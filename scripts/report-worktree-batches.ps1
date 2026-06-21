@@ -145,6 +145,12 @@ function Get-WorktreeBatch {
 
     if ($p -eq 'EZMicroBalanceCode/README.md' -or
         $p -eq 'docs/implement.md' -or
+        $p.StartsWith('docs/archive/feature-work-logs/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/archive/issues/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/archive/prompts/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('docs/archive/superseded/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p -eq 'docs/archive/issues-archive.md' -or
+        $p -eq 'docs/archive/project-state-history-20260516.md' -or
         $p -match '^docs/archive/project-state-validation-snapshots-\d{8}\.md$' -or
         $p.StartsWith('docs/archive/legacy-planning/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('docs/audits/', [System.StringComparison]::OrdinalIgnoreCase) -or

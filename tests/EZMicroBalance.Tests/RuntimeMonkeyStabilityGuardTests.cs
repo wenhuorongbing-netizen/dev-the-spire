@@ -3152,255 +3152,167 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     public void RuntimeFailureAnalyzerReportsGameNativeAutoSlayProbePhaseAndTimestampDefects()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
-        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
-        var runDir = Path.Combine(workdir, "run-0001");
-        Directory.CreateDirectory(runDir);
+        using var fixture = CreateGameNativeAutoSlayFixture();
 
-        try
-        {
-            var runtimeProbeSamplesPath = Path.Combine(runDir, "runtime-probe-samples.json");
-            File.WriteAllText(
-                runtimeProbeSamplesPath,
-                """
-                [
-                  {
-                    "Phase": "runtime",
-                    "SampledAt": "2026-06-18T10:00:20Z",
-                    "LogExists": true,
-                    "LogLengthBytes": 200,
-                    "LogLastWriteTimeUtc": "2999-01-01T00:00:00Z",
-                    "ProcessId": 4242,
-                    "ProcessStartTimeUtc": "2026-06-18T09:59:50Z",
-                    "ProcessPath": "C:/Games/SlayTheSpire2.exe",
-                    "ExpectedGameProcessId": 4242,
-                    "ExpectedGameProcessStartTimeUtc": "2026-06-18T09:59:50Z",
-                    "ExpectedGameProcessPath": "C:/Games/SlayTheSpire2.exe",
-                    "ProcessIdMatchesExpected": true,
-                    "ProcessStartTimeMatchesExpected": true,
-                    "ProcessPathMatchesExpected": true,
-                    "ProcessIdentityMatchesExpected": true,
-                    "ProcessObserved": true,
-                    "MainWindowObserved": true,
-                    "HungWindow": false,
-                    "Responding": true,
-                    "StaleProcessCount": 1,
-                    "CurrentProcessCount": 2,
-                    "UnknownStartTimeProcessCount": 1,
-                    "AmbiguousCurrentProcessCount": 1
-                  }
-                ]
-                """);
-            var runtimeProbeSamplesHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(runtimeProbeSamplesPath))).ToLowerInvariant();
-            var runResultPath = Path.Combine(runDir, "run-result.json");
-            File.WriteAllText(
-                runResultPath,
-                $$"""
-                {
-                  "RunnerKind": "GameNativeAutoSlay",
-                  "Iteration": 1,
-                  "Seed": "TEST-SEED-001",
-                  "EventKind": "Ancient",
-                  "AncientId": "Urda",
-                  "Invocation": "AutoSlayer.Start(seed, logFile)",
-                  "Command": "AutoSlayer.Start(seed, logFile)",
-                  "Passed": true,
-                  "FailureReasonCodes": [],
-                  "HangSignals": [],
-                  "StartTimestamp": "2026-06-18T10:01:00Z",
-                  "EndTimestamp": "2026-06-18T10:00:00Z",
-                  "RuntimeProbeSamplesPath": "runtime-probe-samples.json",
-                  "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(runtimeProbeSamplesHash)}},
-                  "MainMenuObservation": {
-                    "Passed": true,
-                    "MainMenuReached": true,
-                    "ProcessObserved": true,
-                    "ProcessExitedAfterObservation": false,
-                    "HungWindowDetected": false,
-                    "StaleProcessObserved": false,
-                    "MaxStaleProcessCount": 0,
-                    "NoLogGrowthTimeoutExceeded": false,
-                    "LogObserved": true
-                  },
-                  "RuntimeObservation": {
-                    "Passed": true,
-                    "ProcessObserved": true,
-                    "ProcessExitedAfterObservation": false,
-                    "HungWindowDetected": false,
-                    "StaleProcessObserved": false,
-                    "MaxStaleProcessCount": 0,
-                    "NoLogGrowthTimeoutExceeded": false,
-                    "LogGrew": true,
-                    "LogObserved": true,
-                    "LogInitialLengthBytes": 100,
-                    "LogFinalLengthBytes": 200
-                  }
-                }
-                """);
+        File.WriteAllText(
+            fixture.RuntimeProbeSamplesPath,
+            $$"""
+            [
+              {
+                "Phase": "runtime",
+                "SampledAt": "2026-06-18T10:00:20Z",
+                "LogExists": true,
+                "LogLengthBytes": 200,
+                "LogLastWriteTimeUtc": "2999-01-01T00:00:00Z",
+                "ProcessId": 4242,
+                "ProcessStartTimeUtc": "2026-06-18T09:59:50Z",
+                "ProcessPath": {{JsonSerializer.Serialize(fixture.GameProcessPath)}},
+                "ExpectedGameProcessId": 4242,
+                "ExpectedGameProcessStartTimeUtc": "2026-06-18T09:59:50Z",
+                "ExpectedGameProcessPath": {{JsonSerializer.Serialize(fixture.GameProcessPath)}},
+                "ProcessIdMatchesExpected": true,
+                "ProcessStartTimeMatchesExpected": true,
+                "ProcessPathMatchesExpected": true,
+                "ProcessIdentityMatchesExpected": true,
+                "ProcessObserved": true,
+                "MainWindowObserved": true,
+                "HungWindow": false,
+                "Responding": true,
+                "StaleProcessCount": 1,
+                "CurrentProcessCount": 2,
+                "UnknownStartTimeProcessCount": 1,
+                "AmbiguousCurrentProcessCount": 1
+              }
+            ]
+            """);
 
-            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
-            var result = RunPowerShell(script, "-IterationDir", runDir, "-OutFile", outputPath);
-            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+        var runtimeProbeSamplesHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["StartTimestamp"] = "2026-06-18T10:01:00Z";
+        runResultJson["EndTimestamp"] = "2026-06-18T10:00:00Z";
+        runResultJson["RuntimeProbeSamplesSha256"] = runtimeProbeSamplesHash;
+        var runtimeObservation = runResultJson["RuntimeObservation"]!.AsObject();
+        runtimeObservation["LogInitialLengthBytes"] = 100;
+        runtimeObservation["LogFinalLengthBytes"] = 200;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
-            var root = document.RootElement;
-            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["RuntimeProbeSamplesSha256"] = runtimeProbeSamplesHash;
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_timestamp_invalid");
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_stale_process");
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_unknown_start_time_process");
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_ambiguous_current_process");
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_current_process_count_invalid");
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_main_menu_phase_missing");
-            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_runtime_phase_missing");
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_timestamp_order_invalid");
-            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_start_timestamp_invalid");
-            Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_end_timestamp_invalid");
-        }
-        finally
-        {
-            if (Directory.Exists(workdir))
-            {
-                Directory.Delete(workdir, recursive: true);
-            }
-        }
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+        Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_timestamp_invalid");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_stale_process");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_unknown_start_time_process");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_ambiguous_current_process");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_current_process_count_invalid");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_main_menu_phase_missing");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_runtime_phase_missing");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_timestamp_order_invalid");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_start_timestamp_invalid");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_run_result_end_timestamp_invalid");
     }
 
     [Fact]
     public void RuntimeFailureAnalyzerReportsGameNativeAutoSlayProbeLogGrowthMismatch()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
-        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
-        var runDir = Path.Combine(workdir, "run-0001");
-        Directory.CreateDirectory(runDir);
+        using var fixture = CreateGameNativeAutoSlayFixture();
 
-        try
-        {
-            var runtimeProbeSamplesPath = Path.Combine(runDir, "runtime-probe-samples.json");
-            File.WriteAllText(
-                runtimeProbeSamplesPath,
-                """
-                [
-                  {
-                    "Phase": "main-menu",
-                    "SampledAt": "2026-06-18T10:00:10Z",
-                    "LogExists": true,
-                    "LogLengthBytes": 150,
-                    "LogLastWriteTimeUtc": "2026-06-18T10:00:10Z",
-                    "ProcessId": 4242,
-                    "ProcessStartTimeUtc": "2026-06-18T09:59:50Z",
-                    "ProcessPath": "C:/Games/SlayTheSpire2.exe",
-                    "ExpectedGameProcessId": 4242,
-                    "ExpectedGameProcessStartTimeUtc": "2026-06-18T09:59:50Z",
-                    "ExpectedGameProcessPath": "C:/Games/SlayTheSpire2.exe",
-                    "ProcessIdMatchesExpected": true,
-                    "ProcessStartTimeMatchesExpected": true,
-                    "ProcessPathMatchesExpected": true,
-                    "ProcessIdentityMatchesExpected": true,
-                    "ProcessObserved": true,
-                    "MainWindowObserved": true,
-                    "HungWindow": false,
-                    "Responding": true,
-                    "StaleProcessCount": 0,
-                    "CurrentProcessCount": 1,
-                    "UnknownStartTimeProcessCount": 0,
-                    "AmbiguousCurrentProcessCount": 0
-                  },
-                  {
-                    "Phase": "runtime",
-                    "SampledAt": "2026-06-18T10:00:20Z",
-                    "LogExists": true,
-                    "LogLengthBytes": 150,
-                    "LogLastWriteTimeUtc": "2026-06-18T10:00:20Z",
-                    "ProcessId": 4242,
-                    "ProcessStartTimeUtc": "2026-06-18T09:59:50Z",
-                    "ProcessPath": "C:/Games/SlayTheSpire2.exe",
-                    "ExpectedGameProcessId": 4242,
-                    "ExpectedGameProcessStartTimeUtc": "2026-06-18T09:59:50Z",
-                    "ExpectedGameProcessPath": "C:/Games/SlayTheSpire2.exe",
-                    "ProcessIdMatchesExpected": true,
-                    "ProcessStartTimeMatchesExpected": true,
-                    "ProcessPathMatchesExpected": true,
-                    "ProcessIdentityMatchesExpected": true,
-                    "ProcessObserved": true,
-                    "MainWindowObserved": true,
-                    "HungWindow": false,
-                    "Responding": true,
-                    "StaleProcessCount": 0,
-                    "CurrentProcessCount": 1,
-                    "UnknownStartTimeProcessCount": 0,
-                    "AmbiguousCurrentProcessCount": 0
-                  }
-                ]
-                """);
-            var runtimeProbeSamplesHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(runtimeProbeSamplesPath))).ToLowerInvariant();
-            File.WriteAllText(
-                Path.Combine(runDir, "run-result.json"),
-                $$"""
-                {
-                  "RunnerKind": "GameNativeAutoSlay",
-                  "Iteration": 1,
-                  "Seed": "TEST-SEED-001",
-                  "EventKind": "Ancient",
-                  "AncientId": "Urda",
-                  "Invocation": "AutoSlayer.Start(seed, logFile)",
-                  "Command": "AutoSlayer.Start(seed, logFile)",
-                  "Passed": true,
-                  "FailureReasonCodes": [],
-                  "HangSignals": [],
-                  "ProcessId": 4242,
-                  "StartTimestamp": "2026-06-18T10:00:00Z",
-                  "EndTimestamp": "2026-06-18T10:01:00Z",
-                  "RuntimeProbeSamplesPath": "runtime-probe-samples.json",
-                  "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(runtimeProbeSamplesHash)}},
-                  "MainMenuObservation": {
-                    "Passed": true,
-                    "MainMenuReached": true,
-                    "ProcessObserved": true,
-                    "ProcessExitedAfterObservation": false,
-                    "HungWindowDetected": false,
-                    "StaleProcessObserved": false,
-                    "MaxStaleProcessCount": 0,
-                    "NoLogGrowthTimeoutExceeded": false,
-                    "LogObserved": true
-                  },
-                  "RuntimeObservation": {
-                    "Passed": true,
-                    "ProcessObserved": true,
-                    "ProcessExitedAfterObservation": false,
-                    "HungWindowDetected": false,
-                    "StaleProcessObserved": false,
-                    "MaxStaleProcessCount": 0,
-                    "NoLogGrowthTimeoutExceeded": false,
-                    "LogGrew": true,
-                    "LogObserved": true,
-                    "LogInitialLengthBytes": 150,
-                    "LogFinalLengthBytes": 220
-                  }
-                }
-                """);
+        File.WriteAllText(
+            fixture.RuntimeProbeSamplesPath,
+            $$"""
+            [
+              {
+                "Phase": "main-menu",
+                "SampledAt": "2026-06-18T10:00:10Z",
+                "LogExists": true,
+                "LogLengthBytes": 150,
+                "LogLastWriteTimeUtc": "2026-06-18T10:00:10Z",
+                "ProcessId": 4242,
+                "ProcessStartTimeUtc": "2026-06-18T09:59:50Z",
+                "ProcessPath": {{JsonSerializer.Serialize(fixture.GameProcessPath)}},
+                "ExpectedGameProcessId": 4242,
+                "ExpectedGameProcessStartTimeUtc": "2026-06-18T09:59:50Z",
+                "ExpectedGameProcessPath": {{JsonSerializer.Serialize(fixture.GameProcessPath)}},
+                "ProcessIdMatchesExpected": true,
+                "ProcessStartTimeMatchesExpected": true,
+                "ProcessPathMatchesExpected": true,
+                "ProcessIdentityMatchesExpected": true,
+                "ProcessObserved": true,
+                "MainWindowObserved": true,
+                "HungWindow": false,
+                "Responding": true,
+                "StaleProcessCount": 0,
+                "CurrentProcessCount": 1,
+                "UnknownStartTimeProcessCount": 0,
+                "AmbiguousCurrentProcessCount": 0
+              },
+              {
+                "Phase": "runtime",
+                "SampledAt": "2026-06-18T10:00:20Z",
+                "LogExists": true,
+                "LogLengthBytes": 150,
+                "LogLastWriteTimeUtc": "2026-06-18T10:00:20Z",
+                "ProcessId": 4242,
+                "ProcessStartTimeUtc": "2026-06-18T09:59:50Z",
+                "ProcessPath": {{JsonSerializer.Serialize(fixture.GameProcessPath)}},
+                "ExpectedGameProcessId": 4242,
+                "ExpectedGameProcessStartTimeUtc": "2026-06-18T09:59:50Z",
+                "ExpectedGameProcessPath": {{JsonSerializer.Serialize(fixture.GameProcessPath)}},
+                "ProcessIdMatchesExpected": true,
+                "ProcessStartTimeMatchesExpected": true,
+                "ProcessPathMatchesExpected": true,
+                "ProcessIdentityMatchesExpected": true,
+                "ProcessObserved": true,
+                "MainWindowObserved": true,
+                "HungWindow": false,
+                "Responding": true,
+                "StaleProcessCount": 0,
+                "CurrentProcessCount": 1,
+                "UnknownStartTimeProcessCount": 0,
+                "AmbiguousCurrentProcessCount": 0
+              }
+            ]
+            """);
 
-            var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
-            var result = RunPowerShell(script, "-IterationDir", runDir, "-OutFile", outputPath);
-            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+        var runtimeProbeSamplesHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["RuntimeProbeSamplesSha256"] = runtimeProbeSamplesHash;
+        var runtimeObservation = runResultJson["RuntimeObservation"]!.AsObject();
+        runtimeObservation["LogInitialLengthBytes"] = 150;
+        runtimeObservation["LogFinalLengthBytes"] = 220;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
-            var root = document.RootElement;
-            var iteration = FindIteration(root, 1);
-            var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["RuntimeProbeSamplesSha256"] = runtimeProbeSamplesHash;
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
-            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
-            Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
-            Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_log_growth_mismatch");
-        }
-        finally
-        {
-            if (Directory.Exists(workdir))
-            {
-                Directory.Delete(workdir, recursive: true);
-            }
-        }
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+        Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_log_growth_mismatch");
     }
 
     [Fact]
@@ -7378,7 +7290,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Path.Combine(evidenceRoot, "session-state.json"),
             $$"""
             {
-              "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+              "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
               "DisableSpirePlus": false,
               "MoveOtherMods": true,
               "MoveCurrentRuns": true,
@@ -7474,6 +7386,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
     private static void WriteMonkeySummary(string evidenceRoot, params int[] failedIterations)
     {
+        const string fixtureSts1EventMode = "Off";
+        const string fixturePackageVersion = "v0.1.0-private-beta.93";
+        const string fixtureGameVersion = "0.107.1";
+        const string fixtureRitsuLibVersion = "0.4.31";
+        const string fixtureRitsuCompatBranch = "0.107.1";
+        const int fixtureExpectedPatchCount = 25;
+
         var results = new JsonArray();
         var plannedCommands = new JsonArray();
         foreach (var iteration in failedIterations)
@@ -7563,6 +7482,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             ["Passed"] = failedIterations.Length == 0,
             ["Scenario"] = "RuntimeMonkeyFixture",
             ["CommandSelectionMode"] = "RoundRobin",
+            ["Sts1EventMode"] = fixtureSts1EventMode,
+            ["ExpectedPackageVersion"] = fixturePackageVersion,
+            ["ExpectedGameVersion"] = fixtureGameVersion,
+            ["ExpectedRitsuLibVersion"] = fixtureRitsuLibVersion,
+            ["ExpectedRitsuCompatBranch"] = fixtureRitsuCompatBranch,
+            ["ExpectedPatchCount"] = fixtureExpectedPatchCount,
             ["RequestedIterations"] = failedIterations.Length,
             ["CompletedIterations"] = failedIterations.Length,
             ["FailedIterations"] = failedIterations.Length,
@@ -7606,6 +7531,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             {
                 ["Scenario"] = "RuntimeMonkeyFixture",
                 ["CommandSelectionMode"] = "RoundRobin",
+                ["Sts1EventMode"] = fixtureSts1EventMode,
+                ["ExpectedPackageVersion"] = fixturePackageVersion,
+                ["ExpectedGameVersion"] = fixtureGameVersion,
+                ["ExpectedRitsuLibVersion"] = fixtureRitsuLibVersion,
+                ["ExpectedRitsuCompatBranch"] = fixtureRitsuCompatBranch,
+                ["ExpectedPatchCount"] = fixtureExpectedPatchCount,
                 ["PlannedCommands"] = plannedCommands
             }.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
     }
@@ -7968,7 +7899,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "MaxSecondsWithoutLogGrowth": 1,
               "MaxConsecutiveUnresponsiveSamples": 0,
               "Results": [
-                { "Iteration": 1, "Passed": true, "Scenario": "VakuuFightSmoke", "CommandSelectionMode": "RoundRobin", "Command": {{JsonSerializer.Serialize(command)}}, "CommandFilePath": {{JsonSerializer.Serialize(retainedCommandPath)}}, "CommandFileSha256": {{JsonSerializer.Serialize(retainedCommandHash)}}, "RuntimeProbeSamplesPath": {{JsonSerializer.Serialize(resultProbeSamplesPath)}}, "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(retainedProbeSamplesHash)}}, "LiveSessionSessionStatePath": {{JsonSerializer.Serialize(resultSessionStatePath)}}, "LiveSessionSessionStateSha256": {{JsonSerializer.Serialize(retainedSessionStateHash)}}, "LiveSessionRestoreStatePath": {{JsonSerializer.Serialize(resultRestoreStatePath)}}, "LiveSessionRestoreStateSha256": {{JsonSerializer.Serialize(retainedRestoreStateHash)}}, "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}}, "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}}, "CommandAckPattern": {{JsonSerializer.Serialize(ackPattern)}}, "CommandAckRequired": true, "CommandAckObserved": true, "FailureReasonCodes": [], "HangSignals": [] }
+                { "Iteration": 1, "Passed": true, "Scenario": "VakuuFightSmoke", "CommandSelectionMode": "RoundRobin", "Command": {{JsonSerializer.Serialize(command)}}, "CommandFilePath": {{JsonSerializer.Serialize(retainedCommandPath)}}, "CommandFileSha256": {{JsonSerializer.Serialize(retainedCommandHash)}}, "RuntimeProbeSamplesPath": {{JsonSerializer.Serialize(resultProbeSamplesPath)}}, "RuntimeProbeSamplesSha256": {{JsonSerializer.Serialize(retainedProbeSamplesHash)}}, "LiveSessionPrepareOutputPath": {{JsonSerializer.Serialize(retainedPrepareOutputPath)}}, "LiveSessionPrepareOutputSha256": {{JsonSerializer.Serialize(retainedPrepareOutputHash)}}, "LiveSessionSessionStatePath": {{JsonSerializer.Serialize(resultSessionStatePath)}}, "LiveSessionSessionStateSha256": {{JsonSerializer.Serialize(retainedSessionStateHash)}}, "LiveSessionRestoreStatePath": {{JsonSerializer.Serialize(resultRestoreStatePath)}}, "LiveSessionRestoreStateSha256": {{JsonSerializer.Serialize(retainedRestoreStateHash)}}, "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}}, "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}}, "CommandAckPattern": {{JsonSerializer.Serialize(ackPattern)}}, "CommandAckRequired": true, "CommandAckObserved": true, "MainMenuElapsedSeconds": 12.3, "MaxSecondsWithoutLogGrowth": 1, "MaxConsecutiveUnresponsiveSamples": 0, "FailureReasonCodes": [], "HangSignals": [] }
               ]
             }
             """);

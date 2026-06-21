@@ -17,7 +17,7 @@ This file may carry long `/goal` intake notes below, but the current guardrail i
 现在重点改成：这些新实现已经存在，接下来要让它们能稳定测、能解释清楚、能避免递归/软锁/多人/save-load 问题。
 ```
 
-当前 GitHub 最新状态也确实支持你的说法：项目已经进入 **Spire Plus / v0.106.0 / BaseLib 3.1.4** 阶段，`PROJECT_STATE.md` 记录当前 active 内容包括 Ancient reward rebalance、Ascension 11-20、Rootblight、Urda、Morvi、Lotha、隐藏 Vakuu fight、Preview tools 等；同时它也明确说 live gameplay、clicked UI、save-load、death/failure path、co-op verification 仍 pending。
+当前 GitHub 最新状态也确实支持你的说法：项目已经进入 **Spire Plus / v0.106.0 / previous framework 3.1.4** 阶段，`PROJECT_STATE.md` 记录当前 active 内容包括 Ancient reward rebalance、Ascension 11-20、Rootblight、Urda、Morvi、Lotha、隐藏 Vakuu fight、Preview tools 等；同时它也明确说 live gameplay、clicked UI、save-load、death/failure path、co-op verification 仍 pending。
 
 `MainFile.Initialize()` 现在也确实初始化了 `LothaInitializer`、`MorviInitializer`、`UrdaInitializer`、`VakuuFightInitializer` 和 `AscensionInitializer`，所以这些已经不是纯文档 planning，而是 active source surface。 Morvi / Lotha 的 gate 也是默认开启、通过 `EZMB_DISABLE_MORVI` / `EZMB_DISABLE_LOTHA` 或 SpirePlus 对应变量关闭，这和你说“默认开启没问题”一致。
 
@@ -27,13 +27,13 @@ This file may carry long `/goal` intake notes below, but the current guardrail i
 
 # 现在要解决的具体问题
 
-## P0：v0.106 / BaseLib 3.1.4 当前状态要闭环
+## P0：v0.106 / previous framework 3.1.4 当前状态要闭环
 
 当前 `PROJECT_STATE.md` 写的是：
 
 ```text
 Slay the Spire 2 game snapshot: v0.106.0
-BaseLib runtime/project package: v3.1.4
+previous framework runtime/project package: v3.1.4
 ```
 
 并且说明本地 `source code/` 已经从 `SlayTheSpire2.pck` + `sts2.dll` 重新生成。 这说明接下来所有源码证据都要改口径：**不要再按 v0.105.0 / v0.105.1 推理。**
@@ -42,7 +42,7 @@ BaseLib runtime/project package: v3.1.4
 
 ```text
 [ ] 刷新所有仍写 v0.105.x 的 release-facing docs
-[ ] 确认 BaseLib 3.1.4 是唯一当前目标
+[ ] 确认 previous framework 3.1.4 是唯一当前目标
 [ ] 用 v0.106 source code / sourcecodeonlyaianalysis 检查所有 Hook
 [ ] 记录 v0.106 API drift：CardPileCmd.Add clonedBy、side-turn hook、AncientEventModel、reward alternatives、death hook、multiplayer lobby
 ```
@@ -248,15 +248,15 @@ scripts/check-installed-ezmb-package.sh  # 如果可行
 
 ## P1：官方 DLL 打包授权 OK，但仍要做“版本冲突 guard”
 
-你说授权没有问题，那我不再把它当合规 blocker。但它仍有**技术风险**：如果 zip 里带了 `sts2.dll`、`BaseLib.dll`、`0Harmony.dll`，可能导致玩家加载错版本。当前 csproj 会把这些复制到输出和 `.godot` temp。
+你说授权没有问题，那我不再把它当合规 blocker。但它仍有**技术风险**：如果 zip 里带了 `sts2.dll`、`previous framework.dll`、`0Harmony.dll`，可能导致玩家加载错版本。当前 csproj 会把这些复制到输出和 `.godot` temp。
 
 所以不是“不能打包”，而是：
 
 ```text
-[ ] 如果决定打包官方 DLL/BaseLib DLL，必须记录为什么
+[ ] 如果决定打包官方 DLL/previous framework DLL，必须记录为什么
 [ ] 如果不打包，release artifact test 要确保 zip/PCK 不包含
-[ ] 如果打包，要检测版本必须等于当前 v0.106 / BaseLib 3.1.4
-[ ] 不能出现玩家 mods/BaseLib 3.1.4 但包内还有另一个 BaseLib.dll 被优先加载
+[ ] 如果打包，要检测版本必须等于当前 v0.106 / previous framework 3.1.4
+[ ] 不能出现玩家 mods/previous framework 3.1.4 但包内还有另一个 previous framework.dll 被优先加载
 ```
 
 这要 Codex 继续查 Godot export 后 zip 里到底有没有这些 DLL。
@@ -294,7 +294,7 @@ D:\Game\FOTN\dev-the-spire
 用户明确说明：
 - Morvi / Lotha / Urda 新实现默认开启没问题，不要改回默认关闭。
 - Vakuu fight 保持 hidden-by-default 没问题。
-- 官方 DLL / BaseLib / 资源授权问题用户已处理，不要把它当合规 blocker。
+- 官方 DLL / previous framework / 资源授权问题用户已处理，不要把它当合规 blocker。
 - 当前任务不是回滚新内容，而是让这些超前实现可测试、可解释、可 debug、可逐步稳定。
 - 不要新增大玩法，先做高风险路径的源码验证、测试护栏、诊断、小修、手测矩阵。
 
@@ -339,7 +339,7 @@ Phase 1：v0.106 source/API drift audit
 - RunManager / NGame / second boss transition
 - ShouldDie / ShouldDieLate / AfterPreventingDeath
 - multiplayer lobby / version mismatch
-- ModSettings / BaseLib config
+- ModSettings / previous framework config
 
 输出：
 - docs/audits/v0.106-source-api-drift.md
@@ -467,14 +467,14 @@ but do not overbuild.
 
 Phase 7：Package DLL / dependency version guard
 
-Because build currently copies sts2.dll / 0Harmony.dll / BaseLib.dll for Godot export:
+Because build currently copies sts2.dll / 0Harmony.dll / previous framework.dll for Godot export:
 - Decide whether final zip should contain them.
 - User says authorization is handled, so do not treat this as legal blocker.
 - Treat as runtime-version conflict risk.
 - Add release artifact test:
   - either package does not include duplicate runtime DLLs,
   - or if it does, the docs clearly say versions and tests assert expected version/hash.
-- Prefer no duplicate BaseLib.dll in mod package unless source proves required.
+- Prefer no duplicate previous framework.dll in mod package unless source proves required.
 
 Phase 8：Update docs and issue index
 

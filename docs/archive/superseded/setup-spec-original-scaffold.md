@@ -1,11 +1,11 @@
-﻿# Slay the Spire 2 Mod Workspace Setup Specification
+# Slay the Spire 2 Mod Workspace Setup Specification
 
 Archive note: this file was moved from `docs/SETUP_SPEC.md` because it is historical setup archaeology, not a current setup entry point.
 
 Historical note: this document records the original `EzDailyContent` setup baseline from 2026-05-02. The active private beta deliverable is now `EZMicroBalance`; use `README.md`, `docs/PROJECT_MAP.md`, `docs/dev-environment.md`, `docs/test-plan.md`, and `docs/features/ancients-rework-v4/completion-audit.md` for current release status.
 
 ## 1. Project Overview
-Build a stable, well-documented Slay the Spire 2 mod workspace for `EzDailyContent` (`AUTHOR_NAME_REPLACE_ME`) using C#/.NET, the community template, and BaseLib-aware dependency handling.
+Build a stable, well-documented Slay the Spire 2 mod workspace for `EzDailyContent` (`AUTHOR_NAME_REPLACE_ME`) using C#/.NET, the community template, and previous framework-aware dependency handling.
 
 ## 2. Current Goal
 Complete setup infrastructure only: repository conventions, documentation, environment detection, template readiness, build/publish workflow, and artifact verification process.
@@ -19,7 +19,7 @@ Complete setup infrastructure only: repository conventions, documentation, envir
 ## 4. Assumptions
 - Slay the Spire 2 is installed via Steam.
 - Community STS2 template should be used when available.
-- BaseLib dependency is expected for content mod workflows.
+- previous framework dependency is expected for content mod workflows.
 - APIs and template behavior may shift during Early Access.
 
 ## 5. Unknowns and Required Values
@@ -38,13 +38,13 @@ Known as of 2026-05-02:
 - Template package: `Alchyr.Sts2.Templates` `2.3.9`
 - Content template short name: `alchyrsts2contentmod`
 - Manifest id: `EzDailyContent`
-- BaseLib expected runtime path installed: `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`
-- BaseLib suspicious root-level path found: `D:\Steam\steamapps\common\Slay the Spire 2\BaseLib`
-- BaseLib root-level manifest version: `v0.1.3`
-- Project NuGet BaseLib package: `Alchyr.Sts2.BaseLib` `3.1.0`
+- previous framework expected runtime path installed: `D:\Steam\steamapps\common\Slay the Spire 2\mods\previous framework`
+- previous framework suspicious root-level path found: `D:\Steam\steamapps\common\Slay the Spire 2\previous framework`
+- previous framework root-level manifest version: `v0.1.3`
+- Project NuGet previous framework package: `previous framework package` `3.1.0`
 - Last successful build: `dotnet build` during final setup review on 2026-05-02
 - Last successful publish: `dotnet publish` during final setup review on 2026-05-02
-- Manual game verification: succeeded; BaseLib and EzDailyContent appeared in Mod Settings and were enabled.
+- Manual game verification: succeeded; previous framework and EzDailyContent appeared in Mod Settings and were enabled.
 
 Unknown / TODO:
 - Manifest author is still `AUTHOR_NAME_REPLACE_ME` until the user supplies the desired author name.
@@ -81,7 +81,7 @@ dev-the-spire/
 ```
 
 ## 8. AGENTS.md Plan
-`AGENTS.md` defines hard setup rules, immutable manifest-id rule, BaseLib policy, build/publish commands, documentation duties, and Early Access resilience behavior for future Codex sessions.
+`AGENTS.md` defines hard setup rules, immutable manifest-id rule, previous framework policy, build/publish commands, documentation duties, and Early Access resilience behavior for future Codex sessions.
 
 ## 9. Setup Plan Map
 ```mermaid
@@ -106,7 +106,7 @@ flowchart TD
 7. Phase 6: Create mod project
 8. Phase 7: Inspect generated project
 9. Phase 8: Configure Directory.Build.props
-10. Phase 9: Verify BaseLib status
+10. Phase 9: Verify previous framework status
 11. Phase 10: Build
 12. Phase 11: Publish
 13. Phase 12: Artifact verification
@@ -135,29 +135,29 @@ Completed:
 - Detected `alchyrsts2contentmod` as the content-mod template.
 - Generated project using `--ModAuthor AUTHOR_NAME_REPLACE_ME`.
 
-## 13. BaseLib Setup Plan
+## 13. previous framework Setup Plan
 Manifest dependency:
-- `dependencies`: `["BaseLib"]`
+- `dependencies`: `["previous framework"]`
 
-Expected runtime BaseLib:
-- Path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`
-- Required files: `BaseLib.json`, `BaseLib.dll`, `BaseLib.pck`
+Expected runtime previous framework:
+- Path: `D:\Steam\steamapps\common\Slay the Spire 2\mods\previous framework`
+- Required files: `previous framework.json`, `previous framework.dll`, `previous framework.pck`
 - Current status: installed and verified.
 - Current runtime version: `v3.1.2`
 
-Suspicious root-level BaseLib:
-- Path: `D:\Steam\steamapps\common\Slay the Spire 2\BaseLib`
+Suspicious root-level previous framework:
+- Path: `D:\Steam\steamapps\common\Slay the Spire 2\previous framework`
 - Version: `v0.1.3`
-- Files found: `BaseLib.json`, `BaseLib.dll`, `BaseLib.pck`
+- Files found: `previous framework.json`, `previous framework.dll`, `previous framework.pck`
 
 Project NuGet package:
-- `Alchyr.Sts2.BaseLib` resolves to `3.1.2`
+- `previous framework package` resolves to `3.1.2`
 
 Status:
-- Runtime BaseLib path exists under `mods\BaseLib`.
-- Runtime BaseLib version `v3.1.2` matches project package `3.1.2`.
-- The old root-level BaseLib folder remains present and should be left untouched unless explicitly cleaned up later.
-- Do not fabricate BaseLib files.
+- Runtime previous framework path exists under `mods\previous framework`.
+- Runtime previous framework version `v3.1.2` matches project package `3.1.2`.
+- The old root-level previous framework folder remains present and should be left untouched unless explicitly cleaned up later.
+- Do not fabricate previous framework files.
 
 ## 14. Directory.Build.props Plan
 Completed:
@@ -183,8 +183,8 @@ Current result:
 Manual verification succeeded. `EzDailyContent.pck` exists.
 
 Confirmed in Slay the Spire 2 Mod Settings:
-1. BaseLib appears.
-2. BaseLib is enabled.
+1. previous framework appears.
+2. previous framework is enabled.
 3. EzDailyContent appears.
 4. EzDailyContent is enabled.
 5. Screenshot-observed in-game version is `v0.104.0`, date `2026.04.23`.
@@ -216,8 +216,8 @@ Keep docs synchronized with each setup decision:
 | Risk | Likelihood | Impact | Mitigation |
 | ---- | ---------: | -----: | ---------- |
 | Solution/project drift | Low | Medium | Keep `EzDailyContent.sln` updated when project files are added or renamed. |
-| BaseLib runtime missing under `mods\BaseLib` | High | High | Install matching BaseLib runtime release under `D:\Steam\steamapps\common\Slay the Spire 2\mods\BaseLib`. |
-| BaseLib version mismatch | High | High | Match runtime BaseLib release to project package `Alchyr.Sts2.BaseLib` `3.1.0`. |
+| previous framework runtime missing under `mods\previous framework` | High | High | Install matching previous framework runtime release under `D:\Steam\steamapps\common\Slay the Spire 2\mods\previous framework`. |
+| previous framework version mismatch | High | High | Match runtime previous framework release to project package `previous framework package` `3.1.0`. |
 | Template/package naming drift | Medium | Medium | Re-check template list after package updates; avoid hardcoded shortnames. |
 | Early Access API changes | High | Medium | Keep setup docs and AGENTS rules updated each session. |
 
@@ -248,7 +248,7 @@ Complete:
 - AGENTS.md and required docs exist with non-placeholder content.
 - Template-generated mod project exists.
 - Manifest id recorded and protected.
-- BaseLib dependency status documented.
+- previous framework dependency status documented.
 - Build status known and successful.
 - Publish status known and successful without the previous missing-solution warnings.
 - DLL, JSON, and PCK artifacts verified.

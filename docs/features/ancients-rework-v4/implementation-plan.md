@@ -258,7 +258,7 @@ Validation:
 - `dotnet publish`.
 - Manual game launch and Mod Settings verification.
 - In-game smoke tests for every implemented reward.
-- Log inspection for `EZMicroBalance`, `BaseLib`, `error`, and `exception`; legacy `EzDailyContent` should be disabled or absent during private-beta testing.
+- Log inspection for `EZMicroBalance`, `previous package`, `error`, and `exception`; legacy `EzDailyContent` should be disabled or absent during private-beta testing.
 
 ## 7. Historical Phase-1 /goal Prompt
 
@@ -275,7 +275,7 @@ Tasks:
 1. Re-read docs/features/ancients-rework-v4/source-design.md and docs/features/ancients-rework-v4/implementation-plan.md.
 2. Use or extend no-op logging only as needed to identify the Pael's Horn Ancient option/reward id, text key, runtime type, and reward application hook.
 3. Create or update docs/features/ancients-rework-v4/api-discovery.md with the actual API findings and chosen patch point.
-4. Historical scaffold-era wording referenced supported game/BaseLib/template APIs. Current release work must instead use native game command APIs, RitsuLib APIs, and template-supported APIs; do not reintroduce BaseLib without owner-approved dependency documentation.
+4. Historical scaffold-era wording referenced supported game/previous package/template APIs. Current release work must instead use native game command APIs, RitsuLib APIs, and template-supported APIs; do not reintroduce previous package without owner-approved dependency documentation.
 5. Historical instruction from the scaffold phase: keep manifest id EzDailyContent and do not add unrelated cards, relics, assets, or other Ancient reward changes. Current release work instead keeps manifest id EZMicroBalance.
 6. Run dotnet build. Do not continue to publish if build fails.
 7. Run dotnet publish only if packaging/resource/manifest changes are made or if manual game verification needs refreshed installed artifacts.

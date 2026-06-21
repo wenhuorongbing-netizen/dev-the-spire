@@ -1,4 +1,4 @@
-﻿# Ancient Reward Optimization Specification for StS2 Public Beta v0.104.0
+# Ancient Reward Optimization Specification for StS2 Public Beta v0.104.0
 
 This is a design and safety-gate specification. It does not authorize gameplay implementation.
 
@@ -14,13 +14,13 @@ Priority order:
 - Repository: `wenhuorongbing-netizen/dev-the-spire`
 - Branch: `main`
 - Game target: Slay the Spire 2 public beta `v0.104.0`, date `2026.04.23`
-- BaseLib runtime: `v3.1.0`
-- BaseLib package: `Alchyr.Sts2.BaseLib` `3.1.0`
+- previous framework runtime: `v3.1.0`
+- previous framework package: `previous framework package` `3.1.0`
 - ModAnalyzers package: `Alchyr.Sts2.ModAnalyzers` `0.1.9`
 - Manifest id: `EzDailyContent`
 - Build baseline: `dotnet build` succeeds
 - Publish baseline: `dotnet publish` succeeds
-- Manual verification: BaseLib and EzDailyContent appear and are enabled in Mod Settings
+- Manual verification: previous framework and EzDailyContent appear and are enabled in Mod Settings
 - Gameplay implementation status: no concrete gameplay features implemented
 
 ## Why Ancient Rewards Are First
@@ -51,11 +51,11 @@ Implementation is forbidden until every gate item is documented.
 | Gate Item | Current Status | Required Before Implementation |
 |---|---|---|
 | Exact Ancient model class or registry location | PARTIAL | `MegaCrit.Sts2.Core.Models.AncientEventModel` is confirmed; act-level Ancient members are confirmed. Exact basegame data source/population path remains UNKNOWN. |
-| Exact reward option model or pool type | PARTIAL | `MegaCrit.Sts2.Core.Events.EventOption` is confirmed; BaseLib custom pools are confirmed. Exact basegame reward pool type remains UNKNOWN. |
+| Exact reward option model or pool type | PARTIAL | `MegaCrit.Sts2.Core.Events.EventOption` is confirmed; previous framework custom pools are confirmed. Exact basegame reward pool type remains UNKNOWN. |
 | Exact reward generation timing | PARTIAL | Relevant generation signatures are confirmed, but exact call order remains UNKNOWN. |
 | Exact UI preview / reward resolution relationship | PARTIAL | `EventOption` text/resolution members are confirmed, but UI binding path remains UNKNOWN. |
-| Whether BaseLib can modify existing Ancient rewards | NO DIRECT API FOUND | Local BaseLib XML/reflection shows custom Ancient support, not explicit existing-reward mutation support. |
-| Whether Harmony is required | UNKNOWN | Decision after BaseLib/template research |
+| Whether previous framework can modify existing Ancient rewards | NO DIRECT API FOUND | Local previous framework XML/reflection shows custom Ancient support, not explicit existing-reward mutation support. |
+| Whether Harmony is required | UNKNOWN | Decision after previous framework/template research |
 | Safest no-op logging probe point | CANDIDATE ONLY | `AncientEventModel.GenerateInitialOptionsWrapper()` is a candidate observation point; not approved until verified. |
 | Rollback plan | UNKNOWN | Touched files, revert path, and runtime disable path |
 | One-Ancient MVP target | UNKNOWN | Selected observed reward and minimal proposed change |
@@ -92,8 +92,8 @@ This taxonomy is provisional until real reward models are inspected.
 
 ## Implementation Strategy Options
 
-### Option A: BaseLib-supported modification
-Use BaseLib or template APIs to modify existing Ancient reward behavior or pools.
+### Option A: previous framework-supported modification
+Use previous framework or template APIs to modify existing Ancient reward behavior or pools.
 
 Status: NO DIRECT API FOUND in local XML/reflection.
 
@@ -104,9 +104,9 @@ Required evidence:
 - Whether existing rewards can be modified safely.
 
 ### Option B: Additive supported content
-Use BaseLib/template APIs to add new Ancient reward models or variants without mutating basegame entries.
+Use previous framework/template APIs to add new Ancient reward models or variants without mutating basegame entries.
 
-Status: PARTIAL. `CustomAncientModel` and BaseLib custom option pools are confirmed, but this is not the same as tuning existing basegame Ancient rewards.
+Status: PARTIAL. `CustomAncientModel` and previous framework custom option pools are confirmed, but this is not the same as tuning existing basegame Ancient rewards.
 
 Required evidence:
 - Whether `CustomAncientModel` exists and what it supports.
@@ -202,7 +202,7 @@ Required before logging implementation:
 
 Desired future log facts:
 - Ancient reward tuning system initialized.
-- Game/BaseLib versions.
+- Game/previous framework versions.
 - Reward generation point observed.
 - Candidate reward id observed.
 - No mutation performed during probe.
@@ -227,7 +227,7 @@ Must include:
 - Treat all Ancient reward APIs as unstable until inspected.
 - Re-run research after public beta updates.
 - Do not claim compatibility beyond tested versions.
-- Prefer BaseLib-supported APIs over Harmony.
+- Prefer previous framework-supported APIs over Harmony.
 
 ## Relation to Ascension 11-20-30
 Ascension expansion depends on Ancient reward balance. Do not design final A11-A30 pressure until Ancient reward power, variance, and risk are better understood.
@@ -246,7 +246,7 @@ See `docs/NEW_CHARACTER_ROADMAP.md` and future drafts under `docs/_future/new-ch
 | Guessing wrong Ancient model class | High | High | Block implementation until exact class/registry is documented |
 | Reward pool type misunderstood | High | High | Require pool type evidence before tuning |
 | UI preview desyncs from effect | Medium | High | Require preview/resolution relationship evidence |
-| BaseLib support is assumed but absent | Medium | High | Inspect BaseLib source/docs before implementation |
+| previous framework support is assumed but absent | Medium | High | Inspect previous framework source/docs before implementation |
 | Harmony patch is too broad | Medium | High | Forbid broad patch points and require no-op probe |
 | Public beta update breaks API | High | High | Pin docs to `v0.104.0` and re-research after updates |
 | MVP target selected from assumptions | Medium | Medium | Require observed facts in balance map |
@@ -270,8 +270,8 @@ Minimum required rollback plan before implementation:
 - Fill balance map with observed facts.
 - No gameplay implementation.
 
-### Phase R1: BaseLib/API Decision
-- Decide whether BaseLib can modify existing Ancient rewards.
+### Phase R1: previous framework/API Decision
+- Decide whether previous framework can modify existing Ancient rewards.
 - Decide whether Harmony is required.
 - If Harmony is required, identify no-op probe point.
 

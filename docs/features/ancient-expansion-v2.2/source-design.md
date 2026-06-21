@@ -179,7 +179,7 @@ Future implementation must inspect local game source before coding. Required res
 - Temporary card storage zones and save/load serialization.
 - Multiplayer player-owned state and desync-sensitive reward paths.
 
-Local `source code/src/Core/` is primary evidence. RitsuLib/template source and local references are second. BaseLib notes are historical migration context only unless the owner explicitly approves reintroducing that dependency. The tutorial index is only a secondary guide: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`.
+Local `source code/src/Core/` is primary evidence. RitsuLib/template source and local references are second. previous package notes are historical migration context only unless the owner explicitly approves reintroducing that dependency. The tutorial index is only a secondary guide: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`.
 
 ## 10. Test Focus
 

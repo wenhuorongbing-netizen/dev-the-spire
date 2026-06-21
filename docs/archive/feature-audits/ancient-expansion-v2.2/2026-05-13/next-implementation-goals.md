@@ -8,7 +8,7 @@ Do not implement Morvi/Lotha/Vakuu, A21-A30, or custom-character work before the
 
 - Why: Urda, Morvi, and Rootblight rely on Player-scoped saved fields; local game source did not prove general Player saved-properties serialization.
 - Likely files: `AncientSavedStateFields.cs`, `UrdaRunHook.cs`, `MorviRunHook.cs`, `AscensionSavedStateFields.cs`, `RootDeckService.cs`, tests/docs.
-- Source evidence needed: direct serialization proof for `SavedSpireField<Player,T>`, or a safer state carrier.
+- Source evidence needed: direct serialization proof for `previous saved-state API<Player,T>`, or a safer state carrier.
 - Implementation sketch: create a tiny controlled save/load proof first. If Player fields fail, migrate persistent state to a source-proven model/relic/card/run carrier instead of adding a normalizer.
 - Acceptance criteria: save/load preserves Urda selected blessing/progress, Morvi debt state when gated, and Rootblight level across relevant transitions.
 - Tests/commands: source guard plus `dotnet build`, `dotnet test`, release-artifact tests when packaging changes.

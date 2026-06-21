@@ -1,4 +1,4 @@
-﻿# Spire Plus To Review
+# Spire Plus To Review
 
 These items were implemented or researched in the 2026-05-17 test-ready loop and need user manual retest.
 
@@ -89,7 +89,7 @@ These items were implemented or researched in the 2026-05-17 test-ready loop and
 | VAKUU-DOC-GUARD-PHRASE | Vakuu current docs now include the exact `ParentEventId` evidence wording required by the save-risk guards, and no longer describe the active fight as using the old Core-rejected shape. | `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: 189 passed, 0 failed. |
 | 2026-05-17-SECOND-SOURCE-REVIEW-NO-NEW-BLOCKERS | Second source review found no P0/P1/P2 findings to extract into `docs/issues.md`; no new source blocker. | `docs/review.md` v3.2 worktree review; no game run or long tests. |
 | 2026-05-17-FINAL-STATIC-REVIEW-NO-EXTRACTABLE-ISSUES | Final static review found no P0/P1/P2 source blockers and no active doc hygiene blockers to extract into `docs/issues.md`; remaining risks are live-only manual proof gates. | `docs/review.md` v3.2 Final Static Review; no game, build, test, or publish run in that review. |
-| DOC-BOOTSTRAP-SPIREPLUS | `scripts/bootstrap-windows.ps1` now targets Spire Plus / `EZMicroBalance`, asks for BaseLib v3.1.2, and no longer tells testers to verify `EzDailyContent`. | Guard added in `ReleaseSafetyExpandedGuardTests`; full validation passed in this pass. |
+| DOC-BOOTSTRAP-SPIREPLUS | `scripts/bootstrap-windows.ps1` now targets Spire Plus / `EZMicroBalance`, asks for previous framework v3.1.2, and no longer tells testers to verify `EzDailyContent`. | Guard added in `ReleaseSafetyExpandedGuardTests`; full validation passed in this pass. |
 | DOC-V22-WORKLOG-READABILITY | The corrupted active v2.2 work-log was archived to `docs/archive/feature-work-logs/ancient-expansion-v2.2/work-log-20260517-pre-cleanup.md`; the active work-log is now a compact readable current summary with no common `s...s` delimiter corruption. | Guard added in `ReleaseSafetyExpandedGuardTests`; full validation passed in this pass. |
 | DOC-HISTORICAL-LOADER-WORDING | README, beta compatibility notes, and changelog now mark the 22-field loader smoke as historical evidence and keep current 25-field package loader parity pending. | Guarded by existing 22-field documentation checks plus this review pass; full validation passed. |
 | CSHARP-ZHS-MOJIBAKE | Inline Simplified Chinese text in Firemark, Banner, Boss Seal, Fission, Royal Decree, Forge Token, and Trial Branch source localization now uses readable short player-facing wording instead of corrupted text. | `dotnet build EZMicroBalance.sln` passed; `AncientPlayerFacingPolishGuardTests` now checks active C# source for known mojibake fragments. |

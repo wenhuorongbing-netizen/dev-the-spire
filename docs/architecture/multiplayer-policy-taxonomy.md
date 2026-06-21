@@ -41,7 +41,7 @@ Classify every Spire Plus feature by its multiplayer safety category. This taxon
 | Rootblight deck management | `ShouldDisableUnverifiedCoopGameplay` | Deck mutation, local player only |
 | Forge Token visible relic | `ShouldDisableUnverifiedCoopGameplay` | Relic UI, local player only |
 | Ascension preference storage | `ShouldDisableUnverifiedCoopFeature` | Local preference only |
-| SavedSpireField read/write | None needed (local save fields) | Per-player save data |
+| previous saved-state API read/write | None needed (local save fields) | Per-player save data |
 
 **Co-op safe**: Yes for host (who owns the local player). Requires verification for client.
 

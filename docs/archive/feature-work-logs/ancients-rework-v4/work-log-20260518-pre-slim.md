@@ -1,4 +1,4 @@
-﻿# EZ Micro Balance Work Log
+# EZ Micro Balance Work Log
 
 Current status note: entries below are chronological history. Older entries may reference `EzDailyContent*` paths and smaller automated test totals from before the independent `EZMicroBalance` migration. The current active release code is under `EZMicroBalanceCode/`, active resources are under `EZMicroBalance/`, and the current automated release/source-guard suite is passing unless a later entry supersedes it.
 
@@ -23,19 +23,19 @@ Current status note: entries below are chronological history. Older entries may 
 - At this source-only checkpoint, `dotnet test`, live gameplay/Steam verification, `dotnet publish`, package refresh, and release-artifact tests had not been rerun. The no-test package refresh entry above supersedes the package gap; tests and live verification remain pending.
 - Private-beta release readiness remains blocked by live Ancient reward matrix rows, save/load-sensitive rows, disable-mod gameplay, post-fix Urda/Rootblight gameplay, natural A11 traversal, co-op verification, release-artifact tests for the refreshed package, clean commit, and user-approved push.
 
-## 2026-05-13 - BaseLib-only plug-off startup/log evidence
+## 2026-05-13 - previous framework-only plug-off startup/log evidence
 
-- Added `-DisableSpirePlus` to `scripts/spire-plus-live-session.ps1` for BaseLib-only plug-off startup/log evidence. The option now requires `-MoveOtherMods`, temporarily isolates `EZMicroBalance` out of the mods folder, records `AllowedModIds`, and restores the package afterward.
+- Added `-DisableSpirePlus` to `scripts/spire-plus-live-session.ps1` for previous framework-only plug-off startup/log evidence. The option now requires `-MoveOtherMods`, temporarily isolates `EZMicroBalance` out of the mods folder, records `AllowedModIds`, and restores the package afterward.
 - The first settings-only disabled attempt under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-142835` is invalid plug-off evidence: the game still logged `Finished mod initialization for 'Spire Plus' (EZMicroBalance)` and `Loaded 2 mods (2 total)`.
 - No-launch plug-off helper smoke under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-142957` moved 25 entries including `EZMicroBalance`, moved 1 current-run file, restored all 25 mod entries and the run file, and restored Steam settings to the original hash.
-- Normal Steam plug-off startup/log validation under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` moved 25 entries including `EZMicroBalance`, launched through Steam, reached main menu, logged `Loaded 1 mods (1 total)` and BaseLib initialization only, did not initialize Spire Plus / `EZMicroBalance`, audited clean with 0 release-blocking signatures, then stopped the game and restored settings, current-run save, and moved entries.
+- Normal Steam plug-off startup/log validation under `.tools/runtime-evidence/live-spire-plus-disabled-session-20260513-143020` moved 25 entries including `EZMicroBalance`, launched through Steam, reached main menu, logged `Loaded 1 mods (1 total)` and previous framework initialization only, did not initialize Spire Plus / `EZMicroBalance`, audited clean with 0 release-blocking signatures, then stopped the game and restored settings, current-run save, and moved entries.
 - This closes only current plug-off loader evidence. Disable-mod gameplay in an actual run remains pending.
 - Ran `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
-- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 18 skipped after the BaseLib-only plug-off startup/log refresh.
-- Ran `dotnet test EZMicroBalance.sln -c Release`: passed, 81 passed, 18 skipped after the BaseLib-only plug-off startup/log refresh.
-- Ran `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 99 passed, 0 skipped after the BaseLib-only plug-off startup/log refresh.
-- Ran `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the BaseLib-only plug-off startup/log refresh.
-- Ran `git diff --check`: passed with CRLF normalization warnings only after the BaseLib-only plug-off startup/log refresh.
+- Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 81 passed, 18 skipped after the previous framework-only plug-off startup/log refresh.
+- Ran `dotnet test EZMicroBalance.sln -c Release`: passed, 81 passed, 18 skipped after the previous framework-only plug-off startup/log refresh.
+- Ran `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 99 passed, 0 skipped after the previous framework-only plug-off startup/log refresh.
+- Ran `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed after the previous framework-only plug-off startup/log refresh.
+- Ran `git diff --check`: passed with CRLF normalization warnings only after the previous framework-only plug-off startup/log refresh.
 - Did not run `dotnet publish`; this pass changed scripts, docs, and tests only, so the current package artifacts remain the Urda custom Ancient asset-path package refresh artifacts.
 
 ## 2026-05-13 - Ascension live-evidence protocol guard refresh
@@ -54,11 +54,11 @@ Current status note: entries below are chronological history. Older entries may 
 ## 2026-05-13 - Urda custom Ancient asset-path package refresh
 
 - A controlled current A14 Rootblight generated-art hover probe under `.tools\runtime-evidence\current-rootblight-art-hover-20260513-114103` was negative evidence, not a pass: it entered the default-on Urda Ancient event before combat and `godot-live.log` reported missing vanilla-derived Urda map icon, run-history icon, and background-scene paths.
-- Fixed Urda to derive from BaseLib `CustomAncientModel` with `autoAdd: false`, custom mod-owned icon/run-history/background scene paths, and a packaged background scene at `EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn`.
+- Fixed Urda to derive from previous framework `CustomAncientModel` with `autoAdd: false`, custom mod-owned icon/run-history/background scene paths, and a packaged background scene at `EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn`.
 - Updated release artifact/source guards so selected-resource PCK parity covers packaged `.tscn` scenes and the Urda custom Ancient asset paths.
 - Added headless installed-PCK resource-load evidence at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345`; the custom Urda scene/icon resolved with `URDA_RESOURCE_LOAD_OK` and 0 `ERROR` / `WARNING` lines.
-- Added `scripts/spire-plus-live-session.ps1` for repeatable normal Steam live-test prepare/restore sessions; no-launch smoke checks restored Steam settings byte-for-byte, restored 24 temporarily moved non-BaseLib/EZMicroBalance mod entries, and confirmed current-run isolation is a clean no-op when no current-run files exist.
-- Ran a helper-driven normal Steam startup/log validation under `.tools/runtime-evidence/live-spire-plus-session-20260513-125206`; the stricter rerun moved the previous log aside before launch, logged Spire Plus initialization, `Loaded 2 mods (2 total)`, `Found 16 SavedSpireFields`, and `Time to main menu: 13,849ms`, restored settings and 24 moved mod entries, and audited clean. This is loader/helper evidence, not gameplay evidence.
+- Added `scripts/spire-plus-live-session.ps1` for repeatable normal Steam live-test prepare/restore sessions; no-launch smoke checks restored Steam settings byte-for-byte, restored 24 temporarily moved non-previous framework/EZMicroBalance mod entries, and confirmed current-run isolation is a clean no-op when no current-run files exist.
+- Ran a helper-driven normal Steam startup/log validation under `.tools/runtime-evidence/live-spire-plus-session-20260513-125206`; the stricter rerun moved the previous log aside before launch, logged Spire Plus initialization, `Loaded 2 mods (2 total)`, `Found 16 previous saved-state registrations`, and `Time to main menu: 13,849ms`, restored settings and 24 moved mod entries, and audited clean. This is loader/helper evidence, not gameplay evidence.
 - Hardened `scripts/spire-plus-live-session.ps1` restore for sessions that start or continue a run by adding `-PreserveNewCurrentRunsOnRestore`. The no-launch smoke under `.tools/runtime-evidence/live-helper-preserve-current-run-smoke-20260513-133431` moved a dummy test-created `current_run.save` into evidence, restored the original current run, and restored Steam settings to the expected hash. This is tooling safety evidence, not gameplay evidence.
 - Added `scripts/check-spire-window-preflight.ps1` after invalid local screenshot attempts showed another foreground application covering Slay the Spire 2. The preflight records foreground-window state and can reject screenshot collection unless Slay the Spire 2 is actually foreground; smoke evidence under `.tools/runtime-evidence/window-preflight-smoke-20260513-135402` reported `VampireSurvivors` foreground and Slay the Spire 2 not running.
 - Added a release-safety guard that requires the invalid live Urda screenshot attempts `.tools/runtime-evidence/live-urda-postfix-20260513-131752` and `.tools/runtime-evidence/live-urda-continue-postfix-20260513-134337` to be referenced only as invalid or non-satisfying evidence in the private-beta release completion audit.
@@ -102,7 +102,7 @@ Files read:
 External references checked:
 
 - `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/04-ritsulib/04-07-add-ancient/`
-- `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-baselib/03-07-add-ancient/`
+- `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-previous-framework/03-07-add-ancient/`
 
 Commands run:
 
@@ -240,13 +240,13 @@ Files read:
 - `EzDailyContent.json`
 - `EzDailyContent/localization/eng/relics.json`
 - `EzDailyContent/localization/eng/cards.json`
-- Live RitsuLib and BaseLib Ancient tutorial URLs listed in `external-references.md`.
+- Live RitsuLib and previous framework Ancient tutorial URLs listed in `external-references.md`.
 
 Commands run:
 
 - `git status -sb`
 - Required local files read with `Get-Content -Encoding UTF8`.
-- Used `.tools\ilspy\ilspycmd` against local `sts2.dll` to inspect `Claws`, `Crossbow`, `Fiddle`, `JeweledMask`, `ChoicesParadox`, `PrismaticGem`, `PaelsTooth`, `MeatCleaver`, `CookRestSiteOption`, `RestSiteOption`, `ToastyMittens`, `YummyCookie`, `Tezcatara`, `Folly`, `Debt`, `Enthralled`, `CardSelectorPrefs`, `CardSelectCmd`, `CardFactory`, `CardPileCmd`, `CardCmd`, `PowerCmd`, `CreatureCmd`, `LocManager`, `LocTable`, `ModelDb`, `EnchantmentModel`, and BaseLib `CustomEnchantmentModel`, `ModelLocPatch`, `PrefixIdPatch`, `TypePrefix`, and `CardModifierLoc`.
+- Used `.tools\ilspy\ilspycmd` against local `sts2.dll` to inspect `Claws`, `Crossbow`, `Fiddle`, `JeweledMask`, `ChoicesParadox`, `PrismaticGem`, `PaelsTooth`, `MeatCleaver`, `CookRestSiteOption`, `RestSiteOption`, `ToastyMittens`, `YummyCookie`, `Tezcatara`, `Folly`, `Debt`, `Enthralled`, `CardSelectorPrefs`, `CardSelectCmd`, `CardFactory`, `CardPileCmd`, `CardCmd`, `PowerCmd`, `CreatureCmd`, `LocManager`, `LocTable`, `ModelDb`, `EnchantmentModel`, and previous framework `CustomEnchantmentModel`, `ModelLocPatch`, `PrefixIdPatch`, `TypePrefix`, and `CardModifierLoc`.
 - `dotnet build` after the finish batch; failed once because `RelicModel.L10NLookup` is protected.
 - `dotnet build` after replacing the protected helper with `new LocString("relics", "CHOICES_PARADOX.selectionScreenPrompt")`; passed with 0 warnings and 0 errors.
 - `dotnet publish` because localization/resources changed; command returned exit code 0 and exported the Godot `.pck`. Godot printed a script-scan `FileNotFoundException` for assembly `sts2` during export but continued through `savepack` and packed `cards.json`, `relics.json`, and `rest_site_ui.json`.
@@ -336,8 +336,8 @@ Commands and notable command results:
 - Located ILSpy at `.tools\ilspy\ilspycmd.exe`.
 - Initial `sts2.dll` probes against `SlayTheSpire2_Data\Managed\sts2.dll` failed because that path does not exist for this install.
 - Located local game API assembly at `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`.
-- Used `.tools\ilspy\ilspycmd.exe` against local `sts2.dll` and BaseLib `BaseLib.dll` to inspect `CardReward`, `RewardsCmd`, `CardFactory`, `CardCreationOptions`, `CardCreationFlags`, `CardCreationResult`, `AbstractModel`, `PrismaticGem`, `PaelsTooth`, `SavedProperties`, `SavedProperty`, BaseLib `SpireField`, BaseLib `SavedSpireField`, `SavedSpireFieldPatch`, `CombatRoom`, `RoomType`, `CardSelectCmd`, `CardPileCmd`, `RelicModel`, `LocManager`, `Tezcatara`, Tezcatara relics, `RefineBlade`, `SovereignBlade`, and `ForgeCmd`.
-- First blocker-batch `dotnet build` failed with compile errors: `SavedSpireField<int>` indexer returned non-null `int` so `?? 0` was invalid, and `SerializableCard` needed `MegaCrit.Sts2.Core.Saves.Runs`.
+- Used `.tools\ilspy\ilspycmd.exe` against local `sts2.dll` and previous framework `previous framework.dll` to inspect `CardReward`, `RewardsCmd`, `CardFactory`, `CardCreationOptions`, `CardCreationFlags`, `CardCreationResult`, `AbstractModel`, `PrismaticGem`, `PaelsTooth`, `SavedProperties`, `SavedProperty`, previous framework `SpireField`, previous framework `previous saved-state API`, `previous saved-state APIPatch`, `CombatRoom`, `RoomType`, `CardSelectCmd`, `CardPileCmd`, `RelicModel`, `LocManager`, `Tezcatara`, Tezcatara relics, `RefineBlade`, `SovereignBlade`, and `ForgeCmd`.
+- First blocker-batch `dotnet build` failed with compile errors: `previous saved-state API<int>` indexer returned non-null `int` so `?? 0` was invalid, and `SerializableCard` needed `MegaCrit.Sts2.Core.Saves.Runs`.
 - Fixed those compile errors, then `dotnet build` passed with 0 warnings and 0 errors.
 - `dotnet build` after the `SovereignBlade` patch passed with 0 warnings and 0 errors.
 - `New-Item -ItemType Directory -Force -LiteralPath .\EzDailyContent\localization\zhs` failed because this PowerShell version lacks `New-Item -LiteralPath`; retried with `-Path` and created the directory.
@@ -512,10 +512,10 @@ Files changed:
 
 Controlled smoke result:
 
-- A temporary default-profile `settings.save` edit enabled only `BaseLib` and `EZMicroBalance`; all other discovered local mods, including legacy `EzDailyContent`, were disabled for the smoke test. Original settings were restored in `finally`.
+- A temporary default-profile `settings.save` edit enabled only `previous framework` and `EZMicroBalance`; all other discovered local mods, including legacy `EzDailyContent`, were disabled for the smoke test. Original settings were restored in `finally`.
 - First smoke found `SealOfGoldMaxEnergyPatch` undefined target.
 - Second smoke found `CrossbowOfferPatch` undefined target.
-- Final smoke loaded `BaseLib.dll`, `BaseLib.pck`, `EZMicroBalance.dll`, and `EZMicroBalance.pck`; `Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance)` appeared in `godot.log`; game reached main menu.
+- Final smoke loaded `previous framework.dll`, `previous framework.pck`, `EZMicroBalance.dll`, and `EZMicroBalance.pck`; `Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance)` appeared in `godot.log`; game reached main menu.
 
 Remaining release gates:
 
@@ -533,7 +533,7 @@ Final automated checks after the runtime hook fixes:
 - PCK audit: 31 entries, 0 legacy/source/docs/art/archive entries.
 - DLL audit: build output and installed `EZMicroBalance.dll` SHA256 hashes matched.
 - `git diff --check`: exit code 0 with only the existing CRLF normalization warning for `docs/dev-environment.md`.
-- Controlled disable smoke: with BaseLib enabled and EZ Micro Balance disabled, `godot.log` showed `Skipping loading mod EZMicroBalance, it is set to disabled in settings`, no `EZMicroBalance.dll` load line, and main menu reached.
+- Controlled disable smoke: with previous framework enabled and EZ Micro Balance disabled, `godot.log` showed `Skipping loading mod EZMicroBalance, it is set to disabled in settings`, no `EZMicroBalance.dll` load line, and main menu reached.
 
 ## 2026-05-05 21:14:01 +02:00
 
@@ -662,8 +662,8 @@ Commands and results:
 
 - Located default profile settings at `%APPDATA%\SlayTheSpire2\default\1\settings.save` and current log at `%APPDATA%\SlayTheSpire2\logs\godot.log`.
 - First Release-DLL smoke reached main menu and initialized EZ Micro Balance, but loaded extra local mods because some local mod manifests were malformed or nested and not discovered by simple JSON scanning.
-- Second isolated smoke combined JSON-discovered ids, Steam-profile mod ids, and explicit ids observed in `godot.log`; temporary settings enabled only `BaseLib` and `EZMicroBalance`.
-- Isolated smoke with `--force-steam off` loaded exactly 2 mods, finished BaseLib initialization, loaded installed `EZMicroBalance.dll` and `.pck`, finished EZ Micro Balance initialization, and reached main menu.
+- Second isolated smoke combined JSON-discovered ids, Steam-profile mod ids, and explicit ids observed in `godot.log`; temporary settings enabled only `previous framework` and `EZMicroBalance`.
+- Isolated smoke with `--force-steam off` loaded exactly 2 mods, finished previous framework initialization, loaded installed `EZMicroBalance.dll` and `.pck`, finished EZ Micro Balance initialization, and reached main menu.
 - Original default-profile settings were restored; `mod_settings` returned to `null`.
 
 Observed unrelated local issues:
@@ -820,7 +820,7 @@ Tooltip findings:
 - Keyword tooltips come from `card_keywords.json`; no override is needed for the keywords used by this mod.
 - Swift is an enchantment, not a keyword/static hover tip; its official zhs tooltip source is base `enchantments.json`.
 - `DynamicVar("Swift", 2m)` remains a numeric variable provider and is not the localized display term.
-- BaseLib `ILocalizationProvider` strings are injected into the active localization table, so Jeweled Mask's custom enchantment needed language-aware code strings.
+- previous framework `ILocalizationProvider` strings are injected into the active localization table, so Jeweled Mask's custom enchantment needed language-aware code strings.
 
 Commands and results:
 
@@ -1170,7 +1170,7 @@ Goal summary:
 Findings fixed:
 
 - Claws pickup used a dead base-relic Harmony path. Added a direct `Claws.AfterObtained` prefix that reuses the existing curse/Wish implementation.
-- Jewelry Box `Apotheosis` marker relied only on an in-memory `ConditionalWeakTable`. Added `SavedSpireField<CardModel,bool>` persistence so marked non-Innate `Apotheosis` survives serialization paths.
+- Jewelry Box `Apotheosis` marker relied only on an in-memory `ConditionalWeakTable`. Added `previous saved-state API<CardModel,bool>` persistence so marked non-Innate `Apotheosis` survives serialization paths.
 - Whispering Earring checked all playable cards through `CanPlayTargeting`; self-targeting and no-target cards can now pass without enemy/ally targeting requirements.
 
 Test coverage added:
@@ -1235,8 +1235,8 @@ Final commands and results after the fix:
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `dotnet publish EZMicroBalance.sln`: passed; built Release, copied DLL/manifest, exported the selected-resource PCK, and reimported the generated `mod_image.png`.
 - Rebuilt `publish/EZMicroBalance-v0.1.0-private-beta.0.zip` from installed artifacts.
-- Final bounded `--force-steam off` smoke: BaseLib initialized, EZ Micro Balance initialized, BaseLib reported 7 SavedSpireFields, and the game reached main menu. The smoke process was stopped after main menu and profile settings were restored.
-- Later package-refresh smoke temporarily enabled only BaseLib and EZ Micro Balance, initialized the final installed EZ Micro Balance DLL/PCK, BaseLib reported 8 SavedSpireFields, and the game reached main menu. Profile settings were restored after the smoke.
+- Final bounded `--force-steam off` smoke: previous framework initialized, EZ Micro Balance initialized, previous framework reported 7 previous saved-state registrations, and the game reached main menu. The smoke process was stopped after main menu and profile settings were restored.
+- Later package-refresh smoke temporarily enabled only previous framework and EZ Micro Balance, initialized the final installed EZ Micro Balance DLL/PCK, previous framework reported 8 previous saved-state registrations, and the game reached main menu. Profile settings were restored after the smoke.
 
 Final artifact evidence:
 
@@ -1323,7 +1323,7 @@ Remaining blocker:
 
 Issue:
 
-- Manual Steam-client testing with only BaseLib and EZ Micro Balance enabled showed the card encyclopedia / Card Library failed to display cards.
+- Manual Steam-client testing with only previous framework and EZ Micro Balance enabled showed the card encyclopedia / Card Library failed to display cards.
 - `godot.log` reported `CanonicalModelException` from `VelvetChokerSoftLimitTracker.ShouldTax(CardModel card)` while `NCardGrid` sorted canonical card models such as `FeelNoPain` and `Enthralled`.
 
 Implementation:
@@ -1353,7 +1353,7 @@ Current artifact hashes:
 
 Remaining blocker:
 
-- Re-test the card encyclopedia / Card Library in the normal Steam client with only BaseLib and EZ Micro Balance enabled, then inspect `godot.log` for absence of `VelvetChokerSoftLimitTracker.ShouldTax` and `CanonicalModelException`.
+- Re-test the card encyclopedia / Card Library in the normal Steam client with only previous framework and EZ Micro Balance enabled, then inspect `godot.log` for absence of `VelvetChokerSoftLimitTracker.ShouldTax` and `CanonicalModelException`.
 - Normal Steam-client Mod Settings verification, live Ancient gameplay matrix, save/load checks, disable gameplay checks, multiplayer disposition, author decision, clean commit, and user-approved push remain pending.
 
 ## 2026-05-06 - Vakuu Distinguished Cape Replacement Validation Refresh
@@ -1593,9 +1593,9 @@ Remaining blocker:
 
 ## 2026-05-08 - RC1 Normal Steam Mod Settings Recheck
 
-- Added a no-op BaseLib config page for EZ Micro Balance so the mod has a visible Mod Settings entry without exposing gameplay options.
+- Added a no-op previous framework config page for EZ Micro Balance so the mod has a visible Mod Settings entry without exposing gameplay options.
 - Rebuilt the package and refreshed hashes. Current package zip SHA256 is `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`.
-- Normal Steam-client isolated recheck `095137` showed BaseLib and EZ Micro Balance loaded, the localized EZMB page `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙, `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
+- Normal Steam-client isolated recheck `095137` showed previous framework and EZ Micro Balance loaded, the localized EZMB page `寰钩琛 with `鏃犲彲閰嶇疆閫夐」銆俙, `Registered config for mod EZMicroBalance`, `Loaded 2 mods (2 total)`, 0 `ERROR` lines, and 0 release-blocking signatures.
 - Live Ancient gameplay matrix, save/load checks, disable gameplay checks, multiplayer disposition, author decision, clean commit, and user-approved push remain pending.
 
 ## 2026-05-09 - Package README Decision-Blocker Refresh

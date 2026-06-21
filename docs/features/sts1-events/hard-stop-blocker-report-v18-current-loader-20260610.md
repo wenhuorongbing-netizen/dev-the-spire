@@ -3,7 +3,7 @@
 Date: 2026-06-10
 Scope: Mandatory Overnight Run v18, current `v0.107.0` loader reproof after RitsuLib `v0.4.16`.
 
-Superseded note, 2026-06-21: this report remains root-cause history for the failed beta.84 package. Current beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 loader/registration proof is clean under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; gameplay, save-load, replacement, multiplayer, and QA proof remain pending. Do not follow the historical BaseLib-backed rerun instruction below as current setup guidance.
+Superseded note, 2026-06-21: this report remains root-cause history for the failed beta.84 package. Current beta.93 `v0.107.1` RitsuLib-only Off and AdditiveBatch1 loader/registration proof is clean under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; gameplay, save-load, replacement, multiplayer, and QA proof remain pending. Do not follow the historical previous package rerun instruction below as current setup guidance.
 
 ## Exact Gate Id
 
@@ -13,7 +13,7 @@ Downstream blocked gates: `O25`, `O33`, `O34-O47`, and `O51-O52` remain blocked 
 
 ## Blocker Reason
 
-The current package-parity Off smoke was captured by a concurrent lane at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`, and it is not clean. RitsuLib selects the current `0.107.0` variant and BaseLib loads, but Spire Plus beta.84 fails during initialization because the installed package still contains stale patch targets from before the dirty-source installed-game API fixes.
+The current package-parity Off smoke was captured by a concurrent lane at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`, and it is not clean. RitsuLib selects the current `0.107.0` variant and previous package loads, but Spire Plus beta.84 fails during initialization because the installed package still contains stale patch targets from before the dirty-source installed-game API fixes.
 
 Current prerequisites are better than the prior blocker:
 
@@ -35,7 +35,7 @@ But the fresh `v0.107.0` loader smoke fails on the beta.84 package and cannot be
 | Current Off smoke folder | `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` |
 | Current Off smoke audit | `godot-log-audit.json`: `Clean=false`, `Spire Plus error/exception=1`, `Godot ERROR line=11` |
 | RitsuLib current variant | `godot.log.after-launch`: host `v0.107.0`, picked variant `0.107.0`, RitsuLib `0.4.16 [compat branch: 0.107.0]` |
-| BaseLib status | `godot.log.after-launch`: BaseLib `v3.1.4`, 217 patches applied, 0 failed |
+| previous package status | `godot.log.after-launch`: previous package `v3.1.4`, 217 patches applied, 0 failed |
 | Spire Plus package failure | `godot.log.after-launch`: `EctoplasmGoldGatePatch::Prefix(...)` undefined target method during mod initializer |
 | Optional patch failures | `godot.log.after-launch`: 8 optional Spire Plus patches failed before the initializer exception |
 | Active same-repo validation process during this thread | `dotnet exec ... vstest.console.dll ... solution-current-diag.log ... RunConfiguration.MaxCpuCount=1` with attached `testhost.exe` was still alive while this thread considered running another smoke, so this thread did not launch a second game session |
@@ -55,7 +55,7 @@ But the fresh `v0.107.0` loader smoke fails on the beta.84 package and cannot be
 
 1. Do not use beta.84 as current `v0.107.0` loader proof; the smoke is red.
 2. Decide whether to cut a new versioned package from the dirty source API fixes, including the required version bump, publish/package refresh, and validation.
-3. Historical action at capture time: after a fixed package is installed, rerun a controlled `v0.107.0` Off loader smoke with the then-required BaseLib + STS2-RitsuLib + Spire Plus stack. Current beta.93 guidance is RitsuLib-only and lives in `PROJECT_STATE.md` plus `docs/features/sts1-events/README.md`.
+3. Historical action at capture time: after a fixed package is installed, rerun a controlled `v0.107.0` Off loader smoke with the then-required previous package + STS2-RitsuLib + Spire Plus stack. Current beta.93 guidance is RitsuLib-only and lives in `PROJECT_STATE.md` plus `docs/features/sts1-events/README.md`.
 4. If Off is clean, capture CanaryOnly and AdditiveBatch1 loader smokes under the same current runtime.
 5. Preserve `godot.log`, audit JSON, session state, restore state, command/env notes, and hash/path prerequisites for each mode.
 

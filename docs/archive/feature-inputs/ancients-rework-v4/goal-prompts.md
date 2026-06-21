@@ -37,13 +37,13 @@ Read these first:
 
 External references:
 - User-required RitsuLib tutorial: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/04-ritsulib/04-07-add-ancient/
-- Current-project BaseLib tutorial: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-baselib/03-07-add-ancient/
+- Current-project previous framework tutorial: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-previous-framework/03-07-add-ancient/
 
 Hard constraints:
 - Preserve the dirty worktree. Never revert, overwrite, delete, or stage existing user changes unless the exact file is part of this goal and the reason is recorded.
 - Keep manifest id `EzDailyContent`.
 - Do not copy original game assets or long decompiled code.
-- Prefer supported game/BaseLib/template APIs and game command APIs over direct state mutation.
+- Prefer supported game/previous framework/template APIs and game command APIs over direct state mutation.
 - Use local compile-time evidence from `sts2.dll` and project references before implementing any API-sensitive behavior.
 - Record every implemented item, command, build result, API mismatch, and blocker in `docs/features/ancients-rework-v4/work-log.md` and `docs/features/ancients-rework-v4/api-discovery.md`.
 - Update `docs/dev-environment.md` with final build/publish status.

@@ -3,7 +3,7 @@
 Date: 2026-06-19
 Status: Planned. Previous beta.88 loader/registration proof exists; current beta.91 RitsuLib-only loader/registration proof supersedes it. Gameplay and release evidence remain pending.
 
-2026-06-20 supersession: current loader truth is beta.91 with `STS2-RitsuLib` `v0.4.28` / `lib/0.107.1` and no Spire Plus BaseLib dependency. This Revision N plan is retained as previous BaseLib-backed planning context.
+2026-06-20 supersession: current loader truth is beta.91 with `STS2-RitsuLib` `v0.4.28` / `lib/0.107.1` and no Spire Plus previous framework dependency. This Revision N plan is retained as previous previous framework-backed planning context.
 
 ## Current Loader Truth
 
@@ -31,8 +31,8 @@ This is loader and registration evidence only.
 
 - beta.85 Off and CanaryOnly logs are previous-package/game-version context.
 - beta.87 AdditiveBatch1 direct proof is previous-game-version context.
-- beta.87 `v0.107.1` AdditiveBatch1 attempt is failed BaseLib `v3.2.1` root-cause evidence.
-- beta.88 AdditiveBatch1 proof is previous BaseLib-backed context.
+- beta.87 `v0.107.1` AdditiveBatch1 attempt is failed previous framework `v3.2.1` root-cause evidence.
+- beta.88 AdditiveBatch1 proof is previous previous framework-backed context.
 - beta.91 AdditiveBatch1 proof does not prove gameplay, UI rendering, save-load, replacement behavior, multiplayer disposition, game-native AutoSlay batch stability, independent QA, release readiness, or tester handoff.
 
 ## Next Runtime Rows

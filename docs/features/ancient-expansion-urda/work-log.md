@@ -34,7 +34,7 @@ Scope:
 
 - Investigated a current A14 Rootblight generated-art hover probe that entered the default-on Urda Ancient event before combat.
 - Treated `.tools\runtime-evidence\current-rootblight-art-hover-20260513-114103` as negative evidence: `godot-live.log` reported missing vanilla-derived Urda map icon, run-history icon, and background-scene paths.
-- Switched Urda to BaseLib `CustomAncientModel` with `autoAdd: false`, preserving the existing explicit Act 1 registration path.
+- Switched Urda to previous package `CustomAncientModel` with `autoAdd: false`, preserving the existing explicit Act 1 registration path.
 - Added mod-owned Urda icon/run-history/background scene path overrides and packaged `EZMicroBalance/scenes/events/background_scenes/ezmb_urda.tscn`.
 - Added clean headless installed-PCK resource-load evidence at `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345`; Godot loaded the installed `EZMicroBalance.pck` as `--main-pack`, resolved the custom Urda scene/icon resources, emitted `URDA_RESOURCE_LOAD_OK`, and logged 0 `ERROR` / `WARNING` lines.
 
@@ -70,7 +70,7 @@ Scope:
 Source/API evidence:
 
 - Rechecked local Core reward flow: `Reward.SelectUnsynchronized()` calls `Hook.AfterRewardTaken(...)` before the reward set is completed by `RewardsSetSynchronizer`, so Humus Pact still needs explicit pending/reentry guards even after moving off `CardReward.OnSkipped`.
-- Rechecked local Core save flow for May-era BaseLib `SavedSpireField<Player,string>`: `Player.ToSerializable()` writes fixed `SerializablePlayer` fields, `SerializablePlayer` has no general `SavedProperties`/`Props`, `ExtraPlayerFields` is fixed-shape, and inspected `SavedProperties.From(...)` call sites are card/relic/modifier paths. Player-field persistence remained not source-proven in that historical pass; current code uses RitsuLib `SavedAttachedState<Player,string>`.
+- Rechecked local Core save flow for May-era previous package `previous saved-state API<Player,string>`: `Player.ToSerializable()` writes fixed `SerializablePlayer` fields, `SerializablePlayer` has no general `SavedProperties`/`Props`, `ExtraPlayerFields` is fixed-shape, and inspected `SavedProperties.From(...)` call sites are card/relic/modifier paths. Player-field persistence remained not source-proven in that historical pass; current code uses RitsuLib `SavedAttachedState<Player,string>`.
 
 Validation:
 
@@ -102,7 +102,7 @@ Follow-up stabilization:
 - Changed Seedbed's fourth-accept bonus to `SetMaxHp` so the +10 max HP bonus does not also heal current HP.
 - Added source guards and EN/ZHS localization for the Humus Pact card reward option.
 - Added a backward-compatible `UrdaStateKey` read path for the prior eight-field shape and a new Humus completion-pending bit.
-- Source evidence still did not prove May-era BaseLib `SavedSpireField<Player,string>` persistence; current code uses RitsuLib `SavedAttachedState<Player,string>`, and live save/load remains required.
+- Source evidence still did not prove May-era previous package `previous saved-state API<Player,string>` persistence; current code uses RitsuLib `SavedAttachedState<Player,string>`, and live save/load remains required.
 - Validation for the stabilization pass:
   - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
   - `dotnet test EZMicroBalance.sln --no-build`: passed, 74 passed, 16 skipped.

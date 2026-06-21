@@ -5,7 +5,7 @@ Fixed concrete source bugs:
 - Red Ink Overdraft no longer generates into a full hand or silently redirects to discard; it verifies the generated card lands in hand and removes wrong-pile results.
 - Red Ink unpaid debt and Debt Settlement HP fallback now share a nonlethal damage helper capped at leaving the player at 1 HP.
 
-Updated source, tests, localization, package hash docs, and current feature docs, including Morvi source design/API/risk/manual/work-log status. Core evidence consulted included `CardPileCmd`, `CombatManager`, `CreatureCmd`, rewards/card reward alternatives, card play/model source, and BaseLib `SavedSpireField` docs.
+Updated source, tests, localization, package hash docs, and current feature docs, including Morvi source design/API/risk/manual/work-log status. Core evidence consulted included `CardPileCmd`, `CombatManager`, `CreatureCmd`, rewards/card reward alternatives, card play/model source, and previous framework `previous saved-state API` docs.
 
 Validation run:
 - `git status --short --branch`: `main...origin/main`, already heavily dirty.

@@ -102,7 +102,7 @@ Tooltip/localization-only code:
 - `static_hover_tips.json` controls static hover tips and dynamic-var hover surfaces, but Swift is not a static hover tip or a card keyword.
 - Swift is an enchantment. Its zhs name and tooltip come from base game `localization/zhs/enchantments.json` (`SWIFT.title = 迅速`). Beautiful Bracelet text should reference the localized term, not raw `Swift`.
 - `DynamicVar("Swift", 2m)` remains a numeric variable provider for relic text if a `{Swift}` placeholder is used. It is not the localized display name and does not need replacement for this pass.
-- BaseLib `ILocalizationProvider` is language-agnostic unless the mod supplies language-aware strings. `ModelLocPatch` injects the provider strings into the `enchantments` loc table, so the Jeweled Mask custom enchantment needed a zhs branch in code.
+- previous package `ILocalizationProvider` is language-agnostic unless the mod supplies language-aware strings. `ModelLocPatch` injects the provider strings into the `enchantments` loc table, so the Jeweled Mask custom enchantment needed a zhs branch in code.
 
 ## Number Formatting
 

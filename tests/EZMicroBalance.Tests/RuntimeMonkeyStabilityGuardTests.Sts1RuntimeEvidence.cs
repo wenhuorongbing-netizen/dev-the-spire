@@ -250,7 +250,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -335,13 +335,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             File.WriteAllText(Path.Combine(workdir, "godot.log.before"), preLaunchPrefix);
             File.WriteAllText(Path.Combine(workdir, "godot.log.after-launch"), preLaunchPrefix + currentSlice);
 
-            var sourcePath = Path.Combine(workdir, "mods", "BaseLib");
+            var sourcePath = Path.Combine(workdir, "mods", "STS2-RitsuLib");
             var destinationPath = Path.Combine(workdir, "isolated-mods", "OtherMod");
             File.WriteAllText(
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -423,7 +423,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -476,7 +476,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -529,7 +529,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -601,7 +601,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -685,7 +685,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,
@@ -759,7 +759,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Path.Combine(workdir, "session-state.json"),
                 $$"""
                 {
-                  "AllowedModIds": ["BaseLib", "STS2-RitsuLib", "EZMicroBalance"],
+                  "AllowedModIds": ["STS2-RitsuLib", "EZMicroBalance"],
                   "DisableSpirePlus": false,
                   "MoveOtherMods": true,
                   "MoveCurrentRuns": true,

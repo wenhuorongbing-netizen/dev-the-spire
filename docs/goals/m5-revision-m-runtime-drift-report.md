@@ -1,7 +1,7 @@
 # M5 Revision M Runtime Drift Boundary
 
 Date: 2026-06-18
-Status: archived beta.87 package/source-shape and BaseLib-drift history.
+Status: archived beta.87 package/source-shape and previous package-drift history.
 
 Full archived record:
 

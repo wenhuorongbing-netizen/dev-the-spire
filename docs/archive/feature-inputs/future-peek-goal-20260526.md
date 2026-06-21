@@ -785,7 +785,7 @@ host/client 同一个 plan
    - PreviewFeaturesDoNotCall PlayerChoiceSynchronizer / CardRewardAlternative / AddReward
 
 8. 实机测试
-   - BaseLib + Spire Plus only。
+   - previous framework + Spire Plus only。
    - host/client 都设置 EZMB_RELEASE_EVIDENCE_LOG=1。
    - 测水晶球。
    - 测 Aroma of Chaos 变换。

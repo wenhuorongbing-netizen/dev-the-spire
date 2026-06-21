@@ -2,7 +2,7 @@
 
 Current active release note: implementation now targets the independent `EZMicroBalance` project. Legacy `EzDailyContent` references in older logs are historical; active code is under `EZMicroBalanceCode/Ancients/`, active resources are under `EZMicroBalance/`, and the active project is `EZMicroBalance.csproj`.
 
-Use these references for the Ancients rework implementation. Re-check the live pages when working because Slay the Spire 2 and RitsuLib APIs may change during Early Access. BaseLib links below are retained only for historical comparison; Spire Plus no longer depends on BaseLib.
+Use these references for the Ancients rework implementation. Re-check the live pages when working because Slay the Spire 2 and RitsuLib APIs may change during Early Access. previous package links below are retained only for historical comparison; Spire Plus no longer depends on previous package.
 
 ## Required User Reference
 
@@ -12,17 +12,17 @@ Notes:
 
 - The RitsuLib page shows the newer RitsuLib-style Ancient flow.
 - It uses patterns such as `ModAncientEventTemplate`, `RegisterActAncient`, `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- Current Spire Plus has already migrated to RitsuLib for compile and runtime dependency. Prefer RitsuLib and local game source over the historical BaseLib route when new Ancient work needs mod API support.
+- Current Spire Plus has already migrated to RitsuLib for compile and runtime dependency. Prefer RitsuLib and local game source over the historical previous package route when new Ancient work needs mod API support.
 
-## Historical BaseLib Reference
+## Historical previous package Reference
 
-- BaseLib tutorial: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-baselib/03-07-add-ancient/
+- previous package tutorial: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/docs/03-previous-package/03-07-add-ancient/
 
 Notes:
 
-- Historical May 2026 work referenced `Alchyr.Sts2.BaseLib` `3.1.4`; the current repo references `STS2.RitsuLib` `0.4.31` and has no Spire Plus BaseLib dependency.
-- The BaseLib page shows `CustomAncientModel`, `IsValidForAct(ActModel act)`, `CustomScenePath`, map/run-history icon paths, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()`.
-- Prefer current local compile-time API evidence over tutorial assumptions when they conflict. Do not reintroduce BaseLib as a Spire Plus dependency without an explicit owner decision, migration document, build, package, and runtime proof.
+- Historical May 2026 work referenced `previous package` `3.1.4`; the current repo references `STS2.RitsuLib` `0.4.31` and has only STS2-RitsuLib as the shared runtime dependency.
+- The previous package page shows `CustomAncientModel`, `IsValidForAct(ActModel act)`, `CustomScenePath`, map/run-history icon paths, `OptionPools`, `MakePool(...)`, and `AncientOption<T>()`.
+- Prefer current local compile-time API evidence over tutorial assumptions when they conflict. Do not reintroduce previous package as a Spire Plus dependency without an explicit owner decision, migration document, build, package, and runtime proof.
 
 ## Local Source References
 

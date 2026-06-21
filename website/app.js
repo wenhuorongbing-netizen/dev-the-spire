@@ -1112,7 +1112,7 @@
               phrase = lang === 'en'
                 ? "Ah, the Spire Plus mod file. It bundles Ancient rewards, higher Ascension tests, and preview tools in one mod."
                 : "这是 Spire Plus 私测包：先古奖励、高进阶测试和预览工具都在同一个 Mod 里。";
-            } else if (hoverType === "baselib") {
+            } else if (hoverType === "previous-package") {
               phrase = lang === 'en'
                 ? "STS2-RitsuLib 0.4.31 is required. Install it first, then enable Spire Plus."
                 : "需要先安装 STS2-RitsuLib 0.4.31，再启用 Spire Plus。";

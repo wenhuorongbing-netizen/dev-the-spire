@@ -18,7 +18,7 @@ Current evidence boundary, 2026-06-20: beta.85 proves retained `v0.107.0`
 default-Off and CanaryOnly loader behavior as previous-package/game-version
 context; beta.87 proves retained `v0.107.0` AdditiveBatch1 loader/registration
 behavior as previous-package/game-version context; beta.88 is previous
-BaseLib-backed `v0.107.1` loader/registration context; beta.90 is previous
+previous package `v0.107.1` loader/registration context; beta.90 is previous
 RitsuLib-only context; current beta.93 proves `v0.107.1` RitsuLib-only Off plus
 AdditiveBatch1 loader/registration with STS2-RitsuLib `0.4.31`, clean audits,
 25/25 Spire Plus patches, Off packet verifier 43 / 0, AdditiveBatch1

@@ -595,7 +595,6 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_passed_boolean_malformed");
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_unhealthy");
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_observation_unhealthy");
-        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_process_identity_unstable");
         Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
     }
 

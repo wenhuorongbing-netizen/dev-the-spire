@@ -7,7 +7,7 @@ Full archived record:
 
 - `docs/archive/legacy-planning/m5-revision-n-owner-commit-packet-20260619.md`
 
-This packet belonged to the beta.88 BaseLib-backed loader/registration lane.
+This packet belonged to the beta.88 previous package loader/registration lane.
 It did not authorize commit, push, release, or tester handoff, and it is
 superseded by beta.93 RitsuLib-only migration evidence.
 

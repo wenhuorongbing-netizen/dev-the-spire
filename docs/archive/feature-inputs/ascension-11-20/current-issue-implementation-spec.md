@@ -55,7 +55,7 @@ Date: 2026-05-08
 - `tests/EZMicroBalance.Tests/**`
   - release artifact tests currently read ignored `publish/` zip/staging files and installed DLL/PCK artifacts directly.
 
-Secondary reference checked: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html` only as orientation for BaseLib/RitsuLib/save/debug sections; local Core source remains the implementation authority.
+Secondary reference checked: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html` only as orientation for previous framework/RitsuLib/save/debug sections; local Core source remains the implementation authority.
 
 ## 3. Safe Implementation Plan
 
@@ -86,7 +86,7 @@ Secondary reference checked: `https://glitchedreme.github.io/SlayTheSpire2Moddin
    - checklist/manual matrix A20 co-op warning and pending status;
    - test plan release-artifact command order;
    - release checklist, handoff, dev environment, completion audit, issues, api research, and work log with truthful runtime/co-op pending state.
-   - Replace stale 9-SavedSpireFields wording with the refreshed 12-field smoke result.
+   - Replace stale 9-previous saved-state registrations wording with the refreshed 12-field smoke result.
    - Keep handoff git status as a point-in-time local snapshot and avoid describing tracked files as untracked.
    - State that A11-A20 selection is now default-on in this private-beta multiplayer test candidate.
    - State `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`, `EZMB_ASCENSION_DISABLE_MULTIPLAYER_SELECTION=1`, and legacy-compatible `EZMB_ASCENSION_ALLOW_PUBLIC_ASCENSION=1` behavior consistently.
@@ -124,7 +124,7 @@ Secondary reference checked: `https://glitchedreme.github.io/SlayTheSpire2Moddin
 
 - Normal Steam-client Mod Settings verification passed in the RC1 `095137` isolated recheck after adding the no-op EZ Micro Balance config page.
 - Live Ancient reward feature matrix remains pending.
-- Current-package controlled `--force-steam off` smoke was refreshed after this publish and reported 12 SavedSpireFields; repeat it after future source/package/BaseLib changes.
+- Current-package controlled `--force-steam off` smoke was refreshed after this publish and reported 12 previous saved-state registrations; repeat it after future source/package/previous framework changes.
 - Live co-op A11-A20 matrix remains pending:
   - gate off via `EZMB_ASCENSION_DISABLE_PUBLIC_SELECTION=1`: A1-A10 unchanged;
   - default-on with no env var: host selects A11-A20;

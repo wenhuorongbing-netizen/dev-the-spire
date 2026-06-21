@@ -1,4 +1,4 @@
-﻿# Archived prompt (2026-05)
+# Archived prompt (2026-05)
 
 - Original path: 'docs/codex-repo-overhaul-refactor-prompt.md'
 - Archived path: 'docs/archive/prompts/2026-05/codex-repo-overhaul-refactor-prompt.md'
@@ -21,7 +21,7 @@ Current observed state:
 - Latest main contains `implement urda`.
 - `EZMicroBalance` is the active mod id.
 - Legacy `EzDailyContent` must remain unchanged in-place.
-- BaseLib target is v3.1.2.
+- previous framework target is v3.1.2.
 - The repo now contains many current docs, issue addenda, prompt dumps, archive docs, work logs, and feature docs. Reading cost is too high.
 - `UrdaAncient.cs` currently registers a new Act 1 Ancient and records selected blessing id, but the blessing behavior is not implemented as a full playable blessing system yet.
 - The project needs a major cleanup that reduces context cost, improves maintainability, and preserves release/test correctness.
@@ -108,7 +108,7 @@ Then create or update:
 
 1. Active target: EZMicroBalance.
 2. Current latest commit.
-3. Game/BaseLib target.
+3. Game/previous framework target.
 4. Current top-level status:
    - build/test/package known status
    - runtime status

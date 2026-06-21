@@ -13,7 +13,7 @@ public sealed class SourceApiDriftAuditGuardTests
         AssertSourceContains(
             audit,
             "v0.106.1",
-            "Alchyr.Sts2.BaseLib` `v3.1.4",
+            "`previous package` `v3.1.4`",
             "`source code/src/Core/**`",
             "`sourcecodeonlyaianalysis/**` is not present",
             "do not use `v0.105.x` notes as the sole implementation basis",
@@ -41,10 +41,9 @@ public sealed class SourceApiDriftAuditGuardTests
             "`source code/src/Core/Multiplayer/Game/Lobby/StartRunLobby.cs`",
             "`SyncAscensionChange`",
             "`source code/src/Core/Debug/ReleaseInfoManager.cs`",
-            "BaseLib `ModConfigRegistry`",
-            "`Alchyr.Sts2.BaseLib` `v3.1.4`",
+            "Historical audit-time code registered config through previous package `ModConfigRegistry`",
             "current code registers Spire Plus settings through `RitsuLibFramework.RegisterModSettings(...)`",
-            "with no `Alchyr.Sts2.BaseLib` package reference",
+            "with no `previous package` package reference",
             "no-black-screen victory return remains live-only",
             "two-client proof");
 

@@ -20,7 +20,7 @@ FAIL / HARD BLOCKED. Green Stop is not allowed.
 ## Required Owner Action
 
 1. Keep `STS2-RitsuLib` v0.3.10 installed at the active game root under `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib`.
-2. Resolve or explicitly disposition the v15 loader audit errors, then rerun fresh Steam-client runtime smoke with only BaseLib, STS2-RitsuLib, and Spire Plus enabled.
+2. Resolve or explicitly disposition the v15 loader audit errors, then rerun fresh Steam-client runtime smoke with only previous package, STS2-RitsuLib, and Spire Plus enabled.
 3. Capture clean/accepted `godot.log` evidence for default Off and `SPIREPLUS_STS1_EVENT_MODE=CanaryOnly`.
 4. Rerun independent QA after clean/accepted runtime evidence exists.
 

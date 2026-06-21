@@ -53,7 +53,7 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.Contains("Save/load, death/failure paths, and co-op still need manual proof", readme, StringComparison.Ordinal);
         Assert.Contains("Ascension 21-30 and custom-character content are not included", readme, StringComparison.Ordinal);
         Assert.DoesNotContain("source-safe", readme, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Found 16 SavedSpireFields", readme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Found 16 PreviousSavedStates", readme, StringComparison.Ordinal);
     }
 
     [Fact]

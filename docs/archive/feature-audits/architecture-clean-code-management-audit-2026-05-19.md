@@ -16,8 +16,8 @@ This repository is a serious local mod workspace with strong source-guard discip
 | Item | Finding |
 | --- | --- |
 | Project Type | Slay the Spire 2 mod workspace with one active integrated mod plus archived legacy scaffold history. |
-| Tech Stack | C# / .NET 9, Godot .NET SDK 4.5.1, Slay the Spire 2 Core API, BaseLib 3.1.4, Harmony, xUnit, PowerShell. |
-| Runtime | Slay the Spire 2 public beta target `v0.106.0`, BaseLib under game `mods\BaseLib`. |
+| Tech Stack | C# / .NET 9, Godot .NET SDK 4.5.1, Slay the Spire 2 Core API, previous framework 3.1.4, Harmony, xUnit, PowerShell. |
+| Runtime | Slay the Spire 2 public beta target `v0.106.0`, previous framework under game `mods\previous framework`. |
 | Package Manager | NuGet through SDK-style `.csproj`. |
 | Build Tool | `dotnet build`, `dotnet publish`, Godot export-pack through project publish targets. |
 | Test Framework | xUnit, `Microsoft.NET.Test.Sdk`; release artifact tests gated by `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1`. |
@@ -78,8 +78,8 @@ Hidden Risks:
 
 | Module | Responsibility | Dependencies | Coupling Risk | Cohesion | Recommendation |
 | --- | --- | --- | --- | ---: | --- |
-| `MainFile` | Bootstrap, Harmony patching, config, feature initialization. | BaseLib, Harmony, feature initializers. | Medium: one ordering point for all features. | 4 | Keep thin. Add an initializer manifest test that asserts explicit order and failure behavior. |
-| `Ancients\Common` | Shared saved fields, helpers, option relic service, feature gates. | BaseLib, Core card/relic/save APIs. | Medium: can become shared bucket. | 3 | Keep only true cross-Ancient primitives here; move blessing-specific helpers back to feature folders. |
+| `MainFile` | Bootstrap, Harmony patching, config, feature initialization. | previous framework, Harmony, feature initializers. | Medium: one ordering point for all features. | 4 | Keep thin. Add an initializer manifest test that asserts explicit order and failure behavior. |
+| `Ancients\Common` | Shared saved fields, helpers, option relic service, feature gates. | previous framework, Core card/relic/save APIs. | Medium: can become shared bucket. | 3 | Keep only true cross-Ancient primitives here; move blessing-specific helpers back to feature folders. |
 | `Ancients\Patches` | Rebalanced vanilla Ancient reward patches. | Many Core model/relic/card types. | High: 40+ direct patch seams. | 3 | Add a patch inventory doc generated from source and group by Core seam risk. |
 | `Urda` | Root rewards, Root Sight, Seed Bank, Seedbed, Rooted Route. | RunManager, ModelDb, card piles, map UI, saved state. | High: map/run/card/UI interactions. | 4 | Extract `RootSightPolicy`, `SeedBankPolicy`, `SeedbedPolicy` with pure inputs/outputs; keep Core commands in adapters. |
 | `Morvi` | Debt, borrowed cards, proofread, open book, archive page systems. | Combat hooks, card generation, saved fields. | Medium-high. | 4 | Introduce a compact state-transition test harness for debt and borrowed-card cleanup. |
@@ -119,7 +119,7 @@ Suggested Domain Model:
 | Model | Purpose | Port / Adapter Boundary |
 | --- | --- | --- |
 | `AncientSelectionPolicy` | Decide selectable blessings and marker relics. | Adapter reads Core event options and relic commands. |
-| `BlessingProgress` value objects | Encode selected blessing progress without raw string manipulation spread across files. | Adapter serializes to existing `SavedSpireField` strings for compatibility. |
+| `BlessingProgress` value objects | Encode selected blessing progress without raw string manipulation spread across files. | Adapter serializes to existing `previous saved-state API` strings for compatibility. |
 | `RootSightPredictionPolicy` | Given map point, room type odds, RNG seed, and player state, return preview/commit plan. | Adapter mutates RunManager queues and map UI. |
 | `BannerCombatPolicy` | Given combat round/cards/enemies/act, return PowerCmd/CreatureCmd actions. | Adapter applies commands in Core hooks. |
 | `FiremarkPolicy` | Encapsulate firemark windows and act-scaled values. | Adapter observes damage/block/heal hooks. |
@@ -261,7 +261,7 @@ Naming Convention:
 - Readability Impact: It is difficult to know which Core seam owns a feature.
 - Extensibility Impact: New patches may conflict with existing patches or other mods.
 - Violated Principle: Stable boundaries, ports/adapters, minimize framework intrusion.
-- Root Cause: Modding requires Harmony where BaseLib lacks extension points.
+- Root Cause: Modding requires Harmony where previous framework lacks extension points.
 - Recommendation: Create `docs/patch-inventory.md` generated from source: target type, method, feature owner, risk, source evidence file, test guard. Add source-signature tests for the highest-risk patches.
 - Before / After Example: patch list embedded in tests -> explicit patch registry with owners and risk labels.
 - Acceptance Criteria: every patch has owner, reason, source evidence, and test category.
@@ -643,7 +643,7 @@ Recommended Onboarding Guide:
 | Save/load reliability | Release checklist keeps save/load rows open. | 3 | Treat as release blocker for affected features. | Keep manual-test labeling. | Add save-state simulation and live evidence protocol. |
 | Multiplayer desync | Docs repeatedly mark co-op pending. | 3 | Keep co-op unsupported/unverified until evidence exists. | Surface warning in release notes. | Two-client runbook evidence and deterministic ownership tests. |
 | UI softlock/black screen | Vakuu live victory/failure pending. | 4 | Keep hidden by default and run targeted manual proof. | Maintain hidden gate. | Isolate child-combat flow into explicit state machine. |
-| Runtime API drift | 137 Harmony patches against Early Access Core. | 3 | Patch inventory plus source signature guards. | Generate inventory. | Reduce patch surface when BaseLib APIs become available. |
+| Runtime API drift | 137 Harmony patches against Early Access Core. | 3 | Patch inventory plus source signature guards. | Generate inventory. | Reduce patch surface when previous framework APIs become available. |
 
 ## 13. Scorecard
 

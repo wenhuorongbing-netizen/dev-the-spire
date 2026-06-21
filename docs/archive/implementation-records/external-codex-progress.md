@@ -49,7 +49,7 @@ This corrective pass removes those paths from source, text, and guard expectatio
 
 ## Completed Work
 
-- Reworked Mirror Rebuttal to open a source-safe deck selector at blessing pickup, mark one real non-Curse/non-Status deck card with `SavedSpireField<CardModel,bool>`, move the matching combat card to hand at combat start when needed, and resolve only when that marked card is played.
+- Reworked Mirror Rebuttal to open a source-safe deck selector at blessing pickup, mark one real non-Curse/non-Status deck card with `previous saved-state API<CardModel,bool>`, move the matching combat card to hand at combat start when needed, and resolve only when that marked card is played.
 - Reworked Deferred Verdict to trigger on turn 4 by drawing 4, gaining 4 Energy, and applying 3 player-owned Verdict stacks. This turn, each next non-Status card consumes 1 Verdict; Attacks/Skills play once more and Powers use the Energy/draw replacement. If combat ends before turn 4, the source hook heals 4 HP.
 - Reworked Single Sentence so the first player-driven Attack/Skill each turn plays two additional times, then the turn is capped at four more cards via `ShouldPlay`. The first Power fallback grants Energy/draw and does not consume the sentence.
 - Reworked Public Evidence to use source power-amount hooks: player-applied Debuffs to enemies double and grant Enlightenment; enemy-applied Debuffs to the player double and remove Enlightenment; turn start consumes up to 3 Enlightenment for draw and Block.

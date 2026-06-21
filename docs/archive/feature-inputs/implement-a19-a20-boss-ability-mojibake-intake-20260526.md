@@ -841,9 +841,9 @@ EZMB_FORCE_MORVI_BLESSING=morvi_debt_settlement
 
 ---
 
-## 3.3 状态模型太脆：字符串状态 + SavedSpireField 多，但没有 typed codec
+## 3.3 状态模型太脆：字符串状态 + previous saved-state API 多，但没有 typed codec
 
-`AncientSavedStateFields.cs` 现在有很多 `SavedSpireField`，包括 Urda/Morvi/Lotha 的 player state、deck state、card marker。 这说明项目已经在认真做存档。但问题是：很多状态最终仍是 `string`。
+`AncientSavedStateFields.cs` 现在有很多 `previous saved-state API`，包括 Urda/Morvi/Lotha 的 player state、deck state、card marker。 这说明项目已经在认真做存档。但问题是：很多状态最终仍是 `string`。
 
 Urda 是典型例子。`UrdaBlessingService.State.cs` 用 `AncientPlayerState.Get(...)` 取出 string，然后用 `;` 分隔，按 index 解析一长串字段；写入时又 `string.Join(ProgressSeparator, ...)` 拼接几十个字段。
 
@@ -911,7 +911,7 @@ Urda 早期和当前 reward flow 都有类似：把 `CardReward` 对象作为 ke
 建议把状态分层：
 
 ```text
-PersistentState：必须保存到 SavedSpireField
+PersistentState：必须保存到 previous saved-state API
 RuntimeSessionState：可以 WeakTable，但不保证 save/load
 UiRenderState：只用于显示
 ```
@@ -1353,7 +1353,7 @@ Phase 2：UrdaState codec
 - UrdaStateCodec
 
 替换 UrdaBlessingService.State.cs 中 index-heavy parse/string.Join 逻辑。
-保留 SavedSpireField<string>，但通过 codec 读写。
+保留 previous saved-state API<string>，但通过 codec 读写。
 支持：
 - empty state
 - malformed state

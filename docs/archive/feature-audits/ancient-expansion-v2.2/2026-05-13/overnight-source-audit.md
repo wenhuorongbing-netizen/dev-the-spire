@@ -28,7 +28,7 @@ Primary evidence inspected:
 | --- | --- |
 | What is currently implemented? | Ancient reward rebalance v4.3 is active. Urda is default-on with four source-backed blessings: Seedbed, Humus Pact, Molting, Moss Map. Morvi has three default-off prototype blessings behind `EZMB_ENABLE_MORVI_V22=1`: Misprint Press, Open-Book Exam, Debt Settlement. A11-A20 Ascension slices are source-implemented and default-on for private-beta test scope, with disable/warning gates. |
 | What is only planned? | Urda Trial Branch, Shallow-Root Relic, Rooted Route, After the Rain, Root-Sight, Seed Bank; most Morvi blessings; all Lotha blessings; Vakuu Fight; Temptation, Waste Paper, Archive Pages. |
-| What cannot safely be supported yet? | Lotha and Vakuu fight lack event/background asset and death/failure-path proof. Red Ink Overdraft needs a source-proven active-button injection model. Death Reprieve needs death-prevention API proof beyond ordinary `BeforeDeath`/`AfterDeath` hooks. Player-scoped `SavedSpireField<Player,string>` persistence is not proven by local game serialization source; Urda/Morvi card-backed deck mirrors mitigate this and now recover only from owned, non-removed deck cards, but still need live save/load proof. Multiplayer authority for reward alternatives, room-entry rewards, and A20 second-boss flow is not proven. |
+| What cannot safely be supported yet? | Lotha and Vakuu fight lack event/background asset and death/failure-path proof. Red Ink Overdraft needs a source-proven active-button injection model. Death Reprieve needs death-prevention API proof beyond ordinary `BeforeDeath`/`AfterDeath` hooks. Player-scoped `previous saved-state API<Player,string>` persistence is not proven by local game serialization source; Urda/Morvi card-backed deck mirrors mitigate this and now recover only from owned, non-removed deck cards, but still need live save/load proof. Multiplayer authority for reward alternatives, room-entry rewards, and A20 second-boss flow is not proven. |
 | What may softlock/desync/fail save-load/platform? | Card reward alternatives can softlock or duplicate if reward context is lost across save/reload or if host/client alternatives diverge. Humus/Debt payoff rewards use custom reward offers after reward completion and need live reentry checks. Moss Map now filters `RunState.Players` through `Player.IsActiveForHooks`, matching vanilla hook-listener filtering, but host/client room-entry authority still needs live proof. A12/A16/A19/A20 map metadata is runtime weak-table state and must prove deterministic regeneration. Windows helper scripts are PowerShell/Windows-path oriented. |
 | Multiplayer issues before release? | Two-client Steam evidence, mod-list/ModelDb hash mismatch logs, A11-A20 selection propagation, co-op save/quit, host/client reward ownership, Rootblight/Urda per-player state, A20 downgrade/second-boss behavior, and clean host/client logs. |
 | Manual/live tests required? | See `manual-test-master-matrix.md`. Required tiers cover environment, single-player smoke, Urda, Ancient reward rebalance, Ascension, multiplayer, and future v2.2 non-activation. |
@@ -101,7 +101,7 @@ Source blockers:
 
 - `Glory.GetUnlockedAncients` has no extension hook beyond Harmony patching.
 - `EventModel.GetAssetPaths`, `EventModel.BackgroundScenePath`, and `NAncientEventLayout` show Ancient events use background scenes/assets.
-- BaseLib exposes `CustomAncientModel.CustomScenePath`, but no Morvi/Lotha event scene/image/import/export-preset files are present locally.
+- previous framework exposes `CustomAncientModel.CustomScenePath`, but no Morvi/Lotha event scene/image/import/export-preset files are present locally.
 - Death/failure flow requires direct proof before Lotha Death Reprieve or Vakuu Fight can be implemented.
 
 Status: planning-only and do-not-implement-yet.
@@ -137,8 +137,8 @@ Expected package hashes from `docs/private-beta-verification-handoff.md`:
 
 Current saved fields:
 
-- Ancient source defines 7 active `SavedSpireField` declarations.
-- Ascension source defines 9 active `SavedSpireField` declarations.
+- Ancient source defines 7 active `previous saved-state API` declarations.
+- Ascension source defines 9 active `previous saved-state API` declarations.
 - Current active source total: 16.
 - Any smoke evidence or log guard still reporting 13 fields is stale after `MorviStateKey` plus the Urda/Morvi card-backed deck mirror fields.
 
@@ -146,7 +146,7 @@ Version state:
 
 - Local source snapshot docs record Slay the Spire 2 `v0.105.0`.
 - `docs/dev-environment.md` records installed Steam game `release_info.json` observed as `v0.105.1` on 2026-05-11.
-- BaseLib project/runtime target is `v3.1.2` under `<GameRoot>\mods\BaseLib`.
+- previous framework project/runtime target is `v3.1.2` under `<GameRoot>\mods\previous framework`.
 - Do not claim v0.105.1 source-backed behavior until local `source code/src/Core/**` is refreshed from v0.105.1.
 
 Package evidence:

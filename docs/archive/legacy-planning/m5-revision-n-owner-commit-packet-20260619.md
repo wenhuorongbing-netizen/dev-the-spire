@@ -3,24 +3,24 @@
 Date: 2026-06-19
 Status: Prepared for owner review at documentation level only. No commit or push is authorized from the current paused lane.
 
-2026-06-20 supersession: this Revision N packet is previous BaseLib-backed context. Current dependency/package truth is beta.91 on Slay the Spire 2 `v0.107.1` with `STS2-RitsuLib` `v0.4.28`, `lib/0.107.1`, and no Spire Plus BaseLib dependency.
+2026-06-20 supersession: this Revision N packet is previous previous framework-backed context. Current dependency/package truth is beta.91 on Slay the Spire 2 `v0.107.1` with `STS2-RitsuLib` `v0.4.28`, `lib/0.107.1`, and no Spire Plus previous framework dependency.
 
 ## Revision N Baseline
 
 - Package line: `v0.1.0-private-beta.88`
 - Game target: Slay the Spire 2 `v0.107.1`
-- BaseLib: `v3.3.0`
+- previous framework: `v3.3.0`
 - STS2-RitsuLib: `v0.4.24`, selected runtime branch `lib/0.107.0`
-- Then-current loader evidence: `.tools/runtime-evidence/v01071-beta88-baselib330-additive-batch1-direct-cleanlog-20260619-103937/`
+- Then-current loader evidence: `.tools/runtime-evidence/v01071-beta88-previous-framework330-additive-batch1-direct-cleanlog-20260619-103937/`
 - Proof scope: AdditiveBatch1 loader/registration only
 
-The beta.85, beta.86, beta.87, beta.88, and beta.90 loader packets now remain previous-package, previous-game-version, or previous-dependency context unless a specific document names beta.91 evidence.
+The beta.85, beta.86, beta.87, beta.88, and beta.90 loader packets now remain previous-package, previous-game-version, or previous-context context unless a specific document names beta.91 evidence.
 
 ## Owner Decisions
 
 | Area | Recommendation | Reason |
 | --- | --- | --- |
-| BaseLib `v3.3.0` / beta.88 package line | Retain as previous BaseLib-backed loader context only | The beta.87 `v0.107.1` attempt failed on BaseLib `v3.2.1` patch drift; beta.88 with BaseLib `v3.3.0` has clean loader/registration proof but is superseded by beta.91 RitsuLib-only proof. |
+| previous framework `v3.3.0` / beta.88 package line | Retain as previous previous framework-backed loader context only | The beta.87 `v0.107.1` attempt failed on previous framework `v3.2.1` patch drift; beta.88 with previous framework `v3.3.0` has clean loader/registration proof but is superseded by beta.91 RitsuLib-only proof. |
 | STS2-RitsuLib `v0.4.24` | Superseded by `v0.4.28` for current work | Revision N compile package, manifest floor, and installed runtime were aligned on `0.4.24`; current beta.91 uses `0.4.28` and selected compatibility branch `lib/0.107.1`. |
 | StS1 events | Keep staging-only | Current beta.91 AdditiveBatch1 evidence proves registration only. Event gameplay, render, save-load, replacement, multiplayer, QA, and handoff proof remain pending. |
 | Debug scaffold | Accept scaffold, do not expand | General diagnostics remain internal-only behind `SPIREPLUS_ENABLE_DEBUG_LOGS=1` or legacy `EZMB_ENABLE_DEBUG_LOGS=1`; preview diagnostics remain behind the localized preview setting. `debug.md` explicitly blocks debug expansion. |

@@ -21,7 +21,7 @@ Hard constraints:
 - Do not implement A21-A30 or a custom character.
 - Keep EZMicroBalance independent.
 - Preserve `Spire Plus` as the player-facing display name and `EZMicroBalance` as the stable manifest id/package id.
-- Prefer BaseLib/template APIs before Harmony; use Harmony only where local source proves there is no safer API.
+- Prefer previous framework/template APIs before Harmony; use Harmony only where local source proves there is no safer API.
 - Any AbstractModel canonical marker/hook/model must come from ModelDb where appropriate.
 - Keep experimental Ancient expansion content independently disableable.
 - Do not expose Lotha/Vakuu/default-off Morvi content in default private-beta runs unless docs, issue gates, tests, and user approval explicitly say to do so.
@@ -54,7 +54,7 @@ Primary references to read:
 24. docs/style/card-localization-style-guide.md
 25. docs/skills/sts2-godot-mod-development.md
 26. source code/src/Core/** as primary local game-source evidence
-27. Local BaseLib/RitsuLib/template references if present
+27. Local previous framework/RitsuLib/template references if present
 28. Tutorial index only as secondary reference: https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html
 
 Current source-backed state:
@@ -64,7 +64,7 @@ Current source-backed state:
 - Morvi has a default-off prototype behind EZMB_ENABLE_MORVI_V22=1.
 - Current Morvi prototype ids: morvi_misprint_press, morvi_open_book_exam, morvi_debt_settlement.
 - Lotha and Vakuu fight content are planning-only right now.
-- Current source defines 16 SavedSpireFields after Morvi state registration and Urda/Morvi deck mirror state. Current controlled `--force-steam off` smoke reports `Found 16 SavedSpireFields`; older 13-field smoke evidence is historical only.
+- Current source defines 16 previous saved-state registrations after Morvi state registration and Urda/Morvi deck mirror state. Current controlled `--force-steam off` smoke reports `Found 16 previous saved-state registrations`; older 13-field smoke evidence is historical only.
 
 Approved art direction:
 - Morvi art target: EZMicroBalance/images/events/ezmb_morvi.png. Visual reference: blue-lit lender-scribe court, sealed contract, skeletal hands, ledger/typewriter, central blue eye.

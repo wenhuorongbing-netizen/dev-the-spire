@@ -295,27 +295,27 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             apiDiscovery,
-            "2026-06-20 dependency supersession: the May discovery notes below recorded the then-active BaseLib project shape.",
+            "2026-06-20 dependency supersession: the May discovery notes below recorded the then-active previous package project shape.",
             "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.31`",
             "Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
-            "Historical local project package at the time: `Alchyr.Sts2.BaseLib` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.31`",
+            "Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.31`",
             "Current authoritative source is the refreshed local public beta `v0.107.1` assembly/source recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.",
             "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
             "historical context only",
             "revalidate against the current `v0.107.1` source snapshot");
         AssertSourceContains(
             implementationPlan,
-            "Historical scaffold-era wording referenced supported game/BaseLib/template APIs.",
+            "Historical scaffold-era wording referenced supported game/previous package/template APIs.",
             "Current release work must instead use native game command APIs, RitsuLib APIs, and template-supported APIs",
-            "do not reintroduce BaseLib without owner-approved dependency documentation.");
+            "do not reintroduce previous package without owner-approved dependency documentation.");
         AssertSourceContains(
             manualChecklist,
             "- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`",
             "- Runtime framework: `STS2-RitsuLib` `v0.4.31` with `lib\\0.107.1`",
-            "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / BaseLib validation lane are historical only and are not the target for this checklist.");
+            "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / previous package validation lane are historical only and are not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
-        Assert.DoesNotContain("through supported game/BaseLib/template APIs", implementationPlan, StringComparison.Ordinal);
+        Assert.DoesNotContain("through supported game/previous package/template APIs", implementationPlan, StringComparison.Ordinal);
         Assert.DoesNotContain("Verified baseline target: `v0.104.0`, `2026.04.23`", manualChecklist, StringComparison.Ordinal);
     }
 
@@ -386,7 +386,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Current package/runtime target is Spire Plus `v0.1.0-private-beta.93`",
             "`STS2-RitsuLib` `0.4.31`",
             "`lib\\0.107.1`",
-            "BaseLib is previous-package or other-mod local context only",
+            "previous package is previous-package or other-mod local context only",
             "`scripts\\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot`",
             "Use `docs/goals/event.md`",
             "Do not combine behavior changes, package version bumps, broad file moves, and",
@@ -394,12 +394,12 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         foreach (var staleCurrentTarget in new[]
                  {
-                     "Slay the Spire 2 v0.106.1 + BaseLib v3.1.4",
+                     "Slay the Spire 2 v0.106.1 + previous package v3.1.4",
                      "STS2-RitsuLib >= 0.3.2",
                      "RitsuLib `v0.3.10` variant pack",
                      "PackageReference Include=\"STS2.RitsuLib\" Version=\"0.3.2\"",
-                     "register BaseLib config",
-                     "BaseLib config"
+                     "register previous package config",
+                     "previous package config"
                  })
         {
             Assert.DoesNotContain(staleCurrentTarget, restructure, StringComparison.OrdinalIgnoreCase);
@@ -414,15 +414,15 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             skill,
             "Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before Harmony patches.",
-            "BaseLib is historical or other-mod context only for current Spire Plus work",
+            "Do not add another shared runtime framework dependency for current Spire Plus work unless the owner explicitly approves a new dependency decision.",
             "Inspect local RitsuLib/template APIs or package references when available",
             "Prefer command APIs and RitsuLib/template hooks over direct state mutation.");
 
         foreach (var staleInstruction in new[]
                  {
-                     "Prefer local BaseLib, RitsuLib, template APIs",
-                     "Inspect local BaseLib/RitsuLib/template APIs",
-                     "Prefer command APIs and BaseLib/template hooks"
+                     "Prefer local previous package, RitsuLib, template APIs",
+                     "Inspect local previous package/RitsuLib/template APIs",
+                     "Prefer command APIs and previous package/template hooks"
                  })
         {
             Assert.DoesNotContain(staleInstruction, skill, StringComparison.Ordinal);
@@ -455,7 +455,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Compile and manifest dependency are active.",
             "`EZMicroBalance.csproj` references `STS2.RitsuLib` only",
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
-            "Current BaseLib target: none for Spire Plus",
+            "Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.",
             "2026-06-21 web recheck",
             "The current public Slay the Spire 2 update target remains Major Update #2",
             "Current compile dependency:",

@@ -11,7 +11,7 @@ Current supersession, 2026-06-20: beta.91 has RitsuLib-only Off and AdditiveBatc
 ## Current Truth
 
 - Worktree is dirty and must not be treated as the beta.84 package source without owner approval, version bump, publish/package refresh, and handoff docs.
-- Current source/build references started from the historical Slay the Spire 2 `v0.106.1` / BaseLib `v3.1.4` target, while the installed game root is now `v0.107.0`; dirty source API fixes were adapted to the installed DLL surface, official RitsuLib `v0.4.16` with `lib\0.107.0` is installed, installed beta.84 package parity is restored, and the fresh beta.84 Off smoke failed clean audit on stale package API targets.
+- Current source/build references started from the historical Slay the Spire 2 `v0.106.1` / previous framework `v3.1.4` target, while the installed game root is now `v0.107.0`; dirty source API fixes were adapted to the installed DLL surface, official RitsuLib `v0.4.16` with `lib\0.107.0` is installed, installed beta.84 package parity is restored, and the fresh beta.84 Off smoke failed clean audit on stale package API targets.
 - The installed game DLL exposes the currently compiled API surface used by the dirty source changes: `ModifyPowerAmountGivenAdditive`, `Ectoplasm.ModifyGoldGained`, and `CookRestSiteOption.get_IsEnabled`.
 - The checked-in `source code/` snapshot contains stale source names for some of those APIs; the build against the installed project references is the deciding no-game gate for this pass.
 - Static EN/ZHS localization is aligned. Runtime EN/ZHS render proof is still pending.
@@ -34,7 +34,7 @@ Current supersession, 2026-06-20: beta.91 has RitsuLib-only Off and AdditiveBatc
 
 - RitsuLib is installed at `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` as official `v0.4.16` with `lib\0.107.0\STS2-RitsuLib.dll`.
 - The current installed game is Slay the Spire 2 `v0.107.0`; installed Spire Plus DLL hash now matches packaged beta.84 after the 2026-06-10 DLL restore, but the fresh beta.84 Off smoke at `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/` failed clean audit on stale package API targets.
-- Historical diagnostic runtime evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes. Those logs reached the main menu with BaseLib, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches.
+- Historical diagnostic runtime evidence exists for Off, CanaryOnly, and AdditiveBatch1 modes. Those logs reached the main menu with previous framework, RitsuLib, and Spire Plus loaded, clean audits, and 25/25 Spire Plus ModPatcher patches.
 - No fresh game launch was produced for the current dirty source. No gameplay, event screenshot, save-load, image/render, replacement, multiplayer, or independent QA proof was produced.
 - `publish/SpirePlus-v0.1.0-private-beta.84.zip` remains the last packaged artifact and must not be represented as a package of this dirty source state.
 

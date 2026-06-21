@@ -99,4 +99,4 @@ if (-not $SkipPublish) {
 }
 
 Write-Host 'Bootstrap completed.'
-Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm STS2-RitsuLib plus Spire Plus appear and are enabled.'
+Write-Host 'Launch Slay the Spire 2, open Settings -> Mod Settings, and confirm STS2-RitsuLib and Spire Plus appear and are enabled.'

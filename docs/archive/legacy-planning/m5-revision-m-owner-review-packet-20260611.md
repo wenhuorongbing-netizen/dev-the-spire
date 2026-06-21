@@ -3,7 +3,7 @@
 Date: 2026-06-11
 Status: owner review prepared; Off loader drift closed; not live-ready or release-ready.
 
-2026-06-20 supersession: Revision M is historical. Current package/runtime truth is beta.91 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.28` / `lib/0.107.1` and no Spire Plus BaseLib dependency.
+2026-06-20 supersession: Revision M is historical. Current package/runtime truth is beta.91 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.28` / `lib/0.107.1` and no Spire Plus previous framework dependency.
 
 ## Scope Reviewed
 
@@ -30,7 +30,7 @@ The minimum Off-loader closure packet is now present:
 
 - package checker pass is recorded in `PROJECT_STATE.md`,
 - beta.85 `v0.107.0` Off smoke reaches main menu,
-- BaseLib, RitsuLib, and Spire Plus load,
+- previous framework, RitsuLib, and Spire Plus load,
 - RitsuLib selects compat branch `0.107.0`,
 - Spire Plus applies 25/25 ModPatcher patches,
 - `EctoplasmGoldGatePatch` exception is absent,

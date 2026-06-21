@@ -10,7 +10,7 @@ Current package/runtime target is Spire Plus `v0.1.0-private-beta.93` on Slay
 the Spire 2 `v0.107.1` with `STS2-RitsuLib` `0.4.31` and the `lib\0.107.1`
 runtime variant. `EZMicroBalance.csproj`, `EZMicroBalance.json`, package
 contents, and current runtime proof must remain RitsuLib-only unless the owner
-explicitly approves a new dependency decision. BaseLib is previous-package or other-mod local context only, not a current Spire Plus dependency.
+explicitly approves a new dependency decision. previous package is previous-package or other-mod local context only, not a current Spire Plus dependency.
 
 External version checks are time-sensitive. As of the 2026-06-21 cleanup pass,
 the current public evidence to recheck is:
@@ -29,7 +29,7 @@ the current public evidence to recheck is:
 - Treat local `source code/` as ignored source evidence only after
   `scripts\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot`
   passes with the current package, game, RitsuLib, and compat-branch targets.
-- Do not use historical `v0.106.1`, `v0.107.0`, BaseLib-backed beta.88, or
+- Do not use historical `v0.106.1`, `v0.107.0`, previous package beta.88, or
   beta.90 rows as current runtime proof.
 - Current beta.93 Off/AdditiveBatch1 logs prove loader, patch application, and
   registration shape only. Gameplay, clicked UI, save-load, replacement,

@@ -6,7 +6,7 @@ Final results:
 - Package/artifact parity passed. Zip/DLL/PCK hashes match expected values.
 - Fixed one local installed-artifact drift: synced installed `README_INSTALL.txt` to match staging/package README.
 - Ancient resource smoke passed: Urda/Morvi/Lotha scenes + 43 textures loaded from installed PCK with 0 errors/warnings.
-- Steam helper startup passed with only BaseLib + Spire Plus / `EZMicroBalance`: `Loaded 2 mods (2 total)`, `Found 22 SavedSpireFields`, main menu reached, clean audit/manual scan.
+- Steam helper startup passed with only previous framework + Spire Plus / `EZMicroBalance`: `Loaded 2 mods (2 total)`, `Found 22 previous saved-state registrations`, main menu reached, clean audit/manual scan.
 - Restore completed: settings/current-run files/moved mods restored, 0 `SlayTheSpire2` processes left running.
 - Final validation:
   - `dotnet test EZMicroBalance.sln --no-build`: 109 passed / 18 skipped

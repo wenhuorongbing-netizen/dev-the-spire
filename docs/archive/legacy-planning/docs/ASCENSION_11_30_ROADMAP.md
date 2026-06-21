@@ -1,4 +1,4 @@
-﻿# Ascension 11-30 Roadmap
+# Ascension 11-30 Roadmap
 
 This document is a future roadmap only. It does not authorize implementation.
 
@@ -63,7 +63,7 @@ Avoid:
 ## Research Needed Later
 - Where Ascension levels are defined.
 - How current public beta handles Ascension caps.
-- Whether BaseLib exposes Ascension extension points.
+- Whether previous framework exposes Ascension extension points.
 - How Ascension changes are displayed to the player.
 - Whether save files store Ascension state in a patch-sensitive way.
 - How Ascension interacts with unlocks, characters, and daily/custom modes.

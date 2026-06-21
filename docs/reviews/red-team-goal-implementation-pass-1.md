@@ -21,7 +21,7 @@ This pass is a partial implementation-hardening pass only. It cannot claim relea
 
 - `GoalCompletionGuardTests` blocks unguarded positive claims such as `goal completed`, `release-ready`, `full multiplayer support`, `feature complete`, and `fully implemented` across `docs/goal.md`, `docs/review.md`, and `docs/issues.md`.
 - `GoalCompletionGuardTests` also prevents release-ready language in `docs/review.md` or `docs/issues.md` while release traceability or issues still contain pending/manual gates.
-- `SaveStateContractsGuardTests` checks stateful feature source for SavedSpireField or deck-mirror persistence, hydrate/restore paths, clear/reset paths, source log/evidence markers, and manual save-load rows.
+- `SaveStateContractsGuardTests` checks stateful feature source for previous saved-state API or deck-mirror persistence, hydrate/restore paths, clear/reset paths, source log/evidence markers, and manual save-load rows.
 
 ## Residual Risk
 

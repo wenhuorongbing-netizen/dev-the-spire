@@ -3,11 +3,11 @@
 Date: 2026-06-18
 Status: Loader/runtime drift remains closed and dependency-floor proof was refreshed through beta.87 AdditiveBatch1 registration proof; live gameplay/release proof still pending.
 
-2026-06-20 supersession: beta.91 is now the current RitsuLib-only loader/registration truth for `v0.107.1` with `STS2-RitsuLib` `v0.4.28`. This Revision M report is retained as the beta.87 `v0.107.0` package/source-shape and BaseLib-drift history only.
+2026-06-20 supersession: beta.91 is now the current RitsuLib-only loader/registration truth for `v0.107.1` with `STS2-RitsuLib` `v0.4.28`. This Revision M report is retained as the beta.87 `v0.107.0` package/source-shape and previous framework-drift history only.
 
 ## Current Truth
 
-- The old missing-`STS2-RitsuLib` blocker is closed locally. Official `STS2-RitsuLib` `v0.4.24` is installed under `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and includes `lib\0.107.0`; BaseLib `v3.2.1` is installed under `mods\BaseLib`.
+- The old missing-`STS2-RitsuLib` blocker is closed locally. Official `STS2-RitsuLib` `v0.4.24` is installed under `E:\Steam\steamapps\common\Slay the Spire 2\mods\STS2-RitsuLib` and includes `lib\0.107.0`; previous framework `v3.2.1` is installed under `mods\previous framework`.
 - The controlling red root-cause evidence is `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/`: the beta.84 package reached main menu on game `v0.107.0`, but Spire Plus applied only 17/25 ModPatcher patches, logged 8 optional ModPatcher failures, and threw an `EctoplasmGoldGatePatch` initializer exception.
 - Current dirty source contains the intended `v0.107.0` drift fixes:
   - `EctoplasmGoldGatePatch` targets `Ectoplasm.ModifyGoldGained(Player, decimal)` and prefixes with `decimal amount` / `ref decimal __result`.

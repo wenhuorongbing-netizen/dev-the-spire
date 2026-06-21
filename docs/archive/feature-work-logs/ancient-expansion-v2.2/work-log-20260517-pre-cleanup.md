@@ -20,7 +20,7 @@
 
 ## 2026-05-15 - Live clicked-UI event background correction
 
-- Rechecked the BaseLib and RitsuLib add-Ancient tutorials. Both paths route custom Ancient visuals through a custom scene/background scene path rather than treating the event PNG as an independently fixed UI element; the active local Core source also instantiates the Ancient sBackgroundScenePaths scene into the event layout.
+- Rechecked the previous framework and RitsuLib add-Ancient tutorials. Both paths route custom Ancient visuals through a custom scene/background scene path rather than treating the event PNG as an independently fixed UI element; the active local Core source also instantiates the Ancient sBackgroundScenePaths scene into the event layout.
 - Live clicked-UI screenshots showed the earlier 2.13 cover-fit repair was wrong for the actual Ancient event frame: the frame behaves as 16:9, so 2.13 images cropped the accepted art and pushed title/focal elements out of place.
 - User review then corrected the Lotha source selection: s.tools/art-generation/chatgpt/crystal-throne-of-shattered-visions.pngs was a similarly named but wrong mirror composition. Recovered the correct user-uploaded horizontal mirror-ensemble image from Edge cache file sf_002caas, archived it to s.tools/art-generation/lotha-background-repair-20260515-feedback/sources/lotha-horizontal-mirror-ensemble-upload-source.pngs, and promoted it to sEZMicroBalance/images/events/ezmb_lotha.pngs.
 - Restored the user-accepted 16:9 Urda root-mother background from s.tools/art-generation/event-background-reframe-20260515/head-backup/EZMicroBalance/images/events/ezmb_urda.pngs into sEZMicroBalance/images/events/ezmb_urda.pngs.
@@ -129,7 +129,7 @@
 
 ## 2026-05-14 - Morvi reward/state lifecycle hardening
 
-- Re-read the active v2.2 docs, Morvi source/localization/tests, sAncientCardHelperss, sAncientPlayerStates, and local Core reward/card-pile/combat/damage source before editing. BaseLib sSavedSpireFields docs were used only for the existing save/load risk stance; live save/load remains pending.
+- Re-read the active v2.2 docs, Morvi source/localization/tests, sAncientCardHelperss, sAncientPlayerStates, and local Core reward/card-pile/combat/damage source before editing. previous framework sprevious saved-state registrations docs were used only for the existing save/load risk stance; live save/load remains pending.
 - Fixed the shared generated-card helper so it guards combat-not-in-progress and missing owner combat state before calling Core, calls sAddGeneratedCardsToCombat([card], ...)s directly instead of Core's single-card wrapper that indexes s[0]s, and removes generated cards on empty/null/unsuccessful add results.
 - Hardened Red Ink Overdraft against Core hand-full redirection by skipping generation when the hand is full, verifying the generated card actually lands in the hand, and removing/logging wrong-pile results. Red Ink unpaid debt now uses the same nonlethal HP fallback as Debt Settlement.
 - Shared Morvi combat-end HP fallback through sDamagePlayerNonlethal(...)s, keeping Debt Settlement and Red Ink from reducing the player below 1 HP during sAfterCombatEnds.
@@ -138,7 +138,7 @@
 
 ## 2026-05-14 - Ancient state mirror source guard coverage
 
-- Audited sAncientPlayerStates, sAncientSavedStateFieldss, and the active Urda, Morvi, and Lotha run hooks against the documented sSavedSpireField<Player,string>s risk. The helper already read runtime state first, restored runtime state from owned/non-removed deck-card mirrors when runtime was empty, wrote runtime plus deck mirrors on set, and used the same recovery path through sSyncDecks.
+- Audited sAncientPlayerStates, sAncientSavedStateFieldss, and the active Urda, Morvi, and Lotha run hooks against the documented sprevious saved-state API<Player,string>s risk. The helper already read runtime state first, restored runtime state from owned/non-removed deck-card mirrors when runtime was empty, wrote runtime plus deck mirrors on set, and used the same recovery path through sSyncDecks.
 - Verified active encoded state reads and writes funnel through each hook's sGetSelectedBlessing(...)s, sGetProgress(...)s, sSetProgress(...)s/sSetState(...)s, and sSyncPersistentState(...)s paths, with recurrent sAfterCardChangedPiles(...)s deck mirror sync calls. No direct source indexing of sUrdaStateKeys, sUrdaDeckStateKeys, sMorviStateKeys, sMorviDeckStateKeys, sLothaStateKeys, or sLothaDeckStateKeys was found outside the helper.
 - Added focused guard coverage for the helper contract, owner/removed-card deck filters, run-hook helper usage, recurrent sync hooks, direct encoded-field bypass rejection, and docs keeping live save/load pending.
 - Updated current risk/API/manual/issue docs to record stronger source guard coverage without closing live save/load rows.
@@ -156,7 +156,7 @@
 ## 2026-05-14 - Save-risk source hardening and status consistency
 
 - Audited active docs for the stale package hashes called out by the goal. The only stale current-status claim found outside archives and the active goal file was the top note in sdocs/issues.mds; current package hashes now point to zip sA147B2850C011DDF04D1D12F6817DFC89BDE58193192B524D5B2385986706C72s, DLL sEAFBAB44B8AB70C1DC81CC878B1ED1E9C270E799AA2637EEABA16F76E3CBC911s, PCK sF279CD94C6BFB0D92B675E5546D937A08C1A121D7B8284549FAD1FD527272377s, manifest s9CB73137A04958D0DC0278E854CA1E0E1AC187C125E938DF7C3734F23F7B6A02s, and README s5B1194440F6B212471E05F0EE117EE7F30E597FAAA916DF91F9378CD529DDCBBs.
-- Reviewed local Core save/death/event-combat source again. The source stance remains unchanged: sCombatRoom.ToSerializable()s rejects active parent-linked combat rooms, prefinished parent restore is source-shaped through sRunManagers, sCreatureCmd.Kill(force: true)s bypasses death prevention, and player serialization still does not source-prove sSavedSpireField<Player,string>s persistence. Deck-card saved fields remain the source-safe mirror carrier; live save/load rows stay open.
+- Reviewed local Core save/death/event-combat source again. The source stance remains unchanged: sCombatRoom.ToSerializable()s rejects active parent-linked combat rooms, prefinished parent restore is source-shaped through sRunManagers, sCreatureCmd.Kill(force: true)s bypasses death prevention, and player serialization still does not source-prove sprevious saved-state API<Player,string>s persistence. Deck-card saved fields remain the source-safe mirror carrier; live save/load rows stay open.
 - Added source-visible Lotha Death Reprieve restore logging that reports the restored pending/active phase, whether the protection power was already present, and that active-turn save/load continuation remains live-pending. Added a Vakuu victory fallback log for the ownerless restored path. No enemy-turn interruption rewrite, new blessing, or state-carrier migration was attempted.
 - Strengthened guards for Lotha phase writes before current-turn/pending reprieve handling, duplicate reprieve start prevention, Vakuu's no-normal-reward/no-sLinkedRewardSets surface, ownerless fallback logging, and current package hash docs.
 - Validation: sdotnet build EZMicroBalance.sln --no-restores passed with 0 warnings/errors; the first sdotnet test EZMicroBalance.sln --no-builds exposed one brittle new guard, then the rerun passed with 136 passed, 18 skipped, 0 failed; sdotnet format EZMicroBalance.sln --verify-no-changes --no-restores first exposed one whitespace issue, then passed after formatting the touched test file; sgit diff --checks passed with CRLF normalization warnings only.
@@ -232,7 +232,7 @@
 
 ## 2026-05-14 - Clicked Ancient UI preparation and black-screen hardening
 
-- Searched scripts, tests, docs, and source for an automated clicked-Ancient UI path. Existing repo helpers can prepare/restore live sessions, isolate BaseLib plus Spire Plus, preserve current-run files, preflight foreground windows, and audit copied logs, but no safe script currently opens/clicks an Ancient screen and captures a screenshot.
+- Searched scripts, tests, docs, and source for an automated clicked-Ancient UI path. Existing repo helpers can prepare/restore live sessions, isolate previous framework plus Spire Plus, preserve current-run files, preflight foreground windows, and audit copied logs, but no safe script currently opens/clicks an Ancient screen and captures a screenshot.
 - Documented a manual force-evidence protocol in smanual-test-checklist.mds using s.tools/runtime-evidence/ancient-ui-click-smoke-YYYYMMDD-HHMMSSs, sSPIREPLUS_FORCE_ANCIENTs, sSPIREPLUS_FORCE_VAKUU_FIGHTs, sscripts/spire-plus-live-session.ps1s, sscripts/check-spire-window-preflight.ps1s, and sscripts/audit-godot-log.ps1s.
 - Hardened Urda/Morvi/Lotha option generation fallback logging for invalid forced blessing ids, empty source-backed option pools, and undersized option pools. Urda now presents four initial options; Morvi and Lotha remain at three.
 - Tightened source/UI readiness guard coverage for Control-root Ancient scenes, separation of event art from map/run-history icons, option marker relic art/localization, force gates, fallback source shape, and active-doc false clicked-UI claims.
@@ -252,7 +252,7 @@
 - Verified current package hash parity under s.tools/runtime-evidence/current-package-smoke-20260514-015901s: installed, staging, versioned, and zip-entry DLL/PCK/manifest/README hashes match the documented sSpirePlus-v0.1.0-private-beta.0s package hashes after syncing the installed README to the package/staging copy.
 - Checked Ancient UI/art resource coverage for Urda, Morvi, Lotha, and Vakuu: Urda/Morvi/Lotha event/background scenes are Control-root scenes; map icons, event art, run-history icons, and option marker relic art use separate mod-owned paths; Lotha event art is the large event illustration rather than a map thumbnail; all checked option marker art paths exist/export; EN and zhs localization keys referenced by scenes/options exist.
 - Ran headless Godot against the installed sEZMicroBalance.pcks; sgodot-ancient-resource-load-summary.jsons reports exit code 0, sHasOkMarker: trues, 0 error lines, and 0 warning lines while loading 3 Ancient scenes and 43 Ancient textures.
-- Ran the normal Steam live-session helper with only BaseLib plus Spire Plus / sEZMicroBalances enabled. The copied sgodot.logs records BaseLib s177 patches successfully, 0 faileds, sRegistered config for mod EZMicroBalances, sFinished mod initialization for 'Spire Plus' (EZMicroBalance)s, sLoaded 2 mods (2 total)s, sFound 22 SavedSpireFieldss, and sTime to main menu: 13,539mss; sscripts/audit-godot-log.ps1s found 0 release-blocking signature hits.
+- Ran the normal Steam live-session helper with only previous framework plus Spire Plus / sEZMicroBalances enabled. The copied sgodot.logs records previous framework s177 patches successfully, 0 faileds, sRegistered config for mod EZMicroBalances, sFinished mod initialization for 'Spire Plus' (EZMicroBalance)s, sLoaded 2 mods (2 total)s, sFound 22 previous saved-state registrationss, and sTime to main menu: 13,539mss; sscripts/audit-godot-log.ps1s found 0 release-blocking signature hits.
 - Restore stopped sSlayTheSpire2s, restored settings to the original hash, restored 24 moved mod entries and 2 current-run files, preserved Steam-rehydrated test current-run files under evidence, and left 0 sSlayTheSpire2s processes. No live gameplay, clicked Ancient UI, save-load, failure/death-path, or co-op verification was run.
 
 ## 2026-05-14 - Source red-team hardening and text cleanup
@@ -262,7 +262,7 @@
 - Removed a stray Urda Seed Bank assignment that marked the second settled Seed Bank card as a Trial Branch plant.
 - Added sSPIREPLUS_FORCE_ANCIENTs, sSPIREPLUS_DISABLE_URDAs, and sSPIREPLUS_FORCE_URDA_BLESSINGs aliases to the Urda gate while preserving the legacy sEZMB_*s names.
 - Clarified EN/zhs text for Lotha Mirror Rebuttal eligibility, Morvi Blueprint Proof Curse exclusion, Urda Root-Sight immediate timing, Vakuu victory fallback, Draw/Discard/Exhaust pile highlighting, Waste Paper's draw-pile condition, and Debt Settlement nonlethal HP fallback.
-- Source review found larger live/save-load blockers that remain open: active-combat Vakuu child-room serialization, Lotha Death Reprieve phase persistence, and player-level sSavedSpireField<Player,string>s persistence proof.
+- Source review found larger live/save-load blockers that remain open: active-combat Vakuu child-room serialization, Lotha Death Reprieve phase persistence, and player-level sprevious saved-state API<Player,string>s persistence proof.
 - Validation for this pass is recorded in sPROJECT_STATE.mds after the final build/test/format/publish loop.
 
 ## 2026-05-14 - Vakuu Temptation source-backed gameplay slice
@@ -423,7 +423,7 @@
   - sscripts/check-installed-ezmb-package.ps1s: passed; installed DLL, manifest, and PCK hashes match sdocs/private-beta-verification-handoff.mds.
   - sdotnet test EZMicroBalance.sln -c Releases: passed, 81 passed, 17 skipped.
   - sscripts/audit-godot-log.ps1s on s.tools/runtime-evidence/current-spire-plus-normal-steam-20260513-054241/godot.logs: clean with 0 release-blocking signature hits.
-  - Normal Steam-client Mod Settings UI capture under s.tools/runtime-evidence/current-spire-plus-modsettings-20260513-111342s: s02-mod-config-list.pngs shows sSpire Pluss, sgodot.logs has sLoaded 2 mods (2 total)s, sFound 16 SavedSpireFieldss, 0 sERRORs lines, and settings/moved mods were restored.
+  - Normal Steam-client Mod Settings UI capture under s.tools/runtime-evidence/current-spire-plus-modsettings-20260513-111342s: s02-mod-config-list.pngs shows sSpire Pluss, sgodot.logs has sLoaded 2 mods (2 total)s, sFound 16 previous saved-state registrationss, 0 sERRORs lines, and settings/moved mods were restored.
 - No new live gameplay, save/load, or co-op testing was performed in this validation refresh.
 
 ## 2026-05-12 - Morvi hardening and Lotha/art blocker review
@@ -434,7 +434,7 @@
 - Clarified Morvi Debt Settlement English/zhs text to say missing Gold falls back to nonlethal HP.
 - Added source guards for Morvi generated-copy cleanup, clone/reentry/Power-card safety, Debt Settlement nonlethal HP fallback, delayed payoff reward UI, and event-art pending status.
 - Rechecked local Act 3 Ancient source: sGlory.GetUnlockedAncients(...)s returns sAllAncients.ToList()s with no native extension hook, so any Lotha insertion would need the same narrow Harmony-postfix shape currently used by Urda/Morvi.
-- Rechecked local event visuals: sNAncientEventLayout.InitializeVisuals()s loads an Ancient background scene through sAncientEventModel.CreateBackgroundScene()s, and sEventModel.GetAssetPaths(...)s preloads sBackgroundScenePaths for sEventLayoutType.Ancients. BaseLib exposes sCustomAncientModel.CustomScenePaths, but this pass has no explicit local Morvi/Lotha source art or custom scene file to bind.
+- Rechecked local event visuals: sNAncientEventLayout.InitializeVisuals()s loads an Ancient background scene through sAncientEventModel.CreateBackgroundScene()s, and sEventModel.GetAssetPaths(...)s preloads sBackgroundScenePaths for sEventLayoutType.Ancients. previous framework exposes sCustomAncientModel.CustomScenePaths, but this pass has no explicit local Morvi/Lotha source art or custom scene file to bind.
 - No explicit local source file was found for sEZMicroBalance/images/events/ezmb_morvi.pngs or sEZMicroBalance/images/events/ezmb_lotha.pngs; no placeholder art, s.imports, or export-preset entry was added.
 - Lotha and Vakuu gameplay remain planning-only in this pass. No future Urda blessing, A21-A30, or custom-character content was added.
 - Validation:
@@ -473,7 +473,7 @@
 - Limited this pass to current Urda acceptance/stability work. No Morvi, Lotha, Vakuu, or future Urda blessing gameplay was added.
 - Hardened Humus Pact's third payoff so sHumusCompletionPendings is cleared only after payoff resolver success; payoff card generation now happens before optional removals so a no-card fallback cannot consume removals or silently drop the payoff.
 - Added/strengthened guards for Humus no sCardReward.OnSkippeds, Humus option localization, Seedbed accept-only counting, future six Urda ids not active, Morvi/Lotha/Vakuu not active, and docs not claiming Urda live/save-load verification.
-- Updated local API research with negative evidence for sSavedSpireField<Player,string>s persistence: local Core sPlayers serialization uses a fixed sSerializablePlayers shape and inspected sSavedPropertiess usage is card/relic/modifier-oriented, so player-field save/load remains pending live proof.
+- Updated local API research with negative evidence for sprevious saved-state API<Player,string>s persistence: local Core sPlayers serialization uses a fixed sSerializablePlayers shape and inspected sSavedPropertiess usage is card/relic/modifier-oriented, so player-field save/load remains pending live proof.
 - sgit status --short --branchs: branch smain...origin/mains with a pre-existing dirty worktree.
 - sgit log -1 --oneline --decorates: sc8bcaa9 (HEAD -> main, origin/main, origin/HEAD) updates.
 - sdotnet build EZMicroBalance.slns: passed with 0 warnings and 0 errors.
@@ -487,7 +487,7 @@
 
 Urda stabilization pass.
 
-- Reviewed current Urda code against v2.2 docs, Urda docs, issue docs, local Core source, BaseLib docs, and the tutorial index as secondary orientation.
+- Reviewed current Urda code against v2.2 docs, Urda docs, issue docs, local Core source, previous framework docs, and the tutorial index as secondary orientation.
 - Confirmed current reviewed HEAD before edits: sc8bcaa9 (HEAD -> main, origin/main, origin/HEAD) updates.
 - Confirmed the worktree already had unrelated modified files before this pass.
 - Removed the Humus Pact dependency on a global sCardReward.OnSkippeds postfix because local Core source shows skipped reward finalization can occur during reward-set abandonment or room exit.

@@ -3,7 +3,7 @@
 Date: 2026-06-11
 Source evidence: `.tools/runtime-evidence/v01070-off-package-parity-20260610-092045/godot.log.after-launch`
 
-2026-06-20 supersession: this ledger is retained as beta.84/beta.87 API-drift history. Current Spire Plus beta.91 no longer depends on BaseLib and uses `STS2-RitsuLib` `v0.4.28` with `lib\0.107.1`; use `PROJECT_STATE.md` or `docs/goals/migration.md` for current dependency truth.
+2026-06-20 supersession: this ledger is retained as beta.84/beta.87 API-drift history. Current Spire Plus beta.91 no longer depends on previous framework and uses `STS2-RitsuLib` `v0.4.28` with `lib\0.107.1`; use `PROJECT_STATE.md` or `docs/goals/migration.md` for current dependency truth.
 
 ## Red beta.84 Off Smoke Failures
 

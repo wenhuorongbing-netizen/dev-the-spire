@@ -1194,7 +1194,7 @@ function Get-OwnerAreaFromText {
 
     $combined = "$Command`n$Text"
 
-    if ($Text -match '(?i)\b(TypeLoadException|MissingMethodException|MissingFieldException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|BaseLib\.Patches)\b|(?i)(?:\[ERROR\]\s+\[BaseLib\]|BaseLib.*(?:HarmonyException|Patching exception|patch(?:ing)? exception|failed))') {
+    if ($Text -match '(?i)\b(TypeLoadException|MissingMethodException|MissingFieldException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|ExternalMod\.Patches)\b|(?i)(?:\[ERROR\]\s+\[ExternalMod\]|ExternalMod.*(?:HarmonyException|Patching exception|patch(?:ing)? exception|failed))') {
         return 'PackageRuntimeDrift'
     }
 
@@ -1286,7 +1286,7 @@ function Get-AuditOwnerText {
     }
 
     $ownerRelevantLines = @($LogText -split "`r?`n" | Where-Object {
-        $_ -match '(?i)(ERROR|exception|TypeLoadException|MissingMethodException|MissingFieldException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|Crystal Sphere|Transform Preview|Future Peek|PreviewTransform|PreviewCrystalSphere|Spire Plus\] Preview|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled|Transform prediction|Crystal Sphere peek|coop|co-op|multiplayer|ALLOW_UNVERIFIED_COOP)'
+        $_ -match '(?i)(ERROR|exception|TypeLoadException|MissingMethodException|MissingFieldException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|StS1|Sts1|Golden Idol|Big Fish|The Cleric|AdditiveBatch1|CanaryOnly|registered-event|Registered act event|Registered shared event|Crystal Sphere|Transform Preview|Future Peek|PreviewTransform|PreviewCrystalSphere|Spire Plus\] Preview|prediction_prepared_multiplayer_ui_only|coop_local_ui_preview_enabled|Transform prediction|Crystal Sphere peek|coop|co-op|multiplayer|ALLOW_UNVERIFIED_COOP)'
     } | Select-Object -First 200)
 
     if ($ownerRelevantLines.Count -eq 0) {
@@ -1370,7 +1370,7 @@ function Get-NextStepForOwner {
         }
         default {
             if ($Signal -match 'package|expectation|TypeLoad|MissingMethod') {
-                return 'Check installed package parity, current RitsuLib runtime compatibility, historical BaseLib context only for old packets, and current game API targets before changing gameplay source.'
+                return 'Check installed package parity, current RitsuLib runtime compatibility, historical ExternalMod context only for old packets, and current game API targets before changing gameplay source.'
             }
 
             return 'Start from iteration-result.json, runtime-probe-samples.json, godot.log.after-launch, and godot-log-audit.json; narrow to the first failing signal.'
@@ -1397,7 +1397,7 @@ function Get-AuditHits {
     return @($hits.ToArray())
 }
 
-function Get-BaseLibPatchFailureDetails {
+function Get-ExternalModFailureDetails {
     param([AllowEmptyString()][string]$LogText)
 
     $details = [System.Collections.Generic.List[object]]::new()
@@ -1408,7 +1408,7 @@ function Get-BaseLibPatchFailureDetails {
     $lines = @($LogText -split "`r?`n")
     for ($i = 0; $i -lt $lines.Count; $i++) {
         $line = [string]$lines[$i]
-        if ($line -notmatch '(?i)^\s*\[ERROR\]\s+\[BaseLib\].*HarmonyException|^\s*\[ERROR\]\s+\[BaseLib\].*Patching exception') {
+        if ($line -notmatch '(?i)^\s*\[ERROR\]\s+\[ExternalMod\].*HarmonyException|^\s*\[ERROR\]\s+\[ExternalMod\].*Patching exception') {
             continue
         }
 
@@ -1416,7 +1416,7 @@ function Get-BaseLibPatchFailureDetails {
         $block.Add($line.Trim()) | Out-Null
         for ($j = $i + 1; $j -lt $lines.Count; $j++) {
             $nextLine = [string]$lines[$j]
-            if ($nextLine -match '^\s*\[(?:INFO|WARN|ERROR)\]' -and $nextLine -notmatch '^\s*\[ERROR\]\s+\[BaseLib\]') {
+            if ($nextLine -match '^\s*\[(?:INFO|WARN|ERROR)\]' -and $nextLine -notmatch '^\s*\[ERROR\]\s+\[ExternalMod\]') {
                 break
             }
 
@@ -1429,7 +1429,7 @@ function Get-BaseLibPatchFailureDetails {
         $blockText = ($block -join "`n")
         $targetMethod = ''
         $patchMethod = ''
-        $failureKind = 'BaseLib patch failure'
+        $failureKind = 'dependency framework patch failure'
         $summary = $block[0]
 
         if ($blockText -match '(?m)Patching exception in method (?<target>.+)$') {
@@ -1457,12 +1457,12 @@ function Get-BaseLibPatchFailureDetails {
         }) | Out-Null
     }
 
-    if ($LogText -match '(?im)^\s*\[INFO\]\s+\[BaseLib\]\s+Applied\s+(?<applied>\d+)\s+patches\s+successfully,\s+(?<failed>\d+)\s+failed') {
+    if ($LogText -match '(?im)^\s*\[INFO\]\s+\[ExternalMod\]\s+Applied\s+(?<applied>\d+)\s+patches\s+successfully,\s+(?<failed>\d+)\s+failed') {
         $details.Add([pscustomobject]@{
             FailureKind = 'Patch summary'
             TargetMethod = ''
             PatchMethod = ''
-            Summary = "BaseLib applied $($Matches['applied']) patches successfully, $($Matches['failed']) failed"
+            Summary = "Dependency framework applied $($Matches['applied']) patches successfully, $($Matches['failed']) failed"
             Snippet = @($Matches[0].Trim())
         }) | Out-Null
     }
@@ -3143,8 +3143,8 @@ function Analyze-Iteration {
     }
     $logOwnerArea = Get-OwnerAreaFromText -Text $ownerLogText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
-    $baseLibPatchFailures = if ($logTextTrustedForOwner) {
-        @(Get-BaseLibPatchFailureDetails -LogText $logText)
+    $externalModFailures = if ($logTextTrustedForOwner) {
+        @(Get-ExternalModFailureDetails -LogText $logText)
     } else {
         @()
     }
@@ -3541,9 +3541,9 @@ function Analyze-Iteration {
         $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
         $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
 
-        if ($name -match 'TypeLoadException|MissingMethodException|BaseLib patch failure|Creature\.get_ShowsInfiniteHp|BaseLib\.Patches') {
+        if ($name -match 'TypeLoadException|MissingMethodException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|ExternalMod\.Patches') {
             $owner = 'PackageRuntimeDrift'
-            $next = 'Treat this as installed-game/BaseLib/RitsuLib API drift first; compare current game source/API targets and package build before gameplay fixes.'
+            $next = 'Treat this as installed-game/ExternalMod/RitsuLib API drift first; compare current game source/API targets and package build before gameplay fixes.'
         } elseif ($name -match 'Spire Plus error/exception') {
             $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
             $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
@@ -3803,7 +3803,7 @@ function Analyze-Iteration {
         HangSignals = @($hangSignals)
         AuditTrustedForOwner = $auditTrustedForOwner
         AuditHits = @($auditHits.ToArray())
-        BaseLibPatchFailures = @($baseLibPatchFailures)
+        ExternalModFailures = @($externalModFailures)
         Findings = @($findings)
     }
 }

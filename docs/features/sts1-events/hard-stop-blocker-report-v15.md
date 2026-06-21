@@ -15,9 +15,9 @@ Downstream blocked gates: `O25-O56` remain blocked because canary runtime, simpl
 
 | Evidence | Path | Result |
 | --- | --- | --- |
-| v15 loader log | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch` | BaseLib, RitsuLib, and Spire Plus loaded; main menu reached; StS1Events default Off logged. |
+| v15 loader log | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/godot.log.after-launch` | previous package, RitsuLib, and Spire Plus loaded; main menu reached; StS1Events default Off logged. |
 | v15 loader audit | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/audit-godot-log.after-launch.json` | FAIL: 11 `Godot ERROR` hits. |
-| v15 live-session state | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/session-state.json` | Controlled E-drive run with BaseLib, STS2-RitsuLib, and EZMicroBalance allowed. |
+| v15 live-session state | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/session-state.json` | Controlled E-drive run with previous package, STS2-RitsuLib, and EZMicroBalance allowed. |
 | v15 restore state | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-231135/restore-state.json` | Restored 25 isolated mods, stopped `SlayTheSpire2`, restored settings hashes. |
 | failed empty helper dir | `.tools/runtime-evidence/sts1-events-v15-loader-20260531-230153/` | Empty; no `session-state.json`; cannot be restored or used as proof. |
 | failed direct Steam-init log | `.tools/runtime-evidence/ritsulib-runtime-proof-20260531-2304/godot.log.failed-steam-init` | Direct executable path failed before mod loading; preserved as blocker evidence. |
@@ -34,7 +34,7 @@ The current best loader log proves the game can reach main menu with the intende
 | `godot.log.after-launch:328-331` | Spire Plus patch summary is `17 applied, 0 ignored, 8 failed, 25 total`; summary `ERROR` lines remain. |
 | `audit-godot-log.after-launch.json` | `Clean=false`; `Godot ERROR line` count is `11`. |
 
-This is not a missing-dependency blocker anymore. `STS2-RitsuLib` `v0.3.10`, BaseLib, and Spire Plus are present on the checked E-drive game root. The blocker is clean loader/error disposition plus absent runtime gameplay proof.
+This is not a missing-dependency blocker anymore. `STS2-RitsuLib` `v0.3.10`, previous package, and Spire Plus are present on the checked E-drive game root. The blocker is clean loader/error disposition plus absent runtime gameplay proof.
 
 ## Attempted Actions
 

@@ -2,7 +2,7 @@
 
 Repository helper scripts live here. Keep scripts small, idempotent where possible, and documented in this file when added.
 
-Runtime failure analyzer note: `analyze-spire-plus-runtime-failure.ps1` also treats a failed direct smoke evidence root with `direct-smoke-summary.json`, `godot.log.current-iteration`, and `godot-log-audit.json` as a no-launch `DirectSmoke` analysis target. Bound BaseLib dirty-audit signatures such as `BaseLib patch failure` and `[ERROR] [BaseLib]` route to `PackageRuntimeDrift`; the report also includes `BaseLibPatchFailures` details such as `AdjustCustomMessageKeys::Fuckery()` undefined target-method failures, `NRelicCollectionCategory::LoadRelics` instruction matcher failures, and the BaseLib applied/failed patch summary. Explanatory text that merely mentions `SPIREPLUS_ALLOW_UNVERIFIED_COOP_*` does not by itself create a co-op override blocker.
+Runtime failure analyzer note: `analyze-spire-plus-runtime-failure.ps1` also treats a failed direct smoke evidence root with `direct-smoke-summary.json`, `godot.log.current-iteration`, and `godot-log-audit.json` as a no-launch `DirectSmoke` analysis target. Bound previous package dirty-audit signatures such as `dependency patch failure` and `[ERROR] [previous package]` route to `PackageRuntimeDrift`; the report also includes `dependency patch failures` details such as `AdjustCustomMessageKeys::Fuckery()` undefined target-method failures, `NRelicCollectionCategory::LoadRelics` instruction matcher failures, and the previous package applied/failed patch summary. Explanatory text that merely mentions `SPIREPLUS_ALLOW_UNVERIFIED_COOP_*` does not by itself create a co-op override blocker.
 
 | Script | Purpose |
 | --- | --- |

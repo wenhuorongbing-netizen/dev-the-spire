@@ -8,11 +8,11 @@
 
 - Current package line: Spire Plus `v0.1.0-private-beta.93`.
 - Current local game: Slay the Spire 2 `v0.107.1`.
-- Current dependencies: STS2-RitsuLib `v0.4.31`, RitsuLib selected compat branch `lib/0.107.1`; no Spire Plus BaseLib project, manifest, package, or current runtime dependency.
+- Current dependencies: STS2-RitsuLib `v0.4.31`, RitsuLib selected compat branch `lib/0.107.1`; no Spire Plus previous package project, manifest, package, or current runtime dependency.
 - Current clean loader/registration proof: `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
-- Scope of that proof: main menu reached, exactly STS2-RitsuLib plus Spire Plus loaded, 25/25 Spire Plus ModPatcher patches applied, Off packet verifier 43 / 0, AdditiveBatch1 10 event types / 14 registration calls, clean audit, retained enabled-mode verifier 31 / 0, and packet verifier 61 / 0.
+- Scope of that proof: main menu reached, exactly STS2-RitsuLib and Spire Plus loaded, 25/25 Spire Plus ModPatcher patches applied, Off packet verifier 43 / 0, AdditiveBatch1 10 event types / 14 registration calls, clean audit, retained enabled-mode verifier 31 / 0, and packet verifier 61 / 0.
 - Not proven: gameplay, clicked UI, save-load, replacement functional behavior, multiplayer/fail-closed behavior, game-native AutoSlay batch stability, independent QA, release readiness, or tester handoff.
-- Retained beta.85, beta.86, beta.87, beta.88, and beta.90 loader logs are previous-package, previous-game-version, or previous-dependency context unless a current doc explicitly names the beta.93 evidence paths.
+- Retained beta.85, beta.86, beta.87, beta.88, and beta.90 loader logs are previous-package, previous-game-version, or previous-package context unless a current doc explicitly names the beta.93 evidence paths.
 - Debug recommendation: accept scaffold only. General info diagnostics stay internal-only behind `SPIREPLUS_ENABLE_DEBUG_LOGS=1` or legacy `EZMB_ENABLE_DEBUG_LOGS=1`; preview diagnostics stay behind the localized preview setting; no debug expansion is authorized.
 - StS1Events recommendation: staging-only. Loader/registration proof must not be treated as event gameplay proof.
 - Batch 4c recommendation: proposal-only pending owner decision and fresh validation.

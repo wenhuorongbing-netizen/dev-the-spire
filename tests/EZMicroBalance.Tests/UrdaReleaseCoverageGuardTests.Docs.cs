@@ -46,14 +46,14 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         Assert.Contains("RitsuLib `ModAncientEventTemplate`", urdaIssue, StringComparison.Ordinal);
         Assert.Contains("SharedAncient<EzmbUrda>()", urdaIssue, StringComparison.Ordinal);
         Assert.Contains("Prefer native game command APIs, RitsuLib APIs, and template-supported APIs before Harmony", v22Api, StringComparison.Ordinal);
-        Assert.Contains("BaseLib references as historical", v22Plan, StringComparison.Ordinal);
-        Assert.Contains("BaseLib notes are historical migration context only", v22SourceDesign, StringComparison.Ordinal);
+        Assert.Contains("treat previous package references as historical", v22Plan, StringComparison.Ordinal);
+        Assert.Contains("previous package notes are historical migration context only", v22SourceDesign, StringComparison.Ordinal);
         Assert.DoesNotContain("Urda live gameplay verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Urda save/load verified", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("URDA-PROTOTYPE | Closed", currentUrdaDocs, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("Urda now derives from BaseLib", currentUrdaDocs, StringComparison.Ordinal);
-        Assert.DoesNotContain("BaseLib/template Ancient-pool API", currentUrdaDocs, StringComparison.Ordinal);
-        Assert.DoesNotContain("Inspect BaseLib/template APIs", currentUrdaDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Urda now derives from previous package", currentUrdaDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("previous package/template Ancient-pool API", currentUrdaDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Inspect previous package/template APIs", currentUrdaDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x]", urdaChecklist, StringComparison.Ordinal);
     }
 }

@@ -69,7 +69,7 @@ These items are extracted from `docs/review.md` where the review found concrete 
 
 Invalid evidence note, 2026-05-15: `.tools/runtime-evidence/ancient-ui-click-vakuu-20260515-211824` is not counted as clicked UI or Vakuu fight proof. It only confirmed that the vanilla DevConsole `ancient VAKUU` command needs an active run/player context; issuing it from the main menu logs a `NullReferenceException` in `AncientConsoleCmd.Process(...)`. The session was restored afterward.
 
-Invalid evidence note, 2026-05-15: `.tools/runtime-evidence/ancient-ui-click-vakuu-20260515-222619` is not counted as clicked UI or Vakuu fight proof. The isolated BaseLib + Spire Plus session launched and restored cleanly, but the keyboard-driven DevConsole helper did not execute `spireplus_test_ancient VAKUU confirm fight`; the screenshot stayed on the main menu. The user will run the live/manual test pass, so this remains a test-ready handoff item rather than a closed runtime row.
+Invalid evidence note, 2026-05-15: `.tools/runtime-evidence/ancient-ui-click-vakuu-20260515-222619` is not counted as clicked UI or Vakuu fight proof. The isolated previous framework + Spire Plus session launched and restored cleanly, but the keyboard-driven DevConsole helper did not execute `spireplus_test_ancient VAKUU confirm fight`; the screenshot stayed on the main menu. The user will run the live/manual test pass, so this remains a test-ready handoff item rather than a closed runtime row.
 
 ## Issue detail links
 

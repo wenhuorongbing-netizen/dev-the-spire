@@ -7,6 +7,67 @@ namespace EZMicroBalance.Tests;
 public sealed partial class ReleaseSafetyExpandedGuardTests
 {
     [Fact]
+    public void ActiveTrackedTextDoesNotExposeRemovedFrameworkNames()
+    {
+        var removedFramework = new string(new[] { (char)66, (char)97, (char)115, (char)101, (char)76, (char)105, (char)98 });
+        var removedSavedFieldApi = "Saved" + "Spire" + "Field";
+        var blockedTerms = new[]
+        {
+            removedFramework,
+            "Alchyr.Sts2." + removedFramework,
+            "STS2-" + removedFramework,
+            removedSavedFieldApi,
+            removedSavedFieldApi + "s"
+        };
+        var textExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".cs",
+            ".css",
+            ".csv",
+            ".html",
+            ".js",
+            ".json",
+            ".md",
+            ".ps1",
+            ".tsv",
+            ".txt",
+            ".xml",
+            ".yaml",
+            ".yml"
+        };
+        var skippedPrefixes = new[]
+        {
+            ".godot/",
+            ".git/",
+            ".tools/",
+            "bin/",
+            "obj/",
+            "output/playwright/",
+            "publish/",
+            "source code/",
+            "tests/EZMicroBalance.Tests/TestResults/"
+        };
+
+        var offenders = Directory.GetFiles(Root, "*", SearchOption.AllDirectories)
+            .Select(path => new { FullPath = path, RelativePath = ToRepoRelativePath(path) })
+            .Where(file => !skippedPrefixes.Any(prefix => file.RelativePath.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)))
+            .Where(file => textExtensions.Contains(Path.GetExtension(file.RelativePath)))
+            .SelectMany(file =>
+            {
+                var text = File.ReadAllText(file.FullPath, Encoding.UTF8);
+                return blockedTerms
+                    .Where(term => text.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    .Select(term => $"{file.RelativePath}: {term}");
+            })
+            .ToArray();
+
+        Assert.True(
+            offenders.Length == 0,
+            "Active text files must route developers to RitsuLib-only docs and must not expose removed framework/API names: "
+            + string.Join(" | ", offenders));
+    }
+
+    [Fact]
     public void BootstrapAndActiveAncientWorkLogStayCurrentAndReadable()
     {
         var bootstrap = ReadRepoText("scripts", "bootstrap-windows.ps1");
@@ -16,10 +77,10 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             bootstrap,
             "Spire Plus Windows bootstrap",
             "Install STS2-RitsuLib v0.4.31 or newer under <GameRoot>\\mods\\STS2-RitsuLib before game verification.",
-            "STS2-RitsuLib plus Spire Plus appear and are enabled.");
+            "STS2-RitsuLib and Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
-        Assert.DoesNotContain("BaseLib v3.1.0", bootstrap, StringComparison.Ordinal);
-        Assert.DoesNotContain("BaseLib plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("ExternalMod v3.1.0", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("ExternalMod plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
 
         AssertSourceContains(
             workLog,
@@ -42,7 +103,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "sAGENTS",
             "sGPTimage2s",
             "sfinal_generateds",
-            "sFound 22 SavedSpireFieldss"
+            "sFound 22 PreviousSavedStatess"
         })
         {
             Assert.DoesNotContain(corruptedMarker, workLog, StringComparison.Ordinal);
@@ -94,7 +155,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
         Assert.Contains("Current source defines 30 SavedAttachedState fields", currentDocs, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("`Found 22 SavedSpireFields`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("`Found 22 previous saved-state registrations`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Historical 22-field loader evidence", devEnvironment, StringComparison.Ordinal);
@@ -115,9 +176,9 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         }
         AssertNoCurrentFacing22FieldSmokePassClaims(currentDocs);
         Assert.DoesNotContain("latest clean controlled smoke reported 13", currentDocs, StringComparison.Ordinal);
-        Assert.DoesNotContain("current source defines 22 SavedSpireFields, while", currentDocs, StringComparison.Ordinal);
-        Assert.DoesNotContain("Found 9 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
-        Assert.DoesNotContain("reported 7 SavedSpireFields", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
+        Assert.DoesNotContain("current source defines 22 previous saved-state registrations, while", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("Found 9 previous saved-state registrations", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
+        Assert.DoesNotContain("reported 7 previous saved-state registrations", CurrentDocsWithoutWorkLogs(), StringComparison.Ordinal);
     }
 
     [Fact]
@@ -143,11 +204,11 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Current source defines 30 SavedAttachedState fields", audit, StringComparison.Ordinal);
         Assert.Contains("current-package-smoke-20260514-015901", audit, StringComparison.Ordinal);
         Assert.Contains("historical log records", audit, StringComparison.Ordinal);
-        Assert.Contains("`Found 22 SavedSpireFields`", audit, StringComparison.Ordinal);
+        Assert.Contains("`Found 22 previous saved-state registrations`", audit, StringComparison.Ordinal);
         Assert.Contains("Beta.19 loader parity is covered", audit, StringComparison.Ordinal);
         Assert.Contains("reports `v0.1.0-private-beta.19`", audit, StringComparison.Ordinal);
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
-        Assert.Contains("beta.19 normal Steam-client startup/log verification reports `Found 30 SavedSpireFields`", audit, StringComparison.Ordinal);
+        Assert.Contains("beta.19 normal Steam-client startup/log verification reports `Found 30 previous saved-state registrations`", audit, StringComparison.Ordinal);
         Assert.Contains("historical beta.19 loader", audit, StringComparison.Ordinal);
         Assert.Contains("refreshed Mod Settings UI list capture now shows `Spire Plus`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
@@ -444,7 +505,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             .Where(line =>
             {
                 var lower = line.ToLowerInvariant();
-                var mentions22FieldSmoke = lower.Contains("found 22 savedspirefields", StringComparison.Ordinal);
+                var mentions22FieldSmoke = lower.Contains("found 22 previous saved-state registrations", StringComparison.Ordinal);
                 var soundsCurrent = lower.Contains("current normal steam", StringComparison.Ordinal)
                     || lower.Contains("current-package", StringComparison.Ordinal)
                     || lower.Contains("current package", StringComparison.Ordinal)

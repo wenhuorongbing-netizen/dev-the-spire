@@ -1,4 +1,4 @@
-﻿# Archived prompt (2026-05)
+# Archived prompt (2026-05)
 
 - Original path: 'docs/issues-urda-overnight-addendum.md'
 - Archived path: 'docs/archive/prompts/2026-05/issues-urda-overnight-addendum.md'
@@ -39,7 +39,7 @@ Each Urda issue can only be closed when all relevant evidence exists:
 - `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: 0 failed after package refresh.
 - `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`: passed.
 - `git diff --check`: passed, only known CRLF normalization warnings allowed.
-- Clean normal Steam-client log with BaseLib + EZMicroBalance only, or explicit pending live blocker.
+- Clean normal Steam-client log with previous framework + EZMicroBalance only, or explicit pending live blocker.
 - No release-ready claim unless live gates actually pass.
 
 ---
@@ -78,9 +78,9 @@ Search current local source:
 - `CardRewardSkipped`
 - `RewardScreen`
 - `RunState`
-- `SavedSpireField`
+- `previous saved-state API`
 - `ModelDb`
-- `BaseLib`
+- `previous framework`
 - existing EZMB `Ancients/**` patches
 
 Implementation requirements:

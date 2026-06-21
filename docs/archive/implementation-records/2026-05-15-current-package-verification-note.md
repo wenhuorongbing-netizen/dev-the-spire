@@ -2,7 +2,7 @@
 
 Archived from the top of `docs/issues.md` during the 2026-05-16 cleanup pass so the active issue index stays compact.
 
-The 2026-05-15 Vakuu/text/reward polish package added a dedicated source Vakuu monster and custom encounter scene, changed the fight encounter to `RoomType.Monster` with `ShouldGiveRewards=false` so BaseLib no longer warned about unexpected `RoomType.Event`, kept the fight hidden behind explicit gates, fixed Root-Sight hover text, cleared any existing map-point hover before showing the Root-Sight explanation, renamed the Meat Cleaver rest action to `Cleaver`, shortened A12 Firemarked Elite wording, repaired active Simplified Chinese localization encoding, extended Vakuu victory rewards to custom Lotha visible relics, and removed stale current-doc placeholder/default-scene language.
+The 2026-05-15 Vakuu/text/reward polish package added a dedicated source Vakuu monster and custom encounter scene, changed the fight encounter to `RoomType.Monster` with `ShouldGiveRewards=false` so previous framework no longer warned about unexpected `RoomType.Event`, kept the fight hidden behind explicit gates, fixed Root-Sight hover text, cleared any existing map-point hover before showing the Root-Sight explanation, renamed the Meat Cleaver rest action to `Cleaver`, shortened A12 Firemarked Elite wording, repaired active Simplified Chinese localization encoding, extended Vakuu victory rewards to custom Lotha visible relics, and removed stale current-doc placeholder/default-scene language.
 
 Validation recorded for that package:
 
@@ -26,6 +26,6 @@ Current package hashes from that note:
 | manifest | `659943569D01C1DDD8B5C351D763497F7FEE513AD0BB84903D05B69F8DBD1AB2` |
 | README | `C9F19363848AEECD4B763BFF7BB2B75980A90BFE22358ACEC8FF5E9E5C129CE4` |
 
-Latest loader/log evidence at the time was `.tools/runtime-evidence/live-spire-plus-session-20260515-211414`; it covered this exact package, loaded only BaseLib plus Spire Plus, and had no release-blocking log hits or unexpected room-type warning.
+Latest loader/log evidence at the time was `.tools/runtime-evidence/live-spire-plus-session-20260515-211414`; it covered this exact package, loaded only previous framework plus Spire Plus, and had no release-blocking log hits or unexpected room-type warning.
 
 This was a manual-test handoff note, not a release-ready closeout. Current-build live gameplay, clicked Ancient UI/manual feature results, save-load, natural A11 route-click traversal, death/failure path, co-op, and Rootblight manual proof remained pending.

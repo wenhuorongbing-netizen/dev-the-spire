@@ -37,7 +37,7 @@ Exact command: Set SPIREPLUS_STS1_EVENT_MODE=CanaryOnly, launch game, navigate t
   unknown room events, screenshot Big Fish / Golden Idol / Lab / Divine Fountain
 Exit code: N/A (requires game launch)
 Error excerpt: Cannot launch Slay the Spire 2 from code-only environment. Runtime
-  verification requires actual game client with BaseLib v3.1.4 installed.
+  verification requires actual game client with previous package v3.1.4 installed.
 Files touched: None (no code changes needed, only runtime evidence)
 Why no safe workaround exists: Event spawning depends on game's event pool system,
   room generation, RNG seeds, and UI rendering. These cannot be verified without

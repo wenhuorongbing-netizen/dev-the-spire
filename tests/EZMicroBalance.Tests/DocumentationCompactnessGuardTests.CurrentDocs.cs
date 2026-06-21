@@ -87,10 +87,10 @@ public sealed partial class DocumentationCompactnessGuardTests
         };
         var staleSavedFieldCounts = new[]
         {
-            "current source defines 26 SavedSpireFields",
-            "Current source defines 26 SavedSpireFields",
-            "current source now defines 26 SavedSpireFields",
-            "Current source now defines 26 SavedSpireFields"
+            "current source defines 26 PreviousSavedStates",
+            "Current source defines 26 PreviousSavedStates",
+            "current source now defines 26 PreviousSavedStates",
+            "Current source now defines 26 PreviousSavedStates"
         };
         var failures = new List<string>();
 

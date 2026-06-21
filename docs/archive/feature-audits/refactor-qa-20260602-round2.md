@@ -54,7 +54,7 @@ This is the **same issue flagged in Round 1 QA**. The claim was not corrected. 1
 | Path | Claim | Actual |
 |---|---|---|
 | `E:\...\mods\STS2-RitsuLib` | True (v0.3.10) | **TRUE**. Directory exists, `mod_manifest.json` present. |
-| `E:\...\mods\BaseLib` | True | **TRUE** |
+| `E:\...\mods\previous framework` | True | **TRUE** |
 | `E:\...\mods\EZMicroBalance` | True | **TRUE** |
 
 ### 1.4 Build, Test, Format — Verified Live
@@ -80,17 +80,17 @@ Evidence path: `.tools\runtime-evidence\live-spire-plus-session-20260602-174656\
 | Claim | Verified? | Notes |
 |---|---|---|
 | Reached main menu | **YES** | Log shows full mod init through Spire Plus + post-init mods through line 500+. |
-| Loaded exactly 3 mods (BaseLib, RitsuLib, Spire Plus) | **MISLEADING** | The session-state.json shows 25 other mods were moved to isolation. However, the game's cached mod list still loaded **24 mods** (see sort order lines 99-123). The doc acknowledges this ("Additional mods still loaded from cached mod list"). The claim "Loaded exactly 3 mods" is technically wrong — 24 mods loaded. Spire Plus itself loaded correctly among them. |
+| Loaded exactly 3 mods (previous framework, RitsuLib, Spire Plus) | **MISLEADING** | The session-state.json shows 25 other mods were moved to isolation. However, the game's cached mod list still loaded **24 mods** (see sort order lines 99-123). The doc acknowledges this ("Additional mods still loaded from cached mod list"). The claim "Loaded exactly 3 mods" is technically wrong — 24 mods loaded. Spire Plus itself loaded correctly among them. |
 | Mod isolation attempted | **YES** | 25 mods moved per session-state.json |
 | Mod isolation effective | **NO** | Game cached mod list before isolation took effect; all 24 mods still loaded |
 | Applied 25/25 patches | **YES** | Line 202: `ModPatcher applied 25 patches (25 registered).` |
 | CanaryOnly mode | **YES** | Line 226: `StS1 events CanaryOnly mode: registering 4 canary events.` |
 | Registered exactly 4 canary events | **YES** | Lines 505-508: Sts1BigFish, Sts1GoldenIdol, Sts1TheLab, Sts1DivineFountain |
-| 30 SavedSpireFields | **YES** | Line 504 |
-| Clean audit | **NO AUDIT JSON EXISTS** | No `godot-log-audit.json` file in this evidence directory. The log contains **5 `[ERROR]` lines**: (1) RouteSuggestConfig.json missing id, (2) ritsulib-variants.json missing id, (3) sts2-heybox-support missing id, (4) duplicate BaseLib id, (5) heybox MethodNotFound. Errors 1, 3, 4, 5 are third-party mod issues. Error 2 is the known RitsuLib variant-manifest quirk. None are Spire Plus bugs, but an audit JSON was not generated. |
+| 30 previous saved-state registrations | **YES** | Line 504 |
+| Clean audit | **NO AUDIT JSON EXISTS** | No `godot-log-audit.json` file in this evidence directory. The log contains **5 `[ERROR]` lines**: (1) RouteSuggestConfig.json missing id, (2) ritsulib-variants.json missing id, (3) sts2-heybox-support missing id, (4) duplicate previous framework id, (5) heybox MethodNotFound. Errors 1, 3, 4, 5 are third-party mod issues. Error 2 is the known RitsuLib variant-manifest quirk. None are Spire Plus bugs, but an audit JSON was not generated. |
 | All 6 FeatureRegistry diagnostics | **YES** | Lines 206-236 show bootstrap/live status for Ancients (Lotha, Morvi, Urda, VakuuFight), Ascension.A11A20, and Sts1Events. |
 
-**Verdict on fresh CanaryOnly smoke:** The Spire Plus loader-gate claims are substantiated by the log (25/25 patches, 4 canary events, 30 SavedSpireFields, 6 features). The mod isolation claim is misleading — isolation was attempted but failed due to game caching. The "clean audit" claim cannot be verified because no audit JSON exists for this session.
+**Verdict on fresh CanaryOnly smoke:** The Spire Plus loader-gate claims are substantiated by the log (25/25 patches, 4 canary events, 30 previous saved-state registrations, 6 features). The mod isolation claim is misleading — isolation was attempted but failed due to game caching. The "clean audit" claim cannot be verified because no audit JSON exists for this session.
 
 ---
 
@@ -128,7 +128,7 @@ Evidence path: `.tools\runtime-evidence\live-spire-plus-session-20260602-174656\
 
 ### 4.2 Fresh CanaryOnly "Loaded Exactly 3 Mods"
 
-`current-validation.md` line 45: "Loaded exactly 3 mods (BaseLib, RitsuLib, Spire Plus)."
+`current-validation.md` line 45: "Loaded exactly 3 mods (previous framework, RitsuLib, Spire Plus)."
 
 The log shows 24 mods in the sort order. The doc itself acknowledges this in the same sentence ("Additional mods still loaded from cached mod list"). The claim is self-contradictory.
 

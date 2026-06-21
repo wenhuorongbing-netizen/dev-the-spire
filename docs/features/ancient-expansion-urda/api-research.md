@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-20
 
-Current supersession note: the original May Urda research used BaseLib as the active template dependency. The current Spire Plus migration target is RitsuLib-only: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.31`, and BaseLib is previous-package/other-mod context only. Reinspect local `source code/` and the installed RitsuLib package before changing Urda behavior.
+Current supersession note: the original May Urda research used previous package as the active template dependency. The current Spire Plus migration target is RitsuLib-only: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.31`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.31`, and previous package is previous-package/other-mod context only. Reinspect local `source code/` and the installed RitsuLib package before changing Urda behavior.
 
 ## 1. Current evidence set
 
@@ -32,7 +32,7 @@ Relevant active paths already used in `EZMicroBalanceCode/Ancients`:
 The current local evidence indicates two families of ancient patterns:
 
 - Direct patching of existing ancient generation flow (`AncientEventModel` and option lists).
-- Historical custom ancient/model registration support exposed in BaseLib tutorials; current implementation should prefer local game source plus installed RitsuLib APIs where they cover the needed hook or registration shape.
+- Historical custom ancient/model registration support exposed in previous package tutorials; current implementation should prefer local game source plus installed RitsuLib APIs where they cover the needed hook or registration shape.
 
 Current risk:
 
@@ -66,7 +66,7 @@ Source-backed implementation now uses:
 - `CreatureCmd.LoseMaxHp(...)` can damage before max HP clamping, so Seedbed must require max HP greater than its cost before offering or accepting.
 - `CreatureCmd.GainMaxHp(...)` heals by the gained amount; Seedbed uses `SetMaxHp(...)` for its no-heal completion bonus.
 - Humus Pact now generates the upgraded payoff card before opening optional deck removal, and clears `HumusCompletionPending` only after the payoff resolver succeeds. This keeps the third payoff from being marked complete if reward-card generation cannot produce a card.
-- Historical BaseLib `SavedSpireField<TKey,TValue>` documentation said automatic save/load only worked on model types with saved properties, mainly cards and relics. Current RitsuLib `SavedAttachedState<TKey,TValue>` replaced that API, but local Core source still does not prove player-field persistence without live save/load evidence:
+- Historical previous package `previous saved-state API<TKey,TValue>` documentation said automatic save/load only worked on model types with saved properties, mainly cards and relics. Current RitsuLib `SavedAttachedState<TKey,TValue>` replaced that API, but local Core source still does not prove player-field persistence without live save/load evidence:
   - `Player.ToSerializable()` writes a fixed `SerializablePlayer` shape and does not call `SavedProperties.From(...)`.
   - `SerializablePlayer` has fixed fields such as deck, relics, potions, rng, odds, and `extra_fields`; it has no general `SavedProperties`/`Props` field.
   - `ExtraPlayerFields` serializes only built-in fixed fields.

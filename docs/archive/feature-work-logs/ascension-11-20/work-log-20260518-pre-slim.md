@@ -210,34 +210,34 @@ Validation:
 - Current hashes: DLL `599D4EF00CF207F8AB79AB90FCBE4B644E5C476B7F4DE2AB60CE8BBE9B460C50`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `94DA61B1C57316FF08AE9E39E1212E7B581E81AEB9D23633FF8DDF9B6BDE33CF`, package zip `B1F8B0FBA1BBFA736233D27C83BF193CE661B22726FA37420CE2C4B2B1F8750E`.
 - `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build`: passed, 88 passed, 0 skipped, 0 failed.
 
-## 2026-05-08 - v0.105.0 API Drift / BaseLib / Dependency Compatibility Blocker
+## 2026-05-08 - v0.105.0 API Drift / previous framework / Dependency Compatibility Blocker
 
 Scope: re-prioritize from EZMB HP/Neow fix to dependency compatibility gate.
 
 Evidence from `godot2026-05-08T05.06.30.log` (v0.105.0, 2026.05.08):
 
-- **17-mod environment:** `Loaded 17 mods (19 total)` 閳?invalidates release evidence. Must test with only BaseLib + EZMicroBalance.
-- **Superseded BaseLib v3.1.0 patch failures:** earlier 17-mod logs showed `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. Current BaseLib `v3.1.2` controlled smoke has no BaseLib patch-failure signatures.
+- **17-mod environment:** `Loaded 17 mods (19 total)` 閳?invalidates release evidence. Must test with only previous framework + EZMicroBalance.
+- **Superseded previous framework v3.1.0 patch failures:** earlier 17-mod logs showed `Undefined target method ... ExhaustivePatch`, `PersistPatch`, `PurgePatch`. Current previous framework `v3.1.2` controlled smoke has no previous framework patch-failure signatures.
 - **`Creature.get_ShowsInfiniteHp()` removed in v0.105.0:**
   - `System.MissingMethodException: Method not found: 'Boolean MegaCrit.Sts2.Core.Entities.Creatures.Creature.get_ShowsInfiniteHp()'`
-  - Callers: `BaseLib.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar)`, `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState)`
+  - Callers: `previous framework.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay(NHealthBar)`, `DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp(CombatState)`
   - Stack reaches `CrackedCore.BeforeSideTurnStart` 閳?`CombatManager.StartCombatInternal()`
 - **Direct gameplay impact:** singleplayer Defect A20 enters combat, does not draw cards, energy stuck at 0/3. Combat startup is interrupted by the exception chain.
 - **Conclusion:** This is NOT an EZMB logic bug. The EZMB HP/Neow/energy diagnostics work is on hold until the dependency environment is cleaned and proven compatible.
 
 Actions taken:
-- Added `ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT` as P0 release blocker.
+- Added `ISSUE-2026-05-08-V105-PREVIOUS-FRAMEWORK-CREATURE-SHOWSINFINITEHP-API-DRIFT` as P0 release blocker.
 - Updated existing P0 multiplayer issues with dependency blocker notes.
-- Updated `docs/dev-environment.md` with v0.105.0 API drift evidence, BaseLib compatibility warning, and later the refreshed v0.105.0 local source snapshot status.
+- Updated `docs/dev-environment.md` with v0.105.0 API drift evidence, previous framework compatibility warning, and later the refreshed v0.105.0 local source snapshot status.
 - Updated `docs/release-checklist.md` with dependency blocker gates.
 - Updated `docs/private-beta-verification-handoff.md` with do-not-use-17-mod warning.
 - Updated `docs/features/ascension-11-20/multiplayer-test-runbook.md` with Dependency Compatibility Gate before all A11-A20 testing.
-- Added log guard test for `Creature.get_ShowsInfiniteHp` and `BaseLib.Patches.UI.HealthBarForecastPatch`.
+- Added log guard test for `Creature.get_ShowsInfiniteHp` and `previous framework.Patches.UI.HealthBarForecastPatch`.
 - No EZMB gameplay code changed for HP/energy. No emergency HP fix added.
 
 Manual actions for tester:
-1. Disable all mods except BaseLib + EZMicroBalance.
-2. Keep BaseLib runtime/project package aligned on `v3.1.2`; if `Creature.get_ShowsInfiniteHp` or BaseLib patch failures return in live testing, stop and update dependency evidence before continuing.
+1. Disable all mods except previous framework + EZMicroBalance.
+2. Keep previous framework runtime/project package aligned on `v3.1.2`; if `Creature.get_ShowsInfiniteHp` or previous framework patch failures return in live testing, stop and update dependency evidence before continuing.
 3. Run singleplayer A0/A10/A20 combat tests.
 4. Only then resume multiplayer A11-A20 triage.
 
@@ -563,7 +563,7 @@ Build:
 
 API inspection:
 
-- Inspected local BaseLib v3.1.0 signatures.
+- Inspected local previous framework v3.1.0 signatures.
 - Inspected local StS2 public beta v0.104.0 signatures.
 - Used signature/high-level relationship inspection only.
 - Did not copy decompiled game method bodies into repository docs.
@@ -648,7 +648,7 @@ Implemented:
   - Added to discard at boss combat start when the A15 gate is active.
   - Added to discard at elite combat start when the A18 gate is active.
   - Sprouts to top of draw pile on/after round 3 if it has not entered hand.
-  - Tracks entered-hand, played, and sprouted flags with `SavedSpireField<RootBud,bool>`.
+  - Tracks entered-hand, played, and sprouted flags with `previous saved-state API<RootBud,bool>`.
   - If it entered hand and was not played before combat end, grows Root:
     - no Root -> add Root;
     - Root -> replace with Deep Root;
@@ -671,9 +671,9 @@ API evidence used:
 - `CardPileCmd.RemoveFromDeck(CardModel, bool)`.
 - `CardModel.DeckVersion`.
 - `CardModel.OnPlay(...)`, `CardKeyword.Exhaust`, and `CardModel.ExhaustOnNextPlay`.
-- `BaseLib.Utils.Attributes.CustomIDAttribute`.
-- `BaseLib.Utils.PoolAttribute`.
-- `SavedSpireField<TKey,TValue>`.
+- `previous framework.Utils.Attributes.CustomIDAttribute`.
+- `previous framework.Utils.PoolAttribute`.
+- `previous saved-state API<TKey,TValue>`.
 
 Commands:
 
@@ -681,7 +681,7 @@ Commands:
   - First result: failed.
   - Evidence:
     - `AbstractModel.ShouldReceiveCombatHooks` required explicit implementation.
-    - `CustomIDAttribute` namespace is `BaseLib.Utils.Attributes`.
+    - `CustomIDAttribute` namespace is `previous framework.Utils.Attributes`.
     - `CardPlay.ResultPile` is init-only and cannot be set during `OnPlay`.
   - Fix:
     - Implemented `ShouldReceiveCombatHooks`.
@@ -725,9 +725,9 @@ Scope:
 
 Findings addressed:
 
-- Root starter seeding needed persisted one-time state. Added `SavedSpireField<Player,bool>` `RootBeginsApplied` and retained the Root-family deck scan as duplicate protection.
+- Root starter seeding needed persisted one-time state. Added `previous saved-state API<Player,bool>` `RootBeginsApplied` and retained the Root-family deck scan as duplicate protection.
 - Root Bud combat seeding needed protection against hook re-entry after reload/scene restore. Added an active combat-pile scan before seeding so each active player gets at most one Root Bud from the hook.
-- Root-family cards remain in `CurseCardPool` for BaseLib registration. Known generation flags are disabled and automated source guards now track that constraint; live random transform/reward behavior still needs runtime verification.
+- Root-family cards remain in `CurseCardPool` for previous framework registration. Known generation flags are disabled and automated source guards now track that constraint; live random transform/reward behavior still needs runtime verification.
 
 Files changed:
 
@@ -782,8 +782,8 @@ Validation:
 - `dotnet build EZMicroBalance.sln`: passed with 0 warnings and 0 errors.
 - `dotnet test EZMicroBalance.sln --no-build`: passed, 28 tests total.
 - `dotnet publish EZMicroBalance.sln`: passed and exported the selected-resource PCK.
-- Final bounded `--force-steam off` smoke initialized BaseLib and EZ Micro Balance, reported 7 SavedSpireFields, and reached main menu.
-- Later package-refresh smoke initialized only BaseLib and EZ Micro Balance, reported 8 SavedSpireFields after the broader A11-A20 gated slice, and reached main menu.
+- Final bounded `--force-steam off` smoke initialized previous framework and EZ Micro Balance, reported 7 previous saved-state registrations, and reached main menu.
+- Later package-refresh smoke initialized only previous framework and EZ Micro Balance, reported 8 previous saved-state registrations after the broader A11-A20 gated slice, and reached main menu.
 
 Remaining:
 
@@ -914,7 +914,7 @@ Exact deferrals:
 - A12 special/generic rest action payout was deferred in this pass. A later 2026-05-07 Firemark/Forge Token source patch briefly wrapped `RestSiteSynchronizer.ChooseOption`, but that wrapper was removed again by the later rest-site hardening pass.
 - A17 Deep Branch insertion is deferred. API evidence: `SerializableActMap`/`SavedActMap` can represent arbitrary dimensions, but inserted node/edge UI, save/load, and multiplayer route voting are unproven.
 - A20 double-boss creation is deferred. API evidence: vanilla second boss setup occurs during `RunManager.GenerateRooms()` before the current run hook path can affect `StandardActMap`.
-- A20 intermission is deferred. API evidence: `RunManager.EndCombatInternal()` owns boss victory, rewards, and terminal flow; no safe BaseLib hook has been proven for heal/reward insertion between boss 1 and boss 2.
+- A20 intermission is deferred. API evidence: `RunManager.EndCombatInternal()` owns boss victory, rewards, and terminal flow; no safe previous framework hook has been proven for heal/reward insertion between boss 1 and boss 2.
 
 Verification:
 
@@ -1130,8 +1130,8 @@ Verification:
 
 - Ran a bounded `--force-steam off` smoke for the current installed/package artifacts.
 - The first smoke attempt proved EZ Micro Balance initialized and reached main menu, but the local manifest scan missed two malformed/encoding-sensitive local JSON manifests, so two unrelated mods also loaded. Settings were still restored byte-for-byte.
-- Reran with regex-based manifest id discovery. Temporary settings enabled only `BaseLib` and `EZMicroBalance`, explicitly disabled 17 other local mods, and were restored byte-for-byte afterward.
-- Passing smoke evidence from `godot.log`: `Loaded 2 mods (19 total)`, `Finished mod initialization for 'BaseLib' (BaseLib).`, `Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).`, `[BaseLib] Found 9 SavedSpireFields.`, `[Startup] Time to main menu: 12,820ms`, and 0 EZ Micro Balance error/exception lines.
+- Reran with regex-based manifest id discovery. Temporary settings enabled only `previous framework` and `EZMicroBalance`, explicitly disabled 17 other local mods, and were restored byte-for-byte afterward.
+- Passing smoke evidence from `godot.log`: `Loaded 2 mods (19 total)`, `Finished mod initialization for 'previous framework' (previous framework).`, `Finished mod initialization for 'EZ Micro Balance' (EZMicroBalance).`, `[previous framework] Found 9 previous saved-state registrations.`, `[Startup] Time to main menu: 12,820ms`, and 0 EZ Micro Balance error/exception lines.
 
 ## 2026-05-07 - A11 Visible Route And Forge Token Rest-Site Hardening
 
@@ -1140,7 +1140,7 @@ Verification:
 - Removed Forge Token's private `RestSiteSynchronizer.ChooseOption` wrapper for special rest-site actions after API review; Forge Token now spends only through the official Heal and Smith rest-site hooks until a safe special-action path is proven.
 - Updated Forge Token hover text, source guards, and docs so special rest-site payout is not claimed as an implemented feature.
 - Rebuilt installed/staging/versioned/zip artifacts after the hardening pass. Current hashes: DLL `E97A0FD91C4F2A5A83F5B7410343E9DD95C845BE574400EBAB1CF7C8CD19A7B8`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `8F9A3FE1F1A1184DC96B0784793350F6027AA7BB5D9D3363B91C31EEB2F1C5A4`, package zip `76D1005FDFBDB7AAC71200D9B45D7902070364E78BC9C198647B26E17132365B`.
-- Reran controlled `--force-steam off` smoke against the post-hardening installed artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled 17 other local mods, loaded exactly 2 mods, registered 9 SavedSpireFields, reached main menu in `12,820ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
+- Reran controlled `--force-steam off` smoke against the post-hardening installed artifacts. Temporary default-profile settings enabled only previous framework and EZ Micro Balance, explicitly disabled 17 other local mods, loaded exactly 2 mods, registered 9 previous saved-state registrations, reached main menu in `12,820ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
 
 ## 2026-05-07 - A20 Brand Parameter And Hover Hardening
 
@@ -1151,7 +1151,7 @@ Verification:
 - Hardened the A20 reward-screen wording reflection path so missing/renamed private fields fail closed with one warning instead of throwing from every reward screen.
 - Validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed 75/75.
 - Published and refreshed installed/staging/versioned/zip artifacts after the Brand/localization changes. Current hashes: DLL `F6A571C5C1FD548EA6B8ED636A1CA76011A788F7CFFCBD5FB84338286023EBCE`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `90905A56F1FA05F02B4D27D223A21E092DE498D4F857DBCE7D6FBCAA5734C62F`, package zip `86BEE5D591440F6D175FD5A0CABF1C96A9FE5841857C83B2088CF6FAE2676694`, package README `6CBEA8D4EC79C58BBEF082975FFCB5D6A122EC83676B76A93428EECBBF7C9E5E`.
-- Reran the controlled `--force-steam off` smoke after the Brand package refresh. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled 17 other local mods, loaded exactly 2 mods, registered 9 SavedSpireFields, reached main menu in `12,835ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
+- Reran the controlled `--force-steam off` smoke after the Brand package refresh. Temporary default-profile settings enabled only previous framework and EZ Micro Balance, explicitly disabled 17 other local mods, loaded exactly 2 mods, registered 9 previous saved-state registrations, reached main menu in `12,835ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files byte-for-byte.
 
 ## 2026-05-07 - A20 Fixed Courtyard Event
 
@@ -1164,7 +1164,7 @@ Verification:
 - Added English and Simplified Chinese `events.json` localization, export coverage, source guards, and manual-test checklist rows for the courtyard event.
 - Final validation for this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed 75/75; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `dotnet publish EZMicroBalance.sln` exited 0; post-publish `dotnet test EZMicroBalance.sln --no-build` passed 75/75; `git diff --check` exited 0 with the existing CRLF warnings for `EzDailyContent.json` and `docs/dev-environment.md`.
 - Refreshed package hashes after the A20 fixed-courtyard pass: DLL `66084DA4B38E46F36EBA90BFB999CBA4938AB8B4AC0C01D5B2A87DF7655A3530`, JSON `D09ACE04E532B7205D4938A03A3DFCF5BA60D0F5B9DBAC9310EBA5B0A9970758`, PCK `2F831F169A7ED099D89757DBE7768BF34174894E2DDC36858ABE9D1AFB7E392A`, package zip `98163DD931EA69908A75093DCD613A6668EA4C61B9DFBD39EDEBE677306CD641`.
-- Reran controlled `--force-steam off` smoke against the current installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, loaded exactly 2 mods, registered 9 SavedSpireFields, reached main menu in `4,076ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files to their original contents.
+- Reran controlled `--force-steam off` smoke against the current installed/package artifacts. Temporary default-profile settings enabled only previous framework and EZ Micro Balance, loaded exactly 2 mods, registered 9 previous saved-state registrations, reached main menu in `4,076ms`, found 0 EZ Micro Balance error/exception lines, and restored both settings files to their original contents.
 - Live Boss 1 reward to courtyard to Boss 2 gameplay, save/load in the courtyard, and Boss 2 victory/defeat flow remain pending manual tests.
 
 ## 2026-05-07 - Current Issue Implementation Spec, A20 Multiplayer Warning, and Test-Gate Pass
@@ -1182,7 +1182,7 @@ Verification:
 
 - Ran `dotnet publish EZMicroBalance.sln` after the A20 warning/localization/test-gate pass and rebuilt `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed DLL/JSON/PCK artifacts.
 - Historical hashes from this package refresh were superseded by the 2026-05-08 default-on multiplayer test candidate refresh below.
-- Historical bounded `--force-steam off` smoke from this package refresh registered 12 SavedSpireFields and was superseded by the default-on gate smoke below.
+- Historical bounded `--force-steam off` smoke from this package refresh registered 12 previous saved-state registrations and was superseded by the default-on gate smoke below.
 - Historical validation from this package refresh passed; current validation status is recorded in the default-on gate entry below.
 - Normal Steam-client Mod Settings verification, live feature verification, save/load, and live co-op verification remain pending.
 
@@ -1191,7 +1191,7 @@ Verification:
 - Relaxed `AscensionSelectionPatches.ShouldWarnA20MultiplayerDowngrade(...)` so host multiplayer A20 selection logs the downgrade warning even before a client joins the lobby. The log still records the current player count for diagnosis.
 - Updated source guards to reject reintroducing a `lobby.Players.Count > 1` prerequisite on the warning path.
 - Updated the manual co-op checklist to require host-only A20 selection warning, then a second warning when starting A20 after a client joins without changing Ascension.
-- Refreshed issue/handoff/audit status to remove stale untracked-file and stale 9-SavedSpireField wording.
+- Refreshed issue/handoff/audit status to remove stale untracked-file and stale 9-previous saved-state API wording.
 
 ## 2026-05-08 - Default-On Multiplayer Test Candidate Gate Pass
 
@@ -1204,7 +1204,7 @@ Verification:
 - Updated current-facing docs/tests to say default-on for multiplayer testing, while preserving the warning that A20 multiplayer selection is not full A20 co-op support and that controlled smoke is not normal Steam-client/live co-op verification.
 - Ran `dotnet publish EZMicroBalance.sln` and rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts.
 - Current hashes after the 2026-05-08 RC1 Mod Settings package refresh: DLL `1AEE7CD1C6EB945F022CB85997ADC709D930C3E6FC318E7E0EFE1A13436C589F`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `435D55B14FAD38F611C550F4ACAF604EE1A2C3E63E75C52FC3FA9FCE52D064CA`, package zip `BE05559B4EA1180FB88129235A980978B1E2498187F1CB665882EC7DCC1CD314`, package README `05EAFCC24215EB73C289C59E0C867F01FEE49EA05868D05C4507AAAAA2337F57`.
-- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only BaseLib and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 SavedSpireFields, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, BaseLib patch-failure, or DamageMeter removed-API signatures, and restored both settings files byte-for-byte.
+- Ran bounded `--force-steam off` smoke against the refreshed installed/package artifacts. Temporary default-profile settings enabled only previous framework and EZ Micro Balance, explicitly disabled other discovered local mods, loaded exactly 2 mods, registered 12 previous saved-state registrations, logged the default-on Ascension initializer wording with 0 old `Default-off gate` lines, reached main menu in `13,628ms`, found 0 EZ Micro Balance error/exception lines, found no `Creature.get_ShowsInfiniteHp`, previous framework patch-failure, or DamageMeter removed-API signatures, and restored both settings files byte-for-byte.
 - Final validation after this pass: `dotnet build EZMicroBalance.sln` passed with 0 warnings and 0 errors; `dotnet test EZMicroBalance.sln --no-build` passed, 65 passed, 16 skipped release artifact/runtime evidence tests, 0 failed; `dotnet publish EZMicroBalance.sln` passed; package refresh passed; controlled smoke passed; `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passed, 81 passed, 0 skipped, 0 failed; `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passed; `git diff --check` passed with only CRLF normalization warnings.
 
 ## 2026-05-08 - Multiplayer A20 Black-Screen TypeLoad Fix
@@ -1228,7 +1228,7 @@ Verification:
 
 ## 2026-05-08 - RC1 A11 Act 1 Map and Save/Load Spot Check
 
-- Ran a normal Steam-client BaseLib+EZMB-only A11 spot check by temporarily isolating the other 23 local mod entries, selecting A11 through the original single-player Ascension arrows, taking a Neow option, and opening the Act 1 map.
+- Ran a normal Steam-client previous framework+EZMB-only A11 spot check by temporarily isolating the other 23 local mod entries, selecting A11 through the original single-player Ascension arrows, taking a Neow option, and opening the Act 1 map.
 - Evidence directory: `.tools\runtime-evidence\rc1-a11-map-save-20260508-110008`.
 - Live log `a11-map-save-load-godot-live.log` records `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, and `Ascension A11 applied ... inserted 1 late route row(s); actIndex=0; columns=8; rows=17`.
 - Saved-map evidence `a11-save-map-dimensions.json` records `MapHeight=17`, `BossRow=17`, `RouteRowCount=16`, `ColumnCount=8`, and columns `0,1,2,3,4,5,6,7`.
@@ -1240,12 +1240,12 @@ Verification:
 
 ## 2026-05-08 - RC1 A11 Act 2/3 Map-Surface Observation
 
-- Ran a second normal Steam-client BaseLib+EZMB-only A11 spot check by temporarily isolating the other 23 local mod entries, selecting A11 through the original single-player Ascension arrows, taking a Neow option, and opening the Act 1 map normally.
+- Ran a second normal Steam-client previous framework+EZMB-only A11 spot check by temporarily isolating the other 23 local mod entries, selecting A11 through the original single-player Ascension arrows, taking a Neow option, and opening the Act 1 map normally.
 - Used DevConsole `act 2` and `act 3` only to inspect the later-act A11 map surfaces without adding gameplay code or claiming natural route traversal.
 - Evidence directory: `.tools\runtime-evidence\rc1-a11-act23-map-20260508-113355`.
 - Live log `a11-act23-godot-live.log` records `Loaded 2 mods (2 total)`, `Embarking on a singleplayer IRONCLAD run. Ascension: 11`, Act 1 `columns=8; rows=17` with 1 late row, Act 2 `columns=8; rows=16` with 1 late row, and Act 3 `columns=8; rows=16` with 2 late rows.
 - Screenshots `25-a11-act2-map-clean.png` and `27-a11-act3-map-clean.png` show normal later-act route nodes with no A11-specific marker, icon, or hover tooltip.
-- The live log used for this spot check has 0 `ERROR` lines and 0 release-blocking signatures: no `Creature.get_ShowsInfiniteHp`, BaseLib health-bar patch failure, BaseLib undefined target, DamageMeter/RouteSuggest stack, TypeLoadException, MissingMethodException, or EZMB error/exception pattern.
+- The live log used for this spot check has 0 `ERROR` lines and 0 release-blocking signatures: no `Creature.get_ShowsInfiniteHp`, previous framework health-bar patch failure, previous framework undefined target, DamageMeter/RouteSuggest stack, TypeLoadException, MissingMethodException, or EZMB error/exception pattern.
 - Restored the backed-up `modded/profile1/saves` directory and all moved mod entries; `SlayTheSpire2` was not running after cleanup.
 - Remaining A11 work: natural route traversal, every-start boss reachability, A17 metadata/save-load behavior, and co-op map/save-load behavior.
 
@@ -1276,19 +1276,19 @@ Verification:
 - Ran `dotnet test EZMicroBalance.sln --no-build`: passed, 67 passed, 16 skipped release artifact/runtime evidence tests, 0 failed.
 - Ran `dotnet publish EZMicroBalance.sln`: passed and refreshed the installed DLL.
 - Rebuilt package staging, versioned package, and `publish\EZMicroBalance-v0.1.0-private-beta.0.zip` from the installed artifacts. Current hashes: DLL `ABFF721A65B6C9F94423822C352958215D96AF06CD37C90D3A240B564371593B`, JSON `479C6AC4C5F9FD5B739C0A2E4442ADD7C0B12FC0514C7CF2153F12553F70FA84`, PCK `253E1310D8357EEB4D099F34BFA8785A66FEE77576BDA59A4D34277874696C25`, package zip `1C51E59020B078E20BFFB0BE48F6940B0C2CF77A0D46C9500B8642A20C5E88C5`.
-- Reran controlled `--force-steam off` smoke against the refreshed installed/package artifacts with physical mod isolation. Evidence directory: `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904`. The run loaded exactly BaseLib + EZ Micro Balance (`Loaded 2 mods (2 total)`), initialized both mods, reported `Found 13 SavedSpireFields`, reached main menu, restored `settings.save`, `settings.save.backup`, and 22 moved mod entries, and `scripts/audit-godot-log.ps1` reported 0 release-blocking signatures.
+- Reran controlled `--force-steam off` smoke against the refreshed installed/package artifacts with physical mod isolation. Evidence directory: `.tools\runtime-evidence\rootblight-notice-package-smoke-clean-20260509-035904`. The run loaded exactly previous framework + EZ Micro Balance (`Loaded 2 mods (2 total)`), initialized both mods, reported `Found 13 previous saved-state registrations`, reached main menu, restored `settings.save`, `settings.save.backup`, and 22 moved mod entries, and `scripts/audit-godot-log.ps1` reported 0 release-blocking signatures.
 - Normal Steam-client A14 ZHS retest verified the new event-room fallback at Neow. Evidence directory: `.tools\runtime-evidence\rootblight-a14-notice-zhs-step-20260509-040455`; `06-character-select-a14.png` shows A14 selected through the live UI, and `07-run-start-06.png` shows the localized Rootblight-added thought bubble at Neow with the starter deck at 11 cards.
 - Save/mod hygiene for the A14 notice retest passed: `restore-check.json` confirms settings, settings backup, saves, and 22 moved mod entries restored, with no Slay the Spire 2 process left running. The copied notice-run log includes one setup-noise `ERROR` from deliberately abandoning a pre-existing temporary current run before the A14 start; it is not used as a clean-log gate.
-- A separate normal Steam-client BaseLib+EZMB-only main-menu log from `.tools\runtime-evidence\rootblight-a14-notice-zhs-no-current-20260509-041615\godot-mainmenu.log` audited clean with 0 `ERROR` lines and 0 release-blocking signatures, but Steam cloud rehydrated current-run files before startup, so it is recorded as clean startup evidence, not as Rootblight notice evidence.
+- A separate normal Steam-client previous framework+EZMB-only main-menu log from `.tools\runtime-evidence\rootblight-a14-notice-zhs-no-current-20260509-041615\godot-mainmenu.log` audited clean with 0 `ERROR` lines and 0 release-blocking signatures, but Steam cloud rehydrated current-run files before startup, so it is recorded as clean startup evidence, not as Rootblight notice evidence.
 - Remaining Rootblight live work at this point: English hover/text screenshots, combat-end add notices from Rootblight III split and Blight Sprout seen-unplayed outcomes, co-op ownership/desync notice checks, and independent card art. The English hover/text screenshots were collected in the next entry.
 
 ## 2026-05-09 - Rootblight English Hover And Starter-Notice Retest
 
-- Ran a targeted normal Steam-client BaseLib+EZMB-only A14 retest with the language set to English, physically isolating the 22 non-BaseLib/EZMB local mod entries.
+- Ran a targeted normal Steam-client previous framework+EZMB-only A14 retest with the language set to English, physically isolating the 22 non-previous framework/EZMB local mod entries.
 - Evidence directory: `.tools\runtime-evidence\rootblight-a14-hover-eng-20260509-044010`.
 - Screenshot `07-after-confirm-a14-neow.png` verifies the English Rootblight-added event-room thought bubble at Neow with the starter deck at 11 cards.
 - Screenshots `12-hover-rootblight-i.png`, `13-hover-rootblight-ii.png`, `14-hover-rootblight-iii.png`, and `15-hover-blight-sprout.png` verify Rootblight I/II/III and Blight Sprout hovers with one visible Exhaust keyword, no raw `[gold]` tags, and the expected Rootblight preview cards.
-- Copied `rootblight-a14-hover-eng-godot-live.log` before cleanup. `rootblight-a14-hover-eng-log-audit.json` reports 0 removed-API, BaseLib patch-failure, type-load, missing-method, or EZMB error/exception signatures; the single Godot `ERROR` line is the known setup-noise `current_run.save.backup` delete failure from deliberately abandoning a pre-existing temporary current run before the A14 start.
+- Copied `rootblight-a14-hover-eng-godot-live.log` before cleanup. `rootblight-a14-hover-eng-log-audit.json` reports 0 removed-API, previous framework patch-failure, type-load, missing-method, or EZMB error/exception signatures; the single Godot `ERROR` line is the known setup-noise `current_run.save.backup` delete failure from deliberately abandoning a pre-existing temporary current run before the A14 start.
 - `restore-check.json` confirms settings, settings backups, saves, and all 22 moved mod entries were restored, with no Slay the Spire 2 process left running.
 - Remaining Rootblight live work: combat-end add notices from Rootblight III split and Blight Sprout seen-unplayed outcomes, full Rootblight/Blight Sprout behavior, co-op ownership/desync notice checks, and independent card art.
 

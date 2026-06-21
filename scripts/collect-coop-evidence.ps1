@@ -249,7 +249,7 @@ $manualInstructions = @(
     '',
     'Before testing:',
     '',
-    '- Use exactly STS2-RitsuLib plus Spire Plus on host and client.',
+    '- Use exactly STS2-RitsuLib and Spire Plus on host and client.',
     '- Set `SPIREPLUS_RELEASE_EVIDENCE_LOG=1` for both clients.',
     '- Record package hashes from `package-hashes.json` before the run.',
     '',

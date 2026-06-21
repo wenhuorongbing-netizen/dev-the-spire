@@ -4,7 +4,7 @@ Date: 2026-06-10
 
 ## Verdict
 
-The previous "missing RitsuLib folder" blocker is closed for local owner-review purposes: `STS2-RitsuLib` `v0.4.16`, BaseLib `v3.1.4`, and the `EZMicroBalance` install folder are present on the E-drive game root.
+The previous "missing RitsuLib folder" blocker is closed for local owner-review purposes: `STS2-RitsuLib` `v0.4.16`, previous framework `v3.1.4`, and the `EZMicroBalance` install folder are present on the E-drive game root.
 
 Fresh runtime proof is still blocked. The installed game root is now Slay the Spire 2 `v0.107.0`, and the installed RitsuLib package includes `lib\0.107.0`. The installed Spire Plus DLL now matches the packaged beta.84 DLL hash, but the current package-parity Off smoke is non-clean: beta.84 still fails Spire Plus initialization against `v0.107.0` because it contains stale patch targets from before the dirty-source installed-game API fixes. Do not use the historical `v0.106.1` loader smokes or the red beta.84 smoke as current runtime proof.
 

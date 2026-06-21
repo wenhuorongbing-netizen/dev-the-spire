@@ -387,7 +387,7 @@ runtime：
 ```text
 [ ] Mod Settings UI screenshot
 [ ] Spire Plus display name correct
-[ ] BaseLib/RitsuLib/Spire Plus only enabled
+[ ] previous framework/RitsuLib/Spire Plus only enabled
 ```
 
 Canary gameplay：

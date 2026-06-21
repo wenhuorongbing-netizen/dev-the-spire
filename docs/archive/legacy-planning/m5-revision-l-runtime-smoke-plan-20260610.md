@@ -59,7 +59,7 @@ Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE
 
 ## Required Audit Checks
 
-- BaseLib, RitsuLib, and Spire Plus load.
+- previous framework, RitsuLib, and Spire Plus load.
 - Spire Plus reports 25/25 ModPatcher patches applied.
 - Off mode logs Sts1Events disabled and 0 StS1 registrations.
 - CanaryOnly logs exactly the 4 canary events.

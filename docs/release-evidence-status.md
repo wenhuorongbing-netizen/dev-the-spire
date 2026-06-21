@@ -22,7 +22,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.92 publish/package sync, installed package parity, runtime preflight, and RitsuLib-only Off/AdditiveBatch1 direct loader smokes are refreshed for loader/registration only; gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.93 publish/package sync, installed package parity, runtime preflight, and RitsuLib-only Off/AdditiveBatch1 direct loader smokes are refreshed for loader/registration only; gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 

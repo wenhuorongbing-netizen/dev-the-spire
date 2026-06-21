@@ -65,7 +65,7 @@ Source locations to inspect:
    - Do not commit extracted source.
    - Compare only API/class/method names and source behavior; do not copy large source bodies into docs.
 
-5. BaseLib/template/RitsuLib references if local.
+5. previous framework/template/RitsuLib references if local.
 
 Current repo-state warning:
 
@@ -170,8 +170,8 @@ Inspect:
 C. Packaging/runtime state
 
 - Current expected hashes from handoff.
-- Current SavedSpireField expected count.
-- Current BaseLib version.
+- Current previous saved-state API expected count.
+- Current previous framework version.
 - Whether docs say v0.105.0 or v0.105.1.
 - Whether package evidence matches latest code or is stale.
 
@@ -430,7 +430,7 @@ For active and planned features, list:
 
 - state data
 - where saved
-- whether SavedSpireField exists
+- whether previous saved-state API exists
 - card instance markers
 - map metadata
 - reward screen context
@@ -489,10 +489,10 @@ Create `manual-test-master-matrix.md`.
 It must unify and prioritize manual tests:
 
 Tier 0 — environment:
-- clean BaseLib + EZMB only
+- clean previous framework + EZMB only
 - installed hash check
 - clean log audit
-- SavedSpireField count
+- previous saved-state API count
 - Windows/macOS command variants
 
 Tier 1 — single-player smoke:

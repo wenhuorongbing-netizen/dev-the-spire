@@ -64,7 +64,7 @@ Completed:
 - Ran `git status --short --branch`; the worktree already contains broad existing project changes.
 - Checked `SlayTheSpire2.exe`; it was not running.
 - Ran `dotnet build EZMicroBalance.sln`; build succeeded with 0 warnings and 0 errors.
-- Inspected StS2/BaseLib signatures for Ascension, cards, commands, hooks, rest sites, map, rewards, enchantments, boss flow, and multiplayer state.
+- Inspected StS2/previous package signatures for Ascension, cards, commands, hooks, rest sites, map, rewards, enchantments, boss flow, and multiplayer state.
 
 Outputs:
 

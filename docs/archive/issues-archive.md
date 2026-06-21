@@ -13,11 +13,11 @@ Status: resolved.
 - A11 now uses widened map geometry without dedicated long-road route-node markers.
 - Inherited marker regression checks are now tracked by other Ascension live-verification items.
 
-### `ISSUE-2026-05-08-V105-BASELIB-CREATURE-SHOWSINFINITEHP-API-DRIFT`
+### `ISSUE-2026-05-08-V105-PREVIOUS-FRAMEWORK-CREATURE-SHOWSINFINITEHP-API-DRIFT`
 
 Status: resolved for dependency/runtime gate.
 
-- BaseLib dependency was pinned to v3.1.2.
+- previous framework dependency was pinned to v3.1.2.
 - Controlled single-mod smoke and Mod Settings checks are clean for this API drift.
 - Gameplay blockers from this missing API are removed after dependency update.
 
@@ -40,8 +40,8 @@ Status: resolved.
 Status: resolved.
 
 - Controlled runtime-smoke freshness is refreshed.
-- SavedSpireField count documentation is synchronized with current package output.
-- Controlled BaseLib + EZMicroBalance startup checks are updated and clean.
+- previous saved-state API count documentation is synchronized with current package output.
+- Controlled previous framework + EZMicroBalance startup checks are updated and clean.
 
 ### `ISSUE-2026-05-07-A12-FORGE-TOKEN-RESTSITE-CRASH`
 

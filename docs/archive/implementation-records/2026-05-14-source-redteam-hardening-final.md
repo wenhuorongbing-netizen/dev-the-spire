@@ -2,7 +2,7 @@ Implemented the source red-team hardening pass and kept it to source-supported c
 
 **Fixes Made**
 - Hardened Morvi runtime paths: generated combat-card cleanup, Forbidden Loan add-result handling, Open-Book sealed-card saved marker, Red Ink visible-power debt fallback, nonlethal Debt Settlement HP fallback, and Blueprint Proof Status/Curse exclusion.
-- Added `MorviOpenBookSealedCard` saved field; current source now defines 22 SavedSpireFields.
+- Added `MorviOpenBookSealedCard` saved field; current source now defines 22 previous saved-state registrations.
 - Added Urda `SPIREPLUS_*` gate aliases and removed stray Seed Bank Trial Plant marker assignment.
 - Polished EN/zhs player text for Urda/Morvi/Lotha/Vakuu, including Draw/Discard/Exhaust pile terms, nonlethal debt wording, Vakuu fight/death/fallback wording, and Lotha Mirror Rebuttal truth.
 - Added/tightened guards for Morvi source shape, Lotha text/source truth, Vakuu Temptation text, saved-field coverage, Urda gate aliases, and stale docs.

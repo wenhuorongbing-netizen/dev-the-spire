@@ -11,8 +11,8 @@ $ErrorActionPreference = 'Stop'
 
 $signatures = @(
     @{ Name = 'Creature.get_ShowsInfiniteHp'; Pattern = 'Creature\.get_ShowsInfiniteHp' },
-    @{ Name = 'BaseLib.Patches.UI.HealthBarForecastPatch'; Pattern = 'BaseLib\.Patches\.UI\.HealthBarForecastPatch' },
-    @{ Name = 'BaseLib patch failure'; Pattern = '(?i)BaseLib.*(?:[1-9][0-9]*\s+failed|patch(?:es)?\s+failed|patch\s+failure|failed\s+to\s+patch|exception)' },
+    @{ Name = 'ExternalMod.Patches.UI.HealthBarForecastPatch'; Pattern = 'ExternalMod\.Patches\.UI\.HealthBarForecastPatch' },
+    @{ Name = 'dependency framework patch failure'; Pattern = '(?i)ExternalMod.*(?:[1-9][0-9]*\s+failed|patch(?:es)?\s+failed|patch\s+failure|failed\s+to\s+patch|exception)' },
     @{ Name = 'DamageMeter'; Pattern = '(?i)\[ERROR\].*DamageMeter' },
     @{ Name = 'RouteSuggest'; Pattern = '(?i)\[ERROR\].*RouteSuggest' },
     @{ Name = 'Spire Plus error/exception'; Pattern = '(?i)(EZMicroBalance|Spire Plus).*(error|exception)' },

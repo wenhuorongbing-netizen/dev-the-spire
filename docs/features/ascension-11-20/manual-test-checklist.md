@@ -23,8 +23,8 @@ Baseline result on 2026-05-06:
 - `dotnet test EZMicroBalance.sln --no-build` passed after Ascension source guards were added.
 - Subagent D diagnostics follow-up: `dotnet build EZMicroBalance.sln` succeeded with 0 warnings and 0 errors; the guard suite passed after one source-guard-shaped code adjustment.
 - Subagent E guard refresh: release coverage guards now also check package drift, installed/staging/package hash parity, current-facing doc freshness, false art claims, source-declared localization keys, Ascension selector constraints, and unsupported-system completion claims.
-- Historical beta.17 normal Steam-client helper startup/log verification under `.tools/runtime-evidence/beta17-loader-smoke-20260525-194311` initialized only BaseLib and Spire Plus, registered config, reported `Found 30 SavedSpireFields`, reached startup completion, found 0 release-blocking signatures, restored settings/moved mods, and left 0 `SlayTheSpire2` processes. Current beta.93 RitsuLib-only Off/AdditiveBatch1 loader evidence is under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; live Ascension gameplay still needs fresh proof.
-- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 SavedSpireFields`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 30-field source state.
+- Historical beta.17 normal Steam-client helper startup/log verification under `.tools/runtime-evidence/beta17-loader-smoke-20260525-194311` initialized only previous package and Spire Plus, registered config, reported `Found 30 previous saved-state registrations`, reached startup completion, found 0 release-blocking signatures, restored settings/moved mods, and left 0 `SlayTheSpire2` processes. Current beta.93 RitsuLib-only Off/AdditiveBatch1 loader evidence is under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/` and `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`; live Ascension gameplay still needs fresh proof.
+- Earlier 2026-05-13 controlled and normal startup/log passes reported `Found 16 previous saved-state registrations`; those are historical for the prior field-count state and are superseded by the historical 22-field smoke plus the current 30-field source state.
 - Rootblight I/II/III and Blight Sprout are implemented for A14/A15/A18 after the current standard-lobby selector expansion.
 - Firemarked Elite, Forge Token heal/smith payout, Fission, Banner Rooms, source-guarded boss dedicated abilities, and A20 vanilla double-boss map path/Branded Form/recovery/reward hooks are implemented for A12/A13/A16/A19/A20 after the current standard-lobby selector expansion. Forge Token special rest-site action payout is disabled until a safe runtime API is proven.
 - A11 widens maps by 1 column, inserts a reachable optional route node in the new column, and adds late route rows by act: Act 1 +1, Act 2 +1, Act 3 +2. A11 ordinary route nodes do not receive a dedicated marker, icon, or hover tooltip. The current source also patches `ActModel.CreateMap` as an earlier geometry boundary before the run hook. A17 inserts one optional 3-4 node Deep Branch in Acts 2/3 for single-player runs when safe saved-map geometry is available. A20 adds a Boss 1 reward-screen intermission prompt and a fixed courtyard event through the vanilla terminal-reward path; a bespoke full-screen intermission remains deferred.
@@ -74,7 +74,7 @@ Use this protocol for A11-A20 live evidence, especially Rootblight/Blight Sprout
 
 Execute with `SPIREPLUS_ASCENSION_DIAGNOSTICS=1` and no gameplay debug level unless the test case explicitly needs Rootblight behavior.
 
-- [ ] Game loads with STS2-RitsuLib v0.4.31 and Spire Plus enabled, with no Spire Plus BaseLib dependency.
+- [ ] Game loads with STS2-RitsuLib v0.4.31 and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
 - [ ] Starting a normal run with only diagnostics enabled does not add Rootblight.
 - [ ] `godot.log` records run Ascension, act index, debug/public gate state, Rootblight level/card counts, room type, round, and combat Blight Sprout counts.
 - [ ] Diagnostics logs appear from the run/combat hook path without mutating gameplay beyond the selected Ascension level.
@@ -88,7 +88,7 @@ Execute only after Rootblight MVP is implemented.
 
 - [x] Build succeeds after implementation.
 - [x] Publish succeeds after localization/resources changed.
-- [ ] Game loads with STS2-RitsuLib v0.4.31 and Spire Plus enabled, with no Spire Plus BaseLib dependency.
+- [ ] Game loads with STS2-RitsuLib v0.4.31 and Spire Plus enabled, with only STS2-RitsuLib as the shared runtime dependency.
 - [ ] Starting a normal run with the debug/internal gate disabled does not add Rootblight.
 - [ ] Existing Ancient reward rebalance behavior still loads and does not throw.
 - [ ] `godot.log` has no Spire Plus Ascension errors under technical id `EZMicroBalance`.
@@ -385,6 +385,6 @@ Planning checks for the next release-engineering pass; do not mark these complet
 - [ ] Release artifact parity tests run only after the documented publish/package refresh sequence and with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`. The old `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` variable remains a compatibility alias, not the preferred command in new notes.
 - [ ] Publish the current package before runtime smoke.
 - [ ] Launch controlled `--force-steam off` with only STS2-RitsuLib and Spire Plus enabled.
-- [x] Inspect `godot.log` and record the current RitsuLib saved-state registration count/shape; current beta.93 RitsuLib-only Off/AdditiveBatch1 packets cover startup/log registration shape. Historical package smokes reported `Found 30 SavedSpireFields` before the RitsuLib-only migration.
+- [x] Inspect `godot.log` and record the current RitsuLib saved-state registration count/shape; current beta.93 RitsuLib-only Off/AdditiveBatch1 packets cover startup/log registration shape. Historical package smokes reported `Found 30 previous saved-state registrations` before the RitsuLib-only migration.
 - [ ] Confirm the controlled smoke has no Spire Plus startup exception or error under technical id `EZMicroBalance`.
 - [ ] Keep normal Steam-client Mod Settings verification separate from controlled smoke.
