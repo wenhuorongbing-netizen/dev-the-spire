@@ -101,7 +101,22 @@ public sealed partial class AncientUiReadinessGuardTests
             "manual-instructions.md",
             "spireplus_test_ancient URDA confirm",
             "This helper and command prepare UI evidence",
-            "Keep this section pending until Urda, Morvi, Lotha, and Vakuu clicked-screen screenshots/logs are captured.");
+            "Beta.105 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs.",
+            "Keep the gated Vakuu fight-option, hover/readability, relic-bar follow-through, save-load, co-op, and gameplay rows pending");
+        Assert.DoesNotContain(
+            string.Concat(
+                "Keep all ",
+                "clicked UI rows below pending until ",
+                "screenshots/logs prove the live screens."),
+            docs,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain(
+            string.Concat(
+                "Keep this section pending until Urda, Morvi, ",
+                "Lotha, and Vakuu ",
+                "clicked-screen screenshots/logs are captured."),
+            docs,
+            StringComparison.Ordinal);
 
         var issues = ReadRepoText("docs", "issues.md");
         AssertSourceContains(
