@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using MegaCrit.Sts2.Core.Unlocks;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
@@ -26,9 +27,14 @@ internal static class VakuuForceAncientPatch
     }
 }
 
-[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), "GenerateInitialOptions")]
-internal static class VakuuFightOptionPatch
+internal sealed class VakuuFightOptionPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-option";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Append or force the gated Vakuu fight option in the Ancient event UI";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), "GenerateInitialOptions")];
+
     [HarmonyPostfix]
     private static void AddFightOption(
         MegaCrit.Sts2.Core.Models.Events.Vakuu __instance,

@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 85 |
-| Migrated to RitsuLib ModPatcher | 84 |
-| Raw HarmonyPatch remaining | 85 |
+| Total raw HarmonyPatch declarations | 78 |
+| Migrated to RitsuLib ModPatcher | 91 |
+| Raw HarmonyPatch remaining | 78 |
 | Tracked patch units total | 169 |
 | High risk (raw Harmony) | 15 |
 | Medium risk (raw Harmony) | 8 |
-| Low risk (raw Harmony) | 62 |
+| Low risk (raw Harmony) | 55 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 84 patch classes implement `IPatchMethod` and are registered via
+These 91 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -47,7 +47,9 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `DebtAndCardPatches.cs` | 8 | `debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust` | 4b |
 | `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy, seal-of-gold-turn` | 4b |
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
+| `NeowInitialOptionRerollPatch.cs` | 1 | `neow-initial-option-reroll` | clicked-ui |
 | `UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |
+| `VakuuFightPatch.cs` | 1 | `vakuu-fight-option` | clicked-ui |
 | `UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |
 | `UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |
 | `SpirePlusMapPointHoverComposer.cs` | 1 | `spire-plus-map-point-hover-composer` | clicked-ui |
@@ -66,23 +68,24 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `PrismaticGemRewardScreenHintPatch.cs` | 1 | `prismatic-gem-reward-screen-hint` | clicked-ui |
 | `AscensionA20RewardScreenPatches.cs` | 2 | `ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state` | clicked-ui |
 | `AscensionA20Patches.cs` | 1 | `ascension-a20-courtyard-proceed` | clicked-ui |
+| `A20Courtyard.cs` | 1 | `ascension-a20-courtyard-portrait` | event-visual-ui |
 | `ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |
 | `CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |
 | `MeatCleaverCookPatches.cs` | 3 | `meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select` | clicked-ui |
 | `AscensionSelectionPatches.cs` | 1 | `ascension-selection-singleplayer-character-change` | clicked-ui |
 | `AscensionSelectionRunStartPatches.cs` | 5 | `ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning` | clicked-ui |
 | `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |
+| `SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 85 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 78 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
-| Ancient shared infrastructure | Low | `EZMicroBalanceCode/Ancients/Common/NeowInitialOptionRerollPatch.cs` | 7 | `[HarmonyPatch(typeof(Neow), "GenerateInitialOptions")]` |
 | Lotha | Low | `EZMicroBalanceCode/Ancients/Expansion/Lotha/LothaAct3AncientService.cs` | 49 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |
 | Morvi | Low | `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAct2AncientService.cs` | 49 | `[HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 49 | `[HarmonyPatch(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))]` |
@@ -93,14 +96,13 @@ These 85 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs` | 9 | `[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs` | 3 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs` | 15 | `[HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))]` |
-| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 13 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |
-| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 29 | `[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), "GenerateInitialOptions")]` |
-| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 61 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]` |
-| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 80 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]` |
-| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 97 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]` |
-| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 107 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
-| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 121 | `[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]` |
-| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 140 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
+| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 14 | `[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]` |
+| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 67 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]` |
+| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 86 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]` |
+| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 103 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]` |
+| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 113 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
+| Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 127 | `[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]` |
+| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 146 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JeweledMaskPatches.cs` | 3 | `[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 5 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 39 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |
@@ -150,7 +152,6 @@ These 85 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 11 | `[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.SaveRun), typeof(AbstractRoom), typeof(bool))]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 26 | `[HarmonyPatch(typeof(NGame), "ReturnToMainMenu")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 38 | `[HarmonyPatch(typeof(NGame), "Quit")]` |
-| Ascension events | Low | `EZMicroBalanceCode/Ascension/Events/A20Courtyard.cs` | 148 | `[HarmonyPatch(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AeonglassIntentPatches.cs` | 8 | `[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AeonglassIntentPatches.cs` | 31 | `[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |
@@ -162,8 +163,4 @@ These 85 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 57 | `[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 66 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 75 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 9 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 30 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 52 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 64 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
 | STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 45 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |

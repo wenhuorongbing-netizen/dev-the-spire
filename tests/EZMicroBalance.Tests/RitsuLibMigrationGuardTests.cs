@@ -51,7 +51,9 @@ public sealed class RitsuLibMigrationGuardTests
         // PickupRewardPatches (1) - Batch 4b
         "ancient-pickup-balance",
         // Clicked UI patches - owner-approved targeted migration
+        "neow-initial-option-reroll",
         "urda-option-relic-click",
+        "vakuu-fight-option",
         "urda-root-sight-map-point-ready",
         "urda-root-sight-map-refresh-state",
         "urda-root-sight-map-quest-icon-refresh",
@@ -94,6 +96,9 @@ public sealed class RitsuLibMigrationGuardTests
         "ascension-a20-reward-screen-ready",
         "ascension-a20-reward-screen-state",
         "ascension-a20-courtyard-proceed",
+        // Event visual UI patches
+        "ascension-a20-courtyard-portrait",
+        // Remaining UI/input patches
         "spire-plus-mod-info-localization",
         "combat-hand-input-safety",
         "meat-cleaver-cook-is-enabled",
@@ -111,16 +116,23 @@ public sealed class RitsuLibMigrationGuardTests
         "ascension-localization-raw-text",
         "ascension-localization-loc-string",
         "ascension-localization-has-entry",
-        "ascension-localization-is-local-key"
+        "ascension-localization-is-local-key",
+        // Core inline localization fallback patches
+        "spire-plus-inline-localization-raw-text",
+        "spire-plus-inline-localization-loc-string",
+        "spire-plus-inline-localization-has-entry",
+        "spire-plus-inline-localization-is-local-key"
     ];
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 40;
+    private const int ExpectedClickedUiCount = 42;
     private const int ExpectedVisualHoverUiCount = 13;
+    private const int ExpectedEventVisualUiCount = 1;
     private const int ExpectedBatch4cLocalizationCount = 6;
-    private const int ExpectedTotalMigratedCount = 84;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 85;
+    private const int ExpectedInlineLocalizationCount = 4;
+    private const int ExpectedTotalMigratedCount = 91;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 78;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -160,16 +172,17 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 84:
-    /// 9 Batch 4a + 16 Batch 4b + 40 clicked/UI patches
-    /// + 13 visual/hover UI patches + 6 Batch 4c localization patches.
+    /// The expected migrated patch count must be 91:
+    /// 9 Batch 4a + 16 Batch 4b + 42 clicked/UI patches
+    /// + 13 visual/hover UI patches + 1 event visual UI patch
+    /// + 6 Batch 4c localization patches + 4 inline localization patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedBatch4cLocalizationCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -293,8 +306,11 @@ public sealed class RitsuLibMigrationGuardTests
             "public static void RegisterAll(ModPatcher patcher)",
             "RegisterBatch4a(patcher);",
             "RegisterBatch4b(patcher);",
-            "RegisterClickedUiPatches(patcher);",
+            "RegisterAncientEventUiPatches(patcher);",
+            "RegisterPatch<NeowInitialOptionRerollPatch>();",
             "RegisterPatch<UrdaOptionRelicClickPatch>();",
+            "RegisterPatch<VakuuFightOptionPatch>();",
+            "RegisterClickedUiPatches(patcher);",
             "RegisterPatch<UrdaRootSightMapQuestIconInputPatch>();",
             "RegisterPatch<UrdaRootSightMapPreviewIconPatch>();",
             "RegisterPatch<UrdaRootSightMapQuestIconPatch>();",
@@ -340,6 +356,7 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<AscensionA20RewardScreenReadyPatch>();",
             "RegisterPatch<AscensionA20RewardScreenStatePatch>();",
             "RegisterPatch<AscensionA20CourtyardProceedPatch>();",
+            "RegisterPatch<AscensionA20CourtyardPortraitPatch>();",
             "RegisterPatch<ModInfoLocalizationPatches>();",
             "RegisterPatch<CombatHandInputSafetyPatch>();",
             "RegisterPatch<MeatCleaverCookIsEnabledPatch>();",
@@ -358,7 +375,12 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<AscensionLocalizationRawTextPatch>();",
             "RegisterPatch<AscensionLocalizationLocStringPatch>();",
             "RegisterPatch<AscensionLocalizationHasEntryPatch>();",
-            "RegisterPatch<AscensionLocalizationIsLocalKeyPatch>();");
+            "RegisterPatch<AscensionLocalizationIsLocalKeyPatch>();",
+            "RegisterInlineLocalizationPatches(patcher);",
+            "RegisterPatch<SpirePlusInlineLocalizationRawTextPatch>();",
+            "RegisterPatch<SpirePlusInlineLocalizationLocStringPatch>();",
+            "RegisterPatch<SpirePlusInlineLocalizationHasEntryPatch>();",
+            "RegisterPatch<SpirePlusInlineLocalizationIsLocalKeyPatch>();");
     }
 
     [Fact]
@@ -414,7 +436,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.115", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.116", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches and the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
@@ -502,7 +524,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.115 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.116 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -572,19 +594,22 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (84).
+    /// state the correct total migrated count (91).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 84", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 91", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 78", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
             inventory,
+            "`NeowInitialOptionRerollPatch.cs` | 1 | `neow-initial-option-reroll` | clicked-ui |",
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",
+            "`VakuuFightPatch.cs` | 1 | `vakuu-fight-option` | clicked-ui |",
             "`UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |",
             "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |",
             "`SpirePlusMapPointHoverComposer.cs` | 1 | `spire-plus-map-point-hover-composer` | clicked-ui |",
@@ -603,12 +628,14 @@ public sealed class RitsuLibMigrationGuardTests
             "`PrismaticGemRewardScreenHintPatch.cs` | 1 | `prismatic-gem-reward-screen-hint` | clicked-ui |",
             "`AscensionA20RewardScreenPatches.cs` | 2 | `ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state` | clicked-ui |",
             "`AscensionA20Patches.cs` | 1 | `ascension-a20-courtyard-proceed` | clicked-ui |",
+            "`A20Courtyard.cs` | 1 | `ascension-a20-courtyard-portrait` | event-visual-ui |",
             "`ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |",
             "`CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |",
             "`MeatCleaverCookPatches.cs` | 3 | `meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select` | clicked-ui |",
             "`AscensionSelectionPatches.cs` | 1 | `ascension-selection-singleplayer-character-change` | clicked-ui |",
             "`AscensionSelectionRunStartPatches.cs` | 5 | `ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning` | clicked-ui |",
-            "`AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |");
+            "`AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |",
+            "`SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |");
     }
 
     [Fact]

@@ -9,6 +9,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Runs;
 using MegaCrit.Sts2.Core.Saves;
 using MegaCrit.Sts2.Core.TestSupport;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
 
@@ -145,9 +146,14 @@ internal static class AscensionA20CourtyardService
     }
 }
 
-[HarmonyPatch(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))]
-internal static class AscensionA20CourtyardPortraitPatch
+internal sealed class AscensionA20CourtyardPortraitPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-a20-courtyard-portrait";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Use the selected second-boss brand icon as the A20 courtyard event portrait";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))];
+
     [HarmonyPrefix]
     private static bool Prefix(EventModel __instance, ref Texture2D __result)
     {

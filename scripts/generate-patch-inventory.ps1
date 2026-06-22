@@ -120,7 +120,9 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'DebtAndCardPatches.cs'; Classes = 8; PatchIds = 'debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust'; Batch = '4b' },
     [pscustomobject]@{ File = 'SealOfGoldPatches.cs'; Classes = 2; PatchIds = 'seal-of-gold-max-energy, seal-of-gold-turn'; Batch = '4b' },
     [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' },
+    [pscustomobject]@{ File = 'NeowInitialOptionRerollPatch.cs'; Classes = 1; PatchIds = 'neow-initial-option-reroll'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaOptionRelicClickPatch.cs'; Classes = 1; PatchIds = 'urda-option-relic-click'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'VakuuFightPatch.cs'; Classes = 1; PatchIds = 'vakuu-fight-option'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaMapUiPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaRootSightMapClickPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'SpirePlusMapPointHoverComposer.cs'; Classes = 1; PatchIds = 'spire-plus-map-point-hover-composer'; Batch = 'clicked-ui' },
@@ -139,12 +141,14 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'PrismaticGemRewardScreenHintPatch.cs'; Classes = 1; PatchIds = 'prismatic-gem-reward-screen-hint'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionA20RewardScreenPatches.cs'; Classes = 2; PatchIds = 'ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionA20Patches.cs'; Classes = 1; PatchIds = 'ascension-a20-courtyard-proceed'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'A20Courtyard.cs'; Classes = 1; PatchIds = 'ascension-a20-courtyard-portrait'; Batch = 'event-visual-ui' },
     [pscustomobject]@{ File = 'ModInfoLocalizationPatches.cs'; Classes = 1; PatchIds = 'spire-plus-mod-info-localization'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'CombatHandInputSafetyPatches.cs'; Classes = 1; PatchIds = 'combat-hand-input-safety'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'MeatCleaverCookPatches.cs'; Classes = 3; PatchIds = 'meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionSelectionPatches.cs'; Classes = 1; PatchIds = 'ascension-selection-singleplayer-character-change'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionSelectionRunStartPatches.cs'; Classes = 5; PatchIds = 'ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning'; Batch = 'clicked-ui' },
-    [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' }
+    [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' },
+    [pscustomobject]@{ File = 'SpirePlusInlineLocalizationPatches.cs'; Classes = 4; PatchIds = 'spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key'; Batch = 'inline-localization' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-22 beta.115:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-22 beta.116:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `0EA6C9925CC24BA9BB00314F117DFE42ADC9B9B0E51190E3E308FF7D8B84322C` |
-| DLL | `B66997670206991A362D8E5B70A07076E05422852EDF0AA0034936E61D886E5A` |
-| PCK | `2630F72AAAA230CF1AC15DEB3091536737FCCB7D6942A6BA6AA921DAB22CAFE3` |
-| Manifest | `13F12FF957ABBB9D43BEEE5FBB65505CFC3B140812B85B8B0679CB373E424790` |
-| README_INSTALL | `BD5CF353B93E436E011B777F6A1446A561C8D73D6FA49BED3A255124EC388BF4` |
+| ZIP | `1910AD3AB8C6AEFF321B577106CC771FE062C6354C498706BAAB74B4CC6F9E83` |
+| DLL | `5BFF7864F426C72625C6FECC0C4BCAA800B60499D8AE8465FDD9A0D58E64C4A4` |
+| PCK | `75CC7065689B9803D738D12B1A0170468E05D7C91774408310F40EA6864DCBB9` |
+| Manifest | `179E5C75BAA1428FF715435552FC80D66A3C16413C813D6F90961C88249F2E4B` |
+| README_INSTALL | `1258029C010E1C0ED4E37F9D0D4CF3D26F0B6C0722EF244E18BD0E00F1A161B4` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -35,7 +35,7 @@
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
 - `RITSULIB-RUNTIME-SMOKE` P0 runtime-smoke current / gameplay pending.
-  beta.115 package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 are current; previous beta.108 clicked UI smoke packet verification passed 1621 / 0 for the previous 64-patch source state.
+  beta.116 package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 are current; previous beta.108 clicked UI smoke packet verification passed 1621 / 0 for the previous 64-patch source state.
   Evidence: `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`; beta.99/beta.96/beta.93 and earlier smokes are previous-version or previous-package context.
   Enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.
 ## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: beta.108 Ancient smoke covers Urda/Morvi/Lotha/normal Vakuu; gated Vakuu fight, hover/readability, A11-A20, save-load, co-op, gameplay proof remain pending; use scripts/collect-ancient-ui-evidence.ps1.

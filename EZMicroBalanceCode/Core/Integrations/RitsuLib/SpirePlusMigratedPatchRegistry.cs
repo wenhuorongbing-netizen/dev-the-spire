@@ -1,6 +1,9 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
+using EZMicroBalance.EZMicroBalanceCode.Core.Localization;
 using EZMicroBalance.EZMicroBalanceCode.Map;
 using EZMicroBalance.EZMicroBalanceCode.Modding;
 using EZMicroBalance.EZMicroBalanceCode.Preview;
@@ -17,6 +20,7 @@ internal static class SpirePlusMigratedPatchRegistry
     {
         RegisterBatch4a(patcher);
         RegisterBatch4b(patcher);
+        RegisterAncientEventUiPatches(patcher);
         RegisterClickedUiPatches(patcher);
         RegisterMapUiPatches(patcher);
         RegisterSereTalonUiPatches(patcher);
@@ -25,6 +29,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterRemainingUiPatches(patcher);
         RegisterAscensionSelectionUiPatches(patcher);
         RegisterBatch4cLocalizationPatches(patcher);
+        RegisterInlineLocalizationPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -46,13 +51,19 @@ internal static class SpirePlusMigratedPatchRegistry
 
     private static void RegisterClickedUiPatches(ModPatcher patcher)
     {
-        patcher.RegisterPatch<UrdaOptionRelicClickPatch>();
         patcher.RegisterPatch<UrdaRootSightMapQuestIconInputPatch>();
         patcher.RegisterPatch<UrdaRootSightMapPreviewIconPatch>();
         patcher.RegisterPatch<UrdaRootSightMapQuestIconPatch>();
         patcher.RegisterPatch<UrdaRootSightMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightMapClosePatch>();
+    }
+
+    private static void RegisterAncientEventUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<NeowInitialOptionRerollPatch>();
+        patcher.RegisterPatch<UrdaOptionRelicClickPatch>();
+        patcher.RegisterPatch<VakuuFightOptionPatch>();
     }
 
     private static void RegisterMapUiPatches(ModPatcher patcher)
@@ -108,6 +119,7 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<AscensionA20RewardScreenReadyPatch>();
         patcher.RegisterPatch<AscensionA20RewardScreenStatePatch>();
         patcher.RegisterPatch<AscensionA20CourtyardProceedPatch>();
+        patcher.RegisterPatch<AscensionA20CourtyardPortraitPatch>();
         patcher.RegisterPatch<ModInfoLocalizationPatches>();
         patcher.RegisterPatch<CombatHandInputSafetyPatch>();
         patcher.RegisterPatch<MeatCleaverCookIsEnabledPatch>();
@@ -133,6 +145,14 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<AscensionLocalizationLocStringPatch>();
         patcher.RegisterPatch<AscensionLocalizationHasEntryPatch>();
         patcher.RegisterPatch<AscensionLocalizationIsLocalKeyPatch>();
+    }
+
+    private static void RegisterInlineLocalizationPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<SpirePlusInlineLocalizationRawTextPatch>();
+        patcher.RegisterPatch<SpirePlusInlineLocalizationLocStringPatch>();
+        patcher.RegisterPatch<SpirePlusInlineLocalizationHasEntryPatch>();
+        patcher.RegisterPatch<SpirePlusInlineLocalizationIsLocalKeyPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

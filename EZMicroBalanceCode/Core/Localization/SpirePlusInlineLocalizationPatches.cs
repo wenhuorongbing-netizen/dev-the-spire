@@ -1,14 +1,17 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Localization;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Localization;
 
-// Keep the LocTable fallback boundary separate from the provider registry. These
-// patches are still a proposal-only RitsuLib migration area because they recover
-// inline model text from Core localization misses rather than registering content.
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]
-internal static class SpirePlusInlineLocalizationRawTextPatch
+internal sealed class SpirePlusInlineLocalizationRawTextPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "spire-plus-inline-localization-raw-text";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Recover Spire Plus inline raw localization text after a Core table miss";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(LocTable), nameof(LocTable.GetRawText))];
+
     private static Exception? Finalizer(LocTable __instance, string key, ref string __result, Exception? __exception)
     {
         if (__exception == null)
@@ -27,9 +30,14 @@ internal static class SpirePlusInlineLocalizationRawTextPatch
     }
 }
 
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]
-internal static class SpirePlusInlineLocalizationLocStringPatch
+internal sealed class SpirePlusInlineLocalizationLocStringPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "spire-plus-inline-localization-loc-string";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Recover LocString handles for Spire Plus inline localization entries";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(LocTable), nameof(LocTable.GetLocString))];
+
     private static Exception? Finalizer(LocTable __instance, string key, ref LocString? __result, Exception? __exception)
     {
         if (__exception == null)
@@ -49,9 +57,14 @@ internal static class SpirePlusInlineLocalizationLocStringPatch
     }
 }
 
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]
-internal static class SpirePlusInlineLocalizationHasEntryPatch
+internal sealed class SpirePlusInlineLocalizationHasEntryPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "spire-plus-inline-localization-has-entry";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Report Spire Plus inline localization keys as present when Core asks the table";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(LocTable), nameof(LocTable.HasEntry))];
+
     private static void Postfix(LocTable __instance, string key, ref bool __result)
     {
         if (!__result && SpirePlusInlineLocalizationRegistry.TryGetText(__instance, key, out _))
@@ -61,9 +74,14 @@ internal static class SpirePlusInlineLocalizationHasEntryPatch
     }
 }
 
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]
-internal static class SpirePlusInlineLocalizationIsLocalKeyPatch
+internal sealed class SpirePlusInlineLocalizationIsLocalKeyPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "spire-plus-inline-localization-is-local-key";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Keep Spire Plus inline localization keys on the active locale table";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(LocTable), nameof(LocTable.IsLocalKey))];
+
     private static void Postfix(LocTable __instance, string key, ref bool __result)
     {
         if (!__result && SpirePlusInlineLocalizationRegistry.TryGetText(__instance, key, out _))

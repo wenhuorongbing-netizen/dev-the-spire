@@ -1,12 +1,18 @@
 using System.Reflection;
 
 using MegaCrit.Sts2.Core.Events;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(Neow), "GenerateInitialOptions")]
-internal static class NeowInitialOptionRerollPatch
+internal sealed class NeowInitialOptionRerollPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "neow-initial-option-reroll";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add the Spire Plus one-shot Ancient reward reroll option to Neow's initial option UI";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Neow), "GenerateInitialOptions")];
+
     private const int ExpectedNeowOptionCount = 3;
     private const string NeowRerollTextKey = $"NEOW.pages.INITIAL.options.{AncientInitialOptionReroll.OptionId}";
 
