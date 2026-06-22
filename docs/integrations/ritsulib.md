@@ -41,6 +41,10 @@ References:
 - `dotnet list EZMicroBalance.csproj package --outdated --include-transitive`
   found no `STS2.RitsuLib` update; only transitive `System.IO.Hashing`
   reported `9.0.0 -> 10.0.9`.
+- `scripts/check-ritsulib-latest-package.ps1 -ExpectedLatestVersion 0.4.33
+  -FailOnMismatch` is the focused repeatable check for the NuGet latest package,
+  the project `PackageReference`, and the manifest `STS2-RitsuLib` runtime
+  minimum.
 - The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`
   across 164 listed versions, with last five `0.4.28` through `0.4.33`.
 - The Nexus files page also lists `0.4.33` for the current public package line.

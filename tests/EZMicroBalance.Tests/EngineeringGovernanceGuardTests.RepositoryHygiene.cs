@@ -19,6 +19,7 @@ public sealed partial class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "generate-patch-inventory.ps1");
         AssertRepoFileExists("scripts", "ci-full-validation.ps1");
         AssertRepoFileExists("scripts", "check-github-workflow-runs.ps1");
+        AssertRepoFileExists("scripts", "check-ritsulib-latest-package.ps1");
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
         AssertRepoFileExists("scripts", "prune-generated-sidecars.ps1");
         AssertRepoFileExists("scripts", "prune-stale-publish-packages.ps1");
@@ -90,6 +91,24 @@ public sealed partial class EngineeringGovernanceGuardTests
             "Retired shared-runtime guidance must stay out of tracked text files",
             "Use STS2-RitsuLib docs and APIs instead",
             ".csproj");
+
+        var ritsuLatestScript = ReadRepoText("scripts", "check-ritsulib-latest-package.ps1");
+        AssertSourceContains(
+            ritsuLatestScript,
+            "[string]$PackageId = 'STS2.RitsuLib'",
+            "[string]$RuntimeModId = 'STS2-RitsuLib'",
+            "[string]$ProjectPath = 'EZMicroBalance.csproj'",
+            "[string]$ManifestPath = 'EZMicroBalance.json'",
+            "https://api.nuget.org/v3-flatcontainer/$packageKey/index.json",
+            "Invoke-RestMethod",
+            "project_has_single_ritsulib_package_reference",
+            "manifest_has_single_ritsulib_runtime_dependency",
+            "project_package_matches_nuget_latest",
+            "manifest_dependency_matches_project_package",
+            "manifest_dependency_matches_nuget_latest",
+            "[string]$ExpectedLatestVersion",
+            "[string]$OutFile",
+            "[switch]$FailOnMismatch");
 
         var workflowRunCheckScript = ReadRepoText("scripts", "check-github-workflow-runs.ps1");
         AssertSourceContains(
