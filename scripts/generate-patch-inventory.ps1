@@ -127,7 +127,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'AscensionMapIconPatches.cs'; Classes = 1; PatchIds = 'ascension-map-marker-icon-refresh'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionMapBossSealHoverPatches.cs'; Classes = 1; PatchIds = 'ascension-boss-map-point-hover'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'SereTalonVisualUiPatches.cs'; Classes = 2; PatchIds = 'sere-talon-event-option-button-ready, sere-talon-relic-node-reload'; Batch = 'clicked-ui' },
-    [pscustomobject]@{ File = 'CrystalSpherePeekPatch.cs'; Classes = 2; PatchIds = 'crystal-sphere-peek-ready, crystal-sphere-peek-finished'; Batch = 'clicked-ui' }
+    [pscustomobject]@{ File = 'CrystalSpherePeekPatch.cs'; Classes = 2; PatchIds = 'crystal-sphere-peek-ready, crystal-sphere-peek-finished'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'TransformPreviewPatch.cs'; Classes = 2; PatchIds = 'transform-preview-initialize, transform-preview-cycle-display'; Batch = 'clicked-ui' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

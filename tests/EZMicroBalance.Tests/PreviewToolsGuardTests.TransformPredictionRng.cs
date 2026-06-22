@@ -14,6 +14,8 @@ public sealed partial class PreviewToolsGuardTests
         var combined = patchSource + Environment.NewLine + displaySource + Environment.NewLine + queueSource + Environment.NewLine + predictionSource;
 
         Assert.Contains("TransformPredictionRngContext.TryConsume", patchSource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-preview-initialize\"", patchSource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-preview-cycle-display\"", displaySource, StringComparison.Ordinal);
         Assert.Contains("no verified transform RNG source", patchSource, StringComparison.Ordinal);
         Assert.Contains("ConditionalWeakTable<NTransformPreview, PredictionQueue>", queueSource, StringComparison.Ordinal);
         Assert.Contains("PreparePredictions(__instance", patchSource, StringComparison.Ordinal);
@@ -38,6 +40,9 @@ public sealed partial class PreviewToolsGuardTests
         Assert.DoesNotContain("realRng.Next", patchSource, StringComparison.Ordinal);
         Assert.DoesNotContain("realRng.FastForward", patchSource, StringComparison.Ordinal);
         Assert.DoesNotContain("private static Queue<CardModel?>? pendingPredictions", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", patchSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", displaySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("AccessTools.Method", displaySource, StringComparison.Ordinal);
     }
 
     [Fact]

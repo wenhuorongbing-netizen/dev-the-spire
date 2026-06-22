@@ -5,7 +5,7 @@ using MegaCrit.Sts2.Core.Nodes.Cards;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
-internal static partial class TransformPreviewCyclePatch
+internal sealed partial class TransformPreviewCyclePatch
 {
     private static readonly ConditionalWeakTable<NTransformPreview, PredictionQueue> PredictionsByPreview = new();
 

@@ -64,14 +64,16 @@ public sealed class RitsuLibMigrationGuardTests
         "sere-talon-event-option-button-ready",
         "sere-talon-relic-node-reload",
         "crystal-sphere-peek-ready",
-        "crystal-sphere-peek-finished"
+        "crystal-sphere-peek-finished",
+        "transform-preview-initialize",
+        "transform-preview-cycle-display"
     ];
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 14;
-    private const int ExpectedTotalMigratedCount = 39;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 132;
+    private const int ExpectedClickedUiCount = 16;
+    private const int ExpectedTotalMigratedCount = 41;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 130;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -123,8 +125,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 39:
-    /// 9 Batch 4a + 16 Batch 4b + 14 clicked/UI patches.
+    /// The expected migrated patch count must be 41:
+    /// 9 Batch 4a + 16 Batch 4b + 16 clicked/UI patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
@@ -259,7 +261,9 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<SereTalonRelicNodeReloadPatch>();",
             "RegisterPreviewUiPatches(patcher);",
             "RegisterPatch<CrystalSpherePeekPatch>();",
-            "RegisterPatch<CrystalSpherePeekFinishedPatch>();");
+            "RegisterPatch<CrystalSpherePeekFinishedPatch>();",
+            "RegisterPatch<TransformPreviewInitializePatch>();",
+            "RegisterPatch<TransformPreviewCyclePatch>();");
     }
 
     [Fact]
@@ -472,14 +476,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (39).
+    /// state the correct total migrated count (41).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 39", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 41", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -491,7 +495,8 @@ public sealed class RitsuLibMigrationGuardTests
             "`AscensionMapIconPatches.cs` | 1 | `ascension-map-marker-icon-refresh` | clicked-ui |",
             "`AscensionMapBossSealHoverPatches.cs` | 1 | `ascension-boss-map-point-hover` | clicked-ui |",
             "`SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |",
-            "`CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |");
+            "`CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |",
+            "`TransformPreviewPatch.cs` | 2 | `transform-preview-initialize, transform-preview-cycle-display` | clicked-ui |");
     }
 
     [Fact]

@@ -67,6 +67,8 @@ internal static class SpirePlusMigratedPatchRegistry
     {
         patcher.RegisterPatch<CrystalSpherePeekPatch>();
         patcher.RegisterPatch<CrystalSpherePeekFinishedPatch>();
+        patcher.RegisterPatch<TransformPreviewInitializePatch>();
+        patcher.RegisterPatch<TransformPreviewCyclePatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

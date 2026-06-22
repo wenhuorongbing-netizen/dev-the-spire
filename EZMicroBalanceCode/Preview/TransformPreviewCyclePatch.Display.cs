@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Threading.Tasks;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
@@ -11,16 +10,19 @@ using MegaCrit.Sts2.Core.Entities.UI;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
 using MegaCrit.Sts2.Core.Nodes.Cards.Holders;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
-internal static partial class TransformPreviewCyclePatch
+internal sealed partial class TransformPreviewCyclePatch : IPatchMethod
 {
-    private static MethodBase TargetMethod()
-    {
-        return AccessTools.Method(typeof(NTransformPreview), "CycleThroughCards")!;
-    }
+    static string IPatchMethod.PatchId => "transform-preview-cycle-display";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Display the local predicted transform card instead of cycling when a verified prediction is queued";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NTransformPreview), "CycleThroughCards", [typeof(NPreviewCardHolder), typeof(CardPile), typeof(IEnumerable<CardModel>)])];
 
+    [HarmonyPrefix]
     private static bool Prefix(NTransformPreview __instance, NPreviewCardHolder holder, CardPile cardPile, ref Task __result)
     {
         try

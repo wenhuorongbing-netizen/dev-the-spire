@@ -7,12 +7,19 @@ using HarmonyLib;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Nodes.Cards;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
-[HarmonyPatch(typeof(NTransformPreview), nameof(NTransformPreview.Initialize))]
-internal static class TransformPreviewInitializePatch
+internal sealed class TransformPreviewInitializePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "transform-preview-initialize";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Prepare local transform predictions when the vanilla preview initializes";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NTransformPreview), nameof(NTransformPreview.Initialize), [typeof(IEnumerable<CardTransformation>)])];
+
+    [HarmonyPrefix]
     private static void Prefix(
         NTransformPreview __instance,
         ref IEnumerable<CardTransformation> cardTransformations,
@@ -23,14 +30,14 @@ internal static class TransformPreviewInitializePatch
         TransformPreviewCyclePatch.PreparePredictions(__instance, __state);
     }
 
+    [HarmonyFinalizer]
     private static void Finalizer(NTransformPreview __instance)
     {
         TransformPreviewCyclePatch.ClearPredictions(__instance);
     }
 }
 
-[HarmonyPatch]
-internal static partial class TransformPreviewCyclePatch
+internal sealed partial class TransformPreviewCyclePatch
 {
     internal static void PreparePredictions(NTransformPreview preview, IReadOnlyList<CardTransformation> transformations)
     {

@@ -89,7 +89,15 @@ public sealed partial class PreviewToolsGuardTests
         Assert.Contains("Clear(player)", transformContextSource, StringComparison.Ordinal);
         Assert.Contains("prediction_display_failed_fallback_vanilla", transformDisplaySource, StringComparison.Ordinal);
         Assert.Contains("LogDisplayFailure(__instance, exception)", transformDisplaySource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-preview-initialize\"", transformSource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-preview-cycle-display\"", transformDisplaySource, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(NTransformPreview), nameof(NTransformPreview.Initialize), [typeof(IEnumerable<CardTransformation>)])", transformSource, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(NTransformPreview), \"CycleThroughCards\", [typeof(NPreviewCardHolder), typeof(CardPile), typeof(IEnumerable<CardModel>)])", transformDisplaySource, StringComparison.Ordinal);
         Assert.Contains("return true;", SliceFrom(transformDisplaySource, "catch (Exception exception)"), StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", transformSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", transformDisplaySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("AccessTools.Method", transformDisplaySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("TargetMethod", transformDisplaySource, StringComparison.Ordinal);
         Assert.DoesNotContain("PlayerChoiceSynchronizer", combinedPreviewSource, StringComparison.Ordinal);
         Assert.DoesNotContain("new PlayerChoice", combinedPreviewSource, StringComparison.Ordinal);
         Assert.DoesNotContain("CardRewardAlternative", combinedPreviewSource, StringComparison.Ordinal);
