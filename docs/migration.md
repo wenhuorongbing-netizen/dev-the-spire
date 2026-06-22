@@ -17,15 +17,17 @@ Use the current sources of truth instead:
 - `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current proof
   boundaries.
 
-Current boundary: Spire Plus is RitsuLib-only for beta.117 on Slay the Spire 2
-`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. Beta.117 package
-parity, runtime preflight, source-workspace validation, and smoke-level clicked
-Ancient UI proof are current. Gameplay, gated Vakuu fight-option/victory
-return, save-load, replacement behavior, co-op/fail-closed proof, independent
-QA, release readiness, and tester handoff remain pending.
+Current boundary: Spire Plus is RitsuLib-only for beta.118 on Slay the Spire 2
+`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. beta.118 package
+parity, runtime preflight, and source-workspace validation are current; the
+retained beta.108 clicked Ancient UI smoke is previous-package evidence only.
+Gameplay, gated Vakuu fight-option/victory return, save-load, replacement
+behavior, co-op/fail-closed proof, independent QA, release readiness, and tester
+handoff remain pending.
 
-Batch 4c localization fallback patches and the visual-hover UI getter batch
-have moved to RitsuLib `IPatchMethod` / `ModPatcher` in source.
+Batch 4c localization fallback patches, the visual-hover UI getter batch,
+Ancient reward getter/relic hook patches, and Aeonglass intent UI patches have
+moved to RitsuLib `IPatchMethod` / `ModPatcher` in source.
 Any higher-risk patch migration remains proposal-only until the owner approves
 the exact scope and the same pass records source evidence, focused tests,
 validation, and package-version decisions when artifacts change.

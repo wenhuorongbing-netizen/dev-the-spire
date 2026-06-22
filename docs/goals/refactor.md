@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.117`
+Current package target: Spire Plus `v0.1.0-private-beta.118`
 
 Runtime dependency target: STS2-RitsuLib `v0.4.34` direct NuGet runtime layout, Slay the Spire 2 `v0.107.1`. previous package is not a current Spire Plus dependency.
 
@@ -41,9 +41,9 @@ release readiness, and tester-package handoff remain pending.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Runtime dependency blocker | Closed for package/dependency; gameplay/runtime recapture pending | STS2-RitsuLib `v0.4.34` direct NuGet runtime layout is installed for Slay the Spire 2 `v0.107.1`; beta.117 package parity is current; beta.108 clicked UI smoke is previous-package smoke-level UI context, while beta.99/beta.96 Off direct proof is previous-package startup/loading evidence only. |
+| Runtime dependency blocker | Closed for package/dependency; gameplay/runtime recapture pending | STS2-RitsuLib `v0.4.34` direct NuGet runtime layout is installed for Slay the Spire 2 `v0.107.1`; beta.118 package parity is current; beta.108 clicked UI smoke is previous-package smoke-level UI context, while beta.99/beta.96 Off direct proof is previous-package startup/loading evidence only. |
 | CanaryOnly proof | Historical loader pass | CanaryOnly beta.85 / v0.107.0 smoke remains previous-package loader proof only: 4 event types / 6 registration calls. |
-| AdditiveBatch1 proof | Previous-package loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Current beta.117 enabled-mode proof still needs recapture before gameplay claims. |
+| AdditiveBatch1 proof | Previous-package loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Current beta.118 enabled-mode proof still needs recapture before gameplay claims. |
 | AutoSlay/runtime evidence governance | Current no-game hardening | Packet/analyzer guards reject malformed, escaped, noncanonical, missing, or blank retained artifact paths before owner routing; this protects future runtime packets from stale or shadow evidence. |
 | Batch 4c | Proposal only / static review recaptured | The 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration. |
 | Documentation compactness | In progress | Player-facing naming guard coverage may be split into source-preserving partial files when the assertions remain unchanged and focused tests pass. |

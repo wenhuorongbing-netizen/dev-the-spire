@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `4DB40A75B9F98BA30FEFE1A22F8CAEC584389A87665DA499B4C042D673AA7A2B` |
-| DLL | `25729A2B780617115A892174909CFD9B55422A2D23EEE7EFAE781A0DDD0E811F` |
-| PCK | `642068E74CA47D0E5BC748229E680357B22A31D624B5340A2B7CEE640C847771` |
-| Manifest | `532F2E6D6D4E1E43E431A4D4EBA00EC5349A08DC34E18DE95EFAC45EEA145D9D` |
-| README_INSTALL | `14963B09810778F290FBBA861150BA9CE50CF380D06A8F249B9BC3D9DE005513` |
+| ZIP | `6034CF9038348C4DE3FC762F5CD7A787D4C18A0A853B06560F7CCF67DDAF8125` |
+| DLL | `70B25ADCFAC46F248D077046C91A19693BF187A1FDF2B1C99152C0012E541170` |
+| PCK | `3A5BDEA8952CFF11EE5216A36767C5043CF257DA0DCE6E4D6F1853EF1A551117` |
+| Manifest | `F300CBF7EE55E9AC2C2D0B8DCBF779FF35ED336E509425D415CD14A1AEF7F786` |
+| README_INSTALL | `7E29DD5025A820934B0DF0DDEDE0BF3B76E638D00B62B1A7C5FCC5C3BF58F452` |
 
 ## Automation Summary
 
@@ -22,11 +22,11 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.110 publish/package sync, installed package parity, runtime preflight, and source-workspace validation are refreshed. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.118 publish/package sync, installed package parity, runtime preflight, and source-workspace validation are refreshed. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.117. Current beta.117 covers package parity, runtime preflight, and source-workspace identity. Previous beta.108 covers smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.118. Current beta.118 covers package parity, runtime preflight, and source-workspace identity. Previous beta.108 covers smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |

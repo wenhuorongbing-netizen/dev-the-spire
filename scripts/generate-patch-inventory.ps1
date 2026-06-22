@@ -120,6 +120,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'DebtAndCardPatches.cs'; Classes = 8; PatchIds = 'debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust'; Batch = '4b' },
     [pscustomobject]@{ File = 'SealOfGoldPatches.cs'; Classes = 2; PatchIds = 'seal-of-gold-max-energy, seal-of-gold-turn'; Batch = '4b' },
     [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' },
+    [pscustomobject]@{ File = 'VakuRewardPatches.cs'; Classes = 8; PatchIds = 'iron-club-vars, brilliant-scarf-vars, beautiful-bracelet-vars, beautiful-bracelet-after-obtained, music-box-before-card-played, music-box-after-card-played, music-box-turn-reset, music-box-combat-reset'; Batch = 'ancient-reward' },
+    [pscustomobject]@{ File = 'VelvetChokerPatches.cs'; Classes = 10; PatchIds = 'velvet-choker-vars, velvet-choker-display-amount, velvet-choker-should-play, velvet-choker-energy-cost, velvet-choker-x-cost-can-play, velvet-choker-x-cost-spend, velvet-choker-after-card-played, velvet-choker-turn-reset, velvet-choker-room-reset, velvet-choker-combat-reset'; Batch = 'ancient-reward' },
     [pscustomobject]@{ File = 'NeowInitialOptionRerollPatch.cs'; Classes = 1; PatchIds = 'neow-initial-option-reroll'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaAct1AncientService.cs'; Classes = 2; PatchIds = 'urda-overgrowth-ancient-unlock, urda-underdocks-ancient-unlock'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaOptionRelicClickPatch.cs'; Classes = 1; PatchIds = 'urda-option-relic-click'; Batch = 'clicked-ui' },
@@ -150,6 +152,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'MeatCleaverCookPatches.cs'; Classes = 3; PatchIds = 'meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionSelectionPatches.cs'; Classes = 1; PatchIds = 'ascension-selection-singleplayer-character-change'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionSelectionRunStartPatches.cs'; Classes = 5; PatchIds = 'ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'AeonglassIntentPatches.cs'; Classes = 2; PatchIds = 'aeonglass-laser-echo-intent-label, aeonglass-laser-echo-intent-damage'; Batch = 'intent-ui' },
     [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' },
     [pscustomobject]@{ File = 'SpirePlusInlineLocalizationPatches.cs'; Classes = 4; PatchIds = 'spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key'; Batch = 'inline-localization' }
 )

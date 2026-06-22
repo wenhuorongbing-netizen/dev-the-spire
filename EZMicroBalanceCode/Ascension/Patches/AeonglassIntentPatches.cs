@@ -2,12 +2,18 @@ using MegaCrit.Sts2.Core.Entities.Creatures;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models.Monsters;
 using MegaCrit.Sts2.Core.MonsterMoves.Intents;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))]
-internal static class AeonglassLaserEchoIntentLabelPatch
+internal sealed class AeonglassLaserEchoIntentLabelPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "aeonglass-laser-echo-intent-label";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Show Aeonglass Laser Echo's extra hit in the multi-attack intent label";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))];
+
     [HarmonyPrefix]
     private static bool Prefix(MultiAttackIntent __instance, IEnumerable<Creature> targets, Creature owner, ref LocString __result)
     {
@@ -28,9 +34,14 @@ internal static class AeonglassLaserEchoIntentLabelPatch
         owner.HasPower<AeonglassLaserEchoPower>();
 }
 
-[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))]
-internal static class AeonglassLaserEchoIntentDamagePatch
+internal sealed class AeonglassLaserEchoIntentDamagePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "aeonglass-laser-echo-intent-damage";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Include Aeonglass Laser Echo's extra hit in total intent damage";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))];
+
     [HarmonyPrefix]
     private static bool Prefix(MultiAttackIntent __instance, IEnumerable<Creature> targets, Creature owner, ref int __result)
     {

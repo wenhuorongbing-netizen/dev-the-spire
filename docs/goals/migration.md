@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.117`
+Current package target: Spire Plus `v0.1.0-private-beta.118`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
@@ -36,7 +36,7 @@ Do not add any runtime dependency besides STS2-RitsuLib unless the owner explici
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration, the visual-hover UI getter migration, the rest-site Meat Cleaver UI migration, the Preview transform prediction source/lifetime migration, the Ascension selection/lobby UI migration, the Neow/Vakuu event-option UI migration, the Act Ancient unlock-list UI migration, the Vakuu event-state UI migration, the A20 courtyard portrait migration, the Batch 4c ascension-localization fallback migration, and the core inline-localization fallback migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 99 migrated patch classes and 70 raw Harmony declarations remaining. The current manifest/package target is beta.117 after moving the latest event-option, event-state, event-visual, and inline-localization hooks to RitsuLib ModPatcher and keeping STS2-RitsuLib `0.4.34` as the sole runtime dependency. Beta.108 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration, the visual-hover UI getter migration, the rest-site Meat Cleaver UI migration, the Preview transform prediction source/lifetime migration, the Ascension selection/lobby UI migration, the Neow/Vakuu event-option UI migration, the Act Ancient unlock-list UI migration, the Vakuu event-state UI migration, the A20 courtyard portrait migration, the Batch 4c ascension-localization fallback migration, the core inline-localization fallback migration, the Ancient reward getter/relic hook migration, and the Aeonglass intent UI migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 119 migrated patch classes and 50 raw Harmony declarations remaining. The current manifest/package target is beta.118 after moving the latest event-option, event-state, event-visual, inline-localization, Ancient reward hook, and intent UI hooks to RitsuLib ModPatcher and keeping STS2-RitsuLib `0.4.34` as the sole runtime dependency. Beta.108 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
 
 Current developer entry points and tracked text files are guarded so future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and unpacked local game source instead of retired runtime-framework assumptions.
 
@@ -44,7 +44,7 @@ The migration is not release-ready. Smoke-level clicked Ancient UI is covered, b
 
 ## Dependency Recheck
 
-- 2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package. The flat-container index lists 164 versions and ends at `0.4.34`; `dotnet list` found no `STS2.RitsuLib` update and reported only transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
+- 2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package. The flat-container index lists 165 versions and ends at `0.4.34`; `dotnet list` found no `STS2.RitsuLib` update and reported only transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
 - Nexus files list the variant-pack main file as `0.4.34`; direct automated Nexus download was blocked by the site challenge in this session.
 - The GitHub release page/API can lag the NuGet/Nexus package version; do not use a lagging GitHub release marker as the dependency-floor source when NuGet and Nexus both expose a newer stable package.
 - The current local runtime is deployed from the official NuGet package via `RitsuLibDeployDir`, producing `mods/STS2-RitsuLib/mod_manifest.json`, root `STS2-RitsuLib.dll`, XML docs, and viewer files.
@@ -68,7 +68,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $blocked = -join ([char[]](66,97,115,101,76,105,98)); git grep -n -i $blocked -- ':!docs/archive/**' ':!source code/**' ':!bin/**' ':!obj/**' ':!.tools/**' ':!publish/**'
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.117' -ExpectedRitsuLibVersion '0.4.34' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.118' -ExpectedRitsuLibVersion '0.4.34' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore

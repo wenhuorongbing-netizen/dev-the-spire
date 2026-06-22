@@ -57,7 +57,7 @@ public sealed partial class AncientBehaviorGuardTests
     }
 
     [Fact]
-    public void HarmonyPatchTargetsAreDeclaredForImplementedAncientSurfaces()
+    public void PatchTargetsAreDeclaredForImplementedAncientSurfaces()
     {
         var allSource = ReadSourceTree("EZMicroBalanceCode", "Ancients");
 
@@ -84,16 +84,16 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(DistinguishedCape), \"CanonicalVars\", MethodType.Getter)",
             "ModPatchTarget(typeof(Vakuu), \"GenerateInitialOptions\")",
             "ModPatchTarget(typeof(DistinguishedCape), nameof(DistinguishedCape.AfterObtained))",
-            "[HarmonyPatch(typeof(VelvetChoker), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(VelvetChoker), \"get_DisplayAmount\")]",
-            "[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.ShouldPlay))]",
-            "[HarmonyPatch(typeof(CardEnergyCost), nameof(CardEnergyCost.GetWithModifiers))]",
-            "[HarmonyPatch(typeof(PlayerCombatState), nameof(PlayerCombatState.HasEnoughResourcesFor))]",
-            "[HarmonyPatch(typeof(CardModel), nameof(CardModel.SpendResources))]",
-            "[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.AfterCardPlayed))]",
-            "[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.BeforeSideTurnStart))]",
-            "[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.AfterRoomEntered))]",
-            "[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.AfterCombatEnd))]",
+            "ModPatchTarget(typeof(VelvetChoker), \"CanonicalVars\", MethodType.Getter)",
+            "ModPatchTarget(typeof(VelvetChoker), \"DisplayAmount\", MethodType.Getter)",
+            "ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.ShouldPlay))",
+            "ModPatchTarget(typeof(CardEnergyCost), nameof(CardEnergyCost.GetWithModifiers))",
+            "ModPatchTarget(typeof(PlayerCombatState), nameof(PlayerCombatState.HasEnoughResourcesFor))",
+            "ModPatchTarget(typeof(CardModel), nameof(CardModel.SpendResources))",
+            "ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.AfterCardPlayed))",
+            "ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.BeforeSideTurnStart))",
+            "ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.AfterRoomEntered))",
+            "ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.AfterCombatEnd))",
             "[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterObtained))]",
             "[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))]",
             "[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]",
@@ -122,14 +122,14 @@ public sealed partial class AncientBehaviorGuardTests
             "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ModifyHandDrawLate))",
             "ModPatchTarget(typeof(Fiddle), nameof(Fiddle.ShouldDraw))",
             "ModPatchTarget(typeof(CardPileCmd), nameof(CardPileCmd.Draw)",
-            "[HarmonyPatch(typeof(IronClub), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(BrilliantScarf), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(BeautifulBracelet), \"get_CanonicalVars\")]",
-            "[HarmonyPatch(typeof(BeautifulBracelet), nameof(BeautifulBracelet.AfterObtained))]",
-            "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeCardPlayed))]",
-            "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))]",
-            "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))]",
-            "[HarmonyPatch(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))]",
+            "ModPatchTarget(typeof(IronClub), \"CanonicalVars\", MethodType.Getter)",
+            "ModPatchTarget(typeof(BrilliantScarf), \"CanonicalVars\", MethodType.Getter)",
+            "ModPatchTarget(typeof(BeautifulBracelet), \"CanonicalVars\", MethodType.Getter)",
+            "ModPatchTarget(typeof(BeautifulBracelet), nameof(BeautifulBracelet.AfterObtained))",
+            "ModPatchTarget(typeof(MusicBox), nameof(MusicBox.BeforeCardPlayed))",
+            "ModPatchTarget(typeof(MusicBox), nameof(MusicBox.AfterCardPlayed))",
+            "ModPatchTarget(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))",
+            "ModPatchTarget(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.CanonicalKeywords), MethodType.Getter)",
             "ModPatchTarget(typeof(BrightestFlame), \"CanonicalVars\", MethodType.Getter)",
             "ModPatchTarget(typeof(CardModel), nameof(CardModel.OnPlayWrapper))");

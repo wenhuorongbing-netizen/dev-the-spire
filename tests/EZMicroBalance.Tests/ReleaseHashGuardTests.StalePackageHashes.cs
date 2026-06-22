@@ -126,6 +126,11 @@ public sealed partial class ReleaseHashGuardTests
         const string stalePreManifestBomFixManifestHash = "9CA9B87288B885CE5853BF376C4283B2680691BD7F589FDF47D77CC9ED230DBE";
         const string stalePreZhsBomRestoreZipHash = "FC9B870F81804FDDC8DBBE730ACD7DF1B42A24A681A702B4B5469FC6156C7218";
         const string stalePreZhsBomRestorePckHash = "79A9364C11C1E4CCCD79F4873878F772F4296D7C21A732B759484DB0B4B65FEE";
+        const string stalePreAncientRewardRitsuMigrationZipHash = "4DB40A75B9F98BA30FEFE1A22F8CAEC584389A87665DA499B4C042D673AA7A2B";
+        const string stalePreAncientRewardRitsuMigrationDllHash = "25729A2B780617115A892174909CFD9B55422A2D23EEE7EFAE781A0DDD0E811F";
+        const string stalePreAncientRewardRitsuMigrationPckHash = "642068E74CA47D0E5BC748229E680357B22A31D624B5340A2B7CEE640C847771";
+        const string stalePreAncientRewardRitsuMigrationManifestHash = "532F2E6D6D4E1E43E431A4D4EBA00EC5349A08DC34E18DE95EFAC45EEA145D9D";
+        const string stalePreAncientRewardRitsuMigrationReadmeHash = "14963B09810778F290FBBA861150BA9CE50CF380D06A8F249B9BC3D9DE005513";
 
         Assert.DoesNotContain(oldZipHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePostPolishZipHash, doc, StringComparison.Ordinal);
@@ -188,6 +193,7 @@ public sealed partial class ReleaseHashGuardTests
         Assert.DoesNotContain(stalePreSeedbedStrengthZipHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreManifestBomFixZipHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreZhsBomRestoreZipHash, doc, StringComparison.Ordinal);
+        Assert.DoesNotContain(stalePreAncientRewardRitsuMigrationZipHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreA20SmartFormatPckHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreSeedbedClarityPckHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreSeedbedClarityManifestHash, doc, StringComparison.Ordinal);
@@ -198,6 +204,9 @@ public sealed partial class ReleaseHashGuardTests
         Assert.DoesNotContain(stalePreManifestBomFixPckHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreManifestBomFixManifestHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreZhsBomRestorePckHash, doc, StringComparison.Ordinal);
+        Assert.DoesNotContain(stalePreAncientRewardRitsuMigrationPckHash, doc, StringComparison.Ordinal);
+        Assert.DoesNotContain(stalePreAncientRewardRitsuMigrationManifestHash, doc, StringComparison.Ordinal);
+        Assert.DoesNotContain(stalePreAncientRewardRitsuMigrationReadmeHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(oldDllHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(staleRootSightUiDllHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(staleRootSightMarkerDllHash, doc, StringComparison.Ordinal);
@@ -247,5 +256,6 @@ public sealed partial class ReleaseHashGuardTests
         Assert.DoesNotContain(stalePreA20SmartFormatDllHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreSeedbedClarityDllHash, doc, StringComparison.Ordinal);
         Assert.DoesNotContain(stalePreSeedbedStrengthDllHash, doc, StringComparison.Ordinal);
+        Assert.DoesNotContain(stalePreAncientRewardRitsuMigrationDllHash, doc, StringComparison.Ordinal);
     }
 }

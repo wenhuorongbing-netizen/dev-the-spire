@@ -1,8 +1,15 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(VelvetChoker), "get_CanonicalVars")]
-internal static class VelvetChokerVarsPatch
+internal sealed class VelvetChokerVarsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-vars";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Override Velvet Choker canonical vars for Spire Plus soft-limit text";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), "CanonicalVars", MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<DynamicVar> __result)
     {
@@ -11,9 +18,14 @@ internal static class VelvetChokerVarsPatch
     }
 }
 
-[HarmonyPatch(typeof(VelvetChoker), "get_DisplayAmount")]
-internal static class VelvetChokerDisplayAmountPatch
+internal sealed class VelvetChokerDisplayAmountPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-display-amount";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Show Velvet Choker's current cards-played soft-limit counter";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), "DisplayAmount", MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(VelvetChoker __instance, ref int __result)
     {
@@ -22,9 +34,14 @@ internal static class VelvetChokerDisplayAmountPatch
     }
 }
 
-[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.ShouldPlay))]
-internal static class VelvetChokerShouldPlayPatch
+internal sealed class VelvetChokerShouldPlayPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-should-play";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Keep Velvet Choker playable while soft-limit cost handles restriction";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.ShouldPlay))];
+
     [HarmonyPrefix]
     private static bool Prefix(ref bool __result)
     {
@@ -33,9 +50,14 @@ internal static class VelvetChokerShouldPlayPatch
     }
 }
 
-[HarmonyPatch(typeof(CardEnergyCost), nameof(CardEnergyCost.GetWithModifiers))]
-internal static class VelvetChokerEnergyCostPatch
+internal sealed class VelvetChokerEnergyCostPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-energy-cost";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Velvet Choker's extra energy tax after the soft card-play limit";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardEnergyCost), nameof(CardEnergyCost.GetWithModifiers))];
+
     [HarmonyPostfix]
     private static void AddSoftLimitCost(CardEnergyCost __instance, CostModifiers modifiers, ref int __result)
     {
@@ -52,9 +74,14 @@ internal static class VelvetChokerEnergyCostPatch
     }
 }
 
-[HarmonyPatch(typeof(PlayerCombatState), nameof(PlayerCombatState.HasEnoughResourcesFor))]
-internal static class VelvetChokerXCostCanPlayPatch
+internal sealed class VelvetChokerXCostCanPlayPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-x-cost-can-play";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Require extra Velvet Choker energy before taxed X-cost cards can play";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(PlayerCombatState), nameof(PlayerCombatState.HasEnoughResourcesFor))];
+
     [HarmonyPostfix]
     private static void RequireExtraEnergyForTaxedXCost(PlayerCombatState __instance, CardModel card, ref UnplayableReason reason, ref bool __result)
     {
@@ -70,9 +97,14 @@ internal static class VelvetChokerXCostCanPlayPatch
     }
 }
 
-[HarmonyPatch(typeof(CardModel), nameof(CardModel.SpendResources))]
-internal static class VelvetChokerXCostSpendPatch
+internal sealed class VelvetChokerXCostSpendPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-x-cost-spend";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Subtract Velvet Choker's soft-limit tax from captured X value after spending";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.SpendResources))];
+
     [HarmonyPostfix]
     private static void ReduceCapturedXBySoftLimitTax(CardModel __instance, ref Task<ValueTuple<int, int>> __result)
     {
@@ -92,9 +124,14 @@ internal static class VelvetChokerXCostSpendPatch
     }
 }
 
-[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.AfterCardPlayed))]
-internal static class VelvetChokerAfterCardPlayedPatch
+internal sealed class VelvetChokerAfterCardPlayedPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-after-card-played";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Track owner-played cards for Velvet Choker's soft limit";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.AfterCardPlayed))];
+
     [HarmonyPrefix]
     private static bool Prefix(VelvetChoker __instance, CardPlay cardPlay, ref Task __result)
     {
@@ -111,9 +148,14 @@ internal static class VelvetChokerAfterCardPlayedPatch
     }
 }
 
-[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.BeforeSideTurnStart))]
-internal static class VelvetChokerTurnResetPatch
+internal sealed class VelvetChokerTurnResetPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-turn-reset";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reset Velvet Choker's soft-limit counter at owner turn start";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.BeforeSideTurnStart))];
+
     [HarmonyPrefix]
     private static bool Prefix(VelvetChoker __instance, CombatSide side, ref Task __result)
     {
@@ -127,9 +169,14 @@ internal static class VelvetChokerTurnResetPatch
     }
 }
 
-[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.AfterRoomEntered))]
-internal static class VelvetChokerRoomResetPatch
+internal sealed class VelvetChokerRoomResetPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-room-reset";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reset Velvet Choker's soft-limit counter on combat room entry";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.AfterRoomEntered))];
+
     [HarmonyPrefix]
     private static bool Prefix(VelvetChoker __instance, AbstractRoom room, ref Task __result)
     {
@@ -143,9 +190,14 @@ internal static class VelvetChokerRoomResetPatch
     }
 }
 
-[HarmonyPatch(typeof(VelvetChoker), nameof(VelvetChoker.AfterCombatEnd))]
-internal static class VelvetChokerCombatResetPatch
+internal sealed class VelvetChokerCombatResetPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "velvet-choker-combat-reset";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reset Velvet Choker's soft-limit counter after combat";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(VelvetChoker), nameof(VelvetChoker.AfterCombatEnd))];
+
     [HarmonyPrefix]
     private static bool Prefix(VelvetChoker __instance, ref Task __result)
     {

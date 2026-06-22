@@ -22,6 +22,7 @@ internal static class SpirePlusMigratedPatchRegistry
     {
         RegisterBatch4a(patcher);
         RegisterBatch4b(patcher);
+        RegisterAncientRewardPatches(patcher);
         RegisterAncientEventUiPatches(patcher);
         RegisterClickedUiPatches(patcher);
         RegisterMapUiPatches(patcher);
@@ -30,6 +31,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterRelicVisualHoverPatches(patcher);
         RegisterRemainingUiPatches(patcher);
         RegisterAscensionSelectionUiPatches(patcher);
+        RegisterAscensionIntentUiPatches(patcher);
         RegisterBatch4cLocalizationPatches(patcher);
         RegisterInlineLocalizationPatches(patcher);
     }
@@ -74,6 +76,28 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<VakuuFightCommandForceCleanupPatch>();
         patcher.RegisterPatch<VakuuFightResumePatch>();
         patcher.RegisterPatch<VakuuFightPreFinishedParentRestoreHealPatch>();
+    }
+
+    private static void RegisterAncientRewardPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<IronClubVarsPatch>();
+        patcher.RegisterPatch<BrilliantScarfVarsPatch>();
+        patcher.RegisterPatch<BeautifulBraceletVarsPatch>();
+        patcher.RegisterPatch<BeautifulBraceletPatch>();
+        patcher.RegisterPatch<MusicBoxBeforeCardPlayedPatch>();
+        patcher.RegisterPatch<MusicBoxAfterCardPlayedPatch>();
+        patcher.RegisterPatch<MusicBoxTurnResetPatch>();
+        patcher.RegisterPatch<MusicBoxCombatResetPatch>();
+        patcher.RegisterPatch<VelvetChokerVarsPatch>();
+        patcher.RegisterPatch<VelvetChokerDisplayAmountPatch>();
+        patcher.RegisterPatch<VelvetChokerShouldPlayPatch>();
+        patcher.RegisterPatch<VelvetChokerEnergyCostPatch>();
+        patcher.RegisterPatch<VelvetChokerXCostCanPlayPatch>();
+        patcher.RegisterPatch<VelvetChokerXCostSpendPatch>();
+        patcher.RegisterPatch<VelvetChokerAfterCardPlayedPatch>();
+        patcher.RegisterPatch<VelvetChokerTurnResetPatch>();
+        patcher.RegisterPatch<VelvetChokerRoomResetPatch>();
+        patcher.RegisterPatch<VelvetChokerCombatResetPatch>();
     }
 
     private static void RegisterMapUiPatches(ModPatcher patcher)
@@ -145,6 +169,12 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<StartRunLobbyUpdatePreferredAscensionPatch>();
         patcher.RegisterPatch<StartRunLobbySyncAscensionChangeA20WarningPatch>();
         patcher.RegisterPatch<StartRunLobbyBeginRunForAllPlayersA20WarningPatch>();
+    }
+
+    private static void RegisterAscensionIntentUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<AeonglassLaserEchoIntentLabelPatch>();
+        patcher.RegisterPatch<AeonglassLaserEchoIntentDamagePatch>();
     }
 
     private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)
