@@ -10,6 +10,10 @@ content-pack registration, and SavedAttachedState field registration helper.
 `SpirePlusMigratedPatchRegistry` owns the explicit migrated patch list so
 `RitsuLibBootstrap` can stay focused on startup order and legacy Harmony
 fallback boundaries.
+`SpirePlusContentRegistrationService` creates and applies the RitsuLib content
+pack; its sibling partial files own the Ancient/encounter, card, relic, power,
+and enchantment registration lists so future content has a direct RitsuLib
+home instead of drifting into scattered registration code.
 Settings UI registration lives in `EZMicroBalanceCode/Config` but also uses
 RitsuLib APIs.
 

@@ -15,7 +15,7 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
         var lothaRunHook = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha");
         var lothaOptionRelics = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaOptionRelics.cs");
         var lothaPower = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Lotha", "LothaPowers.cs");
-        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
+        var ritsuRegistration = ReadSourceTree("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib");
         var lothaScene = ReadRepoText("EZMicroBalance", "scenes", "events", "background_scenes", "ezmb_lotha.tscn");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");

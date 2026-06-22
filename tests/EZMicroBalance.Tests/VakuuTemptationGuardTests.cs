@@ -9,7 +9,7 @@ public sealed partial class VakuuTemptationGuardTests
     {
         var card = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTemptationCard.cs");
         var powers = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightPowers.cs");
-        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
+        var ritsuRegistration = ReadSourceTree("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib");
         var exportPreset = ReadRepoText("export_presets.cfg");
 
         AssertSourceContains(

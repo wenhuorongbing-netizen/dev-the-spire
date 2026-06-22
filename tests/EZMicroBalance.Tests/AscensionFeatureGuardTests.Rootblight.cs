@@ -331,7 +331,7 @@ public sealed partial class AscensionFeatureGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootBudCard.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootFamilyCard.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Cards", "RootPortraitPaths.cs"));
-        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
+        var ritsuRegistration = ReadSourceTree("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib");
         var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
         var englishCards = JsonStringMap("EZMicroBalance", "localization", "eng", "cards.json");
         var simplifiedChineseCards = JsonStringMap("EZMicroBalance", "localization", "zhs", "cards.json");

@@ -18,7 +18,7 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRainBreath.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "WitheredHusk.cs"));
         var witheredHusk = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "WitheredHusk.cs");
-        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
+        var ritsuRegistration = ReadSourceTree("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib");
         var urdaInitializer = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaInitializer.cs");
         var urdaMapUiPatches = string.Join(
             Environment.NewLine,

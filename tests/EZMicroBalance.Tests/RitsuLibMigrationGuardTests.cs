@@ -226,6 +226,47 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterBatch4b(patcher);");
     }
 
+    [Fact]
+    public void RitsuLibContentRegistrationIsSplitByContentKind()
+    {
+        var orchestration = ReadRepoText(
+            "EZMicroBalanceCode",
+            "Core",
+            "Integrations",
+            "RitsuLib",
+            "SpirePlusContentRegistrationService.cs");
+
+        AssertSourceContains(
+            orchestration,
+            "internal static partial class SpirePlusContentRegistrationService",
+            "RitsuLibFramework.CreateContentPack(modId)",
+            "RegisterAncients(content);",
+            "RegisterVakuuEncounter(content);",
+            "RegisterCards(content);",
+            "RegisterRelics(content);",
+            "RegisterPowers(content);",
+            "RegisterEnchantments(content);",
+            "content.Apply();");
+        Assert.DoesNotContain("content.Card<", orchestration, StringComparison.Ordinal);
+        Assert.DoesNotContain("content.Relic<", orchestration, StringComparison.Ordinal);
+        Assert.DoesNotContain("content.Power<", orchestration, StringComparison.Ordinal);
+        Assert.DoesNotContain("content.Enchantment<", orchestration, StringComparison.Ordinal);
+
+        foreach (var fileName in new[]
+        {
+            "SpirePlusContentRegistrationService.Ancients.cs",
+            "SpirePlusContentRegistrationService.Cards.cs",
+            "SpirePlusContentRegistrationService.Relics.cs",
+            "SpirePlusContentRegistrationService.Powers.cs",
+            "SpirePlusContentRegistrationService.Enchantments.cs"
+        })
+        {
+            var partial = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", fileName);
+            Assert.Contains("internal static partial class SpirePlusContentRegistrationService", partial, StringComparison.Ordinal);
+            Assert.Contains("ModContentPackBuilder content", partial, StringComparison.Ordinal);
+        }
+    }
+
     /// <summary>
     /// docs/migration.md must state the correct migrated counts:
     /// Batch 4a = 9, Batch 4b = 16, Total = 25.

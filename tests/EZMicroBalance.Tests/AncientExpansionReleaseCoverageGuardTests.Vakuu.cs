@@ -20,7 +20,7 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
         var encounter = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightEncounter.cs");
         var monster = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuTrialMonster.cs");
         var optionRelic = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightOptionRelic.cs");
-        var ritsuRegistration = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusContentRegistrationService.cs");
+        var ritsuRegistration = ReadSourceTree("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib");
         var assetPaths = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Vakuu", "VakuuFightAssetPaths.cs");
         var exportPreset = ReadRepoText("export_presets.cfg");
         var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
