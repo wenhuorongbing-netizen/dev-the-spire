@@ -159,7 +159,9 @@ public sealed class RitsuLibMigrationGuardTests
         "spire-plus-inline-localization-raw-text",
         "spire-plus-inline-localization-loc-string",
         "spire-plus-inline-localization-has-entry",
-        "spire-plus-inline-localization-is-local-key"
+        "spire-plus-inline-localization-is-local-key",
+        // RitsuLib compatibility patches
+        "ritsulib-mod-settings-button-selection-reticle"
     ];
 
     private const int ExpectedBatch4aCount = 9;
@@ -172,7 +174,8 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedEnemyDamagePolishCount = 7;
     private const int ExpectedBatch4cLocalizationCount = 6;
     private const int ExpectedInlineLocalizationCount = 4;
-    private const int ExpectedTotalMigratedCount = 126;
+    private const int ExpectedRitsuLibCompatibilityCount = 1;
+    private const int ExpectedTotalMigratedCount = 127;
     private const int ExpectedRawHarmonyPatchDeclarationCount = 43;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
@@ -213,19 +216,20 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 126:
+    /// The expected migrated patch count must be 127:
     /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
     /// + 1 event visual UI patch + 2 intent UI patches
     /// + 7 enemy damage polish getter patches
-    /// + 6 Batch 4c localization patches + 4 inline localization patches.
+    /// + 6 Batch 4c localization patches + 4 inline localization patches
+    /// + 1 RitsuLib compatibility patch.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -517,7 +521,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.119", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.122", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -607,7 +611,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.119 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.122 package parity passed; current beta.122 clicked Ancient UI smoke applied all 127 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -677,14 +681,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (126).
+    /// state the correct total migrated count (127).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 126", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 127", inventory, StringComparison.Ordinal);
         Assert.Contains("Raw HarmonyPatch remaining | 43", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
@@ -806,6 +810,68 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     [Fact]
+    public void MigratedPatchMethodsUseRitsuLibDiscoverableNames()
+    {
+        var sourceFiles = Directory.GetFiles(
+            RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories);
+        var classPattern = new Regex(@"\bclass\s+(?<name>\w+)\s*:\s*IPatchMethod\b");
+        var methodPattern = new Regex(@"\bstatic\s+(?:async\s+)?[^(=;]+?\s+(?<name>[A-Za-z_]\w*)\s*\(");
+        var offenders = new List<string>();
+
+        foreach (var file in sourceFiles)
+        {
+            var lines = File.ReadAllLines(file);
+            string? patchClass = null;
+
+            for (var index = 0; index < lines.Length; index++)
+            {
+                var line = lines[index];
+                var classMatch = classPattern.Match(line);
+                if (classMatch.Success)
+                {
+                    patchClass = classMatch.Groups["name"].Value;
+                }
+                else if (Regex.IsMatch(line, @"^\s*internal\s+(?:sealed\s+|static\s+|partial\s+)*class\s+"))
+                {
+                    patchClass = null;
+                }
+
+                if (patchClass == null)
+                {
+                    continue;
+                }
+
+                var expectedMethodName = line.Contains("[HarmonyPrefix]", StringComparison.Ordinal)
+                    ? "Prefix"
+                    : line.Contains("[HarmonyPostfix]", StringComparison.Ordinal)
+                        ? "Postfix"
+                        : null;
+                if (expectedMethodName == null)
+                {
+                    continue;
+                }
+
+                var methodLineIndex = FindNextMethodLine(lines, index + 1);
+                if (methodLineIndex < 0)
+                {
+                    offenders.Add($"{ToRepoRelativePath(file)}:{index + 1}: {patchClass} has {line.Trim()} without a discoverable method signature.");
+                    continue;
+                }
+
+                var methodMatch = methodPattern.Match(lines[methodLineIndex]);
+                if (!methodMatch.Success || !string.Equals(methodMatch.Groups["name"].Value, expectedMethodName, StringComparison.Ordinal))
+                {
+                    offenders.Add($"{ToRepoRelativePath(file)}:{methodLineIndex + 1}: {patchClass} {line.Trim()} must name its method {expectedMethodName} for RitsuLib discovery.");
+                }
+            }
+        }
+
+        Assert.True(offenders.Count == 0,
+            "RitsuLib IPatchMethod discovery expects canonical Prefix/Postfix method names:" +
+            Environment.NewLine + string.Join(Environment.NewLine, offenders));
+    }
+
+    [Fact]
     public void UrdaOptionRelicClickPatchUsesRitsuLibDiscoverablePrefix()
     {
         var source = ReadRepoText(
@@ -822,6 +888,22 @@ public sealed class RitsuLibMigrationGuardTests
             "[HarmonyPrefix]",
             "private static bool Prefix(RelicModel model)");
         Assert.DoesNotContain("ExtractStoredSeedInsteadOfInspecting", source, StringComparison.Ordinal);
+    }
+
+    private static int FindNextMethodLine(string[] lines, int startIndex)
+    {
+        for (var index = startIndex; index < lines.Length; index++)
+        {
+            var trimmed = lines[index].Trim();
+            if (trimmed.Length == 0 || trimmed.StartsWith("[", StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            return index;
+        }
+
+        return -1;
     }
 
     private static string ReadRitsuLibIntegrationSource() =>

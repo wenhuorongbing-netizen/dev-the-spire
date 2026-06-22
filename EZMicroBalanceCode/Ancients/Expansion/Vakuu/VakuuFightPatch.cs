@@ -42,7 +42,7 @@ internal sealed class VakuuFightOptionPatch : IPatchMethod
         [new ModPatchTarget(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), "GenerateInitialOptions")];
 
     [HarmonyPostfix]
-    private static void AddFightOption(
+    private static void Postfix(
         MegaCrit.Sts2.Core.Models.Events.Vakuu __instance,
         ref IReadOnlyList<EventOption> __result)
     {
@@ -79,7 +79,7 @@ internal sealed class VakuuFightCommandForceCleanupPatch : IPatchMethod
         [new ModPatchTarget(typeof(EventModel), nameof(EventModel.BeginEvent), [typeof(Player), typeof(bool)])];
 
     [HarmonyPostfix]
-    private static void ClearCommandForceFightWhenVakuuBeginEventCompletes(
+    private static void Postfix(
         EventModel __instance,
         ref Task __result)
     {
@@ -103,7 +103,7 @@ internal sealed class VakuuFightResumePatch : IPatchMethod
         [new ModPatchTarget(typeof(EventModel), nameof(EventModel.Resume), [typeof(AbstractRoom)])];
 
     [HarmonyPrefix]
-    private static bool ResumeVakuuFightVictory(EventModel __instance, AbstractRoom exitedRoom, ref Task __result)
+    private static bool Prefix(EventModel __instance, AbstractRoom exitedRoom, ref Task __result)
     {
         if (__instance is not MegaCrit.Sts2.Core.Models.Events.Vakuu vakuu ||
             exitedRoom is not CombatRoom { Encounter: EzmbVakuuTrialEncounter } combatRoom)
@@ -149,7 +149,7 @@ internal sealed class VakuuFightPreFinishedParentRestoreHealPatch : IPatchMethod
         [new ModPatchTarget(typeof(AncientEventModel), "BeforeEventStarted", [typeof(bool)])];
 
     [HarmonyPrefix]
-    private static bool SkipDuplicateVakuuRestoreHeal(
+    private static bool Prefix(
         AncientEventModel __instance,
         bool isPreFinished,
         ref Task __result)

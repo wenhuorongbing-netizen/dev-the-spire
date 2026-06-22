@@ -39,6 +39,8 @@ internal sealed partial class SpirePlusAncientLiveTestConsoleCmd
                 TestSeed,
                 GameMode.Standard);
 
+            await CompleteInitialNeowEventIfPresent();
+
             if (forceFight)
             {
                 commandForceFightRunState = RunManager.Instance.DebugOnlyGetState()
@@ -68,6 +70,33 @@ internal sealed partial class SpirePlusAncientLiveTestConsoleCmd
 
             throw;
         }
+    }
+
+    private static async Task CompleteInitialNeowEventIfPresent()
+    {
+        var runState = RunManager.Instance.DebugOnlyGetState();
+        if (runState?.CurrentRoom is not EventRoom { CanonicalEvent: Neow })
+        {
+            return;
+        }
+
+        var eventSynchronizer = RunManager.Instance.EventSynchronizer;
+        var localEvent = eventSynchronizer.GetLocalEvent();
+        if (localEvent is not Neow || localEvent.IsFinished)
+        {
+            return;
+        }
+
+        if (localEvent.CurrentOptions.Count <= 0)
+        {
+            throw new InvalidOperationException(
+                "Initial Neow event has no options for Ancient UI live-test setup.");
+        }
+
+        MainFile.Logger.Info(
+            "[Spire Plus] Completing initial Neow event before Ancient UI handoff.");
+        eventSynchronizer.ChooseLocalOption(0);
+        await eventSynchronizer.AwaitPendingOptionTasks();
     }
 
     private static AncientUiTarget? ResolveTarget(string value)

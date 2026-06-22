@@ -169,7 +169,7 @@ internal sealed class MusicBoxTurnResetPatch : IPatchMethod
         [new ModPatchTarget(typeof(MusicBox), nameof(MusicBox.BeforeSideTurnStart))];
 
     [HarmonyPostfix]
-    private static void ResetOnTurnStart(MusicBox __instance, CombatSide side)
+    private static void Postfix(MusicBox __instance, CombatSide side)
     {
         if (side == __instance.Owner.Creature.Side)
         {
@@ -187,7 +187,7 @@ internal sealed class MusicBoxCombatResetPatch : IPatchMethod
         [new ModPatchTarget(typeof(MusicBox), nameof(MusicBox.AfterCombatEnd))];
 
     [HarmonyPostfix]
-    private static void ResetAfterCombat(MusicBox __instance)
+    private static void Postfix(MusicBox __instance)
     {
         MusicBoxStateTracker.Reset(__instance);
     }

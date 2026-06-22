@@ -59,7 +59,7 @@ internal sealed class VelvetChokerEnergyCostPatch : IPatchMethod
         [new ModPatchTarget(typeof(CardEnergyCost), nameof(CardEnergyCost.GetWithModifiers))];
 
     [HarmonyPostfix]
-    private static void AddSoftLimitCost(CardEnergyCost __instance, CostModifiers modifiers, ref int __result)
+    private static void Postfix(CardEnergyCost __instance, CostModifiers modifiers, ref int __result)
     {
         if (!modifiers.HasFlag(CostModifiers.Global) || __result < 0)
         {
@@ -83,7 +83,7 @@ internal sealed class VelvetChokerXCostCanPlayPatch : IPatchMethod
         [new ModPatchTarget(typeof(PlayerCombatState), nameof(PlayerCombatState.HasEnoughResourcesFor))];
 
     [HarmonyPostfix]
-    private static void RequireExtraEnergyForTaxedXCost(PlayerCombatState __instance, CardModel card, ref UnplayableReason reason, ref bool __result)
+    private static void Postfix(PlayerCombatState __instance, CardModel card, ref UnplayableReason reason, ref bool __result)
     {
         if (!card.EnergyCost.CostsX ||
             !VelvetChokerSoftLimitTracker.ShouldTax(card) ||
@@ -106,7 +106,7 @@ internal sealed class VelvetChokerXCostSpendPatch : IPatchMethod
         [new ModPatchTarget(typeof(CardModel), nameof(CardModel.SpendResources))];
 
     [HarmonyPostfix]
-    private static void ReduceCapturedXBySoftLimitTax(CardModel __instance, ref Task<ValueTuple<int, int>> __result)
+    private static void Postfix(CardModel __instance, ref Task<ValueTuple<int, int>> __result)
     {
         if (__instance.EnergyCost.CostsX && VelvetChokerSoftLimitTracker.ShouldTax(__instance))
         {

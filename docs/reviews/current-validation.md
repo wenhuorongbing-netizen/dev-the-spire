@@ -5,8 +5,8 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 
 ## Current Target
 
-- Date: 2026-06-22; latest addendum: source now has 126 RitsuLib `IPatchMethod` classes and 43 raw Harmony declarations after the Batch 4c ascension-localization fallback, visual-hover UI, A20 reward proceed, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, A20 courtyard portrait, inline-localization fallback, Ancient reward getter/relic hook, Aeonglass intent UI, and Enemy Damage polish getter migrations. beta.119 build, publish, package refresh, installed-package parity, runtime preflight, focused migration/preview/release metadata tests, and current-doc claims are current for this source pass; beta.108 clicked UI smoke is retained as previous-package evidence only.
-- Current package target is Spire Plus `v0.1.0-private-beta.119` on Slay the Spire 2 `v0.107.1`.
+- Date: 2026-06-22; latest addendum: source now has 127 RitsuLib `IPatchMethod` classes and 43 raw Harmony declarations after the Batch 4c ascension-localization fallback, visual-hover UI, A20 reward proceed, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, A20 courtyard portrait, inline-localization fallback, Ancient reward getter/relic hook, Aeonglass intent UI, Enemy Damage polish getter migrations, and the RitsuLib settings-button compatibility patch. beta.122 build, publish, package refresh, installed-package parity, runtime preflight, focused migration/preview/release metadata tests, current-doc claims, and clicked Ancient UI smoke are current for this source pass.
+- Current package target is Spire Plus `v0.1.0-private-beta.122` on Slay the Spire 2 `v0.107.1`.
 - `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 - The unpacked local game source under `source code/src/Core/` is the primary API authority for game behavior. RitsuLib docs/XML are the modding API authority.
 
@@ -18,17 +18,17 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 
 ## Current Evidence
 
-- beta.119 package refresh passed `dotnet build` with 0 warnings / 0 errors, `dotnet publish` with only the known Godot ignored `source code` project warning, and `scripts/package-spire-plus.ps1`.
-- Installed-package parity passed for `publish/SpirePlus-v0.1.0-private-beta.119.zip`, the game-root zip, installed DLL, manifest, PCK, README, and Sere Talon/Tanx Claws package content. beta.119 artifact hashes are recorded in `docs/private-beta-verification-handoff.md`.
+- beta.122 package refresh passed `dotnet build` with 0 warnings / 0 errors, `dotnet publish` with only the known Godot ignored `source code` project warning, and `scripts/package-spire-plus.ps1`.
+- Installed-package parity passed for `publish/SpirePlus-v0.1.0-private-beta.122.zip`, the game-root zip, installed DLL, manifest, PCK, README, and Sere Talon/Tanx Claws package content. beta.122 artifact hashes are recorded in `docs/private-beta-verification-handoff.md`.
 - Focused RitsuLib migration plus Enemy Damage polish guard passed 18 / 0 / 1 / 19. The broader RitsuLib migration, Enemy Damage polish, Ascension selector, release coverage, documentation, release-safety, and Ancient guard lane passed 152 / 0 / 6 / 158. The opt-in release artifact lane passed 24 / 0 / 0 / 24. Current-doc claims passed 1321 / 0.
 - Runtime preflight passed 28 checks / 0 mismatches. RitsuLib latest-package guard passed 9 checks / 0 mismatches, keeping `STS2.RitsuLib` at `0.4.34`.
-- Source-workspace validation passed 58 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.119`, and STS2-RitsuLib `0.4.34`, with retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
+- Source-workspace validation passed 57 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.122`, and STS2-RitsuLib `0.4.34`, with retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
 - Repository hygiene, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, active retired-dependency/old-package/count/hash residue scans, and `git diff --check` passed. `git diff --check` reported only retained CRLF normalization warnings for `AGENTS.md` and `docs/patch-inventory.md`.
-- Previous beta.108 clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 migrated Spire Plus ModPatcher patches applied, and packet verification 1621 / 0.
+- Current beta.122 clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-beta122-20260622-230109/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 migrated Spire Plus ModPatcher patches applied, and packet verification 1621 / 0.
 
 ## Evidence Boundary
 
-- This is previous-package smoke-level clicked Ancient UI migration proof; recapture it for beta.119 before tester handoff or release claims.
+- This is current-package smoke-level clicked Ancient UI migration proof; it does not close gameplay, save-load, co-op, or release-readiness gates.
 - It does not prove event encounter gameplay, gated Vakuu fight-option/victory return, live gameplay, save-load, image rendering, replacement functional behavior, multiplayer fail-closed behavior, independent QA, release handoff, live-ready, or private-beta release readiness.
 - Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
 

@@ -35,6 +35,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterEnemyDamagePolishPatches(patcher);
         RegisterBatch4cLocalizationPatches(patcher);
         RegisterInlineLocalizationPatches(patcher);
+        RegisterRitsuLibCompatibilityPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -205,6 +206,11 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<SpirePlusInlineLocalizationLocStringPatch>();
         patcher.RegisterPatch<SpirePlusInlineLocalizationHasEntryPatch>();
         patcher.RegisterPatch<SpirePlusInlineLocalizationIsLocalKeyPatch>();
+    }
+
+    private static void RegisterRitsuLibCompatibilityPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<RitsuLibModSettingsButtonSelectionReticlePatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

@@ -20,10 +20,10 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package target is beta.119", projectState, StringComparison.Ordinal);
-        Assert.Contains("build, publish, package refresh, and local RitsuLib runtime install are current", projectState, StringComparison.Ordinal);
-        Assert.Contains("Previous beta.108 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
-        Assert.Contains("The beta.108 clicked Ancient UI smoke, beta.99 RitsuLib settings UI, beta.96 Off loader, and beta.93 AdditiveBatch1 rows remain previous-package context only", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.122", projectState, StringComparison.Ordinal);
+        Assert.Contains("build, publish, package refresh, local RitsuLib runtime install, and forced clicked Ancient UI smoke are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current beta.122 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
+        Assert.Contains("The beta.99 RitsuLib settings UI, beta.96 Off loader, and beta.93 AdditiveBatch1 rows remain previous-package context", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
         Assert.Contains("beta.19 packages have historical loader/startup evidence", projectState, StringComparison.Ordinal);
@@ -93,7 +93,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-06-22 beta.119:",
+            "Current package hashes, 2026-06-22 beta.122:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -130,9 +130,9 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
             "Active M5 Revision S truth",
-            "Latest package target is beta.119",
-            "build, publish, package refresh, and local RitsuLib runtime install are current",
-            "Previous beta.108 clicked Ancient UI smoke proof is",
+            "Latest package target is beta.122",
+            "build, publish, package refresh, local RitsuLib runtime install, and forced clicked Ancient UI smoke are current",
+            "Current beta.122 clicked Ancient UI smoke proof is",
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],

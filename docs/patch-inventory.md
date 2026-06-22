@@ -16,9 +16,9 @@ Regenerate:
 | Metric | Count |
 | --- | ---: |
 | Total raw HarmonyPatch declarations | 43 |
-| Migrated to RitsuLib ModPatcher | 126 |
+| Migrated to RitsuLib ModPatcher | 127 |
 | Raw HarmonyPatch remaining | 43 |
-| Tracked patch units total | 169 |
+| Tracked patch units total | 170 |
 | High risk (raw Harmony) | 15 |
 | Medium risk (raw Harmony) | 7 |
 | Low risk (raw Harmony) | 21 |
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 126 patch classes implement `IPatchMethod` and are registered via
+These 127 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -83,6 +83,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `EnemyDamagePolishPatches.cs` | 7 | `decimillipede-writhe-damage-polish, decimillipede-constrict-damage-polish, decimillipede-bulk-damage-polish, terror-eel-crash-damage-polish, terror-eel-thrash-damage-polish, phantasmal-gardener-bite-damage-polish, phantasmal-gardener-lash-damage-polish` | enemy-damage-polish |
 | `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |
 | `SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |
+| `RitsuLibModSettingsButtonSelectionReticlePatch.cs` | 1 | `ritsulib-mod-settings-button-selection-reticle` | ritsulib-compatibility |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.

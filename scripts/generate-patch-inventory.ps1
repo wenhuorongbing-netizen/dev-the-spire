@@ -155,7 +155,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'AeonglassIntentPatches.cs'; Classes = 2; PatchIds = 'aeonglass-laser-echo-intent-label, aeonglass-laser-echo-intent-damage'; Batch = 'intent-ui' },
     [pscustomobject]@{ File = 'EnemyDamagePolishPatches.cs'; Classes = 7; PatchIds = 'decimillipede-writhe-damage-polish, decimillipede-constrict-damage-polish, decimillipede-bulk-damage-polish, terror-eel-crash-damage-polish, terror-eel-thrash-damage-polish, phantasmal-gardener-bite-damage-polish, phantasmal-gardener-lash-damage-polish'; Batch = 'enemy-damage-polish' },
     [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' },
-    [pscustomobject]@{ File = 'SpirePlusInlineLocalizationPatches.cs'; Classes = 4; PatchIds = 'spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key'; Batch = 'inline-localization' }
+    [pscustomobject]@{ File = 'SpirePlusInlineLocalizationPatches.cs'; Classes = 4; PatchIds = 'spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key'; Batch = 'inline-localization' },
+    [pscustomobject]@{ File = 'RitsuLibModSettingsButtonSelectionReticlePatch.cs'; Classes = 1; PatchIds = 'ritsulib-mod-settings-button-selection-reticle'; Batch = 'ritsulib-compatibility' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

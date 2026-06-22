@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-22 beta.119:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-22 beta.122:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `20911A544516954B8ACB7C9DBD7FAEB192FD17EAC8E8C1F9B3F5D990E3545485` |
-| DLL | `1EBFA239EBE6DF967F5F67EEFFC03A86C6C43E38DB075054C773C325C627D610` |
-| PCK | `A75C26038DB31CDF296477BD23C1080249CB979EF70A48E59CE4100AF8666B80` |
-| Manifest | `56502CE729A80377F113219930FC880E6189DF5FEFBA72A92A8C3C828D36CBCC` |
-| README_INSTALL | `3D4A0E4B5301788BCA83795C178E097AD5D8D204D3084B2AE4DAAC7CAFD55BDA` |
+| ZIP | `2D9752CBEB98A358D75DF85B2189F61DA3B116A1619A329C2959CB88BB964D98` |
+| DLL | `C6355689524B5A9E680531E7DFFD989B07460BAA6CC4204A81A4719DA881148D` |
+| PCK | `B9D4BB9543A6CC0089598533C13ED56D045BFCEA55A0900D246F49F5F5C6325F` |
+| Manifest | `D75A2417583C3B8E0926730AA42295861B99A5FBD2C85006F82B82E3654F4FDB` |
+| README_INSTALL | `7280953E68CCA9E208D71D588E52ED889A8212660BEF910AFE253178E5BAB171` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -16,7 +16,7 @@
 - `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending: Crystal Sphere and transform preview now run in co-op as local UI only; no choices, rewards, or real RNG calls.
 - `ENEMY-DAMAGE-POLISH` P1 source/package-fixed / live-pending: strengthened Bulk now uses the same getter polish as Writhe/Constrict, so visible intent and real damage no longer stay at 7.
 - `ROOTBLIGHT-STARTER-MISSING` / `BOSS-BLIGHT-SPROUT-PLAYED-STILL-ROOTBLIGHT` P1 source-fixed / live-pending: combat start retries A14 starter Rootblight before growth marking; played/planted Blight Sprouts still do not grow.
-- `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
+- `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 鎾曞挰+; live pickup proof still pending.
 - `QUEEN-BOSS-SEAL-RUNTIME` P0 source/package-fixed / live-pending: Royal Decree now skips un-enchantable Bound cards before `CardCmd.Enchant`; retest Queen/Royal Decree and capture `godot.log`.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.
 - `MORVI/LOTHA/VAKUU` P0/P1 live-pending: default-on morvi_forbidden_loan/lotha_death_reprieve need gameplay proof; hidden Vakuu fight needs victory, death/failure, save/load, and no-black-screen proof.
@@ -35,10 +35,10 @@
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
 - `RITSULIB-RUNTIME-SMOKE` P0 runtime-smoke current / gameplay pending.
-  beta.119 package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 are current; previous beta.108 clicked UI smoke packet verification passed 1621 / 0 for the previous 64-patch source state.
-  Evidence: `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`; beta.99/beta.96/beta.93 and earlier smokes are previous-version or previous-package context.
+  beta.122 package parity, runtime preflight 28 / 0, source-workspace validation 57 / 0, and clicked UI smoke packet verification 1621 / 0 are current for the 127-patch source state.
+  Evidence: `.tools/runtime-evidence/monkey-stability-beta122-20260622-230109/`; beta.99/beta.96/beta.93 and earlier smokes are previous-version or previous-package context.
   Enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.
-## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: beta.108 Ancient smoke covers Urda/Morvi/Lotha/normal Vakuu; gated Vakuu fight, hover/readability, A11-A20, save-load, co-op, gameplay proof remain pending; use scripts/collect-ancient-ui-evidence.ps1.
+## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: beta.122 Ancient smoke covers Urda/Morvi/Lotha/normal Vakuu; gated Vakuu fight, hover/readability, A11-A20, save-load, co-op, gameplay proof remain pending; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.
 ## Issue detail links: `docs/issues/ancient-expansion-v2.2.md`, `docs/issues/urda.md`, `docs/issues/waiting-tests.md`, `docs/issues/v3.3-design-review.md`; retest rows in `docs/toreview.md`.

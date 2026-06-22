@@ -23,7 +23,7 @@ internal sealed class NeowInitialOptionRerollPatch : IPatchMethod
     private static bool isRegeneratingOptions;
 
     [HarmonyPostfix]
-    private static void AddRerollOption(Neow __instance, ref IReadOnlyList<EventOption> __result)
+    private static void Postfix(Neow __instance, ref IReadOnlyList<EventOption> __result)
     {
         if (isRegeneratingOptions ||
             __instance.Owner == null ||

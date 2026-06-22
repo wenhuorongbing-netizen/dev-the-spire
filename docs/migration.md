@@ -17,10 +17,10 @@ Use the current sources of truth instead:
 - `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current proof
   boundaries.
 
-Current boundary: Spire Plus is RitsuLib-only for beta.119 on Slay the Spire 2
-`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. beta.119 package
-parity, runtime preflight, and source-workspace validation are current; the
-retained beta.108 clicked Ancient UI smoke is previous-package evidence only.
+Current boundary: Spire Plus is RitsuLib-only for beta.122 on Slay the Spire 2
+`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. beta.122 package
+parity, runtime preflight, source-workspace validation, and clicked Ancient UI
+smoke are current.
 Gameplay, gated Vakuu fight-option/victory return, save-load, replacement
 behavior, co-op/fail-closed proof, independent QA, release readiness, and tester
 handoff remain pending.

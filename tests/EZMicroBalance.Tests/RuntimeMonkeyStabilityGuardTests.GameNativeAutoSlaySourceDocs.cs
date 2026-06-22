@@ -163,7 +163,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Target coverage compares expected, plan, summary, and traversed Ancient ids",
             "case-insensitively after normalizing them to uppercase",
             "`run-result.json` and `autoslay-summary.json` `AncientId` values must still",
-            "-ExpectedPatchCount 64");
+            "-ExpectedPatchCount 127");
 
         Assert.DoesNotContain("Current runtime dependency: `STS2-RitsuLib v0.4.31` with `lib\\0.107.0`", docs, StringComparison.Ordinal);
         Assert.DoesNotContain("currently reports `v0.106.0`", docs, StringComparison.Ordinal);
