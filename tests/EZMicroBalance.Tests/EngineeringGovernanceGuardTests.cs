@@ -211,9 +211,12 @@ public sealed partial class EngineeringGovernanceGuardTests
         var sourcePatchCount = Directory
             .GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories)
             .Sum(path => Regex.Matches(File.ReadAllText(path), @"\[HarmonyPatch").Count);
-        var migratedPatchCount = Regex.Matches(
-            ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusMigratedPatchRegistry.cs"),
-            @"\.RegisterPatch<").Count;
+        var migratedPatchCount = Directory
+            .GetFiles(
+                RepoPath("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib"),
+                "SpirePlusMigratedPatchRegistry*.cs",
+                SearchOption.TopDirectoryOnly)
+            .Sum(path => Regex.Matches(File.ReadAllText(path), @"\.RegisterPatch<").Count);
 
         Assert.Contains($"| Total raw HarmonyPatch declarations | {sourcePatchCount} |", inventory, StringComparison.Ordinal);
         Assert.Contains($"| Migrated to RitsuLib ModPatcher | {migratedPatchCount} |", inventory, StringComparison.Ordinal);
@@ -227,7 +230,8 @@ public sealed partial class EngineeringGovernanceGuardTests
             "Vakuu",
             "Ascension core",
             "Ascension patches",
-            "Preview tools",
+            "CrystalSpherePeekPatch.cs",
+            "TransformPreviewPatch.cs",
             "High: run, room, save, lobby, multiplayer, or game lifecycle surface.");
     }
 

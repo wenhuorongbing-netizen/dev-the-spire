@@ -70,7 +70,7 @@ Known wording commitments:
 - A16 says Banner Rooms have extra rewards.
 - A17 says the special route is more dangerous and more rewarding.
 - A19 says each Boss gains its own dedicated ability / 首领专属能力.
-- A20 says only the second Act 3 Boss enters Branded Form / 烙印形�?and strengthens that Boss's dedicated ability.
+- A20 says only the second Act 3 Boss enters Branded Form / 烙印形态 and strengthens that Boss's dedicated ability.
 - Holy Daze, Struggle Bait, and Residual Sample need concrete effect text, not design commentary.
 
 ## Manual Evidence Still Pending

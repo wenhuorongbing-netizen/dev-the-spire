@@ -177,7 +177,7 @@ Each implemented Ancient reward change needs a manual result before private beta
 - War Hammer: pickup chooses two cards to upgrade; elite kill upgrades remain.
 - Jewelry Box: adds Apotheosis without Innate.
 - Preserved Fog / Folly: removes four cards and adds Folly with Unplayable, Innate, Eternal.
-- Vakuu's Sere Talon / 瓦库原初之爪: offers four Curses, lets the player choose one, then adds that Curse, two Wish, and one Wish+ as the Vakuu reward. Tanx Claws / 坦克斯利�?remains the separate Tanx relic that transforms cards into upgraded Maul+ / 撕咬+ cards.
+- Vakuu's Sere Talon / 瓦库原初之爪: offers four Curses, lets the player choose one, then adds that Curse, two Wish, and one Wish+ as the Vakuu reward. Tanx Claws / 坦克斯利爪 remains the separate Tanx relic that transforms cards into upgraded Maul+ / 撕咬+ cards.
 - Choices Paradox: combat-start five rare choices, Retain, combat temporary.
 - Jeweled Mask: selected/drafted power permanently costs 0 and is moved from draw pile to hand at combat start.
 - Prismatic Gem: Every second standard card reward contains only off-color cards; reroll preserves trigger/non-trigger state; non-normal rewards do not count; the reward-screen hint logs a fallback if the banner cannot be updated.

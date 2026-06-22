@@ -495,14 +495,15 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "AGENTS.md").Text,
             "STS2-RitsuLib `v0.4.34`",
-            "found `0.4.34` as the latest `STS2.RitsuLib` package",
+            "2026-06-23 NuGet/GitHub plus `dotnet list package --outdated --include-transitive` recheck",
+            "no newer `STS2.RitsuLib` update is available",
             "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
             "inspect RitsuLib/template APIs",
             "Install STS2-RitsuLib `v0.4.34`");
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "PROJECT_STATE.md").Text,
             "Current dependency configurations are aligned on STS2-RitsuLib `v0.4.34`",
-            "2026-06-22 NuGet flat-container",
+            "2026-06-23 NuGet/GitHub plus `dotnet list package --outdated --include-transitive` recheck",
             "2026-06-22 source-workspace recheck pass 57 checks / 0 mismatches",
             "local `STS2-RitsuLib.xml` API marker coverage");
         AssertSourceContains(
@@ -512,7 +513,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "unpacked local game source under `source code/src/Core/`",
             "Git-tracked text surfaces stay free of retired shared-runtime names",
             "future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and unpacked local game source",
-            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package");
+            "2026-06-23: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package");
     }
 
     [Fact]
@@ -555,10 +556,11 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
             "Only current runtime dependency target: `STS2-RitsuLib` for Spire Plus.",
             "Future migration work has two first checks: confirm the latest stable RitsuLib",
-            "2026-06-22 recheck",
+            "2026-06-23 recheck",
             "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.34`",
-            "GitHub releases can lag those package channels",
-            "the main branch manifest is not the dependency-floor source",
+            "GitHub release API now reports release tag/name `v0.4.34` / `0.4.34`",
+            "raw `main` branch `mod_manifest.json`",
+            "Keep NuGet plus the installed XML/runtime as the primary",
             "RegisterModSettings",
             "ApplyRequiredPatcher",
             "main-menu RitsuLib shortcut",

@@ -141,9 +141,11 @@ public sealed partial class BossDedicatedAbilityV41GuardTests
 
         AssertSourceContains(
             aeonglassIntentPatch,
-            "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
+            "IPatchMethod.PatchId => \"aeonglass-laser-echo-intent-label\"",
+            "new ModPatchTarget(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
             "__instance.Repeats + 1",
-            "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))",
+            "IPatchMethod.PatchId => \"aeonglass-laser-echo-intent-damage\"",
+            "new ModPatchTarget(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))",
             "GetSingleDamage(targets, owner) * (__instance.Repeats + 1)");
         AssertSourceContains(
             heatPowers,

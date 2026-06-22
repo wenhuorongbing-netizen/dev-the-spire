@@ -47,7 +47,7 @@ References:
 
 ## External Version Recheck
 
-2026-06-22 recheck:
+2026-06-23 recheck:
 
 - `dotnet list EZMicroBalance.csproj package --outdated --include-transitive`
   found no `STS2.RitsuLib` update; only transitive `System.IO.Hashing`
@@ -60,9 +60,10 @@ References:
 - The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.34`
   across 165 listed versions, with last five `0.4.28` through `0.4.34`.
 - The Nexus files page also lists `0.4.34` for the current public package line.
-  GitHub releases can lag those package channels; GitHub is not the dependency-floor source for this pass.
-- A live 2026-06-21 check of the raw `main` branch `mod_manifest.json` returned
-  an older version string, so the main branch manifest is not the dependency-floor source.
+- GitHub release API now reports release tag/name `v0.4.34` / `0.4.34`
+  published on 2026-06-22, and the raw `main` branch `mod_manifest.json`
+  reports `0.4.34`. Keep NuGet plus the installed XML/runtime as the primary
+  dependency floor, with GitHub as corroborating evidence.
 - Official docs recheck found the current settings-page API names used by this
   repo: `RegisterModSettings`, `AddSection`, and `AddToggle`; the patching
   guide exposes `ApplyRequiredPatcher`, `CreatePatcher`, `RegisterPatch`, and

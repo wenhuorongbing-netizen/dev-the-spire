@@ -44,9 +44,9 @@ The migration is not release-ready. Smoke-level clicked Ancient UI is covered, b
 
 ## Dependency Recheck
 
-- 2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package. The flat-container index lists 165 versions and ends at `0.4.34`; `dotnet list` found no `STS2.RitsuLib` update and reported only transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
+- 2026-06-23: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package. The flat-container index lists 165 versions and ends at `0.4.34`; `dotnet list` found no `STS2.RitsuLib` update and reported only transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
 - Nexus files list the variant-pack main file as `0.4.34`; direct automated Nexus download was blocked by the site challenge in this session.
-- The GitHub release page/API can lag the NuGet/Nexus package version; do not use a lagging GitHub release marker as the dependency-floor source when NuGet and Nexus both expose a newer stable package.
+- GitHub release API now reports tag/name `v0.4.34` / `0.4.34`, and raw `main` `mod_manifest.json` reports version `0.4.34`; keep NuGet plus installed XML/runtime as the primary dependency-floor evidence.
 - The current local runtime is deployed from the official NuGet package via `RitsuLibDeployDir`, producing `mods/STS2-RitsuLib/mod_manifest.json`, root `STS2-RitsuLib.dll`, XML docs, and viewer files.
 - Keep Spire Plus on stable `0.4.34`, not a dev build, unless the owner explicitly approves a separate dev-runtime validation lane.
 

@@ -70,7 +70,9 @@ public sealed partial class AscensionV2MilestoneGuardTests
             "ModelDb.Event<A20Courtyard>()",
             "EnterRoomWithoutExitingCurrentRoom(eventRoom, fadeToBlack: true)",
             "SaveManager.Instance.SaveRun(eventRoom, saveProgress: false)",
-            "HarmonyPatch(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))",
+            "AscensionA20CourtyardPortraitPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"ascension-a20-courtyard-portrait\"",
+            "new ModPatchTarget(typeof(EventModel), nameof(EventModel.CreateInitialPortrait))",
             "AscensionAssetPaths.BossSealIndicator",
             "GetSecondBossBrandIconPath(runState)",
             "AscensionAssetPaths.GetBossSealIndicator(definition.Id)",
@@ -222,9 +224,11 @@ public sealed partial class AscensionV2MilestoneGuardTests
         Assert.DoesNotContain("PowerCmd.Apply<StrengthPower>(choiceContext, Owner, -Amount", powers, StringComparison.Ordinal);
         AssertSourceContains(
             aeonglassIntentPatch,
-            "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
+            "IPatchMethod.PatchId => \"aeonglass-laser-echo-intent-label\"",
+            "new ModPatchTarget(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetIntentLabel))",
             "__instance.Repeats + 1",
-            "HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))");
+            "IPatchMethod.PatchId => \"aeonglass-laser-echo-intent-damage\"",
+            "new ModPatchTarget(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))");
 
         AssertSourceContains(
             bossSealSource,

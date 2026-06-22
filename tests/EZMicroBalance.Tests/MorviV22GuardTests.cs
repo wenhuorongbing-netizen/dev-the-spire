@@ -65,7 +65,9 @@ public sealed partial class MorviV22GuardTests
         AssertSourceContains(
             ancient,
             "ModAncientEventTemplate",
-            "HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
+            "MorviHivePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"morvi-hive-ancient-unlock\"",
+            "new ModPatchTarget(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
             "MorviFeatureGate.ShouldForceMorvi",
             "unlockedAncients = [morvi]",
             "list.Add(morvi)",
