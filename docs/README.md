@@ -89,7 +89,7 @@ These files are current support records but are not part of the default next-dev
 | `codex-harness/templates/` | Empty templates for HCA_PROJECT_MAP, TASK_FOCUS_PACK, TASK_STATUS, TASK_RESULT, ERROR_LEDGER. |
 | `integrations/ritsulib.md` | Current RitsuLib integration record: compile package, manifest dependency, installed runtime variant, loader evidence, and remaining proof gates. |
 | `refactor-map.md` | Move-only folder refactor map for EZMicroBalanceCode (planning only, no moves executed). |
-| `migration.md` | Compact RitsuLib migration status index; detailed goal/evidence lives in `goals/migration.md` and `integrations/ritsulib.md`. |
+| `migration.md` | Compatibility stub only; current migration work starts from `features/ritsulib-migration/README.md`, `goals/migration.md`, `integrations/ritsulib.md`, and generated patch counts in `patch-inventory.md`. |
 | `restructure.md` | Source design document for the integration and refactor plan. |
 
 ## Code And Helper Indexes

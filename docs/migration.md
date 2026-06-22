@@ -1,75 +1,29 @@
-# RitsuLib Migration Status Index
+# RitsuLib Migration Status Stub
 
-This file is the compact active index for migration status. It intentionally
-does not carry the old PR-sequencing history; current implementation work should
-start from:
+This file stays only as a compatibility link for older docs, scripts, and
+guards that still open `docs/migration.md`. Do not add migration tables,
+runtime ledgers, package hashes, or patch inventory here.
 
-- `docs/goals/migration.md` for the active goal, success criteria, and next
-  actions.
-- `docs/integrations/ritsulib.md` for the dependency, installed runtime, API,
-  and evidence record.
-- `docs/features/ritsulib-migration/batch-4c-candidates.md` for the proposal
-  boundary before any further patch migration.
-- `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current
-  command output and evidence scope.
+Use the current sources of truth instead:
 
-## Current Boundary
+- `docs/features/ritsulib-migration/README.md` for the migration entry point,
+  read order, RitsuLib-first rules, and stop lines.
+- `docs/goals/migration.md` for success criteria, validation commands, and
+  current next actions.
+- `docs/integrations/ritsulib.md` for dependency version, installed runtime,
+  public RitsuLib references, and API evidence.
+- `docs/patch-inventory.md` for generated patch counts and remaining Harmony
+  declarations.
+- `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current proof
+  boundaries.
 
-Spire Plus is on the beta.105 RitsuLib-only target:
+Current boundary: Spire Plus is RitsuLib-only for beta.105 on Slay the Spire 2
+`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.33`. Beta.105 package
+parity, runtime preflight, source-workspace validation, and smoke-level clicked
+Ancient UI proof are current. Gameplay, gated Vakuu fight-option/victory
+return, save-load, replacement behavior, co-op/fail-closed proof, independent
+QA, release readiness, and tester handoff remain pending.
 
-- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33`.
-- `EZMicroBalance.json` declares `STS2-RitsuLib >= 0.4.33` as the shared runtime
-  framework dependency.
-- Current package parity exists for beta.105 after the RitsuLib default-key
-  localization alias and clicked-UI smoke pass.
-- Beta.105 runtime preflight passed 28 / 0, source-workspace validation passed
-  57 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke is
-  captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`
-  with 4 / 4 iterations and packet verification 1621 / 0.
-- Beta.99 clicked RitsuLib Mod Settings UI proof is previous-package context at
-  `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
-- Beta.99 direct Off loader proof is previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` for startup/loading and default-Off StS1Events behavior only.
-- Previous beta.96 RitsuLib-only Off proof is startup/loading evidence only.
-  Prior beta.93 RitsuLib-only AdditiveBatch1 proof is previous-package
-  registration evidence only. Recapture current loader or settings proof before
-  making a new current runtime claim.
-
-Gameplay, event screenshots, save-load, image/render, replacement functional
-proof, co-op/fail-closed proof, independent QA, current enabled-mode proof, and
-tester-package handoff remain pending; handoff must recapture HEAD and worktree
-status after any later edits.
-
-## Migrated Patch Inventory
-
-Batch 4a source status: Migrated 9 low-risk patch classes to RitsuLib
-`IPatchMethod`.
-
-| File | Classes | PatchIds |
-| --- | ---: | --- |
-| `FiddlePatches.cs` | 4 | `fiddle-vars`, `fiddle-hand-draw`, `fiddle-should-draw`, `fiddle-draw-cap` |
-| `ChoicesParadoxPatches.cs` | 1 | `choices-paradox-turn-start` |
-| `DistinguishedCapePatches.cs` | 3 | `distinguished-cape-vars`, `distinguished-cape-event-option`, `distinguished-cape-pickup` |
-| `BlackStarCompensationPatches.cs` | 1 | `black-star-obtain` |
-
-Batch 4b source status: Migrated 16 medium-risk patch classes to RitsuLib
-`IPatchMethod`.
-
-| File | Classes | PatchIds |
-| --- | ---: | --- |
-| `CrossbowPatches.cs` | 2 | `crossbow-offer`, `crossbow-vanilla-after-turn` |
-| `BrightestFlameExhaustDrawPatch.cs` | 3 | `brightest-flame-keywords`, `brightest-flame-vars`, `brightest-flame-exhaust-backstop` |
-| `DebtAndCardPatches.cs` | 8 | `debt-after-created`, `debt-from-save`, `debt-keywords`, `debt-vars`, `debt-turn-end-effect`, `debt-turn-end-in-hand`, `card-model-on-play`, `debt-exhaust` |
-| `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy`, `seal-of-gold-turn` |
-| `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` |
-
-**Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b).
-**Remaining:** 146 `[HarmonyPatch]` declarations still on raw Harmony.
-
-Inventory rechecked on 2026-06-20 against the current source tree: 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, and 171 tracked patch units.
-
-## Batch 4c Boundary
-
-Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c or high-risk run, map, reward, save, and multiplayer patches without explicit owner approval, current source evidence, focused tests, package-version planning when artifacts change, and fresh validation.
-
-The candidate proposal is
-`docs/features/ritsulib-migration/batch-4c-candidates.md`.
+Batch 4c and any higher-risk patch migration remain proposal-only until the
+owner approves the exact scope and the same pass records source evidence,
+focused tests, validation, and package-version decisions when artifacts change.

@@ -267,31 +267,25 @@ public sealed class RitsuLibMigrationGuardTests
         }
     }
 
-    /// <summary>
-    /// docs/migration.md must state the correct migrated counts:
-    /// Batch 4a = 9, Batch 4b = 16, Total = 25.
-    /// DebtAndCardPatches row must say 8 classes.
-    /// </summary>
     [Fact]
-    public void MigrationDocCountsMatchSource()
+    public void MigrationStatusStubRoutesInventoryToCanonicalDocs()
     {
         var migrationDoc = ReadRepoText("docs", "migration.md");
 
-        // Batch 4a header should say 9
-        Assert.Contains("Migrated 9 low-risk patch classes", migrationDoc, StringComparison.Ordinal);
-
-        // DebtAndCardPatches row should say 8
-        Assert.Contains("| `DebtAndCardPatches.cs` | 8 |", migrationDoc, StringComparison.Ordinal);
-
-        // Total migrated line
-        Assert.Contains("Total migrated:** 25 classes (9 from Batch 4a + 16 from Batch 4b)", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("**Remaining:** 146 `[HarmonyPatch]` declarations still on raw Harmony.", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains(
-            "Inventory rechecked on 2026-06-20 against the current source tree: 25 migrated `IPatchMethod` classes, 146 raw `[HarmonyPatch]` declarations, and 171 tracked patch units.",
-            migrationDoc,
-            StringComparison.Ordinal);
-
-        // Should NOT contain the old wrong values
+        Assert.Contains("# RitsuLib Migration Status Stub", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("This file stays only as a compatibility link", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Do not add migration tables", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("`docs/features/ritsulib-migration/README.md`", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.105", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Batch 4c and any higher-risk patch migration remain proposal-only", migrationDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("| File | Classes | PatchIds |", migrationDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("| `DebtAndCardPatches.cs` |", migrationDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("Total migrated:**", migrationDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("**Remaining:**", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("Migrated 10 low-risk", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("Total migrated:** 26 classes", migrationDoc, StringComparison.Ordinal);
     }
@@ -312,7 +306,7 @@ public sealed class RitsuLibMigrationGuardTests
     public void Batch4cCandidatesRemainProposalOnly()
     {
         var proposal = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
-        var migrationDoc = ReadRepoText("docs", "migration.md");
+        var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
         var inventory = ReadRepoText("docs", "patch-inventory.md");
         var registrationSource = ReadRitsuLibIntegrationSource();
 
@@ -322,7 +316,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
         Assert.Contains("Previous `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
         Assert.Contains("retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence", proposal, StringComparison.Ordinal);
-        Assert.Contains("Batch 4c may be reviewed as a low-risk candidate proposal only; do not migrate Batch 4c", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Do not migrate Batch 4c or high-risk run/map/reward/save/multiplayer patches", migrationReadme, StringComparison.Ordinal);
 
         var candidateSectionStart = proposal.IndexOf("## Candidates", StringComparison.Ordinal);
         var candidateSectionEnd = proposal.IndexOf("## Per-Candidate Evidence", StringComparison.Ordinal);
