@@ -48,6 +48,16 @@ References:
   guide exposes `ApplyRequiredPatcher`, `CreatePatcher`, `RegisterPatch`, and
   `PatchAll`. Keep future settings and patch work aligned with those names
   before adding local wrappers.
+- Official Mod Settings docs now describe multiple in-game host surfaces for
+  registered pages: the main-menu RitsuLib shortcut, pause-menu, and settings
+  surfaces. The main-menu shortcut is controlled by RitsuLib's
+  `main_menu_mod_settings_button_enabled` setting, so tester docs should name
+  both the main-menu path and the in-run pause/settings path when settings
+  visibility matters.
+- Official Mod Settings docs also state that interactive controls need stable
+  entry ids. Spire Plus keeps these ids as source constants in
+  `SpirePlusModConfig` because clicked UI screenshots and future automation use
+  them as evidence anchors.
 - Local NuGet XML confirms `BeginModDataRegistration`, `ModDataStore.Register`,
   and scoped global initialization for persisted data slots. Spire Plus settings
   registration now uses that scope before registering the settings page.

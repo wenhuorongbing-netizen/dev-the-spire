@@ -478,6 +478,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         var docRestructureSpec = ReadRepoText("docs", "doc-restructure-spec.md");
         var integration = ReadRepoText("docs", "integrations", "ritsulib.md");
         var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
+        var coreIntegrationReadme = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "README.md");
 
         AssertSourceContains(
             docsReadme,
@@ -514,6 +515,10 @@ public sealed partial class DocumentationCompactnessGuardTests
             "the main branch manifest is not the dependency-floor source",
             "RegisterModSettings",
             "ApplyRequiredPatcher",
+            "main-menu RitsuLib shortcut",
+            "main_menu_mod_settings_button_enabled",
+            "interactive controls need stable",
+            "clicked UI screenshots and future automation use",
             "The current public Slay the Spire 2 update target remains Major Update #2",
             "Current compile dependency:",
             "Current manifest dependency:");
@@ -528,6 +533,18 @@ public sealed partial class DocumentationCompactnessGuardTests
             "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
             "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
+        AssertSourceContains(
+            coreIntegrationReadme,
+            "Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`",
+            "`0.4.33`, and Spire Plus `v0.1.0-private-beta.105`.",
+            "This directory owns the RitsuLib bootstrap, migrated patch registration,",
+            "Settings UI registration lives in `EZMicroBalanceCode/Config` but also uses",
+            "Current beta.105 evidence covers package parity, runtime preflight,",
+            "That proves forced clicked UI visibility only;",
+            "Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93",
+            "`docs/features/ritsulib-migration/README.md` as the migration entry point.");
+        Assert.DoesNotContain("repo now compiles against `STS2.RitsuLib` 0.4.32", coreIntegrationReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("full staging record", coreIntegrationReadme, StringComparison.Ordinal);
 
         foreach (var staleInstruction in new[]
                  {

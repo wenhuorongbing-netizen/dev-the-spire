@@ -2,20 +2,21 @@
 
 RitsuLib bootstrap integration lives here.
 
-Historical loader proof used StS2 v0.106.1 with the RitsuLib runtime
-variant 0.106.1, and later beta.87 proof covered StS2 v0.107.0 with
-RitsuLib v0.4.24. The current local game install is v0.107.1, and
-official RitsuLib v0.4.32 direct NuGet runtime layout is installed. The
-repo now compiles against `STS2.RitsuLib` 0.4.32, and the Spire Plus
-manifest requires `STS2-RitsuLib` for the beta.99 package line. Current
-beta.99 clicked settings UI proof is retained under
-`.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
-Previous beta.96 Off proof and beta.93 AdditiveBatch1 loader proof are
-retained only as previous-package loader/registration context under
-`.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`,
-`.tools/runtime-evidence/v01071-beta93-ritsulib0431-off-direct-20260621/`
-and
-`.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
+Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
+`0.4.33`, and Spire Plus `v0.1.0-private-beta.105`.
 
-See `docs/integrations/ritsulib.md` for the full staging record and
-migration plan.
+This directory owns the RitsuLib bootstrap, migrated patch registration,
+content-pack registration, and SavedAttachedState field registration helper.
+Settings UI registration lives in `EZMicroBalanceCode/Config` but also uses
+RitsuLib APIs.
+
+Current beta.105 evidence covers package parity, runtime preflight,
+source-workspace validation, and smoke-level clicked Ancient UI for Urda,
+Morvi, Lotha, and normal Vakuu. That proves forced clicked UI visibility only;
+gameplay, save-load, gated Vakuu fight-option/victory return, co-op, release,
+and handoff proof remain separate gates.
+
+Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93
+AdditiveBatch1 proof are retained only as previous-package context. Use
+`docs/integrations/ritsulib.md` for the current RitsuLib record and
+`docs/features/ritsulib-migration/README.md` as the migration entry point.
