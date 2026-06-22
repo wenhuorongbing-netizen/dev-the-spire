@@ -39,6 +39,7 @@
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
 | `docs/archive/feature-audits/review-pre-slim-20260518.md` | Archive | Full historical source-review log before the compact current `docs/review.md`. |
 | `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Archive | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the compact current review. |
+| `docs/archive/feature-audits/current-validation-full-20260622.md` | Archive | Full historical validation ledger moved out of the compact active `docs/reviews/current-validation.md`. |
 | `docs/archive/feature-audits/overnight-run-20260529.md` | Archive | Historical StS1 overnight no-game/source-governance report; active `docs/reviews/overnight-run-20260529.md` is a compact guarded stub only. |
 | `docs/archive/feature-audits/refactor-qa-20260602*.md` | Archive | Historical StS1 loader-gate QA reports; active `docs/reviews/refactor-qa-20260602*.md` files are compact guarded stubs only. |
 | `docs/archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md` | Archive | Full May 20 red-team goal-completion review; active `docs/reviews/red-team-goal-implementation-pass-1.md` is a compact boundary stub only. |
@@ -73,6 +74,7 @@
 | `docs/reviews/overnight-run-20260529.md` | Current boundary stub | Compact guarded pointer preserving historical overnight no-game/source-governance no-overclaim boundaries while the full record lives in `docs/archive/feature-audits/`. |
 | `docs/reviews/refactor-qa-20260602*.md` | Current boundary stubs | Compact guarded pointers preserving historical StS1 QA no-overclaim boundaries while full records live in `docs/archive/feature-audits/`. |
 | `docs/reviews/red-team-goal-implementation-pass-1.md` | Current boundary stub | Compact pointer preserving the May 20 source-only completion rejection while current status routes through `docs/review.md`, `docs/issues.md`, and `PROJECT_STATE.md`. |
+| `docs/reviews/current-validation.md` | Current validation summary | Compact active validation entry for beta.105 RitsuLib-only proof boundaries; full historical validation ledger lives in `docs/archive/feature-audits/`. |
 | `EZMicroBalanceCode/Sts1Events/` | Current implementation | StS1 event code: Runtime registry, Shared/Act1/Act2/Act3 event models. |
 | `manifests/` | Current support | StS1 event manifest CSV/JSON and asset manifest for extraction scripts. |
 

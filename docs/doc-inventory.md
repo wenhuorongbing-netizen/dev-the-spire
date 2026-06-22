@@ -77,6 +77,7 @@ Current support docs, not default reading path:
 - `docs/archive/prompts/2026-05/`
 - `docs/archive/feature-inputs/`
 - `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/`
+- `docs/archive/feature-audits/current-validation-full-20260622.md`
 - `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`
 - `docs/archive/feature-audits/overnight-run-20260529.md`
 - `docs/archive/feature-audits/refactor-qa-20260602.md`
@@ -141,6 +142,7 @@ Current support docs, not default reading path:
 - Historical StS1 overnight no-game/source-governance report `docs/reviews/overnight-run-20260529.md` -> `docs/archive/feature-audits/overnight-run-20260529.md`; active review file is a compact guarded stub retaining no-overclaim boundaries.
 - Historical StS1 loader-gate QA reports `docs/reviews/refactor-qa-20260602.md` and `docs/reviews/refactor-qa-20260602-round2.md` -> `docs/archive/feature-audits/refactor-qa-20260602.md` and `docs/archive/feature-audits/refactor-qa-20260602-round2.md`; active review files are compact guarded stubs retaining no-overclaim boundaries.
 - Historical May 20 goal-completion red-team review `docs/reviews/red-team-goal-implementation-pass-1.md` -> `docs/archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md`; active review file is a compact boundary stub routing current status to `docs/review.md`, `docs/issues.md`, and `PROJECT_STATE.md`.
+- Full historical validation ledger `docs/reviews/current-validation.md` -> `docs/archive/feature-audits/current-validation-full-20260622.md`; active validation file is a compact current beta.105/RitsuLib evidence summary.
 - Root `BUGFIX_NOTES.md` and `BUGFIX_REPORT.md` -> `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md` and `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`; current package/runtime state now lives in `PROJECT_STATE.md` and current release docs.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 - ignored local zip residue `docs/STS2-RitsuLib.0.3.3.variant-pack.zip` and `docs/codex-app-better-token-main.zip` deleted after confirming neither file was tracked nor referenced; use official RitsuLib release URLs instead of copied archives.
@@ -163,6 +165,7 @@ Current support docs, not default reading path:
 - `docs/archive/prompts/2026-05/codex-ancient-expansion-v22-next-development-prompt.md`
 - `docs/issues/waiting-tests.md`
 - `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/README.md`
+- `docs/archive/feature-audits/current-validation-full-20260622.md`
 - `docs/archive/feature-audits/review-pre-slim-20260518.md`
 - `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`
 - `docs/archive/feature-audits/overnight-run-20260529.md`

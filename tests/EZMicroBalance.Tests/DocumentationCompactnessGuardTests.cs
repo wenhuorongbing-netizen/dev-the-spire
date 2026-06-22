@@ -645,6 +645,36 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void CurrentValidationStaysCompactAndFullLedgerStaysArchived()
+    {
+        var currentValidation = ReadRepoText("docs", "reviews", "current-validation.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var docsReadme = ReadRepoText("docs", "README.md");
+        var lineCount = currentValidation.Split('\n').Length;
+
+        Assert.True(lineCount <= 70, $"docs/reviews/current-validation.md should stay compact; current line count is {lineCount}.");
+        AssertRepoFileExists("docs", "archive", "feature-audits", "current-validation-full-20260622.md");
+        AssertSourceContains(
+            currentValidation,
+            "Status: compact active validation summary.",
+            "Full archived record: `docs/archive/feature-audits/current-validation-full-20260622.md`.",
+            "Current package target is Spire Plus `v0.1.0-private-beta.105`",
+            "`EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33`",
+            "The unpacked local game source under `source code/src/Core/` is the primary API authority",
+            "This closes smoke-level clicked Ancient UI migration proof only.",
+            "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
+        Assert.DoesNotContain("## June 18 Beta.87", currentValidation, StringComparison.Ordinal);
+        Assert.DoesNotContain("## June 15 Pause-Safe Static Verification Addendum", currentValidation, StringComparison.Ordinal);
+        Assert.DoesNotContain("## June 10 Migration Reconciliation Addendum", currentValidation, StringComparison.Ordinal);
+        Assert.Contains("current-validation-full-20260622.md", archiveReadme, StringComparison.Ordinal);
+        Assert.Contains("current-validation-full-20260622.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("current-validation-full-20260622.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("Compact active validation summary", docsReadme, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void M5RevisionNDocsStayCompactAndArchivedOutOfActivePath()
     {
         var archiveReadme = ReadRepoText("docs", "archive", "README.md");

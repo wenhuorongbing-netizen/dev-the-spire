@@ -42,7 +42,7 @@ References:
   found no `STS2.RitsuLib` update; only transitive `System.IO.Hashing`
   reported `9.0.0 -> 10.0.9`.
 - The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`
-  across 163 listed versions, with last five `0.4.28` through `0.4.33`.
+  across 164 listed versions, with last five `0.4.28` through `0.4.33`.
 - The Nexus files page also lists `0.4.33` for the current public package line.
   GitHub releases can lag those package channels; GitHub is not the dependency-floor source for this pass.
 - A live 2026-06-21 check of the raw `main` branch `mod_manifest.json` returned

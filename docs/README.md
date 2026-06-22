@@ -10,7 +10,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Human overview | `../README.md` | Short project overview, build commands, and release policy. |
 | Agent rules | `../AGENTS.md` | Hard rules for manifest ids, source evidence, release claims, and validation. |
 | Current development goal | `test-ready-development-goal.md` | Single active long-scope directive for the next implementation pass. |
-| Current migration/review state | `../PROJECT_STATE.md`, `features/ritsulib-migration/README.md`, `integrations/ritsulib.md`, and `reviews/current-validation.md` | Current beta.105 RitsuLib-only package state, source-workspace proof, package parity, and clicked Ancient UI smoke; beta.99 settings/Off proof and beta.93 enabled-mode loader proof are retained only as previous-package history. |
+| Current migration/review state | `../PROJECT_STATE.md`, `features/ritsulib-migration/README.md`, `integrations/ritsulib.md`, and `reviews/current-validation.md` | Current beta.105 RitsuLib-only package state, source-workspace proof, package parity, and clicked Ancient UI smoke; full validation history is archived. |
 | Open issues and TODO | `issues.md` | Compact active blocker and next-development issue index. |
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
@@ -68,6 +68,7 @@ These files are current support records but are not part of the default next-dev
 | `mod-changelog.md` | Player-facing change summary. Keep it short. |
 | `intro.zh.md` | Chinese feature and change summary for downstream web documentation. |
 | `reviews/red-team-goal-implementation-pass-1.md` | Compact historical boundary stub for the May 20 red-team review; full record is archived. |
+| `reviews/current-validation.md` | Compact active validation summary; full historical validation ledger is archived. |
 | `month-plan/commit-boundaries.md` | Commit boundary planning for the current cycle. |
 | `../website/README.md` | Public static site maintenance notes. |
 
@@ -120,6 +121,7 @@ These files are current support records but are not part of the default next-dev
 | `archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 audit matrices moved out of the active reading path. |
 | `archive/feature-audits/review-pre-slim-20260518.md` | Full historical source-review log before `docs/review.md` was reduced to current findings. |
 | `archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the active review summary. |
+| `archive/feature-audits/current-validation-full-20260622.md` | Full historical validation ledger moved out of active `docs/reviews/current-validation.md`. |
 | `archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md` | Full May 20 red-team goal-completion review; active `docs/reviews/` file is a compact boundary stub only. |
 | `archive/feature-audits/toreview-pre-slim-20260518.md` | Full historical retest queue before `docs/toreview.md` was reduced to the current manual queue. |
 | `archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md` | Historical architecture/clean-code audit. It contains superseded Future Peek separation advice and should not be used as current implementation direction. |
