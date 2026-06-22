@@ -2,7 +2,7 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 91 migrated RitsuLib `IPatchMethod` patch classes and 78 raw Harmony declarations remaining after the Batch 4c localization, visual-hover UI, A20 reward proceed/portrait, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, and core inline-localization fallback migrations. Current beta.116 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. Previous beta.108 clicked Ancient UI smoke covers the 64-patch migrated package under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` but must be recaptured after this source migration. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 99 migrated RitsuLib `IPatchMethod` patch classes and 70 raw Harmony declarations remaining after the Batch 4c localization, visual-hover UI, A20 reward proceed/portrait, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, Act Ancient unlock-list UI, Vakuu event-state UI, and core inline-localization fallback migrations. Current beta.117 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. Previous beta.108 clicked Ancient UI smoke covers the 64-patch migrated package under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` but must be recaptured after this source migration. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
 
 - Compile package: `STS2.RitsuLib` `0.4.34` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.34`.
@@ -15,11 +15,11 @@ Future migration work has two first checks: confirm the latest stable RitsuLib
 package line, then inspect the unpacked local game source under
 `source code/src/Core/` before changing game-facing behavior.
 
-The current `v0.107.1` game install uses the official RitsuLib `v0.4.34` direct NuGet runtime files. Installed beta.116 package parity is recorded on 2026-06-22. Packaged beta.116 evidence covers build, publish, package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only. Previous beta.108 clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` covered `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. This smoke was captured after the Batch 4c localization and visual-hover UI migrations and is previous-package smoke-level clicked Ancient UI proof only. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
+The current `v0.107.1` game install uses the official RitsuLib `v0.4.34` direct NuGet runtime files. Installed beta.117 package parity is recorded on 2026-06-22. Packaged beta.117 evidence covers build, publish, package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only. Previous beta.108 clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` covered `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. This smoke was captured after the Batch 4c localization and visual-hover UI migrations and is previous-package smoke-level clicked Ancient UI proof only. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
 
-Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.116 proof includes package parity, runtime preflight, and source-workspace validation; previous beta.108 clicked Ancient UI smoke remains previous-package smoke-level UI evidence. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
+Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.117 proof includes package parity, runtime preflight, and source-workspace validation; previous beta.108 clicked Ancient UI smoke remains previous-package smoke-level UI evidence. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
 
-Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.34` after NuGet and Nexus showed `0.4.34` as the latest available package line. The current package version is `v0.1.0-private-beta.116` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, rest-site UI migration, Preview transform prediction source/lifetime migration, and beta.116 package refresh.
+Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.34` after NuGet and Nexus showed `0.4.34` as the latest available package line. The current package version is `v0.1.0-private-beta.117` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, rest-site UI migration, Preview transform prediction source/lifetime migration, Act Ancient unlock-list and Vakuu event-state UI migration, and beta.117 package refresh.
 
 ## What Is RitsuLib
 
@@ -142,7 +142,7 @@ Current manifest dependency:
 
 ## RitsuLib API Adoption Plan
 
-- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.116 package parity/source validation is current on `v0.107.1` with RitsuLib `v0.4.34`, previous beta.108 clicked Ancient UI smoke is previous-package smoke-level UI context, enabled-mode recapture is pending, and beta.99/beta.96/beta.93 loader proof remains previous-package evidence.
+- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.117 package parity/source validation is current on `v0.107.1` with RitsuLib `v0.4.34`, previous beta.108 clicked Ancient UI smoke is previous-package smoke-level UI context, enabled-mode recapture is pending, and beta.99/beta.96/beta.93 loader proof remains previous-package evidence.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
 - StS1 event registration is mode-split under
   `EZMicroBalanceCode/Sts1Events/Runtime`: the dispatcher selects Off,
@@ -161,8 +161,9 @@ Current manifest dependency:
   virtual tables replace the remaining native `LocString` caller.
 - Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
 - Batch 4b: 16 medium-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
-- Clicked/UI migration: 42 UI/input and selection/lobby patch classes now use `IPatchMethod` for Neow reroll,
-  Urda option/map clicks and visuals, Vakuu fight-option injection, shared map hover, Ascension map/boss hover,
+- Clicked/UI migration: 50 UI/input and selection/lobby patch classes now use `IPatchMethod` for Neow reroll,
+  Act Ancient unlock-list UI, Urda option/map clicks and visuals, Vakuu fight-option/event-state injection,
+  shared map hover, Ascension map/boss hover,
   Sere Talon event/relic visuals, Crystal Sphere peek, transform preview,
   transform prediction source/lifetime tracking, Prismatic Gem reward-screen
   hint, A20 reward-screen wording, Spire Plus mod-info localization, combat
@@ -180,9 +181,9 @@ Current manifest dependency:
   Previous beta.108 clicked Ancient UI smoke applied all 64 migrated patch classes; gameplay and enabled-mode proof remain pending.
 - Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
-Current migrated total: 91 patch classes.
+Current migrated total: 99 patch classes.
 
-Current raw Harmony remaining: 78 declarations, tracked in `docs/patch-inventory.md`.
+Current raw Harmony remaining: 70 declarations, tracked in `docs/patch-inventory.md`.
 
 ## Current Evidence Pointers
 

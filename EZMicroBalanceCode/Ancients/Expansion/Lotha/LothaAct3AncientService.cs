@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Lotha;
 
@@ -46,9 +47,14 @@ internal static class LothaAct3AncientService
     }
 }
 
-[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]
-internal static class LothaGloryPatch
+internal sealed class LothaGloryPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "lotha-glory-ancient-unlock";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Lotha to the Act 3 Ancient event offer list";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Glory), nameof(Glory.GetUnlockedAncients))];
+
     [HarmonyPostfix]
     private static void Postfix(UnlockState unlockState, ref IEnumerable<AncientEventModel> __result) =>
         LothaAct3AncientService.AddLothaToAct3(unlockState, ref __result);

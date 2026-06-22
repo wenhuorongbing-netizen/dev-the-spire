@@ -8,7 +8,7 @@ Status: active summary only. The full chronological log was archived to `docs/ar
 - Urda, Morvi, and Lotha are source-complete test slices with marker relics for selected rewards.
 - Vakuu has a dedicated source enemy/scene and remains opt-in until live victory return, save/load, death/failure, and co-op proof exists.
 - Ancient reward text, marker relic visibility, Root Sight, Seed Bank, Morvi debt/page/proofread flows, Lotha powers, and Vakuu entry are covered by source guards.
-- Beta.107 forced clicked UI smoke exists for Urda, Morvi, Lotha, and normal Vakuu; gameplay, hover/readability follow-through, save/load, death/failure path, gated Vakuu fight-option, and co-op evidence remain manual gates.
+- Beta.108 forced clicked UI smoke exists for Urda, Morvi, Lotha, and normal Vakuu; gameplay, hover/readability follow-through, save/load, death/failure path, gated Vakuu fight-option, and co-op evidence remain manual gates.
 
 ## Latest Refactor Notes
 

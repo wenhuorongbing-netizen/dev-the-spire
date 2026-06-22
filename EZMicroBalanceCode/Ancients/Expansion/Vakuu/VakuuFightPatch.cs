@@ -1,4 +1,5 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Entities.Players;
 using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Models.Acts;
@@ -11,9 +12,14 @@ using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Vakuu;
 
-[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]
-internal static class VakuuForceAncientPatch
+internal sealed class VakuuForceAncientPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-force-ancient-unlock";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Force Vakuu into the Act 3 Ancient event offer list for test gates";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Glory), nameof(Glory.GetUnlockedAncients))];
+
     [HarmonyPostfix]
     private static void Postfix(UnlockState unlockState, ref IEnumerable<AncientEventModel> __result)
     {
@@ -64,9 +70,14 @@ internal sealed class VakuuFightOptionPatch : IPatchMethod
     }
 }
 
-[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]
-internal static class VakuuFightCommandForceCleanupPatch
+internal sealed class VakuuFightCommandForceCleanupPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-command-force-cleanup";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Clear the one-shot command-force Vakuu fight flag after the event begins";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(EventModel), nameof(EventModel.BeginEvent), [typeof(Player), typeof(bool)])];
+
     [HarmonyPostfix]
     private static void ClearCommandForceFightWhenVakuuBeginEventCompletes(
         EventModel __instance,
@@ -83,9 +94,14 @@ internal static class VakuuFightCommandForceCleanupPatch
     }
 }
 
-[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]
-internal static class VakuuFightResumePatch
+internal sealed class VakuuFightResumePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-victory-resume";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Resume the parent Vakuu event after the gated fight victory room";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(EventModel), nameof(EventModel.Resume), [typeof(AbstractRoom)])];
+
     [HarmonyPrefix]
     private static bool ResumeVakuuFightVictory(EventModel __instance, AbstractRoom exitedRoom, ref Task __result)
     {
@@ -124,9 +140,14 @@ internal static class VakuuFightPreFinishedParentRestorePatch
             isRestoringRoomStackBase);
 }
 
-[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]
-internal static class VakuuFightPreFinishedParentRestoreHealPatch
+internal sealed class VakuuFightPreFinishedParentRestoreHealPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-prefinished-parent-heal-skip";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Skip duplicate Ancient heal when restoring Vakuu's prefinished parent event";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(AncientEventModel), "BeforeEventStarted", [typeof(bool)])];
+
     [HarmonyPrefix]
     private static bool SkipDuplicateVakuuRestoreHeal(
         AncientEventModel __instance,

@@ -51,7 +51,9 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
         AssertSourceContains(
             morviSource,
             "ModAncientEventTemplate",
-            "HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
+            "MorviHivePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"morvi-hive-ancient-unlock\"",
+            "new ModPatchTarget(typeof(Hive), nameof(Hive.GetUnlockedAncients))",
             "MorviFeatureGate.IsMorviEnabled(unlockState)",
             "MorviFeatureGate.ShouldForceMorvi",
             "ModelDb.AncientEvent<EzmbMorvi>()",

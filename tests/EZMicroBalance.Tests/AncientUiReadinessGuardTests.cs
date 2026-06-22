@@ -35,7 +35,9 @@ public sealed partial class AncientUiReadinessGuardTests
             "var forceFight = VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
             "VakuuFightFeatureGate.IsFightEnabledForRun(runState, forceFight)",
             "VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState)",
-            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]",
+            "VakuuFightCommandForceCleanupPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-command-force-cleanup\"",
+            "new ModPatchTarget(typeof(EventModel), nameof(EventModel.BeginEvent), [typeof(Player), typeof(bool)])",
             "VakuuFightFeatureGate.HasCommandForceFightForRun(runState)",
             "VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState)",
             "if (forceFight)",
@@ -95,7 +97,9 @@ public sealed partial class AncientUiReadinessGuardTests
 
         AssertSourceContains(
             neowReroll,
-            "[HarmonyPatch(typeof(Neow), \"GenerateInitialOptions\")]",
+            "NeowInitialOptionRerollPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"neow-initial-option-reroll\"",
+            "new ModPatchTarget(typeof(Neow), \"GenerateInitialOptions\")",
             "ExpectedNeowOptionCount = 3",
             "NEOW.pages.INITIAL.options.",
             "RunState.Modifiers.Count > 0",

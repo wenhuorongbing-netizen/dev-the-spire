@@ -17,7 +17,7 @@ Status: Urda eleven-blessing rows, default-on Morvi source rows, and default-on 
 
 `scripts/collect-ancient-ui-evidence.ps1` prepares one forced-Ancient evidence folder, writes `ancient-ui-evidence-plan.json`, `manual-instructions.md`, `command.txt`, `environment.json`, `package-hashes.json`, and a pending `manual-rows-template.json`, runs the window preflight unless `-NoPreflight` is used, and only launches through `scripts/spire-plus-live-session.ps1` when `-Launch` is explicitly present. It now also prints a safer Spire Plus DevConsole smoke command that starts an unsaved single-player test run from the main menu and opens the requested Ancient. This helper and command prepare UI evidence; they do not prove natural routing, gameplay, save/load, or co-op by themselves.
 
-Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. Later GPTimage2/browser art passes replaced the temporary small-art blockers for the current package. Beta.107 smoke proof captured forced Urda, Morvi, Lotha, and normal Vakuu clicked screens; keep hover/readability, relic-bar follow-through, gated Vakuu fight-option, and gameplay rows pending until live evidence covers them.
+Static resource-routing guards added on 2026-05-14 confirm current source/resource/export wiring only: Urda, Morvi, and Lotha scene files are Control-root clicked backgrounds using event art; map/run-history icons and option marker relic art remain separate exported resources; and the latest art audit reports 0 missing targets, 0 hash mismatches, and 0 missing exports. Later GPTimage2/browser art passes replaced the temporary small-art blockers for the current package. Beta.108 smoke proof captured forced Urda, Morvi, Lotha, and normal Vakuu clicked screens; keep hover/readability, relic-bar follow-through, gated Vakuu fight-option, and gameplay rows pending until live evidence covers them.
 
 Prepare without launching:
 
@@ -64,7 +64,7 @@ Restore after capture:
 .\scripts\collect-ancient-ui-evidence.ps1 -Mode Restore -EvidenceDir <evidence-dir>
 ```
 
-Beta.107 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs. Keep the gated Vakuu fight-option, hover/readability, relic-bar follow-through, save-load, co-op, and gameplay rows pending until their matching live files exist.
+Beta.108 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs. Keep the gated Vakuu fight-option, hover/readability, relic-bar follow-through, save-load, co-op, and gameplay rows pending until their matching live files exist.
 
 ## 1. Current Urda First
 

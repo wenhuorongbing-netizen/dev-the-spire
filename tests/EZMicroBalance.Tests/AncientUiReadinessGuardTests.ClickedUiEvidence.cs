@@ -101,7 +101,7 @@ public sealed partial class AncientUiReadinessGuardTests
             "manual-instructions.md",
             "spireplus_test_ancient URDA confirm",
             "This helper and command prepare UI evidence",
-            "Beta.107 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs.",
+            "Beta.108 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs.",
             "Keep the gated Vakuu fight-option, hover/readability, relic-bar follow-through, save-load, co-op, and gameplay rows pending");
         Assert.DoesNotContain(
             string.Concat(
@@ -161,7 +161,9 @@ public sealed partial class AncientUiReadinessGuardTests
             "var forceFight = VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
             "VakuuFightFeatureGate.IsFightEnabledForRun(runState, forceFight)",
             "VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState)",
-            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]",
+            "VakuuFightCommandForceCleanupPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-command-force-cleanup\"",
+            "new ModPatchTarget(typeof(EventModel), nameof(EventModel.BeginEvent), [typeof(Player), typeof(bool)])",
             "VakuuFightFeatureGate.HasCommandForceFightForRun(runState)",
             "VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState)",
             "finally",

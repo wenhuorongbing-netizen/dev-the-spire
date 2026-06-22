@@ -1,6 +1,7 @@
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Unlocks;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Morvi;
 
@@ -46,9 +47,14 @@ internal static class MorviAct2AncientService
     }
 }
 
-[HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))]
-internal static class MorviHivePatch
+internal sealed class MorviHivePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "morvi-hive-ancient-unlock";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Morvi to the Act 2 Ancient event offer list";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Hive), nameof(Hive.GetUnlockedAncients))];
+
     [HarmonyPostfix]
     private static void Postfix(UnlockState unlockState, ref IEnumerable<AncientEventModel> __result) =>
         MorviAct2AncientService.AddMorviToAct2(unlockState, ref __result);

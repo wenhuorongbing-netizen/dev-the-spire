@@ -58,7 +58,7 @@ The practical control points are:
 - Urda, Morvi, and Lotha map and run-history pairs intentionally share final browser GPTimage2 oil-repaint filled/outline bytes until a live UI test proves separate variants are needed.
 - The map and run-history pairs intentionally share final browser GPTimage2 filled/outline bytes; the current files are the oil-repaint replacements recorded in the manifest.
 - Neutral fallback assets are no longer temporary blockers: `images/powers/power.png`, `images/powers/big/power.png`, `images/relics/relic.png`, `images/relics/big/relic.png`, and `images/relics/relic_outline.png` were rebuilt from browser GPTimage2 sources.
-- Event backgrounds are active middle-draft resources, not final generated event art. The background scenes use keep-aspect centered fitting so 16:9 art is not cropped in the clicked Ancient UI. Beta.107 smoke-level clicked UI proof exists for forced Urda, Morvi, Lotha, and normal Vakuu; art readiness still requires live hover/readability review and gated Vakuu fight-option checks before release-ready claims.
+- Event backgrounds are active middle-draft resources, not final generated event art. The background scenes use keep-aspect centered fitting so 16:9 art is not cropped in the clicked Ancient UI. Beta.108 smoke-level clicked UI proof exists for forced Urda, Morvi, Lotha, and normal Vakuu; art readiness still requires live hover/readability review and gated Vakuu fight-option checks before release-ready claims.
 
 ## Asset Hygiene Rules
 

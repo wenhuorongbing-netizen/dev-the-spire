@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Entities.Ancients;
 using MegaCrit.Sts2.Core.Models.Acts;
 using MegaCrit.Sts2.Core.Models.Events;
 using MegaCrit.Sts2.Core.Unlocks;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
@@ -46,17 +47,27 @@ internal static class UrdaAct1AncientService
     }
 }
 
-[HarmonyPatch(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))]
-internal static class UrdaOvergrowthPatch
+internal sealed class UrdaOvergrowthPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-overgrowth-ancient-unlock";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Urda to the Overgrowth Ancient event offer list";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))];
+
     [HarmonyPostfix]
     private static void Postfix(UnlockState unlockState, ref IEnumerable<AncientEventModel> __result) =>
         UrdaAct1AncientService.AddUrdaToAct1(unlockState, ref __result);
 }
 
-[HarmonyPatch(typeof(Underdocks), nameof(Underdocks.GetUnlockedAncients))]
-internal static class UrdaUnderdocksPatch
+internal sealed class UrdaUnderdocksPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-underdocks-ancient-unlock";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Urda to the Underdocks Ancient event offer list";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Underdocks), nameof(Underdocks.GetUnlockedAncients))];
+
     [HarmonyPostfix]
     private static void Postfix(UnlockState unlockState, ref IEnumerable<AncientEventModel> __result) =>
         UrdaAct1AncientService.AddUrdaToAct1(unlockState, ref __result);

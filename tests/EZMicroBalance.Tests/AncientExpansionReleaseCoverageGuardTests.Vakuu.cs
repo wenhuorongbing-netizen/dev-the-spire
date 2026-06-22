@@ -54,17 +54,23 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
             "runState.Players.Count == 1");
         AssertSourceContains(
             patch,
-            "[HarmonyPatch(typeof(Glory), nameof(Glory.GetUnlockedAncients))]",
+            "VakuuForceAncientPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-force-ancient-unlock\"",
+            "new ModPatchTarget(typeof(Glory), nameof(Glory.GetUnlockedAncients))",
             "ModelDb.AncientEvent<MegaCrit.Sts2.Core.Models.Events.Vakuu>()",
             "VakuuFightOptionPatch : IPatchMethod",
             "IPatchMethod.PatchId => \"vakuu-fight-option\"",
             "new ModPatchTarget(typeof(MegaCrit.Sts2.Core.Models.Events.Vakuu), \"GenerateInitialOptions\")",
             "VakuuFightFeatureGate.ShouldForceFightForRun(runState)",
             "VakuuFightFeatureGate.ConsumeCommandForceFightForRun(runState)",
-            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.BeginEvent))]",
+            "VakuuFightCommandForceCleanupPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-command-force-cleanup\"",
+            "new ModPatchTarget(typeof(EventModel), nameof(EventModel.BeginEvent), [typeof(Player), typeof(bool)])",
             "VakuuFightFeatureGate.HasCommandForceFightForRun(runState)",
             "VakuuFightFeatureGate.ClearCommandForceFightWhenBeginEventCompletes(__result, runState)",
-            "[HarmonyPatch(typeof(EventModel), nameof(EventModel.Resume))]",
+            "VakuuFightResumePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-victory-resume\"",
+            "new ModPatchTarget(typeof(EventModel), nameof(EventModel.Resume), [typeof(AbstractRoom)])",
             "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]");
         var vakuuCommandSource = string.Join(Environment.NewLine, command, vakuuSource);
         Assert.False(

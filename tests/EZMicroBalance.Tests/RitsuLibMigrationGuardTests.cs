@@ -52,8 +52,16 @@ public sealed class RitsuLibMigrationGuardTests
         "ancient-pickup-balance",
         // Clicked UI patches - owner-approved targeted migration
         "neow-initial-option-reroll",
+        "urda-overgrowth-ancient-unlock",
+        "urda-underdocks-ancient-unlock",
         "urda-option-relic-click",
+        "morvi-hive-ancient-unlock",
+        "lotha-glory-ancient-unlock",
+        "vakuu-force-ancient-unlock",
         "vakuu-fight-option",
+        "vakuu-fight-command-force-cleanup",
+        "vakuu-fight-victory-resume",
+        "vakuu-fight-prefinished-parent-heal-skip",
         "urda-root-sight-map-point-ready",
         "urda-root-sight-map-refresh-state",
         "urda-root-sight-map-quest-icon-refresh",
@@ -126,13 +134,13 @@ public sealed class RitsuLibMigrationGuardTests
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 42;
+    private const int ExpectedClickedUiCount = 50;
     private const int ExpectedVisualHoverUiCount = 13;
     private const int ExpectedEventVisualUiCount = 1;
     private const int ExpectedBatch4cLocalizationCount = 6;
     private const int ExpectedInlineLocalizationCount = 4;
-    private const int ExpectedTotalMigratedCount = 91;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 78;
+    private const int ExpectedTotalMigratedCount = 99;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 70;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -172,8 +180,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 91:
-    /// 9 Batch 4a + 16 Batch 4b + 42 clicked/UI patches
+    /// The expected migrated patch count must be 99:
+    /// 9 Batch 4a + 16 Batch 4b + 50 clicked/UI patches
     /// + 13 visual/hover UI patches + 1 event visual UI patch
     /// + 6 Batch 4c localization patches + 4 inline localization patches.
     /// </summary>
@@ -308,8 +316,16 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterBatch4b(patcher);",
             "RegisterAncientEventUiPatches(patcher);",
             "RegisterPatch<NeowInitialOptionRerollPatch>();",
+            "RegisterPatch<UrdaOvergrowthPatch>();",
+            "RegisterPatch<UrdaUnderdocksPatch>();",
             "RegisterPatch<UrdaOptionRelicClickPatch>();",
+            "RegisterPatch<MorviHivePatch>();",
+            "RegisterPatch<LothaGloryPatch>();",
+            "RegisterPatch<VakuuForceAncientPatch>();",
             "RegisterPatch<VakuuFightOptionPatch>();",
+            "RegisterPatch<VakuuFightCommandForceCleanupPatch>();",
+            "RegisterPatch<VakuuFightResumePatch>();",
+            "RegisterPatch<VakuuFightPreFinishedParentRestoreHealPatch>();",
             "RegisterClickedUiPatches(patcher);",
             "RegisterPatch<UrdaRootSightMapQuestIconInputPatch>();",
             "RegisterPatch<UrdaRootSightMapPreviewIconPatch>();",
@@ -436,7 +452,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.116", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.117", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches and the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
@@ -524,7 +540,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.116 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.117 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -594,22 +610,25 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (91).
+    /// state the correct total migrated count (99).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 91", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 78", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 99", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 70", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
             inventory,
             "`NeowInitialOptionRerollPatch.cs` | 1 | `neow-initial-option-reroll` | clicked-ui |",
+            "`UrdaAct1AncientService.cs` | 2 | `urda-overgrowth-ancient-unlock, urda-underdocks-ancient-unlock` | clicked-ui |",
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",
-            "`VakuuFightPatch.cs` | 1 | `vakuu-fight-option` | clicked-ui |",
+            "`MorviAct2AncientService.cs` | 1 | `morvi-hive-ancient-unlock` | clicked-ui |",
+            "`LothaAct3AncientService.cs` | 1 | `lotha-glory-ancient-unlock` | clicked-ui |",
+            "`VakuuFightPatch.cs` | 5 | `vakuu-force-ancient-unlock, vakuu-fight-option, vakuu-fight-command-force-cleanup, vakuu-fight-victory-resume, vakuu-fight-prefinished-parent-heal-skip` | clicked-ui |",
             "`UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |",
             "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |",
             "`SpirePlusMapPointHoverComposer.cs` | 1 | `spire-plus-map-point-hover-composer` | clicked-ui |",

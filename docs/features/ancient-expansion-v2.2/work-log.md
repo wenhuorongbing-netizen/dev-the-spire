@@ -40,6 +40,6 @@ dotnet publish EZMicroBalance.sln
 $env:SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS='1'; dotnet test EZMicroBalance.sln --no-build
 ```
 
-Beta.107 clicked Ancient UI smoke is recorded elsewhere; this work log does not claim live gameplay, hover/readability follow-through, save-load, failure/death path, or co-op proof.
+Beta.108 clicked Ancient UI smoke is recorded elsewhere; this work log does not claim live gameplay, hover/readability follow-through, save-load, failure/death path, or co-op proof.
 No live game, clicked Ancient UI, save-load, failure/death path, or co-op proof is claimed here.
 
