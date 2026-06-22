@@ -14,6 +14,12 @@ fallback boundaries.
 pack; its sibling partial files own the Ancient/encounter, card, relic, power,
 and enchantment registration lists so future content has a direct RitsuLib
 home instead of drifting into scattered registration code.
+StS1 event mode registration lives in `EZMicroBalanceCode/Sts1Events/Runtime`:
+`Sts1EventRegistrationService.cs` owns mode dispatch, while
+`Sts1EventRegistrationService.Canary.cs`,
+`Sts1EventRegistrationService.AdditiveBatch1.cs`, and
+`Sts1EventRegistrationService.AllDraft.cs` own the explicit RitsuLib content
+pack calls for each mode.
 Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file
 keeps public preview-tool settings and localization bootstrap,
 `SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data persistence,

@@ -300,7 +300,7 @@ public sealed partial class Sts1EventFeatureGuardTests
         // Golden Wing, Living Wall, Old Beggar, Purifier, Golden Shrine, Bonfire Spirits, Divine Fountain,
         // Fountain of Cleansing, The Lab, Face Trader, The Mausoleum, Designer, The Woman in Blue,
         // Wheel of Change. Sts1Duplicator is excluded from compilation.
-        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var source = ReadSts1RuntimeSources();
         var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
         var sharedEventCount = CountOccurrences(registerAllMethod, "content.SharedEvent<");
         Assert.Equal(14, sharedEventCount);
@@ -338,7 +338,7 @@ public sealed partial class Sts1EventFeatureGuardTests
     public void RegisterAllTotalRegistrationCallsIs57()
     {
         // 14 shared x 1 + 10 Act1 x 2 + 14 Act2 x 1 + 9 Act3 x 1 = 57 total registration calls.
-        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var source = ReadSts1RuntimeSources();
         var registerAllMethod = SliceBetween(source, "public static void RegisterAll(string modId)", "content.Apply();");
         var totalRegistrations = CountOccurrences(registerAllMethod, "content.ActEvent<") + CountOccurrences(registerAllMethod, "content.SharedEvent<");
         Assert.Equal(57, totalRegistrations);
@@ -349,7 +349,7 @@ public sealed partial class Sts1EventFeatureGuardTests
     {
         // CanaryOnly must use hardcoded registration calls, not a loop or dynamic list.
         // This prevents TODO/BLOCKED events from accidentally entering safe modes.
-        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var source = ReadSts1RuntimeSources();
         var canaryMethod = SliceBetween(source, "RegisterCanaryOnly(string modId)", "content.Apply()");
 
         // Must not contain any dynamic registration patterns

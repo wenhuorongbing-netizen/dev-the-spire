@@ -43,6 +43,10 @@ Do not start future implementation from historical plans, archived prompt dumps,
   guard scans Git-tracked text files and rejects retired shared-runtime wording.
 - Register mod content through `RitsuLibFramework.CreateContentPack(...)` and
   `SpirePlusContentRegistrationService`.
+- Keep StS1 event registration mode-specific: the dispatcher belongs in
+  `Sts1EventRegistrationService.cs`, and each mode's RitsuLib content-pack
+  calls belong in its matching partial file under
+  `EZMicroBalanceCode/Sts1Events/Runtime`.
 - Register settings data before the settings page: `BeginModDataRegistration`
   / `ModDataStore.Register` first, then `RegisterModSettings`.
 - Keep settings entry ids stable; screenshots and future automation use them as

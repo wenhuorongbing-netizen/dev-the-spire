@@ -457,13 +457,19 @@ public sealed class RitsuLibMigrationGuardTests
     [Fact]
     public void Sts1EventRegistrationCommentsStayRitsuLibOnlyAndReadable()
     {
-        var registration = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistrationService.cs");
+        var registration = string.Join(
+            Environment.NewLine,
+            Directory.GetFiles(
+                    RepoPath("EZMicroBalanceCode", "Sts1Events", "Runtime"),
+                    "Sts1EventRegistrationService*.cs")
+                .OrderBy(path => path, StringComparer.Ordinal)
+                .Select(path => File.ReadAllText(path)));
 
         AssertSourceContains(
             registration,
             "Registers StS1 events through RitsuLib content packs.",
             "Keep this service on RitsuLib APIs only.",
-            "new event batches should extend the mode-specific registrations below",
+            "new event batches should extend the mode-specific partial registration",
             "StS1 Act 1 events -> Overgrowth + Underdocks",
             "StS1 Act 2 events -> Hive",
             "StS1 Act 3 events -> Glory",

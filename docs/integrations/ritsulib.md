@@ -134,6 +134,10 @@ Current manifest dependency:
 
 - Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.105 package parity/source validation/clicked Ancient UI smoke are current on `v0.107.1` with RitsuLib `v0.4.33`, enabled-mode recapture is pending, and beta.99/beta.96/beta.93 loader proof remains previous-package evidence.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
+- StS1 event registration is mode-split under
+  `EZMicroBalanceCode/Sts1Events/Runtime`: the dispatcher selects Off,
+  CanaryOnly, AdditiveBatch1, or draft modes, while each partial file owns the
+  explicit `CreateContentPack` registration calls for that mode.
 - Batch 3: persistence sidecar experiments are not currently applicable because current saved-state usage has migrated to RitsuLib `SavedAttachedState`; no additional RitsuLib data-store sidecar is planned for this pass.
 - Settings persistence: preview-tool settings use RitsuLib `ModDataStore` under
   `BeginModDataRegistration(...)`, then bind the RitsuLib settings UI entries to
