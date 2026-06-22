@@ -16,6 +16,8 @@ param(
     [switch]$FailOnMismatch
 )
 
+# Networked governance check for keeping the compile package and runtime
+# manifest minimum aligned with the latest public STS2.RitsuLib package line.
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 3.0
 

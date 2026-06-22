@@ -19,7 +19,7 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 ## Current Evidence
 
 - Beta.105 build, focused guards, opt-in release-artifact guards, publish/package refresh, installed-package parity, runtime preflight, and source-workspace validation passed for the RitsuLib-only target. `PROJECT_STATE.md` and `docs/goals/migration.md` carry the current command summary.
-- Source-workspace validation passed 58 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.105`, and STS2-RitsuLib `0.4.33`, with retained GDRE warnings only. The checker now also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
+- Source-workspace validation passed 57 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.105`, and STS2-RitsuLib `0.4.33`, with retained GDRE warnings only. The checker now also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
 - Clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-20260622-025733/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0.
 
 ## Evidence Boundary

@@ -18,7 +18,7 @@ Current evidence:
 - beta.105 build, publish, package refresh, and installed package parity are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
 - beta.105 runtime preflight passed 28 / 0, source-workspace validation passed
-  58 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
+  57 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
   coverage, and clicked Ancient UI smoke is
   retained at `.tools/runtime-evidence/monkey-stability-20260622-025733/`.
   The smoke covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations

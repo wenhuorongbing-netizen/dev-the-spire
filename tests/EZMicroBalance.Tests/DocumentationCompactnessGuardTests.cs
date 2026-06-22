@@ -449,7 +449,10 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Inspect local RitsuLib XML/docs, template APIs, or package references when available",
             "Prefer command APIs and RitsuLib/template hooks over direct state mutation.",
             "## RitsuLib API Lookup Workflow",
+            "Run or review `scripts/check-ritsulib-latest-package.ps1` before claiming the RitsuLib package line is current",
+            "do not assume current package status from memory or stale validation notes",
             "<GameRoot>/mods/STS2-RitsuLib/STS2-RitsuLib.xml",
+            "RitsuLib public docs root: `https://sts2-ritsulib.ritsukage.com/guide/getting-started`",
             "RitsuLibFramework.CreateContentPack(...)",
             "RitsuLibFramework.CreatePatcher(...)",
             "RitsuLibFramework.SubscribeLifecycle(...)",
@@ -500,7 +503,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             entryDocs.Single(entry => entry.Path == "PROJECT_STATE.md").Text,
             "Current dependency configurations are aligned on STS2-RitsuLib `v0.4.33`",
             "2026-06-22 NuGet flat-container",
-            "2026-06-22 source-workspace recheck now pass 58 checks / 0 mismatches",
+            "2026-06-22 source-workspace recheck pass 57 checks / 0 mismatches",
             "local `STS2-RitsuLib.xml` API marker coverage");
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "docs/goals/migration.md").Text,

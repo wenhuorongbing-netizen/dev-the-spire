@@ -38,11 +38,12 @@ Any canonical marker, hook, or model inheriting `AbstractModel` should be obtain
 Use this order before adding wrappers, fallback helpers, or Harmony patches:
 
 1. Confirm the package target in `PROJECT_STATE.md` and `docs/integrations/ritsulib.md`.
-2. Check the installed XML docs at `<GameRoot>/mods/STS2-RitsuLib/STS2-RitsuLib.xml`.
-3. Check the public RitsuLib docs for the same topic.
-4. Inspect the local game source under `source code/src/Core/` for the game-facing type or command.
-5. Search existing Spire Plus source for the same RitsuLib entry point before adding a new pattern.
-6. Record any source/API evidence in the feature doc that owns the behavior.
+2. Run or review `scripts/check-ritsulib-latest-package.ps1` before claiming the RitsuLib package line is current; do not assume current package status from memory or stale validation notes.
+3. Check the installed XML docs at `<GameRoot>/mods/STS2-RitsuLib/STS2-RitsuLib.xml`.
+4. Check the public RitsuLib docs for the same topic. RitsuLib public docs root: `https://sts2-ritsulib.ritsukage.com/guide/getting-started`.
+5. Inspect the local game source under `source code/src/Core/` for the game-facing type or command.
+6. Search existing Spire Plus source for the same RitsuLib entry point before adding a new pattern.
+7. Record any source/API evidence in the feature doc that owns the behavior.
 
 Current RitsuLib entry points already verified in the local `0.4.33` XML include:
 
