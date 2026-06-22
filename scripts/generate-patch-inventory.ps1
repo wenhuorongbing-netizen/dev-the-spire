@@ -121,6 +121,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'SealOfGoldPatches.cs'; Classes = 2; PatchIds = 'seal-of-gold-max-energy, seal-of-gold-turn'; Batch = '4b' },
     [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' },
     [pscustomobject]@{ File = 'UrdaOptionRelicClickPatch.cs'; Classes = 1; PatchIds = 'urda-option-relic-click'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'UrdaMapUiPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaRootSightMapClickPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'SereTalonVisualUiPatches.cs'; Classes = 2; PatchIds = 'sere-talon-event-option-button-ready, sere-talon-relic-node-reload'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'CrystalSpherePeekPatch.cs'; Classes = 2; PatchIds = 'crystal-sphere-peek-ready, crystal-sphere-peek-finished'; Batch = 'clicked-ui' }

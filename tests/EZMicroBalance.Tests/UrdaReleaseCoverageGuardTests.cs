@@ -486,8 +486,15 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             "FiremarkedEliteMapHoverPatch.TryCreateHoverTip",
             "BannerRoomMapHoverPatch.TryCreateHoverTip",
             "TryGetRootSightPreviewRoomType",
+            "UrdaRootSightMapQuestIconInputPatch",
+            "IPatchMethod.PatchId => \"urda-root-sight-map-point-ready\"",
+            "new ModPatchTarget(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))",
             "UrdaRootSightMapPreviewIconPatch",
+            "IPatchMethod.PatchId => \"urda-root-sight-map-refresh-state\"",
+            "new ModPatchTarget(typeof(NNormalMapPoint), \"RefreshState\")",
             "UrdaRootSightMapQuestIconPatch",
+            "IPatchMethod.PatchId => \"urda-root-sight-map-quest-icon-refresh\"",
+            "new ModPatchTarget(typeof(NNormalMapPoint), \"RefreshMarkedIconVisibility\")",
             "UrdaRootSightMapPreviewVisuals.ApplyPreviewIcon",
             "UrdaRootSightMapPreviewVisuals.ApplyQuestIcon",
             "UrdaBlessingService.CanRootSightTarget(pointNode.Point)",
@@ -508,6 +515,9 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             "UrdaBlessingService.CancelRootSightSelection");
         AssertSourceContains(
             ritsuRegistration,
+            "RegisterPatch<UrdaRootSightMapQuestIconInputPatch>();",
+            "RegisterPatch<UrdaRootSightMapPreviewIconPatch>();",
+            "RegisterPatch<UrdaRootSightMapQuestIconPatch>();",
             "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightMapClosePatch>();");

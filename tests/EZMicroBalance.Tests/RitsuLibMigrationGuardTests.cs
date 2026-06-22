@@ -50,8 +50,11 @@ public sealed class RitsuLibMigrationGuardTests
         "seal-of-gold-turn",
         // PickupRewardPatches (1) - Batch 4b
         "ancient-pickup-balance",
-        // Clicked UI patches (4) - owner-approved targeted migration
+        // Clicked UI patches - owner-approved targeted migration
         "urda-option-relic-click",
+        "urda-root-sight-map-point-ready",
+        "urda-root-sight-map-refresh-state",
+        "urda-root-sight-map-quest-icon-refresh",
         "urda-root-sight-map-point-click",
         "urda-root-sight-disabled-map-point-click",
         "urda-root-sight-map-close",
@@ -63,9 +66,9 @@ public sealed class RitsuLibMigrationGuardTests
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 8;
-    private const int ExpectedTotalMigratedCount = 33;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 138;
+    private const int ExpectedClickedUiCount = 11;
+    private const int ExpectedTotalMigratedCount = 36;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 135;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -117,8 +120,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 33:
-    /// 9 Batch 4a + 16 Batch 4b + 8 clicked UI patches.
+    /// The expected migrated patch count must be 36:
+    /// 9 Batch 4a + 16 Batch 4b + 11 clicked UI patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
@@ -238,6 +241,9 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterBatch4b(patcher);",
             "RegisterClickedUiPatches(patcher);",
             "RegisterPatch<UrdaOptionRelicClickPatch>();",
+            "RegisterPatch<UrdaRootSightMapQuestIconInputPatch>();",
+            "RegisterPatch<UrdaRootSightMapPreviewIconPatch>();",
+            "RegisterPatch<UrdaRootSightMapQuestIconPatch>();",
             "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightMapClosePatch>();",
@@ -459,19 +465,20 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (33).
+    /// state the correct total migrated count (36).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 33", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 36", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
             inventory,
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",
+            "`UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |",
             "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |",
             "`SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |",
             "`CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |");
@@ -512,7 +519,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// All 25 migrated PatchId strings from ExpectedMigratedPatchIds must appear
+    /// All migrated PatchId strings from ExpectedMigratedPatchIds must appear
     /// in RitsuLibBootstrap.cs as IPatchMethod.PatchId implementations.
     /// </summary>
     [Fact]

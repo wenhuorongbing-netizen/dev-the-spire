@@ -39,6 +39,9 @@ internal static class SpirePlusMigratedPatchRegistry
     private static void RegisterClickedUiPatches(ModPatcher patcher)
     {
         patcher.RegisterPatch<UrdaOptionRelicClickPatch>();
+        patcher.RegisterPatch<UrdaRootSightMapQuestIconInputPatch>();
+        patcher.RegisterPatch<UrdaRootSightMapPreviewIconPatch>();
+        patcher.RegisterPatch<UrdaRootSightMapQuestIconPatch>();
         patcher.RegisterPatch<UrdaRootSightMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightMapClosePatch>();

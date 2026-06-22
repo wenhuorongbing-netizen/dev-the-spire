@@ -15,12 +15,12 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 138 |
-| Migrated to RitsuLib ModPatcher | 33 |
-| Raw HarmonyPatch remaining | 138 |
+| Total raw HarmonyPatch declarations | 135 |
+| Migrated to RitsuLib ModPatcher | 36 |
+| Raw HarmonyPatch remaining | 135 |
 | Tracked patch units total | 171 |
 | High risk (raw Harmony) | 22 |
-| Medium risk (raw Harmony) | 31 |
+| Medium risk (raw Harmony) | 28 |
 | Low risk (raw Harmony) | 85 |
 | Unclassified owner | 0 |
 
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 33 patch classes implement `IPatchMethod` and are registered via
+These 36 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -48,6 +48,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy, seal-of-gold-turn` | 4b |
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
 | `UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |
+| `UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |
 | `UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |
 | `SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |
 | `CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |
@@ -57,7 +58,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 138 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 135 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -66,9 +67,6 @@ These 138 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Morvi | Low | `EZMicroBalanceCode/Ancients/Expansion/Morvi/MorviAct2AncientService.cs` | 49 | `[HarmonyPatch(typeof(Hive), nameof(Hive.GetUnlockedAncients))]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 49 | `[HarmonyPatch(typeof(Overgrowth), nameof(Overgrowth.GetUnlockedAncients))]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaAct1AncientService.cs` | 57 | `[HarmonyPatch(typeof(Underdocks), nameof(Underdocks.GetUnlockedAncients))]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 7 | `[HarmonyPatch(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 31 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 43 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 5 | `[HarmonyPatch(typeof(RunManager), "RollRoomTypeFor")]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 21 | `[HarmonyPatch(typeof(RunManager), "CreateRoom")]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs` | 7 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |

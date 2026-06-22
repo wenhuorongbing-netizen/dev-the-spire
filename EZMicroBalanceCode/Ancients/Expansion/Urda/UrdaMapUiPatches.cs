@@ -1,12 +1,18 @@
 using Godot;
 using MegaCrit.Sts2.Core.Nodes.GodotExtensions;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[HarmonyPatch(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))]
-internal static class UrdaRootSightMapQuestIconInputPatch
+internal sealed class UrdaRootSightMapQuestIconInputPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-root-sight-map-point-ready";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Refresh Root Sight map visuals after normal map point setup";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))];
+
     [HarmonyPostfix]
     private static void Postfix(NNormalMapPoint __instance)
     {
@@ -28,9 +34,14 @@ internal static class UrdaRootSightMapHoverPatch
     // from deleting or duplicating each other's map text.
 }
 
-[HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]
-internal static class UrdaRootSightMapPreviewIconPatch
+internal sealed class UrdaRootSightMapPreviewIconPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-root-sight-map-refresh-state";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Restore Root Sight preview and quest icons after map point state refresh";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NNormalMapPoint), "RefreshState")];
+
     [HarmonyPriority(Priority.Last)]
     [HarmonyPostfix]
     private static void Postfix(NNormalMapPoint __instance)
@@ -40,9 +51,14 @@ internal static class UrdaRootSightMapPreviewIconPatch
     }
 }
 
-[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]
-internal static class UrdaRootSightMapQuestIconPatch
+internal sealed class UrdaRootSightMapQuestIconPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-root-sight-map-quest-icon-refresh";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Restore Root Sight quest icon overlay after vanilla marker visibility refresh";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")];
+
     [HarmonyPriority(Priority.Last)]
     [HarmonyPostfix]
     private static void Postfix(NNormalMapPoint __instance) =>
