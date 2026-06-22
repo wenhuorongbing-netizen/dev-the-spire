@@ -7,12 +7,12 @@ namespace EZMicroBalance.Tests;
 /// Guards for RitsuLib patch migration integrity:
 /// - PatchId uniqueness
 /// - No double-patching (migrated class must not have [HarmonyPatch])
-/// - Raw HarmonyPatch classes must not be registered in RegisterMigratedPatches
+/// - Raw HarmonyPatch classes must not be registered in the migrated patch registry
 /// - Migration counts match docs
 /// </summary>
 public sealed class RitsuLibMigrationGuardTests
 {
-    // All PatchId strings registered in RitsuLibBootstrap.RegisterMigratedPatches().
+    // All PatchId strings registered in SpirePlusMigratedPatchRegistry.RegisterAll().
     // Keep this list synchronized with the source.
     private static readonly string[] ExpectedMigratedPatchIds =
     [
@@ -97,7 +97,7 @@ public sealed class RitsuLibMigrationGuardTests
     ];
 
     /// <summary>
-    /// All PatchId values registered in RegisterMigratedPatches must be unique.
+    /// All PatchId values registered in SpirePlusMigratedPatchRegistry must be unique.
     /// </summary>
     [Fact]
     public void MigratedPatchIdsAreUnique()
@@ -123,20 +123,14 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// Patch classes registered in RegisterMigratedPatches must NOT have
+    /// Patch classes registered in the migrated patch registry must NOT have
     /// class-level [HarmonyPatch] attributes. If they did, Harmony.PatchAll()
     /// would pick them up again, causing double-patching.
     /// </summary>
     [Fact]
     public void MigratedPatchClassesHaveNoHarmonyPatchAttribute()
     {
-        var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
-
-        // Extract all RegisterPatch<T>() calls to get the class names
-        var registerPatchPattern = new Regex(@"patcher\.RegisterPatch<(\w+)>\(\)");
-        var migratedClassNames = registerPatchPattern.Matches(bootstrap)
-            .Select(m => m.Groups[1].Value)
-            .ToArray();
+        var migratedClassNames = ReadMigratedPatchClassNames();
 
         Assert.True(migratedClassNames.Length == ExpectedTotalMigratedCount,
             $"Expected {ExpectedTotalMigratedCount} RegisterPatch calls, found {migratedClassNames.Length}");
@@ -165,17 +159,13 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// Classes with [HarmonyPatch] attributes must NOT be registered in
-    /// RegisterMigratedPatches. This is the inverse of the above check.
+    /// SpirePlusMigratedPatchRegistry. This is the inverse of the above check.
     /// </summary>
     [Fact]
     public void RawHarmonyPatchClassesAreNotMigrated()
     {
-        var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
-
-        // Extract all RegisterPatch<T>() calls
-        var registerPatchPattern = new Regex(@"patcher\.RegisterPatch<(\w+)>\(\)");
         var migratedClassNames = new HashSet<string>(
-            registerPatchPattern.Matches(bootstrap).Select(m => m.Groups[1].Value),
+            ReadMigratedPatchClassNames(),
             StringComparer.Ordinal);
 
         // Find all classes with [HarmonyPatch] attribute
@@ -208,16 +198,32 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The RegisterMigratedPatches call count in RitsuLibBootstrap.cs must match
+    /// The migrated patch registry call count must match
     /// the expected total (25). This guards against source drift.
     /// </summary>
     [Fact]
-    public void RegisterMigratedPatchesCallCountMatchesSource()
+    public void MigratedPatchRegistryCallCountMatchesSource()
     {
-        var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
-        var callCount = CountOccurrences(bootstrap, "patcher.RegisterPatch<");
+        var registrationSource = ReadRitsuLibIntegrationSource();
+        var callCount = CountOccurrences(registrationSource, ".RegisterPatch<");
 
         Assert.Equal(ExpectedTotalMigratedCount, callCount);
+    }
+
+    [Fact]
+    public void RitsuLibBootstrapDelegatesMigratedPatchRegistration()
+    {
+        var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
+        var registry = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusMigratedPatchRegistry.cs");
+
+        Assert.Contains("SpirePlusMigratedPatchRegistry.RegisterAll(patcher);", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain(".RegisterPatch<", bootstrap, StringComparison.Ordinal);
+        AssertSourceContains(
+            registry,
+            "internal static class SpirePlusMigratedPatchRegistry",
+            "public static void RegisterAll(ModPatcher patcher)",
+            "RegisterBatch4a(patcher);",
+            "RegisterBatch4b(patcher);");
     }
 
     /// <summary>
@@ -267,7 +273,7 @@ public sealed class RitsuLibMigrationGuardTests
         var proposal = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
         var migrationDoc = ReadRepoText("docs", "migration.md");
         var inventory = ReadRepoText("docs", "patch-inventory.md");
-        var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
+        var registrationSource = ReadRitsuLibIntegrationSource();
 
         Assert.Contains("Status: proposal only. Do not migrate these patches without explicit owner approval.", proposal, StringComparison.Ordinal);
         Assert.Contains("Candidate count is 10", proposal, StringComparison.Ordinal);
@@ -292,7 +298,7 @@ public sealed class RitsuLibMigrationGuardTests
         foreach (var candidateClass in ExpectedBatch4cCandidateClasses)
         {
             Assert.Contains(candidateClass, proposal, StringComparison.Ordinal);
-            Assert.DoesNotContain($"RegisterPatch<{candidateClass}>", bootstrap, StringComparison.Ordinal);
+            Assert.DoesNotContain($"RegisterPatch<{candidateClass}>", registrationSource, StringComparison.Ordinal);
 
             var classPattern = new Regex(
                 @"\[HarmonyPatch[^\]]*\]\s*(?:\r?\n\s*\[[^\]]+\]\s*)*(?:internal\s+)?(?:static\s+)?(?:partial\s+)?class\s+" +
@@ -380,7 +386,7 @@ public sealed class RitsuLibMigrationGuardTests
             "`dotnet list EZMicroBalance.csproj package --outdated --include-transitive`",
             "found no `STS2.RitsuLib` update",
             "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`",
-            "across 163 listed versions",
+            "across 164 listed versions",
             "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "NuGet package",
@@ -476,5 +482,16 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.True(offenders.Length == 0,
             "ModPatcher property getter targets must use the property name with MethodType.Getter, not compiler get_* names:" +
             Environment.NewLine + string.Join(Environment.NewLine, offenders));
+    }
+
+    private static string ReadRitsuLibIntegrationSource() =>
+        ReadSourceTree("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib");
+
+    private static string[] ReadMigratedPatchClassNames()
+    {
+        var registerPatchPattern = new Regex(@"\.RegisterPatch<(\w+)>\(\)");
+        return registerPatchPattern.Matches(ReadRitsuLibIntegrationSource())
+            .Select(m => m.Groups[1].Value)
+            .ToArray();
     }
 }

@@ -7,6 +7,9 @@ Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
 
 This directory owns the RitsuLib bootstrap, migrated patch registration,
 content-pack registration, and SavedAttachedState field registration helper.
+`SpirePlusMigratedPatchRegistry` owns the explicit migrated patch list so
+`RitsuLibBootstrap` can stay focused on startup order and legacy Harmony
+fallback boundaries.
 Settings UI registration lives in `EZMicroBalanceCode/Config` but also uses
 RitsuLib APIs.
 

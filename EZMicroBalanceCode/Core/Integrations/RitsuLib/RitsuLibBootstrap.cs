@@ -1,8 +1,6 @@
 using HarmonyLib;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
-using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using STS2RitsuLib;
-using STS2RitsuLib.Patching.Core;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 
@@ -24,7 +22,7 @@ internal static class RitsuLibBootstrap
         // RitsuLib ModPatcher owns every migrated patch class. Keeping this
         // explicit list prevents accidental double-patching through PatchAll().
         var patcher = RitsuLibFramework.CreatePatcher(modId, "SpirePlus");
-        RegisterMigratedPatches(patcher);
+        SpirePlusMigratedPatchRegistry.RegisterAll(patcher);
         patcher.PatchAll();
         logger.Info($"ModPatcher applied {patcher.AppliedPatchCount} patches ({patcher.RegisteredPatchCount} registered).");
         SpirePlusDebug.Log("RitsuLib", $"ModPatcher applied {patcher.AppliedPatchCount} patches.");
@@ -51,52 +49,6 @@ internal static class RitsuLibBootstrap
         }
 
         return harmony;
-    }
-
-    private static void RegisterMigratedPatches(ModPatcher patcher)
-    {
-        // FiddlePatches (4 classes)
-        patcher.RegisterPatch<FiddleVarsPatch>();
-        patcher.RegisterPatch<FiddleHandDrawPatch>();
-        patcher.RegisterPatch<FiddleShouldDrawPatch>();
-        patcher.RegisterPatch<FiddleDrawCapPatch>();
-
-        // ChoicesParadoxPatches (1 class)
-        patcher.RegisterPatch<ChoicesParadoxPatch>();
-
-        // DistinguishedCapePatches (3 classes)
-        patcher.RegisterPatch<DistinguishedCapeVarsPatch>();
-        patcher.RegisterPatch<DistinguishedCapeEventOptionPatch>();
-        patcher.RegisterPatch<DistinguishedCapePickupPatch>();
-
-        // BlackStarCompensationPatches (1 class)
-        patcher.RegisterPatch<BlackStarObtainPatch>();
-
-        // CrossbowPatches (2 classes)
-        patcher.RegisterPatch<CrossbowOfferPatch>();
-        patcher.RegisterPatch<CrossbowVanillaAfterTurnPatch>();
-
-        // BrightestFlameExhaustDrawPatch (3 classes)
-        patcher.RegisterPatch<BrightestFlameCanonicalKeywordsPatch>();
-        patcher.RegisterPatch<BrightestFlameCanonicalVarsPatch>();
-        patcher.RegisterPatch<BrightestFlameExhaustOnPlayBackstopPatch>();
-
-        // DebtAndCardPatches (8 classes)
-        patcher.RegisterPatch<DebtAfterCreatedPatch>();
-        patcher.RegisterPatch<DebtFromSavePatch>();
-        patcher.RegisterPatch<DebtKeywordsPatch>();
-        patcher.RegisterPatch<DebtVarsPatch>();
-        patcher.RegisterPatch<DebtTurnEndEffectPatch>();
-        patcher.RegisterPatch<DebtTurnEndInHandPatch>();
-        patcher.RegisterPatch<CardModelOnPlayPatch>();
-        patcher.RegisterPatch<DebtExhaustPatch>();
-
-        // SealOfGoldPatches (2 classes)
-        patcher.RegisterPatch<SealOfGoldMaxEnergyPatch>();
-        patcher.RegisterPatch<SealOfGoldTurnPatch>();
-
-        // PickupRewardPatches (1 class)
-        patcher.RegisterPatch<AncientPickupBalancePatch>();
     }
 
     private static string GetRitsuLibVersion()
