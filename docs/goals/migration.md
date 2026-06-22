@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.104`
+Current package target: Spire Plus `v0.1.0-private-beta.105`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
@@ -35,7 +35,7 @@ Do not add another shared runtime framework dependency unless the owner explicit
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.104 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, and adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text. Beta.104 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.105 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, and adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text. Beta.105 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
 
 The migration is not release-ready. Smoke-level clicked Ancient UI is covered, but gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
 
@@ -65,7 +65,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $blocked = -join ([char[]](66,97,115,101,76,105,98)); git grep -n -i $blocked -- ':!docs/archive/**' ':!source code/**' ':!bin/**' ':!obj/**' ':!.tools/**' ':!publish/**'
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.104' -ExpectedRitsuLibVersion '0.4.33' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.105' -ExpectedRitsuLibVersion '0.4.33' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
@@ -84,7 +84,7 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 ## Next Actions
 
 1. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
-2. Keep beta.104 clicked Ancient UI smoke scoped to forced UI visibility; it does not prove gameplay or release readiness.
+2. Keep beta.105 clicked Ancient UI smoke scoped to forced UI visibility; it does not prove gameplay or release readiness.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any Batch 4c or higher-risk patch migration.
 5. Recapture git status, pushed HEAD, and validation status before any later handoff.

@@ -15,14 +15,14 @@ start from:
 
 ## Current Boundary
 
-Spire Plus is on the beta.104 RitsuLib-only target:
+Spire Plus is on the beta.105 RitsuLib-only target:
 
 - `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33`.
 - `EZMicroBalance.json` declares `STS2-RitsuLib >= 0.4.33` as the shared runtime
   framework dependency.
-- Current package parity exists for beta.104 after the RitsuLib default-key
+- Current package parity exists for beta.105 after the RitsuLib default-key
   localization alias and clicked-UI smoke pass.
-- Beta.104 runtime preflight passed 28 / 0, source-workspace validation passed
+- Beta.105 runtime preflight passed 28 / 0, source-workspace validation passed
   57 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke is
   captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`
   with 4 / 4 iterations and packet verification 1621 / 0.

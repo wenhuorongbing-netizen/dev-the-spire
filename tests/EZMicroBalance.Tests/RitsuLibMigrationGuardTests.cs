@@ -16,27 +16,27 @@ public sealed class RitsuLibMigrationGuardTests
     // Keep this list synchronized with the source.
     private static readonly string[] ExpectedMigratedPatchIds =
     [
-        // FiddlePatches (4) — Batch 4a
+        // FiddlePatches (4) - Batch 4a
         "fiddle-vars",
         "fiddle-hand-draw",
         "fiddle-should-draw",
         "fiddle-draw-cap",
-        // ChoicesParadoxPatches (1) — Batch 4a
+        // ChoicesParadoxPatches (1) - Batch 4a
         "choices-paradox-turn-start",
-        // DistinguishedCapePatches (3) — Batch 4a
+        // DistinguishedCapePatches (3) - Batch 4a
         "distinguished-cape-vars",
         "distinguished-cape-event-option",
         "distinguished-cape-pickup",
-        // BlackStarCompensationPatches (1) — Batch 4a
+        // BlackStarCompensationPatches (1) - Batch 4a
         "black-star-obtain",
-        // CrossbowPatches (2) — Batch 4b
+        // CrossbowPatches (2) - Batch 4b
         "crossbow-offer",
         "crossbow-vanilla-after-turn",
-        // BrightestFlameExhaustDrawPatch (3) — Batch 4b
+        // BrightestFlameExhaustDrawPatch (3) - Batch 4b
         "brightest-flame-keywords",
         "brightest-flame-vars",
         "brightest-flame-exhaust-backstop",
-        // DebtAndCardPatches (8) — Batch 4b
+        // DebtAndCardPatches (8) - Batch 4b
         "debt-after-created",
         "debt-from-save",
         "debt-keywords",
@@ -45,10 +45,10 @@ public sealed class RitsuLibMigrationGuardTests
         "debt-turn-end-in-hand",
         "card-model-on-play",
         "debt-exhaust",
-        // SealOfGoldPatches (2) — Batch 4b
+        // SealOfGoldPatches (2) - Batch 4b
         "seal-of-gold-max-energy",
         "seal-of-gold-turn",
-        // PickupRewardPatches (1) — Batch 4b
+        // PickupRewardPatches (1) - Batch 4b
         "ancient-pickup-balance"
     ];
 
@@ -158,7 +158,7 @@ public sealed class RitsuLibMigrationGuardTests
                     @"\[HarmonyPatch[^\]]*\][\s\S]*?class\s+" + Regex.Escape(className) + @"\b");
 
                 Assert.False(classPattern.IsMatch(source),
-                    $"Migrated class '{className}' in '{relativePath}' has [HarmonyPatch] attribute — would cause double-patching.");
+                    $"Migrated class '{className}' in '{relativePath}' has [HarmonyPatch] attribute - would cause double-patching.");
             }
         }
     }
@@ -324,7 +324,7 @@ public sealed class RitsuLibMigrationGuardTests
             "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.104 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
+        Assert.Contains("installed beta.105 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);

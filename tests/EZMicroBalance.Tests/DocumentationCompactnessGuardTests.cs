@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.104 package truth is RitsuLib-only",
+            "Current beta.105 package truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -383,7 +383,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.104`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.105`",
             "`STS2-RitsuLib` `0.4.33`",
             "direct NuGet runtime layout",
             "previous package is previous-package or other-mod local context only",
@@ -489,9 +489,16 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Runtime integration records for active dependencies such as RitsuLib.");
         AssertSourceContains(
             docRestructureSpec,
-            "**RitsuLib integration** (PR5/PR6+)",
-            "Current beta.104 RitsuLib-only compile/manifest/package/clicked-UI target active",
-            "beta.99, beta.96, and beta.93 loader/settings proof retained only as previous-package evidence");
+            "# Documentation Restructure Boundary",
+            "This is the current documentation cleanup rule set, not an old move plan.",
+            "The RitsuLib integration lane is current for beta.105",
+            "compile package",
+            "manifest dependency",
+            "package parity",
+            "source-workspace validation",
+            "clicked Ancient UI smoke are RitsuLib-only",
+            "beta.99, beta.96, and beta.93 loader or",
+            "settings proof remain previous-package evidence only");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",
@@ -512,7 +519,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             migrationReadme,
             "# RitsuLib Migration",
             "This is the single entry point for RitsuLib migration work.",
-            "Spire Plus is RitsuLib-only for beta.104.",
+            "Spire Plus is RitsuLib-only for beta.105.",
             "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
             "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
             "Register settings data before the settings page: `BeginModDataRegistration`",

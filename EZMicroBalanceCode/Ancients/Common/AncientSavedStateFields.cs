@@ -1,3 +1,5 @@
+using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 internal static class AncientSavedStateFields
@@ -44,21 +46,6 @@ internal static class AncientSavedStateFields
     public static readonly SavedAttachedState<Player, string> AncientInitialOptionRerollStateKey =
         new("EZMicroBalanceAncientInitialOptionRerollStateKey", () => string.Empty);
 
-    public static void EnsureRegistered()
-    {
-        _ = PrismaticGemNormalRewardCounter;
-        _ = PaelsToothNonBossCombatCounter;
-        _ = JewelryBoxNonInnateApotheosis;
-        _ = UrdaStateKey;
-        _ = UrdaDeckStateKey;
-        _ = UrdaTrialPlantCard;
-        _ = MorviStateKey;
-        _ = MorviDeckStateKey;
-        _ = MorviBorrowedAncientCard;
-        _ = MorviOpenBookSealedCard;
-        _ = LothaStateKey;
-        _ = LothaDeckStateKey;
-        _ = LothaMirrorRebuttalCard;
-        _ = AncientInitialOptionRerollStateKey;
-    }
+    public static void EnsureRegistered() =>
+        RitsuLibSavedStateRegistration.EnsureRegistered(typeof(AncientSavedStateFields));
 }

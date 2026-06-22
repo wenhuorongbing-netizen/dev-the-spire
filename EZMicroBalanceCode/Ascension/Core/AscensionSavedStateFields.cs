@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Entities.Players;
+using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -53,23 +54,6 @@ internal static class AscensionSavedStateFields
     public static readonly SavedAttachedState<RootBud, int> RootBudSproutRound =
         new("EZMicroBalanceAscensionRootBudSproutRound", () => RootBud.DefaultSproutRound);
 
-    public static void EnsureRegistered()
-    {
-        _ = RootBeginsApplied;
-        _ = RootblightLevel;
-        _ = RootblightPendingCombatDowngrades;
-        _ = RootblightWasPresentAtCombatStart;
-        _ = RootblightHasSplit;
-        _ = RootblightPlantedInSeedbed;
-        _ = ForgeTokenHeld;
-        _ = StruggleBaitGeneratedEscape;
-        _ = RoyalDecreeMarkedCard;
-        _ = RoyalDecreePlayedCard;
-        _ = RoyalDecreePlayedBoundCard;
-        _ = RootBudEnteredHand;
-        _ = RootBudPlayed;
-        _ = RootBudSprouted;
-        _ = RootBudPlantedInSeedbed;
-        _ = RootBudSproutRound;
-    }
+    public static void EnsureRegistered() =>
+        RitsuLibSavedStateRegistration.EnsureRegistered(typeof(AscensionSavedStateFields));
 }
