@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 50 |
-| Migrated to RitsuLib ModPatcher | 119 |
-| Raw HarmonyPatch remaining | 50 |
+| Total raw HarmonyPatch declarations | 43 |
+| Migrated to RitsuLib ModPatcher | 126 |
+| Raw HarmonyPatch remaining | 43 |
 | Tracked patch units total | 169 |
 | High risk (raw Harmony) | 15 |
 | Medium risk (raw Harmony) | 7 |
-| Low risk (raw Harmony) | 28 |
+| Low risk (raw Harmony) | 21 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 119 patch classes implement `IPatchMethod` and are registered via
+These 126 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -80,6 +80,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `AscensionSelectionPatches.cs` | 1 | `ascension-selection-singleplayer-character-change` | clicked-ui |
 | `AscensionSelectionRunStartPatches.cs` | 5 | `ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning` | clicked-ui |
 | `AeonglassIntentPatches.cs` | 2 | `aeonglass-laser-echo-intent-label, aeonglass-laser-echo-intent-damage` | intent-ui |
+| `EnemyDamagePolishPatches.cs` | 7 | `decimillipede-writhe-damage-polish, decimillipede-constrict-damage-polish, decimillipede-bulk-damage-polish, terror-eel-crash-damage-polish, terror-eel-thrash-damage-polish, phantasmal-gardener-bite-damage-polish, phantasmal-gardener-lash-damage-polish` | enemy-damage-polish |
 | `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |
 | `SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |
 
@@ -88,7 +89,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 50 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 43 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -134,11 +135,4 @@ These 50 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 38 | `[HarmonyPatch(typeof(NGame), "Quit")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs` | 8 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 21 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_WritheDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 30 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_ConstrictDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 39 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_BulkDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 48 | `[HarmonyPatch(typeof(TerrorEel), "get_CrashDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 57 | `[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 66 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]` |
-| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 75 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
 | STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 45 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |

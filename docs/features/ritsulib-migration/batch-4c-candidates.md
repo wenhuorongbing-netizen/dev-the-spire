@@ -13,8 +13,8 @@ This migration is source/registration work only; it is not gameplay, save-load, 
 
 - STS2-RitsuLib `v0.4.34` is installed on the E-drive game root in direct NuGet runtime layout.
 - The latest dependency recheck still reports `STS2.RitsuLib` `0.4.34` as the stable NuGet target.
-- installed beta.118 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.
-- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; later visual-hover UI, rest-site UI, Act Ancient unlock-list UI, and Vakuu event-state UI passes raised the current source count to 119 migrated patches. The beta.108 clicked UI smoke covers only the earlier 64-patch state for forced Ancient UI.
+- installed beta.119 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.
+- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; later visual-hover UI, rest-site UI, Act Ancient unlock-list UI, Vakuu event-state UI, Ancient reward hook, intent UI, and Enemy Damage getter passes raised the current source count to 126 migrated patches. The beta.108 clicked UI smoke covers only the earlier 64-patch state for forced Ancient UI.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 ## Migration Self-Check
@@ -54,6 +54,6 @@ Dependency gate checked: 2026-06-22.
 ## Stop Lines
 
 - High-risk migration remains out of scope without a new owner decision: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, and reward-state patches stay on their current guarded path.
-- Before citing this source migration as current runtime coverage, rebuild/package and capture a fresh loader packet that proves the current 119 migrated Spire Plus patch classes apply in the installed game.
+- Before citing this source migration as current runtime coverage, rebuild/package and capture a fresh loader packet that proves the current 126 migrated Spire Plus patch classes apply in the installed game.
 - Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite current enabled-mode evidence with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
 - Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

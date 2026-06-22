@@ -13,9 +13,9 @@ Target manifest id: `EZMicroBalance`
 
 ## Build And Publish
 
-Current status note (2026-06-22): the active manifest is `v0.1.0-private-beta.118` after the Sovereign Blade hover ModPatcher migration and package refresh pass.
+Current status note (2026-06-22): the active manifest is `v0.1.0-private-beta.119` after the Sovereign Blade hover ModPatcher migration and package refresh pass.
 The beta.88 package/hash rows and direct `v0.107.1` AdditiveBatch1 smoke are previous-package context context only. The beta.90 rows are previous RitsuLib-only package context.
-The beta.118 package/hash rows, runtime preflight, source-workspace
+The beta.119 package/hash rows, runtime preflight, source-workspace
 validation are current package evidence; clicked Ancient UI smoke is previous beta.108 evidence. The previous beta.108 smoke is
 captured under `.tools\runtime-evidence\monkey-stability-beta108-20260622-172312`;
 it covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations, clean
@@ -36,7 +36,7 @@ evidence only.
 Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evidence are still required before any live-ready or release-ready claim.
 
 - [x] `dotnet build` succeeds.
-- [x] Latest source build check passed with `dotnet build` after the beta.118 Sovereign Blade hover ModPatcher migration and package refresh pass.
+- [x] Latest source build check passed with `dotnet build` after the beta.119 Sovereign Blade hover ModPatcher migration and package refresh pass.
 - [x] Publish/package/hash refresh has been rerun for the latest source/text/resource slices with a rebuilt `SpirePlus` private-beta zip.
 - [x] `dotnet publish` succeeds.
 - [x] Published `EZMicroBalance.json` exists.
@@ -48,14 +48,14 @@ Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evide
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.118.zip` is rebuilt from the beta.118 Sovereign Blade hover ModPatcher migration and package refresh pass and copied to the local game root for manual testing.
-- Current package hashes: DLL `70B25ADCFAC46F248D077046C91A19693BF187A1FDF2B1C99152C0012E541170`; manifest `F300CBF7EE55E9AC2C2D0B8DCBF779FF35ED336E509425D415CD14A1AEF7F786`; PCK `3A5BDEA8952CFF11EE5216A36767C5043CF257DA0DCE6E4D6F1853EF1A551117`; ZIP-entry `README_INSTALL.txt` `7E29DD5025A820934B0DF0DDEDE0BF3B76E638D00B62B1A7C5FCC5C3BF58F452`; zip `6034CF9038348C4DE3FC762F5CD7A787D4C18A0A853B06560F7CCF67DDAF8125`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.119.zip` is rebuilt from the beta.119 Sovereign Blade hover ModPatcher migration and package refresh pass and copied to the local game root for manual testing.
+- Current package hashes: DLL `1EBFA239EBE6DF967F5F67EEFFC03A86C6C43E38DB075054C773C325C627D610`; manifest `56502CE729A80377F113219930FC880E6189DF5FEFBA72A92A8C3C828D36CBCC`; PCK `A75C26038DB31CDF296477BD23C1080249CB979EF70A48E59CE4100AF8666B80`; ZIP-entry `README_INSTALL.txt` `3D4A0E4B5301788BCA83795C178E097AD5D8D204D3084B2AE4DAAC7CAFD55BDA`; zip `20911A544516954B8ACB7C9DBD7FAEB192FD17EAC8E8C1F9B3F5D990E3545485`.
   - This hash refresh records automated source/package validation plus smoke-level clicked Ancient UI proof. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, gated Vakuu fight-option UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
 ## Runtime
 
-- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.118 because settings code/resources did not change in the beta.108 pass.
+- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.119 because settings code/resources did not change in the beta.108 pass.
 - [x] STS2-RitsuLib loads when enabled in a controlled Off smoke profile for the beta.108 RitsuLib-only package.
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.
@@ -146,7 +146,7 @@ Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-ap
   - This is loader/registration evidence, not gameplay proof.
   - The beta.88 row is previous-package context loader/startup evidence, and beta.90 is previous RitsuLib-only package context; neither is beta.93 gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. The old previous package-only plug-off evidence is previous package loader-isolation context; beta.96 startup/log shape is previous-package context after beta.99. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
-  - Previous beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`. It opened Settings -> `Mod Settings (RitsuLib)` in a normal Steam-client session with only `STS2-RitsuLib` and `EZMicroBalance` enabled, showed only `RitsuLib` and `Spire Plus` in the RitsuLib Mods tree, rendered the Spire Plus Migration Status, `STS2-RitsuLib >= 0.4.34` runtime dependency, evidence-boundary, technical-id, and Preview Tools controls, retained same-session `godot.log`, audited clean, and passed StS1 Off runtime shape verification 21 / 0. Treat it as previous-package settings-page context after beta.118; the older `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` screenshot is historical list context only.
+  - Previous beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`. It opened Settings -> `Mod Settings (RitsuLib)` in a normal Steam-client session with only `STS2-RitsuLib` and `EZMicroBalance` enabled, showed only `RitsuLib` and `Spire Plus` in the RitsuLib Mods tree, rendered the Spire Plus Migration Status, `STS2-RitsuLib >= 0.4.34` runtime dependency, evidence-boundary, technical-id, and Preview Tools controls, retained same-session `godot.log`, audited clean, and passed StS1 Off runtime shape verification 21 / 0. Treat it as previous-package settings-page context after beta.119; the older `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` screenshot is historical list context only.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.
 - A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The existing A11 live save has a saved-map graph proof from the post-load first-node coord to the boss; natural click-by-click traversal remains pending.
 - Host multiplayer A20 development selection logs an explicit downgrade warning. This is not live co-op support for Branded Form; A20 co-op boss-path behavior remains pending manual verification.

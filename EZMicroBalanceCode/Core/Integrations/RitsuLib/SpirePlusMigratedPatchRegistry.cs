@@ -32,6 +32,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterRemainingUiPatches(patcher);
         RegisterAscensionSelectionUiPatches(patcher);
         RegisterAscensionIntentUiPatches(patcher);
+        RegisterEnemyDamagePolishPatches(patcher);
         RegisterBatch4cLocalizationPatches(patcher);
         RegisterInlineLocalizationPatches(patcher);
     }
@@ -175,6 +176,17 @@ internal static class SpirePlusMigratedPatchRegistry
     {
         patcher.RegisterPatch<AeonglassLaserEchoIntentLabelPatch>();
         patcher.RegisterPatch<AeonglassLaserEchoIntentDamagePatch>();
+    }
+
+    private static void RegisterEnemyDamagePolishPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<DecimillipedeWritheDamagePolishPatch>();
+        patcher.RegisterPatch<DecimillipedeConstrictDamagePolishPatch>();
+        patcher.RegisterPatch<DecimillipedeBulkDamagePolishPatch>();
+        patcher.RegisterPatch<TerrorEelCrashDamagePolishPatch>();
+        patcher.RegisterPatch<TerrorEelThrashDamagePolishPatch>();
+        patcher.RegisterPatch<PhantasmalGardenerBiteDamagePolishPatch>();
+        patcher.RegisterPatch<PhantasmalGardenerLashDamagePolishPatch>();
     }
 
     private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)

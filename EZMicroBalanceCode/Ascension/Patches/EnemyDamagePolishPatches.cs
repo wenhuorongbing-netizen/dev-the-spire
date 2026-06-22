@@ -1,6 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 using MegaCrit.Sts2.Core.Models.Monsters;
+using STS2RitsuLib.Patching.Models;
 
 internal static class EnemyDamagePolish
 {
@@ -18,63 +19,98 @@ internal static class EnemyDamagePolish
     }
 }
 
-[HarmonyPatch(typeof(DecimillipedeSegment), "get_WritheDamage")]
-internal static class DecimillipedeWritheDamagePolishPatch
+internal sealed class DecimillipedeWritheDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "decimillipede-writhe-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Decimillipede Writhe damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(DecimillipedeSegment), "WritheDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.DecimillipedeWritheReduction);
     }
 }
 
-[HarmonyPatch(typeof(DecimillipedeSegment), "get_ConstrictDamage")]
-internal static class DecimillipedeConstrictDamagePolishPatch
+internal sealed class DecimillipedeConstrictDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "decimillipede-constrict-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Decimillipede Constrict damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(DecimillipedeSegment), "ConstrictDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.DecimillipedeConstrictReduction);
     }
 }
 
-[HarmonyPatch(typeof(DecimillipedeSegment), "get_BulkDamage")]
-internal static class DecimillipedeBulkDamagePolishPatch
+internal sealed class DecimillipedeBulkDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "decimillipede-bulk-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Decimillipede Bulk damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(DecimillipedeSegment), "BulkDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.DecimillipedeBulkReduction);
     }
 }
 
-[HarmonyPatch(typeof(TerrorEel), "get_CrashDamage")]
-internal static class TerrorEelCrashDamagePolishPatch
+internal sealed class TerrorEelCrashDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "terror-eel-crash-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Terror Eel Crash damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(TerrorEel), "CrashDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.TerrorEelCrashReduction);
     }
 }
 
-[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]
-internal static class TerrorEelThrashDamagePolishPatch
+internal sealed class TerrorEelThrashDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "terror-eel-thrash-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Terror Eel Thrash damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(TerrorEel), "ThrashDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.TerrorEelThrashReduction);
     }
 }
 
-[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]
-internal static class PhantasmalGardenerBiteDamagePolishPatch
+internal sealed class PhantasmalGardenerBiteDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "phantasmal-gardener-bite-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Phantasmal Gardener Bite damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(PhantasmalGardener), "BiteDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.PhantasmalGardenerBiteReduction);
     }
 }
 
-[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]
-internal static class PhantasmalGardenerLashDamagePolishPatch
+internal sealed class PhantasmalGardenerLashDamagePolishPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "phantasmal-gardener-lash-damage-polish";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Reduce Phantasmal Gardener Lash damage and matching intent value";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(PhantasmalGardener), "LashDamage", MethodType.Getter)];
+
     private static void Postfix(ref int __result)
     {
         EnemyDamagePolish.ReduceDamage(ref __result, EnemyDamagePolish.PhantasmalGardenerLashReduction);
