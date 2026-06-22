@@ -132,7 +132,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'PrismaticGemRewardScreenHintPatch.cs'; Classes = 1; PatchIds = 'prismatic-gem-reward-screen-hint'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionA20RewardScreenPatches.cs'; Classes = 2; PatchIds = 'ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'ModInfoLocalizationPatches.cs'; Classes = 1; PatchIds = 'spire-plus-mod-info-localization'; Batch = 'clicked-ui' },
-    [pscustomobject]@{ File = 'CombatHandInputSafetyPatches.cs'; Classes = 1; PatchIds = 'combat-hand-input-safety'; Batch = 'clicked-ui' }
+    [pscustomobject]@{ File = 'CombatHandInputSafetyPatches.cs'; Classes = 1; PatchIds = 'combat-hand-input-safety'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

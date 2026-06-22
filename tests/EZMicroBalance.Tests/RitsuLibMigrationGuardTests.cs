@@ -71,16 +71,24 @@ public sealed class RitsuLibMigrationGuardTests
         "ascension-a20-reward-screen-ready",
         "ascension-a20-reward-screen-state",
         "spire-plus-mod-info-localization",
-        "combat-hand-input-safety"
+        "combat-hand-input-safety",
+        // Batch 4c localization fallback patches
+        "ascension-localization-locstring-raw-text",
+        "ascension-localization-get-table",
+        "ascension-localization-raw-text",
+        "ascension-localization-loc-string",
+        "ascension-localization-has-entry",
+        "ascension-localization-is-local-key"
     ];
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
     private const int ExpectedClickedUiCount = 21;
-    private const int ExpectedTotalMigratedCount = 46;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 125;
+    private const int ExpectedBatch4cLocalizationCount = 6;
+    private const int ExpectedTotalMigratedCount = 52;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 119;
 
-    private static readonly string[] ExpectedBatch4cCandidateClasses =
+    private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
         "AscensionLocalizationLocStringRawTextPatch",
         "AscensionLocalizationGetTablePatch",
@@ -88,16 +96,6 @@ public sealed class RitsuLibMigrationGuardTests
         "AscensionLocalizationLocStringPatch",
         "AscensionLocalizationHasEntryPatch",
         "AscensionLocalizationIsLocalKeyPatch"
-    ];
-
-    private static readonly string[] ExpectedBatch4cInventoryRows =
-    [
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 6 | `[HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 26 | `[HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 38 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 59 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 80 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 92 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |"
     ];
 
     private static readonly string[] ForbiddenBatch4cMigrationCategories =
@@ -128,14 +126,16 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 46:
-    /// 9 Batch 4a + 16 Batch 4b + 21 clicked/UI patches.
+    /// The expected migrated patch count must be 52:
+    /// 9 Batch 4a + 16 Batch 4b + 21 clicked/UI patches + 6 Batch 4c localization patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
-        Assert.Equal(ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedClickedUiCount, ExpectedTotalMigratedCount);
+        Assert.Equal(
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedClickedUiCount + ExpectedBatch4cLocalizationCount,
+            ExpectedTotalMigratedCount);
     }
 
     /// <summary>
@@ -272,7 +272,14 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<AscensionA20RewardScreenReadyPatch>();",
             "RegisterPatch<AscensionA20RewardScreenStatePatch>();",
             "RegisterPatch<ModInfoLocalizationPatches>();",
-            "RegisterPatch<CombatHandInputSafetyPatch>();");
+            "RegisterPatch<CombatHandInputSafetyPatch>();",
+            "RegisterBatch4cLocalizationPatches(patcher);",
+            "RegisterPatch<AscensionLocalizationLocStringRawTextPatch>();",
+            "RegisterPatch<AscensionLocalizationGetTablePatch>();",
+            "RegisterPatch<AscensionLocalizationRawTextPatch>();",
+            "RegisterPatch<AscensionLocalizationLocStringPatch>();",
+            "RegisterPatch<AscensionLocalizationHasEntryPatch>();",
+            "RegisterPatch<AscensionLocalizationIsLocalKeyPatch>();");
     }
 
     [Fact]
@@ -329,7 +336,8 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.107", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("The remaining Batch 4c candidates and any higher-risk patch migration remain", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Batch 4c localization fallback patches have moved to RitsuLib", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("| File | Classes | PatchIds |", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("| `DebtAndCardPatches.cs` |", migrationDoc, StringComparison.Ordinal);
@@ -352,26 +360,25 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     [Fact]
-    public void Batch4cCandidatesRemainProposalOnly()
+    public void Batch4cLocalizationPatchesAreMigratedAndDocumented()
     {
-        var proposal = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
+        var record = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
         var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
         var inventory = ReadRepoText("docs", "patch-inventory.md");
         var registrationSource = ReadRitsuLibIntegrationSource();
 
-        Assert.Contains("Status: remaining-candidate proposal.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Candidate count is 6", proposal, StringComparison.Ordinal);
-        Assert.Contains("Before any remaining Batch 4c source migration:", proposal, StringComparison.Ordinal);
-        Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Previous `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
-        Assert.Contains("retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence", proposal, StringComparison.Ordinal);
-        Assert.Contains("Do not migrate the remaining Batch 4c candidates or high-risk", migrationReadme, StringComparison.Ordinal);
+        Assert.Contains("Status: migrated localization fallback batch.", record, StringComparison.Ordinal);
+        Assert.Contains("Migrated candidate count is 6", record, StringComparison.Ordinal);
+        Assert.Contains("Owner decision recorded: 2026-06-22 continuation goal approved migrating the remaining six localization fallback candidates.", record, StringComparison.Ordinal);
+        Assert.Contains("This migration is source/registration work only; it is not gameplay, save-load, co-op, release, or handoff proof.", record, StringComparison.Ordinal);
+        Assert.Contains("Batch 4c localization fallback patches have moved to RitsuLib", migrationReadme, StringComparison.Ordinal);
+        Assert.Contains("Do not migrate high-risk run/map/reward/save/multiplayer patches without explicit owner approval.", migrationReadme, StringComparison.Ordinal);
 
-        var candidateSectionStart = proposal.IndexOf("## Candidates", StringComparison.Ordinal);
-        var candidateSectionEnd = proposal.IndexOf("## Per-Candidate Evidence", StringComparison.Ordinal);
-        var candidateSection = proposal[candidateSectionStart..candidateSectionEnd];
+        var candidateSectionStart = record.IndexOf("## Migrated Candidates", StringComparison.Ordinal);
+        var candidateSectionEnd = record.IndexOf("## Per-Candidate Evidence", StringComparison.Ordinal);
+        var candidateSection = record[candidateSectionStart..candidateSectionEnd];
         var candidateRows = Regex.Matches(candidateSection, @"^\| \d+ \|", RegexOptions.Multiline);
-        Assert.Equal(ExpectedBatch4cCandidateClasses.Length, candidateRows.Count);
+        Assert.Equal(ExpectedBatch4cLocalizationPatchClasses.Length, candidateRows.Count);
 
         var sourceFiles = Directory.GetFiles(
             RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories);
@@ -379,68 +386,69 @@ public sealed class RitsuLibMigrationGuardTests
             Environment.NewLine,
             sourceFiles.Select(path => File.ReadAllText(path)));
 
-        foreach (var candidateClass in ExpectedBatch4cCandidateClasses)
+        foreach (var patchClass in ExpectedBatch4cLocalizationPatchClasses)
         {
-            Assert.Contains(candidateClass, proposal, StringComparison.Ordinal);
-            Assert.DoesNotContain($"RegisterPatch<{candidateClass}>", registrationSource, StringComparison.Ordinal);
+            Assert.Contains(patchClass, record, StringComparison.Ordinal);
+            Assert.Contains($"RegisterPatch<{patchClass}>", registrationSource, StringComparison.Ordinal);
+            Assert.Contains($"class {patchClass} : IPatchMethod", allSource, StringComparison.Ordinal);
 
             var classPattern = new Regex(
                 @"\[HarmonyPatch[^\]]*\]\s*(?:\r?\n\s*\[[^\]]+\]\s*)*(?:internal\s+)?(?:static\s+)?(?:partial\s+)?class\s+" +
-                Regex.Escape(candidateClass) +
+                Regex.Escape(patchClass) +
                 @"\b");
-            Assert.True(
+            Assert.False(
                 classPattern.IsMatch(allSource),
-                $"Batch 4c candidate '{candidateClass}' must remain a raw HarmonyPatch until owner approval and runtime validation are complete.");
+                $"Batch 4c migrated patch '{patchClass}' must not keep a class-level [HarmonyPatch] attribute.");
         }
 
-        foreach (var inventoryRow in ExpectedBatch4cInventoryRows)
-        {
-            Assert.Contains(inventoryRow, inventory, StringComparison.Ordinal);
-        }
+        Assert.Contains(
+            "| `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |",
+            inventory,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs`", inventory, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void Batch4cStaticReviewKeepsOwnerDecisionOpen()
+    public void Batch4cStaticReviewRecordsOwnerDecisionAndKeepsHighRiskClosed()
     {
-        var proposal = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
+        var record = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
         var nextRun = ReadRepoText("docs", "features", "ritsulib-migration", "next-overnight-run.md");
         var goal = ReadRepoText("docs", "goals", "migration.md");
 
-        Assert.Contains("Static review recaptured: 2026-06-18", proposal, StringComparison.Ordinal);
-        Assert.Contains("Dependency gate refreshed: 2026-06-21", proposal, StringComparison.Ordinal);
-        Assert.Contains("Checked: 2026-06-18.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Dependency gate checked: 2026-06-21.", proposal, StringComparison.Ordinal);
+        Assert.Contains("Static review recaptured: 2026-06-18", record, StringComparison.Ordinal);
+        Assert.Contains("Dependency gate refreshed: 2026-06-22", record, StringComparison.Ordinal);
+        Assert.Contains("Checked: 2026-06-18.", record, StringComparison.Ordinal);
+        Assert.Contains("Dependency gate checked: 2026-06-22.", record, StringComparison.Ordinal);
         Assert.Contains(
-            "The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
-            proposal,
+            "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
+            record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.107 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
-        Assert.DoesNotContain("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
-        Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
-        Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);
-        Assert.Contains("use the documented split lanes instead of treating runner instability as a source failure", proposal, StringComparison.Ordinal);
+        Assert.Contains("installed beta.107 package parity and clicked Ancient UI smoke pass", record, StringComparison.Ordinal);
+        Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
+        Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
+        Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
+        Assert.Contains("use the documented split lanes instead of treating runner instability as a source failure", record, StringComparison.Ordinal);
 
         Assert.Contains(
-            "the 2026-06-18 static recapture confirmed 10 low-risk candidates; the UI/input subset was migrated through RitsuLib on 2026-06-22, leaving 6 proposal-only localization candidates and no forbidden high-risk categories.",
+            "the 2026-06-22 continuation migrated the remaining 6 low-risk localization fallback candidates through RitsuLib after owner approval.",
             nextRun,
             StringComparison.Ordinal);
-        Assert.Contains("The current static recapture is not that decision.", nextRun, StringComparison.Ordinal);
-        Assert.Contains("- [x] Batch 4c candidate list static review recaptured: 6 proposal-only localization candidates remain after the UI/input subset was migrated through RitsuLib.", nextRun, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Remaining Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
-        Assert.DoesNotContain("- [x] Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("This is not current enabled-mode, gameplay, save-load, replacement, co-op, QA, release, or handoff proof.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.", nextRun, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [ ] Remaining Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
 
         Assert.Contains(
-            "| Batch 4c migration | Partial targeted UI/input migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the UI/input subset through RitsuLib; 6 localization candidates remain proposal-only with no forbidden high-risk categories. |",
+            "| Batch 4c migration | Completed for the six localization fallback candidates | 2026-06-22 continuation goal approved the exact low-risk localization list; source now registers those six classes through RitsuLib `IPatchMethod` / `ModPatcher`. |",
             goal,
             StringComparison.Ordinal);
         Assert.Contains(
-            "Record a fresh owner decision before migrating any of the remaining Batch 4c candidates.",
+            "Do not treat Batch 4c source migration as gameplay, save-load, co-op, QA, release, or handoff proof.",
             goal,
             StringComparison.Ordinal);
 
         foreach (var forbiddenCategory in ForbiddenBatch4cMigrationCategories)
         {
-            Assert.Contains(forbiddenCategory, proposal, StringComparison.Ordinal);
+            Assert.Contains(forbiddenCategory, record, StringComparison.Ordinal);
             Assert.Contains(forbiddenCategory, nextRun, StringComparison.Ordinal);
         }
     }
@@ -485,14 +493,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (46).
+    /// state the correct total migrated count (52).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 46", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 52", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -509,7 +517,8 @@ public sealed class RitsuLibMigrationGuardTests
             "`PrismaticGemRewardScreenHintPatch.cs` | 1 | `prismatic-gem-reward-screen-hint` | clicked-ui |",
             "`AscensionA20RewardScreenPatches.cs` | 2 | `ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state` | clicked-ui |",
             "`ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |",
-            "`CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |");
+            "`CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |",
+            "`AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |");
     }
 
     [Fact]

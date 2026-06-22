@@ -106,12 +106,15 @@ public sealed partial class AscensionFeatureGuardTests
 
         AssertSourceContains(
             source,
-            "HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))",
-            "HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))",
-            "HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))",
-            "HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))",
-            "HarmonyPatch(typeof(LocManager), nameof(LocManager.GetTable))",
-            "HarmonyPatch(typeof(LocString), nameof(LocString.GetRawText))",
+            "new ModPatchTarget(typeof(LocTable), nameof(LocTable.GetRawText))",
+            "new ModPatchTarget(typeof(LocTable), nameof(LocTable.GetLocString))",
+            "new ModPatchTarget(typeof(LocTable), nameof(LocTable.HasEntry))",
+            "new ModPatchTarget(typeof(LocTable), nameof(LocTable.IsLocalKey))",
+            "new ModPatchTarget(typeof(LocManager), nameof(LocManager.GetTable))",
+            "new ModPatchTarget(typeof(LocString), nameof(LocString.GetRawText))",
+            "[HarmonyPrefix]",
+            "[HarmonyPostfix]",
+            "[HarmonyFinalizer]",
             "AscensionLocalizationBridge.MergeIntoIfAscensionTable(__result)",
             "table.MergeWith(new Dictionary<string, string>(localizedTable, StringComparer.Ordinal))",
             "TableNameField?.GetValue(table) is string tableName",
@@ -125,6 +128,7 @@ public sealed partial class AscensionFeatureGuardTests
         Assert.DoesNotContain("internal static class AscensionLocalizationBridge", patches, StringComparison.Ordinal);
         Assert.DoesNotContain("Godot.FileAccess.Open", patches, StringComparison.Ordinal);
         Assert.DoesNotContain("HarmonyPatch(", bridge, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(", patches, StringComparison.Ordinal);
 
         for (var level = 11; level <= 20; level++)
         {

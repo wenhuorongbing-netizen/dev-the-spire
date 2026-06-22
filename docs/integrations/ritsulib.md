@@ -2,7 +2,7 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 46 migrated RitsuLib `IPatchMethod` patch classes and 125 raw Harmony declarations remaining. Current beta.107 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.33` in direct NuGet runtime layout, and the beta.107 clicked Ancient UI smoke covers the current migrated package under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 52 migrated RitsuLib `IPatchMethod` patch classes and 119 raw Harmony declarations remaining after the source-only Batch 4c localization migration. Current beta.107 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.33` in direct NuGet runtime layout, and the beta.107 clicked Ancient UI smoke covers the previous 46-patch migrated package under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
 
 - Compile package: `STS2.RitsuLib` `0.4.33` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.33`.
@@ -15,7 +15,7 @@ Future migration work has two first checks: confirm the latest stable RitsuLib
 package line, then inspect the unpacked local game source under
 `source code/src/Core/` before changing game-facing behavior.
 
-The current `v0.107.1` game install uses the official RitsuLib `v0.4.33` direct NuGet runtime files. Installed beta.107 package parity is recorded on 2026-06-22. Packaged beta.107 evidence covers build, focused guards, publish, package parity, runtime preflight 28 / 0, source-workspace validation 58 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` each passed once with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 46 Spire Plus ModPatcher patches applied, and packet verification 1620 / 0. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
+The current `v0.107.1` game install uses the official RitsuLib `v0.4.33` direct NuGet runtime files. Installed beta.107 package parity is recorded on 2026-06-22. Packaged beta.107 evidence covers build, focused guards, publish, package parity, runtime preflight 28 / 0, source-workspace validation 58 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` each passed once with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all then-current 46 Spire Plus ModPatcher patches applied, and packet verification 1620 / 0. This predates the Batch 4c localization source migration to 52 migrated patch classes. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
 
 Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.107 proof includes package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
 
@@ -166,16 +166,18 @@ Current manifest dependency:
   Sere Talon event/relic visuals, Crystal Sphere peek, transform preview,
   Prismatic Gem reward-screen hint, A20 reward-screen wording, and Spire Plus
   mod-info localization, plus combat hand stale-input safety.
-- Batch 4c: proposal-only candidate list lives in `docs/features/ritsulib-migration/batch-4c-candidates.md`; those six localization candidates remain proposal-only.
+- Batch 4c: six ascension localization fallback patch classes now use
+  `IPatchMethod` for `LocString`, `LocManager`, and `LocTable` fallback paths.
+  Runtime proof for the new 52-patch source state remains pending.
 - Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
-Current migrated total: 46 patch classes.
+Current migrated total: 52 patch classes.
 
-Current raw Harmony remaining: 125 declarations, tracked in `docs/patch-inventory.md`.
+Current raw Harmony remaining: 119 declarations, tracked in `docs/patch-inventory.md`.
 
 ## Current Evidence Pointers
 
 - Loader proof and command status, including current `v0.107.1` runtime dependency status: `docs/reviews/current-validation.md`.
 - Runtime smoke checklist: `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
-- Batch 4c candidate proposal: `docs/features/ritsulib-migration/batch-4c-candidates.md`.
+- Batch 4c localization migration record: `docs/features/ritsulib-migration/batch-4c-candidates.md`.
 - Patch inventory: `docs/patch-inventory.md`.

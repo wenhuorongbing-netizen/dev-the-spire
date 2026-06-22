@@ -46,8 +46,10 @@ replacement behavior, current beta.107 enabled-mode
 registration/gameplay proof, multiplayer/co-op, independent QA, and versioned
 tester-package handoff.
 
-Batch 4c and any high-risk patch migration remain proposal-only until those
-runtime/manual gates have current evidence and owner approval.
+Batch 4c localization migration is source-only until fresh runtime proof
+captures all 52 migrated patch classes in the installed game. Any high-risk
+patch migration remains proposal-only until those runtime/manual gates have
+current evidence and owner approval.
 
 ## Required Runtime Proof
 

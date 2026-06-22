@@ -5,14 +5,14 @@ Status: compact execution boundary. This replaces the long historical overnight 
 
 ## Objective
 
-Manual QA after clean RitsuLib-only Off loader proof, plus remaining Batch 4c owner review. This is not approval to migrate more patches and not a release-ready claim.
+Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime recapture. This is not approval to migrate high-risk patches and not a release-ready claim.
 
 ## Start State
 
 - Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.107 no-game/package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, source-workspace checks, and clicked Ancient UI smoke passed for the current dependency target. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
-- Current HEAD/worktree validation refreshed after the beta.107 RitsuLib default-key localization and clicked UI pass; recheck again before handoff if any later edits appear.
+- Latest beta.107 package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, source-workspace checks, and clicked Ancient UI smoke passed for the current dependency target. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
+- Current source now has 52 migrated RitsuLib patch classes after the source-only Batch 4c localization migration. The retained beta.107 smoke applied 46 migrated patch classes and must not be stretched to cover the new source state.
 - Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 
 ## Retained Evidence Boundaries
@@ -31,19 +31,18 @@ Manual QA after clean RitsuLib-only Off loader proof, plus remaining Batch 4c ow
 4. Capture current StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
 5. Capture gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 
-## Batch 4c Owner Review
+## Batch 4c Runtime Boundary
 
-- the 2026-06-18 static recapture confirmed 10 low-risk candidates; the UI/input subset was migrated through RitsuLib on 2026-06-22, leaving 6 proposal-only localization candidates and no forbidden high-risk categories.
-- The current static recapture is not that decision.
+- the 2026-06-22 continuation migrated the remaining 6 low-risk localization fallback candidates through RitsuLib after owner approval.
+- This is not current enabled-mode, gameplay, save-load, replacement, co-op, QA, release, or handoff proof.
 - Forbidden candidate surfaces remain: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, reward-state.
-- Do not migrate the remaining Batch 4c candidates without owner approval and fresh validation.
+- Do not migrate high-risk candidates without owner approval and fresh validation.
 
 ## Success Checklist
 
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
-- [x] Batch 4c candidate list static review recaptured: 6 proposal-only localization candidates remain after the UI/input subset was migrated through RitsuLib.
+- [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.
 - [x] Current beta.107 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`; previous beta.99 Off loader proof remains previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 - [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
 - [ ] Gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.
-- [ ] Remaining Batch 4c owner decision recorded.

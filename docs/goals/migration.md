@@ -36,7 +36,7 @@ Do not add any runtime dependency besides STS2-RitsuLib unless the owner explici
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 46 migrated patch classes and 125 raw Harmony declarations remaining. The current manifest/package target is beta.107 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text, and fixing the Urda option-relic prefix so RitsuLib discovers that patch. Beta.107 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 46 Spire Plus ModPatcher patches applied, and packet verification 1620 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration and the Batch 4c ascension-localization fallback migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 52 migrated patch classes and 119 raw Harmony declarations remaining. The current manifest/package target is beta.107 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text, and fixing the Urda option-relic prefix so RitsuLib discovers that patch. Beta.107 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all then-current 46 Spire Plus ModPatcher patches applied, and packet verification 1620 / 0. That smoke predates the source-only Batch 4c localization migration; recapture package/runtime proof before claiming the 52-patch source state is covered in-game. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
 
 Current developer entry points and tracked text files are guarded so future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and unpacked local game source instead of retired runtime-framework assumptions.
 
@@ -54,9 +54,9 @@ The migration is not release-ready. Smoke-level clicked Ancient UI is covered, b
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Batch 4c migration | Partial targeted UI/input migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the UI/input subset through RitsuLib; 6 localization candidates remain proposal-only with no forbidden high-risk categories. |
+| Batch 4c migration | Completed for the six localization fallback candidates | 2026-06-22 continuation goal approved the exact low-risk localization list; source now registers those six classes through RitsuLib `IPatchMethod` / `ModPatcher`. |
 
-Record a fresh owner decision before migrating any of the remaining Batch 4c candidates.
+Do not treat Batch 4c source migration as gameplay, save-load, co-op, QA, release, or handoff proof.
 
 ## Validation Snapshot
 
@@ -89,5 +89,5 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 1. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
 2. Keep beta.107 clicked Ancient UI smoke scoped to forced UI visibility; it does not prove gameplay or release readiness.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
-4. Record an owner decision before any remaining Batch 4c or higher-risk patch migration.
+4. Keep higher-risk patch migration blocked until a new owner decision and direct source/runtime evidence exist.
 5. Recapture git status, pushed HEAD, and validation status before any later handoff.

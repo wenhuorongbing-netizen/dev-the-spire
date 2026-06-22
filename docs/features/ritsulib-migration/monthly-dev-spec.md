@@ -12,10 +12,13 @@ Use the current sources of truth instead:
 - `docs/goals/migration.md` for migration success criteria and validation.
 - `docs/integrations/ritsulib.md` for RitsuLib version/API evidence.
 - `runtime-smoke-checklist.md` for future runtime evidence commands.
-- `batch-4c-candidates.md` for the proposal-only patch list.
+- `batch-4c-candidates.md` for the completed low-risk localization migration
+  record.
 
 Current boundary: beta.107 is RitsuLib-only and has package parity, runtime
 preflight, source-workspace validation, and smoke-level clicked Ancient UI
 proof. Settings, loader, and screenshot evidence remain scoped evidence only;
 gameplay, enabled-mode, save-load, replacement, co-op, QA, release readiness,
-handoff, and Batch 4c owner approval require separate current proof.
+and handoff require separate current proof. Batch 4c localization migration is
+source-only until a fresh package/runtime pass proves all 52 migrated patch
+classes apply in the installed game.

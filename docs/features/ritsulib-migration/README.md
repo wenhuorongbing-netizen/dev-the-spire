@@ -19,11 +19,17 @@ read only the support file that matches the task.
   mod-info localization UI patches plus combat hand stale-input safety are
   registered through RitsuLib
   `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
-- Current inventory: 46 migrated patch classes and 125 raw Harmony declarations
+- Batch 4c localization fallback patches for A11-A20 ascension table text now
+  also use RitsuLib `IPatchMethod` / `ModPatcher`.
+- Batch 4c localization fallback patches have moved to RitsuLib; this is still
+  source/registration work, not runtime gameplay proof.
+- Current inventory: 52 migrated patch classes and 119 raw Harmony declarations
   remain in `docs/patch-inventory.md`.
 - Boundary: beta.107 was rebuilt, published, packaged, and runtime-smoked after
-  the current UI/input migration, and the smoke applied all 46 Spire Plus
-  ModPatcher patches.
+  the UI/input migration, and that retained smoke applied the then-current 46
+  Spire Plus ModPatcher patches. It predates the source-only Batch 4c
+  localization migration, so a future package smoke must recapture 52 migrated
+  patches before claiming runtime coverage for this source state.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
 - Not proved: beta.107 enabled-mode registration, gameplay, save-load,
@@ -39,8 +45,8 @@ read only the support file that matches the task.
 4. `docs/reviews/current-validation.md` for the latest validation record.
 5. `runtime-smoke-checklist.md` only when preparing or reviewing runtime
    evidence.
-6. `batch-4c-candidates.md` only when the owner explicitly asks about the next
-   patch migration batch.
+6. `batch-4c-candidates.md` only when reviewing the completed Batch 4c
+   localization fallback migration and its remaining proof boundaries.
 
 Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.
 
@@ -112,7 +118,7 @@ Do not start future implementation from historical plans, archived prompt dumps,
 | `monthly-dev-spec.md` | Compatibility stub retained for guarded historical references. Not a default entry point. |
 | `runtime-smoke-checklist.md` | Runtime evidence checklist and verifier command source. |
 | `next-overnight-run.md` | Future controlled runtime QA run order. |
-| `batch-4c-candidates.md` | Proposal-only list for the next possible low-risk patch migration batch. |
+| `batch-4c-candidates.md` | Completed Batch 4c localization fallback migration record and proof boundary. |
 | `runtime-hard-block-report-20260531.md` | Current pointer for the old runtime hard-block lane; the original blocker is historical. |
 
 ## Stop Lines
@@ -121,5 +127,4 @@ Do not start future implementation from historical plans, archived prompt dumps,
   approval and a same-pass package/docs/guard update.
 - Do not treat loader proof or settings screenshots as gameplay, save-load,
   multiplayer, QA, release, or handoff proof.
-- Do not migrate the remaining Batch 4c candidates or high-risk
-  run/map/reward/save/multiplayer patches without explicit owner approval.
+- Do not migrate high-risk run/map/reward/save/multiplayer patches without explicit owner approval.

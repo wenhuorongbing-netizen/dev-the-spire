@@ -22,6 +22,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterSereTalonUiPatches(patcher);
         RegisterPreviewUiPatches(patcher);
         RegisterRemainingUiPatches(patcher);
+        RegisterBatch4cLocalizationPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -80,6 +81,16 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<AscensionA20RewardScreenStatePatch>();
         patcher.RegisterPatch<ModInfoLocalizationPatches>();
         patcher.RegisterPatch<CombatHandInputSafetyPatch>();
+    }
+
+    private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<AscensionLocalizationLocStringRawTextPatch>();
+        patcher.RegisterPatch<AscensionLocalizationGetTablePatch>();
+        patcher.RegisterPatch<AscensionLocalizationRawTextPatch>();
+        patcher.RegisterPatch<AscensionLocalizationLocStringPatch>();
+        patcher.RegisterPatch<AscensionLocalizationHasEntryPatch>();
+        patcher.RegisterPatch<AscensionLocalizationIsLocalKeyPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

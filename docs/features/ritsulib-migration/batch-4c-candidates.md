@@ -1,48 +1,44 @@
-# Batch 4c Low-Risk Candidate Proposal
+# Batch 4c Low-Risk Localization Migration
 
-Date: 2026-06-10
+Date: 2026-06-22
 Static review recaptured: 2026-06-18
-Dependency gate refreshed: 2026-06-21
-Status: remaining-candidate proposal. The UI/input subset was migrated through
-RitsuLib on 2026-06-22 under the active owner goal to finish clicked UI
-migration. Do not migrate the remaining localization candidates without
-explicit owner approval.
+Dependency gate refreshed: 2026-06-22
+Status: migrated localization fallback batch.
+
+Owner decision recorded: 2026-06-22 continuation goal approved migrating the remaining six localization fallback candidates.
+
+This migration is source/registration work only; it is not gameplay, save-load, co-op, release, or handoff proof.
 
 ## Gate
 
-The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-risk candidates, but not to approve a migration or claim current `v0.107.1` runtime proof:
-
 - STS2-RitsuLib `v0.4.33` is installed on the E-drive game root in direct NuGet runtime layout.
-- Historical `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes reached main menu with clean audits.
-- Spire Plus applied 25/25 migrated ModPatcher patches in those historical loader smokes.
-- The current local game install is `v0.107.1`; installed beta.107 package parity and clicked Ancient UI smoke pass. Previous beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 AdditiveBatch1 loader proof are retained only as previous-package context.
-- Previous beta.93 AdditiveBatch1 retained log and packet verifiers passed with 10 event types / 14 registration lines and exact tuple parity. This is loader/registration proof only and is not Batch 4c approval, gameplay proof, or handoff proof. Retained beta.85/beta.87 `v0.107.0` smokes remain previous-package/game-version context.
+- The latest dependency recheck still reports `STS2.RitsuLib` `0.4.33` as the stable NuGet target.
+- installed beta.107 package parity and clicked Ancient UI smoke pass, but that package proof applied the previous 46 migrated patch classes.
+- This source pass moves the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; a future package/runtime proof must recapture the new 52 migrated patch count before claiming runtime coverage for this source state.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
-This list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any remaining candidate for a `v0.107.1` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
-
-## Proposal Self-Check
+## Migration Self-Check
 
 Checked: 2026-06-18.
-Dependency gate checked: 2026-06-21.
+Dependency gate checked: 2026-06-22.
 
-- Candidate count is 6 after the UI/input subset was migrated through RitsuLib.
-- All candidates are currently classified as low risk in `docs/patch-inventory.md`.
-- No candidate touches run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss flow, or reward-state mutation.
-- Source inspection confirms the remaining candidates are scoped to localization fallback.
-- The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.
-- Owner decision remains pending for the remaining six localization candidates; this self-check is not approval to migrate them.
+- Migrated candidate count is 6 after the earlier UI/input subset was migrated through RitsuLib.
+- All six candidates were classified as low risk in `docs/patch-inventory.md` before migration.
+- No candidate touches run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, or reward-state mutation.
+- Source inspection confirms the migrated candidates are scoped to ascension localization fallback.
+- The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.
+- Current accepted no-build test lanes pass with 0 failures. If the solution-level lane destabilizes around `ReleaseEvidenceGateTests`, use the documented split lanes instead of treating runner instability as a source failure.
 
-## Candidates
+## Migrated Candidates
 
 | # | File | Class | Target | Why low-risk | Targeted tests | Rollback |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationLocStringRawTextPatch` | `LocString.GetRawText` | A11-A20 localization fallback only; no gameplay state mutation. | `AscensionLocalizationBridgeCoversModdedOriginalAscensionTableKeys`; A20 selector localization manual row. | Move the class back to raw Harmony registration. |
-| 2 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationGetTablePatch` | `LocManager.GetTable` | Merges missing ascension entries into the ascension table only. | Same localization guard plus `dotnet test --filter AscensionFeatureGuardTests`. | Move the class back to raw Harmony registration. |
-| 3 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationRawTextPatch` | `LocTable.GetRawText` | Finalizer only recovers known ascension loc keys after `LocException`. | Same localization guard; verify no raw `ascension.LEVEL_20.*` text in selector. | Move the class back to raw Harmony registration. |
-| 4 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationLocStringPatch` | `LocTable.GetLocString` | Finalizer only returns a `LocString` for known ascension bridge keys. | Same localization guard; manual selector screenshot remains pending. | Move the class back to raw Harmony registration. |
-| 5 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationHasEntryPatch` | `LocTable.HasEntry` | Read-only table presence answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
-| 6 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationIsLocalKeyPatch` | `LocTable.IsLocalKey` | Read-only local-key answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
+| 1 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationLocStringRawTextPatch` | `LocString.GetRawText` | A11-A20 localization fallback only; no gameplay state mutation. | `AscensionLocalizationBridgeCoversModdedOriginalAscensionTableKeys`; A20 selector localization manual row. | Remove the RitsuLib registration and restore the class-level raw Harmony patch. |
+| 2 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationGetTablePatch` | `LocManager.GetTable` | Merges missing ascension entries into the ascension table only. | Same localization guard plus `dotnet test --filter AscensionFeatureGuardTests`. | Remove the RitsuLib registration and restore the class-level raw Harmony patch. |
+| 3 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationRawTextPatch` | `LocTable.GetRawText` | Finalizer only recovers known ascension loc keys after `LocException`. | Same localization guard; verify no raw `ascension.LEVEL_20.*` text in selector. | Remove the RitsuLib registration and restore the class-level raw Harmony patch. |
+| 4 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationLocStringPatch` | `LocTable.GetLocString` | Finalizer only returns a `LocString` for known ascension bridge keys. | Same localization guard; manual selector screenshot remains pending. | Remove the RitsuLib registration and restore the class-level raw Harmony patch. |
+| 5 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationHasEntryPatch` | `LocTable.HasEntry` | Read-only table presence answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Remove the RitsuLib registration and restore the class-level raw Harmony patch. |
+| 6 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationIsLocalKeyPatch` | `LocTable.IsLocalKey` | Read-only local-key answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Remove the RitsuLib registration and restore the class-level raw Harmony patch. |
 
 ## Per-Candidate Evidence
 
@@ -55,18 +51,9 @@ Dependency gate checked: 2026-06-21.
 | 5 | `LocTable.HasEntry` keeps existing `true` results and only upgrades missing known bridge keys to present. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing entries are untouched. |
 | 6 | `LocTable.IsLocalKey` keeps existing `true` results and only upgrades missing known bridge keys to local. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing local-key results are untouched. |
 
-## Required Acceptance Before Migration
+## Stop Lines
 
-Before any remaining Batch 4c source migration:
-
-1. Owner accepts this exact candidate list or a smaller subset.
-2. `dotnet build EZMicroBalance.sln` passes with 0 errors.
-3. Current accepted no-build test lanes pass with 0 failures. If the solution-level lane destabilizes around `ReleaseEvidenceGateTests`, use the documented split lanes instead of treating runner instability as a source failure.
-4. `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` passes.
-5. `git diff --check` passes.
-6. `scripts/generate-patch-inventory.ps1 -Check` passes after any migration.
-7. A loader smoke is rerun if the migrated patch registration path changes.
-8. Previous `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute for any new loader smoke required by changed patch registration paths or for gameplay proof.
-9. Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite the retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
-
-Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.
+- High-risk migration remains out of scope without a new owner decision: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, and reward-state patches stay on their current guarded path.
+- Before citing this source migration as current runtime coverage, rebuild/package and capture a fresh loader packet that proves the 52 migrated Spire Plus patch classes apply in the installed game.
+- Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite current enabled-mode evidence with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
+- Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

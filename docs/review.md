@@ -16,10 +16,10 @@ Clicked UI is limited to beta.107 forced Ancient smoke. Current smoke proof cove
 ## Current Migration Evidence
 
 - Spire Plus targets `STS2.RitsuLib` `0.4.33`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
-- Current source has completed the clicked/input UI migration to RitsuLib `IPatchMethod` / `ModPatcher`: 46 migrated patch classes and 125 raw Harmony declarations remain in `docs/patch-inventory.md`.
+- Current source has completed the clicked/input UI migration and Batch 4c ascension-localization fallback migration to RitsuLib `IPatchMethod` / `ModPatcher`: 52 migrated patch classes and 119 raw Harmony declarations remain in `docs/patch-inventory.md`.
 - `check-local-godot-source-workspace.ps1` verifies the unpacked local source snapshot, installed game identity, package parity, and installed `STS2-RitsuLib.xml` markers for the RitsuLib APIs Spire Plus uses. The current refreshed run passed 58 / 0 with the retained GDRE warnings only.
 - The repository entry docs are free of the retired framework name and route future implementation through RitsuLib docs/XML plus the unpacked local game source under `source code/src/Core/`.
-- The beta.107 runtime/package proof recaptures the current clicked/input UI migration package and applies all 46 Spire Plus ModPatcher patches; gameplay and handoff proof remain separate pending gates.
+- The beta.107 runtime/package proof recaptures the clicked/input UI migration package and applies all then-current 46 Spire Plus ModPatcher patches. It predates the source-only Batch 4c localization migration to 52 migrated patch classes; gameplay and handoff proof remain separate pending gates.
 - Previous enabled-mode packets remain historical or previous-package context and do not close current beta.107 enabled-mode gameplay proof.
 - AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.107 gameplay or handoff proof.
 

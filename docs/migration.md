@@ -24,7 +24,8 @@ Ancient UI proof are current. Gameplay, gated Vakuu fight-option/victory
 return, save-load, replacement behavior, co-op/fail-closed proof, independent
 QA, release readiness, and tester handoff remain pending.
 
-The remaining Batch 4c candidates and any higher-risk patch migration remain
-proposal-only until the owner approves the exact scope and the same pass records
-source evidence, focused tests, validation, and package-version decisions when
+Batch 4c localization fallback patches have moved to RitsuLib `IPatchMethod`
+/ `ModPatcher` in source. Any higher-risk patch migration remains proposal-only
+until the owner approves the exact scope and the same pass records source
+evidence, focused tests, validation, and package-version decisions when
 artifacts change.

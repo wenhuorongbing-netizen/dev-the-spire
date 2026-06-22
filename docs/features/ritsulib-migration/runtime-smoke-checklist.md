@@ -231,5 +231,7 @@ multiplayer/co-op, independent QA, and tester handoff remain pending.
   beside copied logs/screenshots.
 - If any beta.107 loader smoke item fails, do not proceed to gameplay items;
   diagnose first.
-- Batch 4c patch migration remains proposal-only. No Batch 4c patch migration
-  is allowed without explicit owner acceptance and fresh validation.
+- Batch 4c localization patch migration is source-only until a fresh
+  package/runtime pass proves all 52 migrated patch classes apply in the
+  installed game. High-risk patch migration still requires a new owner decision
+  and fresh validation.
