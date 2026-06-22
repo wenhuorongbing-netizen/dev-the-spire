@@ -328,7 +328,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.105", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.107", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("The remaining Batch 4c candidates and any higher-risk patch migration remain", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("| File | Classes | PatchIds |", migrationDoc, StringComparison.Ordinal);
@@ -414,7 +414,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.105 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
+        Assert.Contains("installed beta.107 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);
@@ -587,6 +587,25 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.True(offenders.Length == 0,
             "ModPatcher property getter targets must use the property name with MethodType.Getter, not compiler get_* names:" +
             Environment.NewLine + string.Join(Environment.NewLine, offenders));
+    }
+
+    [Fact]
+    public void UrdaOptionRelicClickPatchUsesRitsuLibDiscoverablePrefix()
+    {
+        var source = ReadRepoText(
+            "EZMicroBalanceCode",
+            "Ancients",
+            "Expansion",
+            "Urda",
+            "UrdaOptionRelicClickPatch.cs");
+
+        AssertSourceContains(
+            source,
+            "UrdaOptionRelicClickPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-option-relic-click\"",
+            "[HarmonyPrefix]",
+            "private static bool Prefix(RelicModel model)");
+        Assert.DoesNotContain("ExtractStoredSeedInsteadOfInspecting", source, StringComparison.Ordinal);
     }
 
     private static string ReadRitsuLibIntegrationSource() =>

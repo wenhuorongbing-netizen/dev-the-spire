@@ -101,7 +101,7 @@ public sealed partial class AncientUiReadinessGuardTests
             "manual-instructions.md",
             "spireplus_test_ancient URDA confirm",
             "This helper and command prepare UI evidence",
-            "Beta.105 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs.",
+            "Beta.107 already captured forced Urda, Morvi, Lotha, and normal Vakuu clicked-screen screenshots/logs.",
             "Keep the gated Vakuu fight-option, hover/readability, relic-bar follow-through, save-load, co-op, and gameplay rows pending");
         Assert.DoesNotContain(
             string.Concat(

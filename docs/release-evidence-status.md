@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `096F52FEDB7F243A6FAC8C9E008798AA042B8748BA5D63FA8BAC70C48408DA09` |
-| DLL | `DB4340FDF9CAF5E35DAABDD9CCABFFFBCCA0BA4E9CF1617291C4A6846958B1DA` |
-| PCK | `E965454C0B3DE096459FFFCF80677E8BC10F9D3B41239B8504114F26DE348913` |
-| Manifest | `4D33C3F8EA6C881EE1A4D33197BB1FE06D96751FAF3C5CE3FA9D74D57D311BF6` |
-| README_INSTALL | `FA3312EDE6E1E32D3A5301A02310E62078A079E6F588FB88AAA230B0331D667A` |
+| ZIP | `DE6CF70E008ECC336B6E8047A40B274176692CE57AFF7444BD2DD6B60BD4E094` |
+| DLL | `3C5F8734B705462515FD4416FBDFCEA77CC8BE1A933D9493978E7DBDC4FC2246` |
+| PCK | `5615B84136288D4420B69241DAE73D478F58A208EEE7F019CA8FFCF4EDF86A10` |
+| Manifest | `E8E16F22297E07ECEBAB844CE30A2E3916092261DF4E4A551B623DEF7EAB4AA9` |
+| README_INSTALL | `1D3FB76EBA38BE95D4B3086FF65C687B9B470CF0690538F087DE9E718BDFDFDF` |
 
 ## Automation Summary
 
@@ -22,20 +22,20 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.105 publish/package sync, installed package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are refreshed. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.107 publish/package sync, installed package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are refreshed. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.105. Current beta.105 covers package parity, runtime preflight, source-workspace identity, and smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.107. Current beta.107 covers package parity, runtime preflight, source-workspace identity, and smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |
 | fresh-current-package-loader-smoke | loader | Pass | Codex | Beta.99 Off loader proof is captured under `.tools\runtime-evidence\v01071-beta99-ritsulib0432-off-direct-20260621-234221`: main menu reached with exactly STS2-RitsuLib and Spire Plus loaded, clean audit, 25/25 Spire Plus patches, StS1Events disabled with 0 registration lines, Off verifier 21 / 0, and packet verifier 43 / 0. This is startup/default-Off evidence only, not gameplay or release readiness. |
 | mod-settings-current-display | clicked-ui | Pass | Codex | Beta.99 normal Steam-client Settings -> `Mod Settings (RitsuLib)` proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`. It proves settings UI visibility only, not beta.99 gameplay or release readiness. |
-| ancient-ui-urda | clicked-ui | Pass | Codex | Beta.105 smoke proof `.tools\runtime-evidence\monkey-stability-20260622-025733\iteration-0001` captured `spireplus_test_ancient URDA confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
-| ancient-ui-morvi | clicked-ui | Pass | Codex | Beta.105 smoke proof `.tools\runtime-evidence\monkey-stability-20260622-025733\iteration-0002` captured `spireplus_test_ancient MORVI confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
-| ancient-ui-lotha | clicked-ui | Pass | Codex | Beta.105 smoke proof `.tools\runtime-evidence\monkey-stability-20260622-025733\iteration-0003` captured `spireplus_test_ancient LOTHA confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
-| ancient-ui-vakuu-normal | clicked-ui | Pass | Codex | Beta.105 smoke proof `.tools\runtime-evidence\monkey-stability-20260622-025733\iteration-0004` captured `spireplus_test_ancient VAKUU confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
+| ancient-ui-urda | clicked-ui | Pass | Codex | Beta.107 smoke proof `.tools\runtime-evidence\monkey-stability-beta107-rerun-20260622-144051\iteration-0001` captured `spireplus_test_ancient URDA confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
+| ancient-ui-morvi | clicked-ui | Pass | Codex | Beta.107 smoke proof `.tools\runtime-evidence\monkey-stability-beta107-rerun-20260622-144051\iteration-0002` captured `spireplus_test_ancient MORVI confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
+| ancient-ui-lotha | clicked-ui | Pass | Codex | Beta.107 smoke proof `.tools\runtime-evidence\monkey-stability-beta107-rerun-20260622-144051\iteration-0003` captured `spireplus_test_ancient LOTHA confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
+| ancient-ui-vakuu-normal | clicked-ui | Pass | Codex | Beta.107 smoke proof `.tools\runtime-evidence\monkey-stability-beta107-rerun-20260622-144051\iteration-0004` captured `spireplus_test_ancient VAKUU confirm`, screenshot, command ACK, clean log audit, and packet-verified retained files. |
 | ancient-ui-vakuu-fight | clicked-ui | Pending | User | Vakuu fight option screenshot, foreground preflight, route note, log, and log audit. |
 | ancient-reward-visible-relics | gameplay | Pending | User | Urda, Morvi, Lotha, and Vakuu reward choices appear as visible option relics; selected lasting rewards appear in the relic bar with readable hover text; Sere Talon / Tanx Claws routing spot checks are filled; `ancient-reward-relics-checklist.md` has every reward row filled. |
 | player-text-tooltip-readability | gameplay | Pending | User | Player-facing card, relic, power, map-hover, event, and tooltip text fits and reads clearly in English and Simplified Chinese; `player-text-qa-checklist.md` has every row filled. |

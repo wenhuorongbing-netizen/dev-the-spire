@@ -13,7 +13,7 @@ internal sealed class UrdaOptionRelicClickPatch : IPatchMethod
         [new ModPatchTarget(typeof(NRelicInventory), "OnRelicClicked", [typeof(RelicModel)])];
 
     [HarmonyPrefix]
-    private static bool ExtractStoredSeedInsteadOfInspecting(RelicModel model)
+    private static bool Prefix(RelicModel model)
     {
         if (model is UrdaRootSightOptionRelic rootSight && rootSight.Owner != null)
         {

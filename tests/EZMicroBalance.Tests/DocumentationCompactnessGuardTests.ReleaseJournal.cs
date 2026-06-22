@@ -154,7 +154,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "active manifest is `v0.1.0-private-beta.105` after the latest RitsuLib default-key localization alias and clicked Ancient UI smoke pass",
+            "active manifest is `v0.1.0-private-beta.107` after the latest RitsuLib default-key localization alias and clicked Ancient UI smoke pass",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

@@ -5,8 +5,8 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 
 ## Current Target
 
-- Date: 2026-06-22; latest addendum: source-only clicked/input UI migration moved the current source patch inventory to 46 RitsuLib `IPatchMethod` classes and 125 raw Harmony declarations.
-- Current package target is Spire Plus `v0.1.0-private-beta.105` on Slay the Spire 2 `v0.107.1`.
+- Date: 2026-06-22; latest addendum: beta.107 recaptured the clicked/input UI migration package after fixing Urda option-relic prefix discovery, with the current source patch inventory at 46 RitsuLib `IPatchMethod` classes and 125 raw Harmony declarations.
+- Current package target is Spire Plus `v0.1.0-private-beta.107` on Slay the Spire 2 `v0.107.1`.
 - `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
 - The unpacked local game source under `source code/src/Core/` is the primary API authority for game behavior. RitsuLib docs/XML are the modding API authority.
 
@@ -18,15 +18,15 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 
 ## Current Evidence
 
-- Beta.105 build, focused guards, opt-in release-artifact guards, publish/package refresh, installed-package parity, runtime preflight, and source-workspace validation passed for the packaged RitsuLib-only target. Later source-only UI/input migration passed build, focused migration/source guards, patch-inventory, current-doc claims, format, diff-check, repository hygiene, RitsuLib latest, and source-workspace checks, but did not publish/package or run live game smoke.
-- Source-workspace validation passed 58 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.105`, and STS2-RitsuLib `0.4.33`, with retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
-- Clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-20260622-025733/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0.
+- Beta.107 build, focused guards, publish/package refresh, installed-package parity, runtime preflight, source-workspace validation, and clicked UI smoke passed for the current RitsuLib-only target. The smoke verifies the installed package applies all 46 migrated Spire Plus patch classes.
+- Source-workspace validation passed 58 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.107`, and STS2-RitsuLib `0.4.33`, with retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
+- Clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1620 / 0.
 
 ## Evidence Boundary
 
 - This closes smoke-level clicked Ancient UI migration proof only.
 - It does not prove event encounter gameplay, gated Vakuu fight-option/victory return, live gameplay, save-load, image rendering, replacement functional behavior, multiplayer fail-closed behavior, independent QA, release handoff, live-ready, or private-beta release readiness.
-- The beta.105 smoke used the installed package before the later source-only UI/input migration. Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
+- Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
 
 ## Guard And Runtime Rows
 

@@ -233,7 +233,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("beta.19 normal Steam-client startup/log verification reports `Found 30 previous saved-state registrations`", audit, StringComparison.Ordinal);
         Assert.Contains("historical beta.19 loader", audit, StringComparison.Ordinal);
-        Assert.Contains("Current beta.105 clicked Ancient UI smoke is `.tools/runtime-evidence/monkey-stability-20260622-025733/`", audit, StringComparison.Ordinal);
+        Assert.Contains("Current beta.107 clicked Ancient UI smoke is `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }
 
@@ -471,7 +471,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
-        Assert.Contains("- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.105 because settings code/resources did not change in the beta.105 pass.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.107 because settings code/resources did not change in the beta.107 pass.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Previous beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
@@ -493,7 +493,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed migration baseline must be read directly from `git log -1 --oneline --decorate`", projectState, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package target is beta.105", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.107", projectState, StringComparison.Ordinal);
         Assert.Contains("clicked Ancient UI smoke proof are current", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);

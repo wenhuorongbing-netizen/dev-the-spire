@@ -5,11 +5,11 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.105.
+- Spire Plus is RitsuLib-only for beta.107.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.33`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.33`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.105 package parity, runtime preflight,
+- Current packaged proof: beta.107 package parity, runtime preflight,
   source-workspace validation, and smoke-level clicked Ancient UI for Urda,
   Morvi, Lotha, and normal Vakuu.
 - Current source migration: Urda option-relic, Root Sight map-click, Root Sight
@@ -21,12 +21,12 @@ read only the support file that matches the task.
   `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
 - Current inventory: 46 migrated patch classes and 125 raw Harmony declarations
   remain in `docs/patch-inventory.md`.
-- Boundary: the beta.105 runtime proof predates the latest source-only
-  UI/input migration. Rebuild, publish/package, and rerun runtime smoke before
-  using current HEAD as tester-package evidence.
+- Boundary: beta.107 was rebuilt, published, packaged, and runtime-smoked after
+  the current UI/input migration, and the smoke applied all 46 Spire Plus
+  ModPatcher patches.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
-- Not proved: beta.105 enabled-mode registration, gameplay, save-load,
+- Not proved: beta.107 enabled-mode registration, gameplay, save-load,
   replacement behavior, co-op, independent QA, release readiness, or tester
   handoff.
 

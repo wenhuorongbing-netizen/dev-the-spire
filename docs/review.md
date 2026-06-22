@@ -9,9 +9,9 @@ Full historical review details are archived at `docs/archive/feature-audits/revi
 
 No current static P0/P1 source blocker is known from the latest no-game review passes. This does not prove release readiness.
 
-Beta.105 RitsuLib-only package parity, runtime preflight, source-workspace validation, and 4 / 4 forced Ancient UI smoke iterations passed for Urda, Morvi, Lotha, and normal Vakuu under `.tools/runtime-evidence/monkey-stability-20260622-025733/` with packet verification 1621 / 0. This closes smoke-level clicked Ancient UI migration proof only; gameplay, gated Vakuu fight-option/victory return, save-load, current enabled-mode proof, replacement, multiplayer, QA, and handoff proof remain pending.
+Beta.107 RitsuLib-only package parity, runtime preflight, source-workspace validation, and 4 / 4 forced Ancient UI smoke iterations passed for Urda, Morvi, Lotha, and normal Vakuu under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/` with packet verification 1620 / 0. This closes smoke-level clicked Ancient UI migration proof only; gameplay, gated Vakuu fight-option/victory return, save-load, current enabled-mode proof, replacement, multiplayer, QA, and handoff proof remain pending.
 
-Clicked UI is limited to beta.105 forced Ancient smoke. Current smoke proof covers forced Urda, Morvi, Lotha, and normal Vakuu only; gated Vakuu fight-option UI, relic hover/readability, and gameplay follow-through remain pending.
+Clicked UI is limited to beta.107 forced Ancient smoke. Current smoke proof covers forced Urda, Morvi, Lotha, and normal Vakuu only; gated Vakuu fight-option UI, relic hover/readability, and gameplay follow-through remain pending.
 
 ## Current Migration Evidence
 
@@ -19,9 +19,9 @@ Clicked UI is limited to beta.105 forced Ancient smoke. Current smoke proof cove
 - Current source has completed the clicked/input UI migration to RitsuLib `IPatchMethod` / `ModPatcher`: 46 migrated patch classes and 125 raw Harmony declarations remain in `docs/patch-inventory.md`.
 - `check-local-godot-source-workspace.ps1` verifies the unpacked local source snapshot, installed game identity, package parity, and installed `STS2-RitsuLib.xml` markers for the RitsuLib APIs Spire Plus uses. The current refreshed run passed 58 / 0 with the retained GDRE warnings only.
 - The repository entry docs are free of the retired framework name and route future implementation through RitsuLib docs/XML plus the unpacked local game source under `source code/src/Core/`.
-- The beta.105 runtime/package proof predates the latest source-only UI/input migration; recapture publish/package/runtime evidence before treating current HEAD as tester-package proof.
-- Previous enabled-mode packets remain historical or previous-package context and do not close current beta.105 enabled-mode gameplay proof.
-- AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.105 gameplay or handoff proof.
+- The beta.107 runtime/package proof recaptures the current clicked/input UI migration package and applies all 46 Spire Plus ModPatcher patches; gameplay and handoff proof remain separate pending gates.
+- Previous enabled-mode packets remain historical or previous-package context and do not close current beta.107 enabled-mode gameplay proof.
+- AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.107 gameplay or handoff proof.
 
 ## Current Manual-Proof Focus
 

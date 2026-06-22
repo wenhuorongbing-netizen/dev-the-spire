@@ -15,7 +15,7 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - STS2-RitsuLib `v0.4.33` is installed on the E-drive game root in direct NuGet runtime layout.
 - Historical `v0.106.1` Off, CanaryOnly, and AdditiveBatch1 diagnostic smokes reached main menu with clean audits.
 - Spire Plus applied 25/25 migrated ModPatcher patches in those historical loader smokes.
-- The current local game install is `v0.107.1`; installed beta.105 package parity and clicked Ancient UI smoke pass. Previous beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 AdditiveBatch1 loader proof are retained only as previous-package context.
+- The current local game install is `v0.107.1`; installed beta.107 package parity and clicked Ancient UI smoke pass. Previous beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 AdditiveBatch1 loader proof are retained only as previous-package context.
 - Previous beta.93 AdditiveBatch1 retained log and packet verifiers passed with 10 event types / 14 registration lines and exact tuple parity. This is loader/registration proof only and is not Batch 4c approval, gameplay proof, or handoff proof. Retained beta.85/beta.87 `v0.107.0` smokes remain previous-package/game-version context.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 

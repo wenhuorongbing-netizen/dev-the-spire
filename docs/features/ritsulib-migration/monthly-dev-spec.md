@@ -14,7 +14,7 @@ Use the current sources of truth instead:
 - `runtime-smoke-checklist.md` for future runtime evidence commands.
 - `batch-4c-candidates.md` for the proposal-only patch list.
 
-Current boundary: beta.105 is RitsuLib-only and has package parity, runtime
+Current boundary: beta.107 is RitsuLib-only and has package parity, runtime
 preflight, source-workspace validation, and smoke-level clicked Ancient UI
 proof. Settings, loader, and screenshot evidence remain scoped evidence only;
 gameplay, enabled-mode, save-load, replacement, co-op, QA, release readiness,

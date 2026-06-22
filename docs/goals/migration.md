@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.105`
+Current package target: Spire Plus `v0.1.0-private-beta.107`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
@@ -36,7 +36,7 @@ Do not add any runtime dependency besides STS2-RitsuLib unless the owner explici
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 46 migrated patch classes and 125 raw Harmony declarations remaining. The current manifest/package target is still beta.105 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, and adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text. Beta.105 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. That package proof predates the latest source-only UI/input migration; rebuild, publish/package, and rerun runtime smoke before treating current HEAD as tester-package evidence. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 46 migrated patch classes and 125 raw Harmony declarations remaining. The current manifest/package target is beta.107 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text, and fixing the Urda option-relic prefix so RitsuLib discovers that patch. Beta.107 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 46 Spire Plus ModPatcher patches applied, and packet verification 1620 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
 
 Current developer entry points and tracked text files are guarded so future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and unpacked local game source instead of retired runtime-framework assumptions.
 
@@ -68,7 +68,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $blocked = -join ([char[]](66,97,115,101,76,105,98)); git grep -n -i $blocked -- ':!docs/archive/**' ':!source code/**' ':!bin/**' ':!obj/**' ':!.tools/**' ':!publish/**'
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.105' -ExpectedRitsuLibVersion '0.4.33' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.107' -ExpectedRitsuLibVersion '0.4.33' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore
@@ -87,7 +87,7 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 ## Next Actions
 
 1. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
-2. Keep beta.105 clicked Ancient UI smoke scoped to forced UI visibility; it does not prove gameplay or release readiness.
+2. Keep beta.107 clicked Ancient UI smoke scoped to forced UI visibility; it does not prove gameplay or release readiness.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
 4. Record an owner decision before any remaining Batch 4c or higher-risk patch migration.
 5. Recapture git status, pushed HEAD, and validation status before any later handoff.

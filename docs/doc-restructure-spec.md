@@ -17,7 +17,7 @@ Start every development pass from:
 For migration work, use `docs/features/ritsulib-migration/README.md` as the
 entry point, then read `docs/goals/migration.md`,
 `docs/integrations/ritsulib.md`, and `docs/reviews/current-validation.md`.
-The RitsuLib integration lane is current for beta.105: compile package,
+The RitsuLib integration lane is current for beta.107: compile package,
 manifest dependency, package parity, source-workspace validation, and clicked Ancient UI smoke are RitsuLib-only;
 beta.99, beta.96, and beta.93 loader or settings proof remain previous-package evidence only.
 
