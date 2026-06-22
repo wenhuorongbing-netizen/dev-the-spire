@@ -179,6 +179,8 @@ public sealed class SourceApiDriftAuditGuardTests
     {
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
+        var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
+        var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
         var store = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStore.cs");
 
         AssertSourceContains(
@@ -198,6 +200,29 @@ public sealed class SourceApiDriftAuditGuardTests
             "ModSettingsText.I18N(i18n, key, fallback)");
         Assert.DoesNotContain("BeginModDataRegistration", page, StringComparison.Ordinal);
         Assert.DoesNotContain("store.Register", page, StringComparison.Ordinal);
+        Assert.DoesNotContain("page.AddSection(", page, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            migrationStatus,
+            "private static void AddMigrationStatusSection(ModSettingsPageBuilder page)",
+            "page.AddSection(MigrationStatusSectionId",
+            "SPIREPLUS-MIGRATION_STATUS.title",
+            "RitsuLib-only mod surface",
+            "LiteralText(RequiredRuntimeDependency)",
+            "Settings screenshots prove UI visibility only.");
+        Assert.DoesNotContain("AddPreviewToolsSection", migrationStatus, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            previewTools,
+            "private static void AddPreviewToolsSection(ModSettingsPageBuilder page, string modId)",
+            "page.AddSection(PreviewToolsSectionId",
+            "SPIREPLUS-PREVIEW_TOOLS.title",
+            "EnableCrystalSpherePeekEntryId",
+            "CrystalSphereMaskAlphaEntryId",
+            "EnableTransformPredictionEntryId",
+            "TransformPredictionAlwaysOnEntryId",
+            "ShowPreviewDebugLogsEntryId");
+        Assert.DoesNotContain("AddMigrationStatusSection", previewTools, StringComparison.Ordinal);
 
         AssertSourceContains(
             store,

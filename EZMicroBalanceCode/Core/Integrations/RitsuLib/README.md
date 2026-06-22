@@ -15,9 +15,12 @@ pack; its sibling partial files own the Ancient/encounter, card, relic, power,
 and enchantment registration lists so future content has a direct RitsuLib
 home instead of drifting into scattered registration code.
 Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file
-keeps public preview-tool settings and localization bootstrap, while
-`SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data persistence and
-`SpirePlusModConfig.SettingsPage.cs` owns clicked Mod Settings UI sections.
+keeps public preview-tool settings and localization bootstrap,
+`SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data persistence,
+`SpirePlusModConfig.SettingsPage.cs` owns page registration,
+`SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the read-only
+migration status section, and `SpirePlusModConfig.SettingsPage.PreviewTools.cs`
+owns interactive preview-tool controls.
 
 Current beta.105 evidence covers package parity, runtime preflight,
 source-workspace validation, and smoke-level clicked Ancient UI for Urda,
