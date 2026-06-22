@@ -622,7 +622,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             archiveReadme,
             "Current migration truth is beta.107 RitsuLib-only.",
-            "active stubs under `docs/goals/` point to current beta.107 RitsuLib-only migration truth.");
+            "current beta.107 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`.");
         Assert.DoesNotContain("repo now compiles against `STS2.RitsuLib` 0.4.32", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("full staging record", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("current beta.91", archiveReadme, StringComparison.OrdinalIgnoreCase);
@@ -754,59 +754,13 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
-    public void M5RevisionNDocsStayCompactAndArchivedOutOfActivePath()
+    public void HistoricalRevisionBoundaryDocReplacesM5GoalStubs()
     {
         var archiveReadme = ReadRepoText("docs", "archive", "README.md");
         var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
         var docInventory = ReadRepoText("docs", "doc-inventory.md");
-        var activeFiles = new[]
-        {
-            "m5-revision-n-final-report.md",
-            "m5-revision-n-owner-commit-packet.md",
-            "m5-revision-n-validation-replay.md",
-            "m5-revision-n-runtime-evidence-plan.md"
-        };
-        var archivedFiles = new[]
-        {
-            "m5-revision-n-final-report-20260619.md",
-            "m5-revision-n-owner-commit-packet-20260619.md",
-            "m5-revision-n-validation-replay-20260619.md",
-            "m5-revision-n-runtime-evidence-plan-20260619.md"
-        };
-
-        foreach (var activeFile in activeFiles)
-        {
-            var activeBoundary = ReadRepoText("docs", "goals", activeFile);
-            var lineCount = activeBoundary.Split('\n').Length;
-            Assert.True(lineCount <= 25, $"{activeFile} should stay a compact historical-boundary stub; current line count is {lineCount}.");
-            AssertSourceContains(
-                activeBoundary,
-                "Status: archived",
-                "beta.93",
-                "RitsuLib-only");
-            Assert.DoesNotContain("## Replay Commands", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Commit Slice Sketch", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Next Runtime Rows", activeBoundary, StringComparison.Ordinal);
-        }
-
-        foreach (var archivedFile in archivedFiles)
-        {
-            AssertRepoFileExists("docs", "archive", "legacy-planning", archivedFile);
-            Assert.Contains(archivedFile, archiveReadme, StringComparison.Ordinal);
-            Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
-        }
-
-        Assert.Contains("docs/archive/legacy-planning/m5-revision-n-*-20260619.md", projectMap, StringComparison.Ordinal);
-        Assert.Contains("docs/goals/m5-revision-n-*.md", projectMap, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void M5RevisionLDocsStayCompactAndArchivedOutOfActivePath()
-    {
-        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
-        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
-        var docInventory = ReadRepoText("docs", "doc-inventory.md");
-        var activeFiles = new[]
+        var boundary = ReadRepoText("docs", "goals", "historical-revision-boundaries.md");
+        var removedActiveFiles = new[]
         {
             "m5-revision-l-runtime-hard-blocker.md",
             "m5-revision-l-runtime-smoke-plan.md",
@@ -814,7 +768,17 @@ public sealed partial class DocumentationCompactnessGuardTests
             "m5-revision-l-owner-review-packet.md",
             "m5-revision-l-dirty-ledger.md",
             "m5-revision-l-commit-slices.md",
-            "m5-revision-l-warning-ledger.md"
+            "m5-revision-l-warning-ledger.md",
+            "m5-revision-m-final-report.md",
+            "m5-revision-m-owner-review-packet.md",
+            "m5-revision-m-runtime-drift-report.md",
+            "m5-revision-m-patch-failure-ledger.md",
+            "m5-revision-m-version-decision.md",
+            "m5-revision-m-commit-slices.md",
+            "m5-revision-n-final-report.md",
+            "m5-revision-n-owner-commit-packet.md",
+            "m5-revision-n-validation-replay.md",
+            "m5-revision-n-runtime-evidence-plan.md"
         };
         var archivedFiles = new[]
         {
@@ -824,83 +788,58 @@ public sealed partial class DocumentationCompactnessGuardTests
             "m5-revision-l-owner-review-packet-20260610.md",
             "m5-revision-l-dirty-ledger-20260610.md",
             "m5-revision-l-commit-slices-20260610.md",
-            "m5-revision-l-warning-ledger-20260610.md"
-        };
-
-        foreach (var activeFile in activeFiles)
-        {
-            var activeBoundary = ReadRepoText("docs", "goals", activeFile);
-            var lineCount = activeBoundary.Split('\n').Length;
-            Assert.True(lineCount <= 25, $"{activeFile} should stay a compact historical-boundary stub; current line count is {lineCount}.");
-            AssertSourceContains(
-                activeBoundary,
-                "Status:",
-                "archived");
-            Assert.DoesNotContain("## Existing Historical Evidence", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Dirty Slices", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Recommended Order", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Current Count", activeBoundary, StringComparison.Ordinal);
-        }
-
-        foreach (var archivedFile in archivedFiles)
-        {
-            AssertRepoFileExists("docs", "archive", "legacy-planning", archivedFile);
-            Assert.Contains(archivedFile, archiveReadme, StringComparison.Ordinal);
-            Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
-        }
-
-        Assert.Contains("docs/archive/legacy-planning/m5-revision-l-*-20260610.md", projectMap, StringComparison.Ordinal);
-        Assert.Contains("docs/goals/m5-revision-l-*.md", projectMap, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void M5RevisionMDocsStayCompactAndArchivedOutOfActivePath()
-    {
-        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
-        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
-        var docInventory = ReadRepoText("docs", "doc-inventory.md");
-        var activeFiles = new[]
-        {
-            "m5-revision-m-final-report.md",
-            "m5-revision-m-owner-review-packet.md",
-            "m5-revision-m-runtime-drift-report.md",
-            "m5-revision-m-patch-failure-ledger.md",
-            "m5-revision-m-version-decision.md",
-            "m5-revision-m-commit-slices.md"
-        };
-        var archivedFiles = new[]
-        {
+            "m5-revision-l-warning-ledger-20260610.md",
             "m5-revision-m-final-report-20260611.md",
             "m5-revision-m-owner-review-packet-20260611.md",
             "m5-revision-m-runtime-drift-report-20260618.md",
             "m5-revision-m-patch-failure-ledger-20260611.md",
             "m5-revision-m-version-decision-20260611.md",
-            "m5-revision-m-commit-slices-20260611.md"
+            "m5-revision-m-commit-slices-20260611.md",
+            "m5-revision-n-final-report-20260619.md",
+            "m5-revision-n-owner-commit-packet-20260619.md",
+            "m5-revision-n-validation-replay-20260619.md",
+            "m5-revision-n-runtime-evidence-plan-20260619.md"
         };
 
-        foreach (var activeFile in activeFiles)
+        var lineCount = boundary.Split('\n').Length;
+        Assert.True(lineCount <= 45, $"historical-revision-boundaries.md should stay compact; current line count is {lineCount}.");
+        AssertSourceContains(
+            boundary,
+            "Status: compact active boundary index replacing the former per-file M5 Revision L/M/N stubs.",
+            "Full records live under `docs/archive/legacy-planning/`",
+            "current source expects 10 event types / 14 calls",
+            "Do not use the historical `v0.106.1` loader smokes or the red beta.84 smoke as current runtime proof.",
+            "Runtime smoke does not prove gameplay.",
+            "not live-ready or release-ready",
+            "Accept as loader-smoke package, not gameplay/release proof",
+            "May run only after process coordination",
+            "do not start overlapping validation lanes",
+            "Current migration truth is beta.107 RitsuLib-only",
+            "Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.");
+        Assert.DoesNotContain("## Replay Commands", boundary, StringComparison.Ordinal);
+        Assert.DoesNotContain("## Commit Slice Sketch", boundary, StringComparison.Ordinal);
+        Assert.DoesNotContain("## Recommended Order", boundary, StringComparison.Ordinal);
+
+        foreach (var activeFile in removedActiveFiles)
         {
-            var activeBoundary = ReadRepoText("docs", "goals", activeFile);
-            var lineCount = activeBoundary.Split('\n').Length;
-            Assert.True(lineCount <= 25, $"{activeFile} should stay a compact historical-boundary stub; current line count is {lineCount}.");
-            AssertSourceContains(
-                activeBoundary,
-                "Status:",
-                "archived");
-            Assert.DoesNotContain("## Slice 1", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Required Next Lane", activeBoundary, StringComparison.Ordinal);
-            Assert.DoesNotContain("## Red beta.84 Off Smoke Failures", activeBoundary, StringComparison.Ordinal);
+            AssertRepoPathDoesNotExist("docs", "goals", activeFile);
         }
 
         foreach (var archivedFile in archivedFiles)
         {
             AssertRepoFileExists("docs", "archive", "legacy-planning", archivedFile);
+            Assert.Contains(archivedFile, boundary, StringComparison.Ordinal);
             Assert.Contains(archivedFile, archiveReadme, StringComparison.Ordinal);
             Assert.Contains(archivedFile, docInventory, StringComparison.Ordinal);
         }
 
+        Assert.Contains("docs/goals/historical-revision-boundaries.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/archive/legacy-planning/m5-revision-n-*-20260619.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("docs/archive/legacy-planning/m5-revision-l-*-20260610.md", projectMap, StringComparison.Ordinal);
         Assert.Contains("docs/archive/legacy-planning/m5-revision-m-*-20260611.md", projectMap, StringComparison.Ordinal);
-        Assert.Contains("docs/goals/m5-revision-m-*.md", projectMap, StringComparison.Ordinal);
+        Assert.DoesNotContain("docs/goals/m5-revision-l-*.md", projectMap, StringComparison.Ordinal);
+        Assert.DoesNotContain("docs/goals/m5-revision-m-*.md", projectMap, StringComparison.Ordinal);
+        Assert.DoesNotContain("docs/goals/m5-revision-n-*.md", projectMap, StringComparison.Ordinal);
     }
 
 }

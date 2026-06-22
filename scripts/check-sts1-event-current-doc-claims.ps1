@@ -435,19 +435,7 @@ $ritsuMigrationReadme = Read-RepoText 'docs\features\ritsulib-migration\README.m
 $ritsuMonthlyDevSpec = Read-RepoText 'docs\features\ritsulib-migration\monthly-dev-spec.md'
 $ritsuBatch4cCandidates = Read-RepoText 'docs\features\ritsulib-migration\batch-4c-candidates.md'
 $ritsuRuntimeHardBlock = Read-RepoText 'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md'
-$m5RevisionLRuntimeHardBlocker = Read-RepoText 'docs\goals\m5-revision-l-runtime-hard-blocker.md'
-$m5RevisionLRuntimeSmokePlan = Read-RepoText 'docs\goals\m5-revision-l-runtime-smoke-plan.md'
-$m5RevisionLFinalReport = Read-RepoText 'docs\goals\m5-revision-l-final-report.md'
-$m5RevisionLOwnerPacket = Read-RepoText 'docs\goals\m5-revision-l-owner-review-packet.md'
-$m5RevisionLDirtyLedger = Read-RepoText 'docs\goals\m5-revision-l-dirty-ledger.md'
-$m5RevisionLCommitSlices = Read-RepoText 'docs\goals\m5-revision-l-commit-slices.md'
-$m5RevisionLWarningLedger = Read-RepoText 'docs\goals\m5-revision-l-warning-ledger.md'
-$m5RevisionMFinalReport = Read-RepoText 'docs\goals\m5-revision-m-final-report.md'
-$m5RevisionMOwnerPacket = Read-RepoText 'docs\goals\m5-revision-m-owner-review-packet.md'
-$m5RevisionMRuntimeDriftReport = Read-RepoText 'docs\goals\m5-revision-m-runtime-drift-report.md'
-$m5RevisionMPatchFailureLedger = Read-RepoText 'docs\goals\m5-revision-m-patch-failure-ledger.md'
-$m5RevisionMVersionDecision = Read-RepoText 'docs\goals\m5-revision-m-version-decision.md'
-$m5RevisionMCommitSlices = Read-RepoText 'docs\goals\m5-revision-m-commit-slices.md'
+$historicalRevisionBoundaries = Read-RepoText 'docs\goals\historical-revision-boundaries.md'
 $goalWarningLedger = Read-RepoText 'docs\goals\warning-ledger.md'
 $overnightRunLedger = Read-RepoText 'docs\goals\overnight-run-ledger.md'
 $overnightRunStatus = Read-RepoText 'docs\goals\overnight-run-status.md'
@@ -525,19 +513,7 @@ $currentClaimFiles = @(
     'docs\features\ritsulib-migration\monthly-dev-spec.md',
     'docs\features\ritsulib-migration\batch-4c-candidates.md',
     'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md',
-    'docs\goals\m5-revision-l-runtime-hard-blocker.md',
-    'docs\goals\m5-revision-l-runtime-smoke-plan.md',
-    'docs\goals\m5-revision-l-final-report.md',
-    'docs\goals\m5-revision-l-owner-review-packet.md',
-    'docs\goals\m5-revision-l-dirty-ledger.md',
-    'docs\goals\m5-revision-l-commit-slices.md',
-    'docs\goals\m5-revision-l-warning-ledger.md',
-    'docs\goals\m5-revision-m-final-report.md',
-    'docs\goals\m5-revision-m-owner-review-packet.md',
-    'docs\goals\m5-revision-m-runtime-drift-report.md',
-    'docs\goals\m5-revision-m-patch-failure-ledger.md',
-    'docs\goals\m5-revision-m-version-decision.md',
-    'docs\goals\m5-revision-m-commit-slices.md',
+    'docs\goals\historical-revision-boundaries.md',
     'docs\goals\warning-ledger.md',
     'docs\goals\overnight-run-ledger.md',
     'docs\goals\overnight-run-status.md',
@@ -606,19 +582,7 @@ Add-Check -Name 'current_claim_scan_includes_ritsu_batch4c' -Passed ($currentCla
 Add-Check -Name 'current_claim_scan_includes_ritsu_runtime_checklist' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\runtime-smoke-checklist.md') -Detail 'RitsuLib runtime smoke checklist must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_runtime_hard_block' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md') -Detail 'RitsuLib runtime hard-block report must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_next_overnight' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\next-overnight-run.md') -Detail 'RitsuLib next overnight run plan must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_runtime_hard_blocker' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-runtime-hard-blocker.md') -Detail 'M5 Revision L runtime hard-blocker must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_runtime_smoke_plan' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-runtime-smoke-plan.md') -Detail 'M5 Revision L runtime smoke plan must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_final_report' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-final-report.md') -Detail 'M5 Revision L final report must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_owner_packet' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-owner-review-packet.md') -Detail 'M5 Revision L owner packet must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_dirty_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-dirty-ledger.md') -Detail 'M5 Revision L dirty ledger must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_commit_slices' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-commit-slices.md') -Detail 'M5 Revision L commit slices must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_l_warning_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-l-warning-ledger.md') -Detail 'M5 Revision L warning ledger must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_final_report' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-m-final-report.md') -Detail 'M5 final report must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_owner_packet' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-m-owner-review-packet.md') -Detail 'M5 owner packet must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_runtime_drift' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-m-runtime-drift-report.md') -Detail 'M5 runtime drift report must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_patch_failure_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-m-patch-failure-ledger.md') -Detail 'M5 patch failure ledger must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_version_decision' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-m-version-decision.md') -Detail 'M5 version decision must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_m5_commit_slices' -Passed ($currentClaimFiles -contains 'docs\goals\m5-revision-m-commit-slices.md') -Detail 'M5 commit slices must be in stale claim scan scope'
+Add-Check -Name 'current_claim_scan_includes_historical_revision_boundaries' -Passed ($currentClaimFiles -contains 'docs\goals\historical-revision-boundaries.md') -Detail 'historical revision boundaries must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_goal_warning_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\warning-ledger.md') -Detail 'current warning ledger must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_overnight_run_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\overnight-run-ledger.md') -Detail 'overnight-run ledger must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_overnight_run_status' -Passed ($currentClaimFiles -contains 'docs\goals\overnight-run-status.md') -Detail 'overnight-run status must be in stale claim scan scope'
@@ -798,32 +762,20 @@ Add-ContainsCheck -Name 'ritsu_runtime_hard_block_settings_ui_path' -Text $ritsu
 Add-ContainsCheck -Name 'ritsu_runtime_hard_block_current_enabled_pending' -Text $ritsuRuntimeHardBlock -Needle 'Current hard blocks are gameplay, save-load,'
 Add-ContainsCheck -Name 'ritsu_runtime_hard_block_manual_gates_pending' -Text $ritsuRuntimeHardBlock -Needle 'current beta.107 enabled-mode'
 Add-ContainsCheck -Name 'ritsu_runtime_hard_block_coordination_boundary' -Text $ritsuRuntimeHardBlock -Needle 'After coordination clears, capture current enabled-mode'
-Add-ContainsCheck -Name 'm5_l_runtime_hard_blocker_batch1_current_count' -Text $m5RevisionLRuntimeHardBlocker -Needle 'historical log used the then-current 10 event types / 11 registration-call shape; current source expects 10 event types / 14 calls'
-Add-ContainsCheck -Name 'm5_l_runtime_hard_blocker_historical_nonclaim' -Text $m5RevisionLRuntimeHardBlocker -Needle 'Do not use the historical `v0.106.1` loader smokes or the red beta.84 smoke as current runtime proof.'
-Add-ContainsCheck -Name 'm5_l_runtime_smoke_plan_batch1_current_count' -Text $m5RevisionLRuntimeSmokePlan -Needle 'current source expects 10 event types / 14 calls'
-Add-ContainsCheck -Name 'm5_l_runtime_smoke_plan_gameplay_nonclaim' -Text $m5RevisionLRuntimeSmokePlan -Needle 'Runtime smoke does not prove gameplay.'
-Add-ContainsCheck -Name 'm5_l_final_report_revision_m_supersession' -Text $m5RevisionLFinalReport -Needle 'Revision M supersession note, 2026-06-11: this report''s beta.84 package/runtime boundary is historical.'
-Add-ContainsCheck -Name 'm5_l_final_report_beta85_off_only' -Text $m5RevisionLFinalReport -Needle 'Current beta.85 has clean `v0.107.0` default-Off loader proof only'
-Add-ContainsCheck -Name 'm5_l_owner_packet_revision_m_supersession' -Text $m5RevisionLOwnerPacket -Needle 'Revision M supersession note, 2026-06-11: this packet''s beta.84 package/runtime boundary is historical.'
-Add-ContainsCheck -Name 'm5_l_owner_packet_enabled_pending' -Text $m5RevisionLOwnerPacket -Needle 'current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, and release-ready proof remain pending.'
-Add-ContainsCheck -Name 'm5_l_dirty_ledger_revision_m_supersession' -Text $m5RevisionLDirtyLedger -Needle 'Revision M supersession note, 2026-06-11: this dirty-ledger scope is historical owner-review context.'
-Add-ContainsCheck -Name 'm5_l_dirty_ledger_beta85_off_only' -Text $m5RevisionLDirtyLedger -Needle 'Current beta.85 has clean `v0.107.0` default-Off loader proof only'
-Add-ContainsCheck -Name 'm5_l_commit_slices_revision_m_supersession' -Text $m5RevisionLCommitSlices -Needle 'Revision M supersession note, 2026-06-11: this commit-slice plan is historical owner-review context.'
-Add-ContainsCheck -Name 'm5_l_commit_slices_current_pointer' -Text $m5RevisionLCommitSlices -Needle 'Use `docs/goals/m5-revision-m-commit-slices.md`, `PROJECT_STATE.md`, and the Revision M docs for current proof claims.'
-Add-ContainsCheck -Name 'm5_l_warning_ledger_revision_m_supersession' -Text $m5RevisionLWarningLedger -Needle 'Revision M supersession note, 2026-06-11: this warning ledger is historical owner-review context for the Revision L burn-down.'
-Add-ContainsCheck -Name 'm5_l_warning_ledger_no_runtime_proof' -Text $m5RevisionLWarningLedger -Needle 'warning-clean source is not enabled-mode, gameplay, save-load, replacement, multiplayer, QA, or release-ready proof.'
-Add-ContainsCheck -Name 'm5_final_report_not_release_ready' -Text $m5RevisionMFinalReport -Needle 'Status: Complete for Off loader runtime-drift closure; not live-ready or release-ready.'
-Add-ContainsCheck -Name 'm5_final_report_no_overlapping_validation' -Text $m5RevisionMFinalReport -Needle 'do not start overlapping validation lanes.'
-Add-ContainsCheck -Name 'm5_owner_packet_loader_package_only' -Text $m5RevisionMOwnerPacket -Needle 'Accept as loader-smoke package, not gameplay/release proof'
-Add-ContainsCheck -Name 'm5_owner_packet_canary_after_coordination' -Text $m5RevisionMOwnerPacket -Needle 'May run only after process coordination'
-Add-ContainsCheck -Name 'm5_runtime_drift_beta87_additive_path' -Text $m5RevisionMRuntimeDriftReport -Needle 'Retained beta.87 AdditiveBatch1 proof is `.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/`'
-Add-ContainsCheck -Name 'm5_runtime_drift_enabled_modes_pending' -Text $m5RevisionMRuntimeDriftReport -Needle 'Fresh beta.87 default-Off and CanaryOnly smokes are not recorded; retained beta.85/beta.86 evidence is previous-package loader context.'
-Add-ContainsCheck -Name 'm5_runtime_drift_stop_line' -Text $m5RevisionMRuntimeDriftReport -Needle 'Do not extend that to runtime-ready, live-ready, or release-ready'
-Add-ContainsCheck -Name 'm5_patch_failure_current_package_proof' -Text $m5RevisionMPatchFailureLedger -Needle '.tools/runtime-evidence/v01070-beta87-additive-batch1-direct-20260618-152531/godot.log.after-launch` was the then-current beta.87 package proof'
-Add-ContainsCheck -Name 'm5_patch_failure_enabled_modes_next_only' -Text $m5RevisionMPatchFailureLedger -Needle 'Required next proof is no longer loader smoke; run gameplay, save-load, render, replacement, multiplayer, and QA checks only if process coordination is clear.'
-Add-ContainsCheck -Name 'm5_version_decision_nonclaim' -Text $m5RevisionMVersionDecision -Needle 'Do not use beta.85 version docs as gameplay, live-ready, or release-ready proof.'
-Add-ContainsCheck -Name 'm5_commit_slices_no_commit_boundary' -Text $m5RevisionMCommitSlices -Needle 'Status: planning only; no commit or push authorized from this paused validation lane.'
-Add-ContainsCheck -Name 'm5_commit_slices_sts1_default_off' -Text $m5RevisionMCommitSlices -Needle 'This should remain default-Off/staged until runtime event proof exists.'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_l_archived' -Text $historicalRevisionBoundaries -Needle 'm5-revision-l-runtime-hard-blocker-20260610.md'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_l_count_boundary' -Text $historicalRevisionBoundaries -Needle 'historical log used the then-current 10 event types / 11 registration-call shape; current source expects 10 event types / 14 calls'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_l_nonclaim' -Text $historicalRevisionBoundaries -Needle 'Do not use the historical `v0.106.1` loader smokes or the red beta.84 smoke as current runtime proof.'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_l_gameplay_nonclaim' -Text $historicalRevisionBoundaries -Needle 'Runtime smoke does not prove gameplay.'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_archived' -Text $historicalRevisionBoundaries -Needle 'm5-revision-m-runtime-drift-report-20260618.md'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_not_release_ready' -Text $historicalRevisionBoundaries -Needle 'not live-ready or release-ready'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_loader_only' -Text $historicalRevisionBoundaries -Needle 'Accept as loader-smoke package, not gameplay/release proof'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_coordination' -Text $historicalRevisionBoundaries -Needle 'May run only after process coordination'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_no_overlap' -Text $historicalRevisionBoundaries -Needle 'do not start overlapping validation lanes'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_version_nonclaim' -Text $historicalRevisionBoundaries -Needle 'Do not use beta.85 version docs as gameplay, live-ready, or release-ready proof.'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_m_default_off' -Text $historicalRevisionBoundaries -Needle 'This should remain default-Off/staged until runtime event proof exists.'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_n_archived' -Text $historicalRevisionBoundaries -Needle 'm5-revision-n-runtime-evidence-plan-20260619.md'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_n_current_truth' -Text $historicalRevisionBoundaries -Needle 'Current migration truth is beta.107 RitsuLib-only'
+Add-ContainsCheck -Name 'historical_revision_boundaries_revision_n_nonclaim' -Text $historicalRevisionBoundaries -Needle 'Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.'
 Add-ContainsCheck -Name 'goal_warning_ledger_revision_m_note' -Text $goalWarningLedger -Needle 'Revision M note, 2026-06-11: beta.85 validation keeps the nullable warning blocker closed'
 Add-ContainsCheck -Name 'goal_warning_ledger_no_runtime_proof' -Text $goalWarningLedger -Needle 'Do not use 0 warnings as current CanaryOnly, AdditiveBatch1, gameplay, save-load, replacement, multiplayer, QA, or release-ready proof.'
 Add-ContainsCheck -Name 'overnight_run_ledger_revision_m_supersession' -Text $overnightRunLedger -Needle 'Revision M supersession note, 2026-06-11: this ledger is historical Revision L owner-review context.'
@@ -1214,19 +1166,7 @@ Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_batch4c' -Text $staticF
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_runtime_checklist' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\runtime-smoke-checklist.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_runtime_hard_block' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_next_overnight' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\next-overnight-run.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_runtime_hard_blocker' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-runtime-hard-blocker.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_runtime_smoke_plan' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-runtime-smoke-plan.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_final_report' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-final-report.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_owner_packet' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-owner-review-packet.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_dirty_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-dirty-ledger.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_commit_slices' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-commit-slices.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_l_warning_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-l-warning-ledger.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_final_report' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-m-final-report.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_owner_packet' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-m-owner-review-packet.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_runtime_drift' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-m-runtime-drift-report.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_patch_failure_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-m-patch-failure-ledger.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_version_decision' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-m-version-decision.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_m5_commit_slices' -Text $staticFileHygieneScript -Needle "'docs\goals\m5-revision-m-commit-slices.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_historical_revision_boundaries' -Text $staticFileHygieneScript -Needle "'docs\goals\historical-revision-boundaries.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_goal_warning_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\warning-ledger.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_overnight_run_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\overnight-run-ledger.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_overnight_run_status' -Text $staticFileHygieneScript -Needle "'docs\goals\overnight-run-status.md'"
