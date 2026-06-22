@@ -1,4 +1,6 @@
 using Godot;
+using EZMicroBalance.EZMicroBalanceCode.Ancients;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Core.Features;
 using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -20,6 +22,12 @@ public partial class MainFile : Node
         SpirePlusDebug.Log("Init", "Spire Plus initialization starting.");
 
         RitsuLibBootstrap.ApplyPatches(ModId);
+
+        // RitsuLib SavedProperties closes registration before gameplay hooks run.
+        // Touch every SavedAttachedState field while mod initialization is open.
+        AncientSavedStateFields.EnsureRegistered();
+        AscensionSavedStateFields.EnsureRegistered();
+        SpirePlusDebug.Log("Init", "RitsuLib saved-state fields registered.");
 
         SpirePlusModConfig.Register(ModId);
         SpirePlusDebug.Log("Init", "RitsuLib mod settings registered.");

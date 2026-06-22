@@ -5,15 +5,18 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.99.
-- Compile dependency: NuGet `STS2.RitsuLib` `0.4.32`.
-- Runtime dependency: manifest `STS2-RitsuLib >= 0.4.32`.
+- Spire Plus is RitsuLib-only for beta.104.
+- Compile dependency: NuGet `STS2.RitsuLib` `0.4.33`.
+- Runtime dependency: manifest `STS2-RitsuLib >= 0.4.33`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current proof: beta.99 package parity, RitsuLib settings UI visibility, and
-  direct Off loader startup/default-Off evidence.
-- Not proved: beta.99 enabled-mode registration, gameplay, clicked Ancient UI,
-  save-load, replacement behavior, co-op, independent QA, release readiness, or
-  tester handoff.
+- Current proof: beta.104 package parity, runtime preflight, source-workspace
+  validation, and smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and
+  normal Vakuu.
+- Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
+  loader startup/default-Off evidence.
+- Not proved: beta.104 enabled-mode registration, gameplay, save-load,
+  replacement behavior, co-op, independent QA, release readiness, or tester
+  handoff.
 
 ## Read Order
 

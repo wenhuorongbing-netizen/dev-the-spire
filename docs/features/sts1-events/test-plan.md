@@ -184,9 +184,9 @@ $evidence = '.tools\runtime-evidence\sts1-canary-v01071-YYYYMMDD-HHMMSS'
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.99 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.32 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.104 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.33 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.99 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.32 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.104 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.33 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 
@@ -198,9 +198,9 @@ $evidence = '.tools\runtime-evidence\sts1-additive-batch1-v01071-YYYYMMDD-HHMMSS
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.99 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.32 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.104 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.33 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.99 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.32 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.104 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.33 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 
@@ -240,9 +240,9 @@ Debug-spawn proof is useful for option behavior, but it does not replace random-
 
 | Option | Expected Result | A15+ | Pass/Fail |
 |--------|----------------|------|-----------|
-| Take → Outrun | Injury curse | Same | |
-| Take → Smash | Lose 25% max HP as HP damage | Lose 35% max HP as HP damage | |
-| Take → Hide | Lose 8% max HP | Lose 10% max HP | |
+| Take -> Outrun | Injury curse | Same | |
+| Take -> Smash | Lose 25% max HP as HP damage | Lose 35% max HP as HP damage | |
+| Take -> Hide | Lose 8% max HP | Lose 10% max HP | |
 | Leave | Nothing | Same | |
 
 ### Golden Shrine AdditiveBatch1 Check
@@ -287,8 +287,8 @@ Debug-spawn proof is useful for option behavior, but it does not replace random-
 
 ### Localization Test
 
-1. Switch game language to English → verify all text displays
-2. Switch game language to Chinese → verify all text displays
+1. Switch game language to English -> verify all text displays
+2. Switch game language to Chinese -> verify all text displays
 3. Verify no missing/placeholder text
 
 ## Test File

@@ -26,7 +26,7 @@ internal static class SpirePlusModConfig
     private const string EnableTransformPredictionEntryId = "enable_transform_prediction";
     private const string TransformPredictionAlwaysOnEntryId = "transform_prediction_always_on";
     private const string ShowPreviewDebugLogsEntryId = "show_preview_debug_logs";
-    private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.32";
+    private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.33";
     private const string StableTechnicalId = "EZMicroBalance";
     private const double DefaultCrystalSphereMaskAlpha = 0.32;
     private const double CrystalSphereMaskAlphaMin = 0.05;

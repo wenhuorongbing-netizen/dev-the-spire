@@ -36,6 +36,27 @@ public static class SpireCaptureNative {
     public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint processId);
 
     [DllImport("user32.dll")]
+    public static extern bool SetForegroundWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    [DllImport("user32.dll")]
+    public static extern bool BringWindowToTop(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr SetFocus(IntPtr hWnd);
+
+    [DllImport("kernel32.dll")]
+    public static extern uint GetCurrentThreadId();
+
+    [DllImport("user32.dll")]
+    public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool fAttach);
+
+    [DllImport("user32.dll")]
     public static extern bool SetProcessDpiAwarenessContext(IntPtr dpiContext);
 }
 "@
@@ -62,6 +83,63 @@ function Get-ForegroundProcessId {
     return [int]$processId
 }
 
+function Request-SpireForeground {
+    param([Parameter(Mandatory = $true)][IntPtr]$WindowHandle)
+
+    $foregroundWindow = [SpireCaptureNative]::GetForegroundWindow()
+    [uint32]$foregroundProcessId = 0
+    [uint32]$foregroundThreadId = 0
+    if ($foregroundWindow -ne [IntPtr]::Zero) {
+        $foregroundThreadId = [SpireCaptureNative]::GetWindowThreadProcessId($foregroundWindow, [ref]$foregroundProcessId)
+    }
+
+    [uint32]$targetProcessId = 0
+    $targetThreadId = [SpireCaptureNative]::GetWindowThreadProcessId($WindowHandle, [ref]$targetProcessId)
+    $currentThreadId = [SpireCaptureNative]::GetCurrentThreadId()
+    $attachedForeground = $false
+    $attachedTarget = $false
+    try {
+        if ($foregroundThreadId -ne 0 -and $foregroundThreadId -ne $currentThreadId) {
+            $attachedForeground = [SpireCaptureNative]::AttachThreadInput($currentThreadId, $foregroundThreadId, $true)
+        }
+        if ($targetThreadId -ne 0 -and $targetThreadId -ne $currentThreadId) {
+            $attachedTarget = [SpireCaptureNative]::AttachThreadInput($currentThreadId, $targetThreadId, $true)
+        }
+
+        [void][SpireCaptureNative]::ShowWindow($WindowHandle, 9)
+        [void][SpireCaptureNative]::BringWindowToTop($WindowHandle)
+        [void][SpireCaptureNative]::SetForegroundWindow($WindowHandle)
+        [void][SpireCaptureNative]::SetActiveWindow($WindowHandle)
+        [void][SpireCaptureNative]::SetFocus($WindowHandle)
+    } finally {
+        if ($attachedTarget) {
+            [void][SpireCaptureNative]::AttachThreadInput($currentThreadId, $targetThreadId, $false)
+        }
+        if ($attachedForeground) {
+            [void][SpireCaptureNative]::AttachThreadInput($currentThreadId, $foregroundThreadId, $false)
+        }
+    }
+}
+
+function Wait-SpireForeground {
+    param(
+        [Parameter(Mandatory = $true)][IntPtr]$WindowHandle,
+        [Parameter(Mandatory = $true)][int]$ProcessId,
+        [int]$TimeoutMs = 3000
+    )
+
+    $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+    do {
+        Request-SpireForeground -WindowHandle $WindowHandle
+        Start-Sleep -Milliseconds 100
+        if ((Get-ForegroundProcessId) -eq $ProcessId) {
+            return $true
+        }
+    } while ((Get-Date) -lt $deadline)
+
+    return (Get-ForegroundProcessId) -eq $ProcessId
+}
+
 $process = Get-Process -Name SlayTheSpire2 -ErrorAction SilentlyContinue |
     Where-Object { $_.MainWindowHandle -ne 0 } |
     Select-Object -First 1
@@ -72,6 +150,10 @@ if (-not $process) {
 
 $foregroundProcessId = Get-ForegroundProcessId
 $isForeground = $foregroundProcessId -eq $process.Id
+if ($RequireSpireForeground -and -not $isForeground) {
+    $isForeground = Wait-SpireForeground -WindowHandle $process.MainWindowHandle -ProcessId $process.Id
+    $foregroundProcessId = Get-ForegroundProcessId
+}
 if ($RequireSpireForeground -and -not $isForeground) {
     Write-Error "SlayTheSpire2 is running but is not the foreground window. Foreground process id: $foregroundProcessId"
     exit 2
@@ -109,6 +191,7 @@ try {
     ProcessId = $process.Id
     MainWindowTitle = $process.MainWindowTitle
     SpireForeground = $isForeground
+    ForegroundProcessId = $foregroundProcessId
     Bounds = [pscustomobject]@{
         Left = $rect.Left
         Top = $rect.Top

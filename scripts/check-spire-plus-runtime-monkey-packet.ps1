@@ -548,7 +548,8 @@ function Test-CurrentSliceBinding {
     param(
         [Parameter(Mandatory = $true)][string]$BeforePath,
         [Parameter(Mandatory = $true)][string]$AfterPath,
-        [Parameter(Mandatory = $true)][string]$CurrentPath
+        [Parameter(Mandatory = $true)][string]$CurrentPath,
+        [long]$ScanOffsetBytes = -1
     )
 
     $result = [ordered]@{
@@ -571,7 +572,27 @@ function Test-CurrentSliceBinding {
         $currentBytes = [System.IO.File]::ReadAllBytes($CurrentPath)
         $result.PrefixMatches = Test-BytePrefix -Prefix $beforeBytes -Content $afterBytes
         if (-not $result.PrefixMatches) {
-            $result.Detail = 'godot.log.after-launch does not have godot.log.before as a byte prefix'
+            if ($ScanOffsetBytes -lt 0 -or $ScanOffsetBytes -gt $afterBytes.Length) {
+                $result.Detail = "godot.log.after-launch does not have godot.log.before as a byte prefix and LogScanOffsetBytes is invalid; offset=$ScanOffsetBytes, afterLength=$($afterBytes.Length)"
+                return [pscustomobject]$result
+            }
+
+            $sliceLength = $afterBytes.Length - $ScanOffsetBytes
+            if ($currentBytes.Length -ne $sliceLength) {
+                $result.Detail = "current slice length $($currentBytes.Length) does not match after-launch length $($afterBytes.Length) minus LogScanOffsetBytes $ScanOffsetBytes"
+                return [pscustomobject]$result
+            }
+
+            for ($i = 0; $i -lt $sliceLength; $i++) {
+                if ($currentBytes[$i] -ne $afterBytes[$ScanOffsetBytes + $i]) {
+                    $result.Detail = "current slice differs from after-launch at byte $i after LogScanOffsetBytes $ScanOffsetBytes"
+                    return [pscustomobject]$result
+                }
+            }
+
+            $result.PrefixMatches = $true
+            $result.SliceMatches = $true
+            $result.Detail = 'godot.log.current-iteration matches godot.log.after-launch from LogScanOffsetBytes after a log reset'
             return [pscustomobject]$result
         }
 
@@ -1794,11 +1815,17 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
 
             if ($beforeLogExists -and $logScanOffsetRecorded) {
                 $beforeLogLength = [long](Get-Item -LiteralPath $beforeLogPath).Length
-                Add-Check -Name "${iterationName}_log_scan_offset_matches_before_length" -Passed ($resultLogScanOffsetBytes -eq $beforeLogLength) -Detail "LogScanOffsetBytes must equal retained godot.log.before length; offset=$resultLogScanOffsetBytes, beforeLength=$beforeLogLength"
+                $afterHasBeforePrefix = $false
+                if ($logExists) {
+                    $afterHasBeforePrefix = Test-BytePrefix -Prefix ([System.IO.File]::ReadAllBytes($beforeLogPath)) -Content ([System.IO.File]::ReadAllBytes($logPath))
+                }
+
+                $offsetMatchesAcceptedStart = if ($afterHasBeforePrefix) { $resultLogScanOffsetBytes -eq $beforeLogLength } else { $resultLogScanOffsetBytes -eq 0 }
+                Add-Check -Name "${iterationName}_log_scan_offset_matches_before_length" -Passed $offsetMatchesAcceptedStart -Detail "LogScanOffsetBytes must equal retained godot.log.before length when the launch log appends, or 0 when Godot rewrites the launch log; offset=$resultLogScanOffsetBytes, beforeLength=$beforeLogLength, afterHasBeforePrefix=$afterHasBeforePrefix"
             }
 
             if ($beforeLogExists -and $logExists -and $currentIterationLogExists) {
-                $sliceBinding = Test-CurrentSliceBinding -BeforePath $beforeLogPath -AfterPath $logPath -CurrentPath $currentIterationLogPath
+                $sliceBinding = Test-CurrentSliceBinding -BeforePath $beforeLogPath -AfterPath $logPath -CurrentPath $currentIterationLogPath -ScanOffsetBytes $resultLogScanOffsetBytes
                 Add-Check -Name "${iterationName}_current_iteration_log_matches_after_launch_prefix" -Passed ([bool]$sliceBinding.PrefixMatches) -Detail $sliceBinding.Detail
                 Add-Check -Name "${iterationName}_current_iteration_log_matches_after_launch_slice" -Passed ([bool]$sliceBinding.SliceMatches) -Detail $sliceBinding.Detail
             } else {
@@ -2181,15 +2208,16 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -Detail 'every probe sample must retain ProcessObserved'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_main_window_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -Detail 'every probe sample must retain MainWindowObserved'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_hung_window_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -Detail 'every probe sample must retain HungWindow'
-                    Add-Check -Name "${iterationName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding; null is allowed before a main window is available'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_stale_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -Detail 'every probe sample must retain StaleProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_current_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -Detail 'every probe sample must retain CurrentProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_unknown_start_time_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -Detail 'every probe sample must retain UnknownStartTimeProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_ambiguous_current_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'AmbiguousCurrentProcessCount') -Detail 'every probe sample must retain AmbiguousCurrentProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'ProcessObserved') -Detail 'at least one probe sample must observe SlayTheSpire2'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_main_window_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved') -Detail 'at least one probe sample must observe the main game window'
-                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $probeSamples -Name 'HungWindow') -Detail 'probe samples must not report hung windows'
-                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding') -Detail 'probe samples must not report Responding=false'
+                    $postCommandProbeSamples = @($probeSamples | Where-Object { [string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue '') -eq 'PostCommandRuntime' })
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $postCommandProbeSamples -Name 'HungWindow') -Detail 'post-command runtime probe samples must not report hung windows; startup transients are governed by MaxConsecutiveUnresponsiveSamples'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $postCommandProbeSamples -Name 'Responding') -Detail 'post-command runtime probe samples must not report Responding=false; startup transients are governed by MaxConsecutiveUnresponsiveSamples'
                     $staleProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
                     $unknownStartTimeSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'UnknownStartTimeProcessCount' -DefaultValue -1) -ne 0 })
@@ -2312,8 +2340,22 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         }
 
         if (-not [string]::IsNullOrWhiteSpace($ExpectedGameVersion)) {
-            $expectedGameMarker = if ($ExpectedGameVersion.StartsWith('v', [System.StringComparison]::OrdinalIgnoreCase)) { "release = $ExpectedGameVersion" } else { "release = v$ExpectedGameVersion" }
-            Add-Check -Name "${iterationName}_expected_game_version_in_log" -Passed (Contains-Text -Text $currentIterationLogText -Needle $expectedGameMarker) -Detail "expected game marker '$expectedGameMarker' in current-iteration log slice"
+            $expectedGameVersionWithV = if ($ExpectedGameVersion.StartsWith('v', [System.StringComparison]::OrdinalIgnoreCase)) { $ExpectedGameVersion } else { "v$ExpectedGameVersion" }
+            $expectedGameMarkers = @(
+                "release = $expectedGameVersionWithV",
+                "release=$expectedGameVersionWithV",
+                "Host Version: $expectedGameVersionWithV",
+                "Release Version: $expectedGameVersionWithV"
+            )
+            $expectedGameMarkerFound = $false
+            foreach ($marker in $expectedGameMarkers) {
+                if (Contains-Text -Text $currentIterationLogText -Needle $marker) {
+                    $expectedGameMarkerFound = $true
+                    break
+                }
+            }
+
+            Add-Check -Name "${iterationName}_expected_game_version_in_log" -Passed $expectedGameMarkerFound -Detail "expected one game marker in current-iteration log slice: $($expectedGameMarkers -join ' | ')"
         }
 
         if (-not [string]::IsNullOrWhiteSpace($ExpectedRitsuLibVersion) -and -not [string]::IsNullOrWhiteSpace($ExpectedRitsuCompatBranch)) {

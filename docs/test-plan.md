@@ -48,7 +48,7 @@ Required artifact checks after publish:
 - DLL exists in the game `mods/<ModId>/` folder.
 - PCK exists when `has_pck` is `true`.
 - Manifest id matches the intended stable id.
-- Dependencies include only `STS2-RitsuLib >= 0.4.32` for the shared runtime
+- Dependencies include only `STS2-RitsuLib >= 0.4.33` for the shared runtime
   framework.
 - `affects_gameplay` remains `true` for Spire Plus.
 - `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1 dotnet test EZMicroBalance.sln --no-build` passes after package staging, versioned package directory, and zip artifacts are refreshed. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
@@ -149,7 +149,7 @@ After a launched run, check the retained packet without launching the game:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.99 `
+  -ExpectedPackageVersion v0.1.0-private-beta.104 `
   -ExpectedPatchCount 25 `
   -FailOnMismatch
 ```
@@ -240,8 +240,8 @@ Current RitsuLib logs are class-only for some checks, so gameplay evidence still
 No-launch StS1 packet verification commands for future retained evidence:
 
 ```powershell
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.99 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.32 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.99 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.32 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.104 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.33 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.104 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.33 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
 ```
 
 - Current automated suite count and command results are recorded in `docs/features/ancients-rework-v4/completion-audit.md` after each validation refresh.

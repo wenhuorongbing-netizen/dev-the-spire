@@ -81,6 +81,54 @@ public sealed partial class AncientUiReadinessGuardTests
         }
     }
 
+    [Fact]
+    public void ActiveAncientModelLocalizationHasRitsuLibDefaultAliases()
+    {
+        var engAncients = JsonStringMap("EZMicroBalance", "localization", "eng", "ancients.json");
+        var zhsAncients = JsonStringMap("EZMicroBalance", "localization", "zhs", "ancients.json");
+
+        foreach (var scene in ActiveAncientScenes)
+        {
+            var oldPrefix = $"EZMICROBALANCE-{AncientLocalizationStem(scene.Ancient)}.";
+            var ritsuLibPrefix = $"{RitsuLibDefaultAncientEventKey(scene.Ancient)}.";
+            var oldKeys = engAncients.Keys
+                .Where(key => key.StartsWith(oldPrefix, StringComparison.Ordinal))
+                .OrderBy(key => key, StringComparer.Ordinal)
+                .ToArray();
+
+            Assert.NotEmpty(oldKeys);
+            foreach (var oldKey in oldKeys)
+            {
+                var ritsuLibKey = ritsuLibPrefix + oldKey[oldPrefix.Length..];
+                AssertLocalizedValue(engAncients, ritsuLibKey);
+                AssertLocalizedValue(zhsAncients, ritsuLibKey);
+                Assert.Equal(engAncients[oldKey], engAncients[ritsuLibKey]);
+                Assert.Equal(zhsAncients[oldKey], zhsAncients[ritsuLibKey]);
+            }
+        }
+    }
+
+    [Fact]
+    public void ActivePowerLocalizationHasRitsuLibDefaultAliases()
+    {
+        var engPowers = JsonStringMap("EZMicroBalance", "localization", "eng", "powers.json");
+        var zhsPowers = JsonStringMap("EZMicroBalance", "localization", "zhs", "powers.json");
+        var legacyKeys = engPowers.Keys
+            .Where(key => key.StartsWith("EZMICROBALANCE-", StringComparison.Ordinal))
+            .OrderBy(key => key, StringComparer.Ordinal)
+            .ToArray();
+
+        Assert.NotEmpty(legacyKeys);
+        foreach (var legacyKey in legacyKeys)
+        {
+            var ritsuLibKey = RitsuLibDefaultPowerKey(legacyKey);
+            AssertLocalizedValue(engPowers, ritsuLibKey);
+            AssertLocalizedValue(zhsPowers, ritsuLibKey);
+            Assert.Equal(engPowers[legacyKey], engPowers[ritsuLibKey]);
+            Assert.Equal(zhsPowers[legacyKey], zhsPowers[ritsuLibKey]);
+        }
+    }
+
     private static string ExtractNodeBlock(string sceneSource, string nodeHeader)
     {
         var start = sceneSource.IndexOf(nodeHeader, StringComparison.Ordinal);

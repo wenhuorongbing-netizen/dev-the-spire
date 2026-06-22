@@ -324,7 +324,7 @@ public sealed class RitsuLibMigrationGuardTests
             "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.99 package parity passes", proposal, StringComparison.Ordinal);
+        Assert.Contains("installed beta.104 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", proposal, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", proposal, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", proposal, StringComparison.Ordinal);
@@ -363,15 +363,15 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             migrationGoal,
-            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.32` as the latest package",
-            "The flat-container index lists 163 versions and ends at `0.4.32`",
+            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.33` as the latest package",
+            "The flat-container index lists 164 versions and ends at `0.4.33`",
             "found no `STS2.RitsuLib` update",
-            "Nexus files list the variant-pack main file as `0.4.32`",
+            "Nexus files list the variant-pack main file as `0.4.33`",
             "The GitHub release page/API can lag the NuGet/Nexus package version",
             "do not use a lagging GitHub release marker as the dependency-floor source",
             "official NuGet package via `RitsuLibDeployDir`",
             "dependency-floor source",
-            "Keep Spire Plus on stable `0.4.32`, not a dev build");
+            "Keep Spire Plus on stable `0.4.33`, not a dev build");
 
         AssertSourceContains(
             integrationDoc,
@@ -379,7 +379,7 @@ public sealed class RitsuLibMigrationGuardTests
             "2026-06-22 recheck",
             "`dotnet list EZMicroBalance.csproj package --outdated --include-transitive`",
             "found no `STS2.RitsuLib` update",
-            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.32`",
+            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`",
             "across 163 listed versions",
             "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",

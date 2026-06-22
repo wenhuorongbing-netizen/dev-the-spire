@@ -32,10 +32,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "if (-not $Launch)",
             "Dry-run only. Re-run with -Launch to start Steam sessions.",
             "exit 0",
-            "& $liveSessionScript @prepareArgs",
+            "Invoke-PowerShellFileToOutput",
             "'-Launch'");
 
-        AssertBefore(runner, "if (-not $Launch)", "& $liveSessionScript @prepareArgs");
+        AssertBefore(runner, "if (-not $Launch)", "$prepareStarted = $true");
         Assert.DoesNotContain("Start-Process", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("dotnet", runner, StringComparison.OrdinalIgnoreCase);
     }
@@ -89,6 +89,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "RuntimeProbeSamplesSha256",
             "Get-FileSha256OrEmpty -Path ([string]$result.RuntimeProbeSamplesPath)",
             "SampledAt",
+            "$result.MainMenuObservation.LogScanOffsetBytes",
             "LogExists",
             "LogLengthBytes",
             "LogLastWriteTimeUtc",
@@ -145,6 +146,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Starting unsaved live-test run for",
             "CommandAckObserved",
             "FailureReasonCodes",
+            "[string[]]$FailureReasonCodes = @()",
+            "if ($null -eq $FailureReasonCodes)",
+            "$failureCodes = @(Get-FailureReasonCodes -Result ([pscustomobject]$result))",
+            "$hangSignals = @(Get-HangSignals -FailureReasonCodes $failureCodes)",
             "HangSignals",
             "game_process_missing",
             "game_process_exited",
@@ -170,6 +175,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "WindowCaptureSha256",
             "window_capture_missing",
             "WindowCaptureMissingCount");
+        Assert.DoesNotContain("[System.Collections.Generic.List[object]]$ProbeSamples", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("[System.Collections.Generic.List[object]]$Samples", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("[System.Collections.Generic.List[object]]$Checks", runner, StringComparison.Ordinal);
+        Assert.DoesNotContain("& $sts1ModeVerifierScript @args", runner, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -222,8 +231,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Copy-BaselineGodotLog",
             "GodotLogBeforePath",
             "$preLaunchLog = Get-LogSnapshot -Path ([string]$result.GodotLogBeforePath)",
-            "& $liveSessionScript @prepareArgs");
+            "Invoke-PowerShellFileToOutput");
         AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "$preLaunchLog = Get-LogSnapshot -Path ([string]$result.GodotLogBeforePath)");
-        AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "& $liveSessionScript @prepareArgs");
+        AssertBefore(runner, "$preExistingProcesses = @(Get-Process -Name SlayTheSpire2", "$prepareStarted = $true");
     }
 }

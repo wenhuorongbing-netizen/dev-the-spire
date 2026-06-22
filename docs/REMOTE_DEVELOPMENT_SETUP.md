@@ -2,9 +2,9 @@
 
 This guide explains how to clone this private repository on another Windows machine and recreate the local-only development environment.
 
-## 2026-06-21 Current Boundary
+## 2026-06-22 Current Boundary
 
-Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on STS2-RitsuLib `v0.4.32` in direct NuGet runtime layout only. Current beta.99 package parity, clicked settings proof, and direct Off loader proof are refreshed. Current beta.99 settings proof is `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`. Current beta.99 Off proof is `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`: it reached main menu with exactly STS2-RitsuLib and Spire Plus loaded, clean audit, 25/25 Spire Plus patches, StS1Events disabled with 0 registration lines, Off verifier 21 / 0, and packet verifier 43 / 0. Previous beta.96 Off proof is `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` for previous-package context only. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup and loader registration only; remote setup, enabled modes, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
+Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire Plus depending on STS2-RitsuLib `v0.4.33` in direct NuGet runtime layout only. Current beta.104 package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are refreshed. Current beta.104 clicked UI proof is `.tools/runtime-evidence/monkey-stability-20260622-025733/`: it covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations, clean audits, exact package/game/Ritsu markers, and packet verification 1621 / 0. Previous beta.99 settings proof is `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`. Previous beta.99 Off proof is `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`: it reached main menu with exactly STS2-RitsuLib and Spire Plus loaded, clean audit, 25/25 Spire Plus patches, StS1Events disabled with 0 registration lines, Off verifier 21 / 0, and packet verifier 43 / 0. Previous beta.96 Off proof is `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 AdditiveBatch1 loader/registration proof is `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` for previous-package context only. Previous-package/game-version beta.85, beta.87, beta.88, and beta.90 proof remains context only. That proof covers startup, settings, loader registration, or smoke-level clicked UI only; remote setup, enabled modes, gameplay, save-load, replacement, multiplayer, QA, package handoff, and release-ready compatibility still require their own current evidence on the target machine.
 
 ## Baseline
 
@@ -13,8 +13,8 @@ Current local installed game evidence is Slay the Spire 2 `v0.107.1` with Spire 
 - Legacy scaffold id: `EzDailyContent`
 - Game: Slay the Spire 2 public/main branch
 - Current local version: `v0.107.1`, installed/source-refreshed locally on `2026-06-20`
-- RitsuLib runtime: `STS2-RitsuLib` `v0.4.32` direct NuGet runtime layout
-- Spire Plus package: `v0.1.0-private-beta.99`
+- RitsuLib runtime: `STS2-RitsuLib` `v0.4.33` direct NuGet runtime layout
+- Spire Plus package: `v0.1.0-private-beta.104`
 - Build command: `dotnet build`
 - Publish command: `dotnet publish`
 
@@ -50,9 +50,9 @@ Install Slay the Spire 2 through Steam and record the game root, for example:
 D:\Steam\steamapps\common\Slay the Spire 2
 ```
 
-## 5. Install STS2-RitsuLib v0.4.32
+## 5. Install STS2-RitsuLib v0.4.33
 
-Install STS2-RitsuLib `v0.4.32` runtime files into:
+Install STS2-RitsuLib `v0.4.33` runtime files into:
 
 ```text
 <GameRoot>\mods\STS2-RitsuLib

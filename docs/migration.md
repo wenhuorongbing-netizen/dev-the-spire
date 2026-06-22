@@ -15,20 +15,24 @@ start from:
 
 ## Current Boundary
 
-Spire Plus is on the beta.99 RitsuLib-only target:
+Spire Plus is on the beta.104 RitsuLib-only target:
 
-- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.32`.
-- `EZMicroBalance.json` declares `STS2-RitsuLib >= 0.4.32` as the shared runtime
+- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33`.
+- `EZMicroBalance.json` declares `STS2-RitsuLib >= 0.4.33` as the shared runtime
   framework dependency.
-- Current package parity exists for beta.99 after the RitsuLib settings-page
-  I18N resource migration.
-- Beta.99 clicked RitsuLib Mod Settings UI proof is captured at
+- Current package parity exists for beta.104 after the RitsuLib default-key
+  localization alias and clicked-UI smoke pass.
+- Beta.104 runtime preflight passed 28 / 0, source-workspace validation passed
+  57 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke is
+  captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`
+  with 4 / 4 iterations and packet verification 1621 / 0.
+- Beta.99 clicked RitsuLib Mod Settings UI proof is previous-package context at
   `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
-- Beta.99 direct Off loader proof is captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` for startup/loading and default-Off StS1Events behavior only.
+- Beta.99 direct Off loader proof is previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` for startup/loading and default-Off StS1Events behavior only.
 - Previous beta.96 RitsuLib-only Off proof is startup/loading evidence only.
   Prior beta.93 RitsuLib-only AdditiveBatch1 proof is previous-package
-  registration evidence only. Recapture beta.99 loader proof before making a
-  current runtime claim.
+  registration evidence only. Recapture current loader or settings proof before
+  making a new current runtime claim.
 
 Gameplay, event screenshots, save-load, image/render, replacement functional
 proof, co-op/fail-closed proof, independent QA, current enabled-mode proof, and

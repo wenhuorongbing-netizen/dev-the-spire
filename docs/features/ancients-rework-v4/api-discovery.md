@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-20
 
-2026-06-20 dependency supersession: the May discovery notes below recorded the then-active previous package project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.32`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.32`, and previous package is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
+2026-06-20 dependency supersession: the May discovery notes below recorded the then-active previous package project shape. Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.33`, `EZMicroBalance.json` depends only on `STS2-RitsuLib >= 0.4.33`, and previous package is previous-package/other-mod context only. Use local `source code/` plus the installed RitsuLib package as the primary implementation authority before changing Ancient behavior.
 
 ## Reference Check
 
@@ -14,7 +14,7 @@ Live pages rechecked on 2026-05-05:
 Tutorial mismatch:
 
 - RitsuLib guidance uses `ModAncientEventTemplate`, registration attributes such as `RegisterActAncient` / `RegisterSharedAncient`, `CreateModRelicOption<T>()`, `AllPossibleOptions`, and `GenerateInitialOptions()`.
-- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `previous package` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.32` and no previous package.
+- Historical May 2026 project state: `EZMicroBalance.csproj` referenced `previous package` `3.1.4`; no RitsuLib package was referenced. Current project state supersedes this: `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33` and no previous package.
 - The previous package tutorial aligned with the historical May project dependency and remains useful only as legacy API context. Current implementation work should prefer local game source plus RitsuLib APIs when they cover the needed hook or registration shape.
 - Phase 1 does not add a custom Ancient. It patches an existing game Ancient relic reward, so the tutorial pages are context for Ancient option structure rather than the direct implementation API.
 
@@ -24,7 +24,7 @@ Evidence source:
 
 - Local game assembly: `D:\Steam\steamapps\common\Slay the Spire 2\data_sts2_windows_x86_64\sts2.dll`
 - Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`
-- Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.32`
+- Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.33`
 - Tooling used for API inspection: local ignored `.tools/ilspy` install of `ilspycmd` `8.2.0.7535`
 
 Findings:

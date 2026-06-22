@@ -3,11 +3,11 @@
 Project: Spire Plus (`EZMicroBalance` manifest id)
 Manifest id: EZMicroBalance  
 Historical game target: Slay the Spire 2 public beta v0.106.1, 2026-05-21 upstream build; local source under `source code/` refreshed from the installed PCK/DLL on 2026-05-22
-Current target: Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.32` in direct NuGet runtime layout; previous package runtime target v3.1.4 is historical May context only
+Current target: Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.33` in direct NuGet runtime layout; previous package runtime target v3.1.4 is historical May context only
 Research date: 2026-05-08; refreshed 2026-05-22
 Status: A11-A20 single-player selector expansion plus prototype slices added. Host-multiplayer selector/gameplay hooks fail closed by default after the 2026-05-25 crash logs. The v0.106.1 source refresh and hook-signature migration are historical compile/test/package context. Previous beta.93 RitsuLib-only loader parity is captured for startup/registration only; live co-op bisect and gameplay verification remain pending.
 
-2026-06-20 dependency supersession: this research file keeps the May `v0.106.1` / previous package `v3.1.4` evidence as historical context. Current Spire Plus targets Slay the Spire 2 `v0.107.1` with `STS2.RitsuLib` `0.4.32` in direct NuGet runtime layout, and `EZMicroBalance.csproj` / `EZMicroBalance.json` no longer depend on previous package. Reinspect current local game source and RitsuLib before changing Ascension behavior.
+2026-06-20 dependency supersession: this research file keeps the May `v0.106.1` / previous package `v3.1.4` evidence as historical context. Current Spire Plus targets Slay the Spire 2 `v0.107.1` with `STS2.RitsuLib` `0.4.33` in direct NuGet runtime layout, and `EZMicroBalance.csproj` / `EZMicroBalance.json` no longer depend on previous package. Reinspect current local game source and RitsuLib before changing Ascension behavior.
 
 ## Research Boundaries
 
@@ -28,14 +28,14 @@ Status: A11-A20 single-player selector expansion plus prototype slices added. Ho
 | --- | --- | --- | --- | --- | --- |
 | Independent mod id | `EZMicroBalance.json` has `id: "EZMicroBalance"`; `EZMicroBalanceCode/MainFile.cs` has `ModId = "EZMicroBalance"`. | Fact | High | Manifest drift would break private beta identity and saves/config. | Keep id unchanged; verify manifest after publish. |
 | Code/resource split | `EZMicroBalance.csproj` compiles `EZMicroBalanceCode/**/*.cs` and packages `EZMicroBalance/**`. | Fact | High | New feature files in wrong directories may not build or publish. | Place code under `EZMicroBalanceCode`; resources/localization under `EZMicroBalance`. |
-| Historical extra shared framework dependency | During this May research pass, `EZMicroBalance.csproj` referenced `previous package` 3.1.4 and the local runtime path was `<GameRoot>/mods/previous package`. Previous beta.93 project and manifest depend only on `STS2-RitsuLib >= 0.4.31`. | Historical fact, superseded | High | Reintroducing previous package would regress the RitsuLib-only migration and require a new owner-approved dependency decision. | Revalidate current load with RitsuLib `0.4.32` and local `v0.107.1` source before release or new Ascension changes. |
+| Historical extra shared framework dependency | During this May research pass, `EZMicroBalance.csproj` referenced `previous package` 3.1.4 and the local runtime path was `<GameRoot>/mods/previous package`. Previous beta.93 project and manifest depend only on `STS2-RitsuLib >= 0.4.31`. | Historical fact, superseded | High | Reintroducing previous package would regress the RitsuLib-only migration and require a new owner-approved dependency decision. | Revalidate current load with RitsuLib `0.4.33` and local `v0.107.1` source before release or new Ascension changes. |
 | Existing Harmony use | `MainFile.Initialize()` calls `Harmony.CreateAndPatchAll(...)`; Ancient code has narrow Harmony patches where API gaps existed. | Fact | High | New broad patches can destabilize unrelated Ancient behavior. | Prefer local game command APIs plus RitsuLib/template-supported hooks; document any new patch before coding. |
 
 ## 2026-05-22 v0.106.1 Source Refresh And API Drift
 
 - Installed game evidence: `release_info.json` reports `v0.106.1`, commit `cb2fbf47`, branch `v0.106.1`, date `2026-05-21T16:17:40-07:00`, and `main_assembly_hash` `1001788235`.
 - Source recovery evidence: `source code/` was deleted after path-boundary checks and regenerated with GDRE Tools `v2.5.0-beta.5` from `SlayTheSpire2.pck` plus `data_sts2_windows_x86_64\sts2.dll`; recovered `source code/sts2.sln` builds with 0 warnings and 0 errors.
-- Dependency evidence at the time of this `v0.106.1` refresh: previous package runtime under `<GameRoot>\mods\previous package` and project package were both `v3.1.4`. Supersession: current Spire Plus beta.99 references `STS2.RitsuLib` `0.4.32` and declares only `STS2-RitsuLib >= 0.4.32`.
+- Dependency evidence at the time of this `v0.106.1` refresh: previous package runtime under `<GameRoot>\mods\previous package` and project package were both `v3.1.4`. Supersession: current Spire Plus beta.99 references `STS2.RitsuLib` `0.4.33` and declares only `STS2-RitsuLib >= 0.4.33`.
 - Signature-diff evidence lives in `.tools\source-refresh-v0.106.1-20260522\`: canonical Core diff counted 1,712 removed signatures and 1,835 added signatures compared with the previous local snapshot.
 - Hook drift: `AbstractModel.BeforeSideTurnStart` now takes `(PlayerChoiceContext, CombatSide, IReadOnlyList<Creature> participants, ICombatState combatState)`. `RootBudCombatHook` now uses the passed `ICombatState` and still avoids debug current-state lookup for that hook.
 - Turn-end hook drift: model overrides moved from `AfterTurnEnd(...)` to side-turn methods. The active hooks now override `AfterSideTurnEnd(PlayerChoiceContext, CombatSide, IEnumerable<Creature> participants)` and delegate to the existing internal `AfterTurnEnd` services.
@@ -368,7 +368,7 @@ See `docs/features/ascension-11-20/multiplayer-test-runbook.md` for bisect rows 
 ### Current Local Evidence
 
 - Current Windows install `E:\Steam\steamapps\common\Slay the Spire 2\release_info.json` reports `version: v0.107.1`, `commit: 59260271`, `branch: v0.107.1`, and `main_assembly_hash: -1555940892`.
-- Current local source was refreshed from the installed `v0.107.1` PCK/DLL with GDRE Tools `v2.5.0`; the source-workspace checker passed against that installed game plus STS2-RitsuLib `0.4.32` in direct NuGet runtime layout, with only retained GDRE recovery warnings.
+- Current local source was refreshed from the installed `v0.107.1` PCK/DLL with GDRE Tools `v2.5.0`; the source-workspace checker passed against that installed game plus STS2-RitsuLib `0.4.33` in direct NuGet runtime layout, with only retained GDRE recovery warnings.
 - Previous beta.93 RitsuLib-only Off and AdditiveBatch1 loader packets loaded exactly `STS2-RitsuLib` plus `EZMicroBalance`, reached main menu, applied 25/25 Spire Plus patches, and audited clean. They prove current loader/registration shape, not live co-op gameplay.
 - Historical May mismatch evidence recorded a failed join where the host and local version both reported `v0.105.1`, but the real failure line was `ModelDb hash mismatch. Host: 3593977223 Ours: 150743674`, preceded by `Our version v0.105.1 matches the host's, but our Model ID hash does not! Disconnecting`.
 - That historical log loaded `15 mods (21 total)` and initialized `ModelIdSerializationCache ... Hash: 150743674`. An earlier clean previous package+EZMicroBalance-only Windows run on `v0.105.0` loaded `2 mods (2 total)` and initialized hash `2670958078`; those hashes are not comparable to the current `v0.107.1` target, but they prove the hash changes with the exact loaded/runtime model set.

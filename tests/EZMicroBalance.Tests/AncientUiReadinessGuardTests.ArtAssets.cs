@@ -55,6 +55,12 @@ public sealed partial class AncientUiReadinessGuardTests
             {
                 AssertLocalizedValue(engRelics, marker.RelicKey + suffix);
                 AssertLocalizedValue(zhsRelics, marker.RelicKey + suffix);
+
+                var ritsuLibRelicKey = RitsuLibDefaultRelicKey(marker.RelicClass) + suffix;
+                AssertLocalizedValue(engRelics, ritsuLibRelicKey);
+                AssertLocalizedValue(zhsRelics, ritsuLibRelicKey);
+                Assert.Equal(engRelics[marker.RelicKey + suffix], engRelics[ritsuLibRelicKey]);
+                Assert.Equal(zhsRelics[marker.RelicKey + suffix], zhsRelics[ritsuLibRelicKey]);
             }
         }
     }

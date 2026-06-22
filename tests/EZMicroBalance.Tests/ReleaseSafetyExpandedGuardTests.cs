@@ -76,7 +76,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         AssertSourceContains(
             bootstrap,
             "Spire Plus Windows bootstrap",
-            "Install STS2-RitsuLib v0.4.32 or newer under <GameRoot>\\mods\\STS2-RitsuLib before game verification.",
+            "Install STS2-RitsuLib v0.4.33 or newer under <GameRoot>\\mods\\STS2-RitsuLib before game verification.",
             "STS2-RitsuLib and Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("ExternalMod v3.1.0", bootstrap, StringComparison.Ordinal);
@@ -114,6 +114,9 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
     public void SavedAttachedStatesAcrossActiveSourceAreUniqueCoveredAndSmokeDocumented()
     {
         var allSource = ReadSourceTree("EZMicroBalanceCode");
+        var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
+        var ancientFields = ReadRepoText("EZMicroBalanceCode", "Ancients", "Common", "AncientSavedStateFields.cs");
+        var ascensionFields = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "AscensionSavedStateFields.cs");
         var sourceWithoutDefinitions = string.Join(
             Environment.NewLine,
             Directory.GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories)
@@ -150,6 +153,21 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains(fields, field => field.Types == "RootBud, bool");
         Assert.Contains(fields, field => field.Types == "RootBud, int");
         Assert.Contains(fields, field => field.Types == "RootFamilyCard, bool");
+        AssertSourceContains(
+            ancientFields,
+            "public static void EnsureRegistered()",
+            "_ = PrismaticGemNormalRewardCounter;",
+            "_ = AncientInitialOptionRerollStateKey;");
+        AssertSourceContains(
+            ascensionFields,
+            "public static void EnsureRegistered()",
+            "_ = RootBeginsApplied;",
+            "_ = RootBudSproutRound;");
+        AssertSourceContains(
+            mainFile,
+            "AncientSavedStateFields.EnsureRegistered();",
+            "AscensionSavedStateFields.EnsureRegistered();",
+            "RitsuLib saved-state fields registered.");
 
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
         var devEnvironment = ReadRepoText("docs", "dev-environment.md");
@@ -210,7 +228,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("0 Spire Plus error signatures for technical id `EZMicroBalance`", audit, StringComparison.Ordinal);
         Assert.Contains("beta.19 normal Steam-client startup/log verification reports `Found 30 previous saved-state registrations`", audit, StringComparison.Ordinal);
         Assert.Contains("historical beta.19 loader", audit, StringComparison.Ordinal);
-        Assert.Contains("Current beta.99 settings proof is `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`", audit, StringComparison.Ordinal);
+        Assert.Contains("Current beta.104 clicked Ancient UI smoke is `.tools/runtime-evidence/monkey-stability-20260622-025733/`", audit, StringComparison.Ordinal);
         Assert.Contains("Two-client multiplayer matrix is pending", audit, StringComparison.Ordinal);
     }
 
@@ -220,6 +238,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         var helper = ReadRepoText("scripts", "spire-plus-live-session.ps1");
         var windowPreflight = ReadRepoText("scripts", "check-spire-window-preflight.ps1");
         var windowCapture = ReadRepoText("scripts", "capture-spire-window.ps1");
+        var consoleCommand = ReadRepoText("scripts", "send-spire-dev-console-command.ps1");
         var scriptsReadme = ReadRepoText("scripts", "README.md");
         var currentDocs = ReadCurrentFacingDocs(CurrentFacingDocs);
 
@@ -275,7 +294,28 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "$dpiAwarenessPerMonitorV2 = [IntPtr](-4)",
             "per-monitor DPI-aware",
             "CopyFromScreen reads physical pixels",
+            "Wait-SpireForeground",
+            "SetForegroundWindow",
+            "kernel32.dll",
+            "AttachThreadInput",
+            "BringWindowToTop",
+            "ForegroundProcessId",
             "CopyFromScreen");
+        AssertSourceContains(
+            consoleCommand,
+            "GetForegroundWindow",
+            "GetWindowThreadProcessId",
+            "Wait-SpireForeground",
+            "SetForegroundWindow",
+            "kernel32.dll",
+            "AttachThreadInput",
+            "BringWindowToTop",
+            "Clipboard]::SetText($Command)",
+            "SendWait(\"^v\")",
+            "{ENTER}",
+            "UsedClipboardPaste",
+            "ForegroundReady",
+            "could not become the foreground window");
         Assert.Contains("spire-plus-live-session.ps1", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("check-spire-window-preflight.ps1", scriptsReadme, StringComparison.Ordinal);
         Assert.Contains("-DisableSpirePlus", scriptsReadme, StringComparison.Ordinal);
@@ -426,10 +466,10 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
 
         Assert.DoesNotMatch(@"(?i)\b(private beta|release)\s+(?:is\s+)?ready\b", currentDocs);
         Assert.DoesNotMatch(@"(?i)\bready\s+for\s+(?:private beta|release)\b", currentDocs);
-        Assert.Contains("- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.104 because settings code/resources did not change in the beta.104 pass.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.", currentDocs, StringComparison.Ordinal);
         Assert.Contains("- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("- [x] Current beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("- [x] Previous beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Every implemented Ancient reward change has a completed manual runtime result.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Save/load-sensitive behavior is tested.", currentDocs, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Disable-mod gameplay behavior is tested in a run.", currentDocs, StringComparison.Ordinal);
@@ -438,7 +478,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
         Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
         Assert.Contains("mod-settings-beta99-ritsulib-click-20260621-223210", currentDocs, StringComparison.Ordinal);
-        Assert.Contains("Current beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\mod-settings-beta99-ritsulib-click-20260621-223210`", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("Previous beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\\runtime-evidence\\mod-settings-beta99-ritsulib-click-20260621-223210`", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Manual feature results are pending", currentDocs, StringComparison.Ordinal);
         Assert.Contains("A11-A20 selection is default-on only for single-player standard lobbies", currentDocs, StringComparison.Ordinal);
         Assert.Contains("SPIREPLUS_ASCENSION_DISABLE_PUBLIC_SELECTION=1", currentDocs, StringComparison.Ordinal);
@@ -448,7 +488,8 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest pushed migration baseline must be read directly from `git log -1 --oneline --decorate`", projectState, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("beta.99 clicked RitsuLib settings UI proof, and beta.99 direct Off loader proof are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.104", projectState, StringComparison.Ordinal);
+        Assert.Contains("clicked Ancient UI smoke proof are current", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);

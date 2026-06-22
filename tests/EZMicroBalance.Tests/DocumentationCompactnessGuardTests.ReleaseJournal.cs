@@ -19,7 +19,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Current automated snapshot:",
             "SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1",
             "Historical detailed command logs are preserved",
-            "Automated evidence does not close clicked UI, live gameplay, save-load, death/failure, route traversal, preview-tools, or co-op rows.");
+            "Automated evidence closes only the smoke-level clicked Ancient UI rows above",
+            "does not close live gameplay, gated Vakuu fight-option/victory return, save-load, death/failure, route traversal, preview-tools, or co-op rows.");
         Assert.DoesNotContain("A1.05.01", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("Current git status before", handoff, StringComparison.Ordinal);
         Assert.DoesNotContain("Pre-commit local cleanup status summary", handoff, StringComparison.Ordinal);
@@ -153,7 +154,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "active manifest is `v0.1.0-private-beta.99` after the latest RitsuLib-only settings page I18N resource migration target",
+            "active manifest is `v0.1.0-private-beta.104` after the latest RitsuLib default-key localization alias and clicked Ancient UI smoke pass",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

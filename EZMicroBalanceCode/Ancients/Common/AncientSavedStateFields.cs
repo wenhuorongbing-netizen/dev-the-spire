@@ -43,4 +43,22 @@ internal static class AncientSavedStateFields
 
     public static readonly SavedAttachedState<Player, string> AncientInitialOptionRerollStateKey =
         new("EZMicroBalanceAncientInitialOptionRerollStateKey", () => string.Empty);
+
+    public static void EnsureRegistered()
+    {
+        _ = PrismaticGemNormalRewardCounter;
+        _ = PaelsToothNonBossCombatCounter;
+        _ = JewelryBoxNonInnateApotheosis;
+        _ = UrdaStateKey;
+        _ = UrdaDeckStateKey;
+        _ = UrdaTrialPlantCard;
+        _ = MorviStateKey;
+        _ = MorviDeckStateKey;
+        _ = MorviBorrowedAncientCard;
+        _ = MorviOpenBookSealedCard;
+        _ = LothaStateKey;
+        _ = LothaDeckStateKey;
+        _ = LothaMirrorRebuttalCard;
+        _ = AncientInitialOptionRerollStateKey;
+    }
 }

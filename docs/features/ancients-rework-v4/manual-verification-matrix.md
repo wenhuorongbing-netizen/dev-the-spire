@@ -1,9 +1,14 @@
 # Ancient Rework v4 Manual Verification Matrix
 
 Prepared: 2026-05-07
-Updated: 2026-06-21
+Updated: 2026-06-22
 
-Status: automated gates passed for the current RitsuLib-only beta.99 package shape. Beta.99 clicked settings UI proof is captured under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210`; beta.99 direct Off loader proof is captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` with main-menu load, clean audit, 25/25 Spire Plus patches, StS1Events disabled with 0 registration lines, Off verifier 21 / 0, and packet verifier 43 / 0. Previous beta.96 Off proof is previous-package startup/loading evidence only. Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only. Earlier normal Steam-client startup/log verification, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.99.
+Status: automated gates passed for the current RitsuLib-only beta.104 package shape.
+Beta.104 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/` with 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0.
+Beta.99 clicked settings UI and direct Off loader proof remain previous-package context only.
+Previous beta.96 Off proof is previous-package startup/loading evidence only.
+Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only.
+Earlier normal Steam-client startup/log verification, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.104.
 
 Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
@@ -18,15 +23,15 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.99.zip`, SHA256 `F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A`; beta.99 Off loader proof is captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.104.zip`, SHA256 `20CA3FB2F89AB1760DED6B8C3A315D7530ABA3760E4A2E8CFB56A74D89A907DA`; beta.104 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/` |
 
 ## Runtime Load Checklist
 
 | Step | Expected Result | Result |
 | --- | --- | --- |
 | Confirm STS2-RitsuLib and `EZMicroBalance` are installed in the game `mods` folder | `STS2-RitsuLib\mod_manifest.json`, `STS2-RitsuLib\lib\0.107.1\STS2-RitsuLib.dll`, `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
-| Launch Slay the Spire 2 public/main branch | Game reaches main menu | Beta.99 direct Off loader proof captured under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`; this is startup/loading evidence only |
-| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Captured for beta.99 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean same-session log audit |
+| Launch Slay the Spire 2 public/main branch | Game reaches main menu | Beta.104 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`; this is smoke-level UI evidence only |
+| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Captured for beta.99 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean same-session log audit; previous-package context after beta.104 |
 | Open Compendium -> Card Library | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
 | Start a run with Spire Plus enabled | No startup exception in `godot.log` for `EZMicroBalance`. Natural route-click first-node path remains pending. | Pending gameplay proof |
 | Disable Spire Plus and restart | Spire Plus patches do not apply while disabled or plugged off | Pending gameplay proof |
@@ -73,7 +78,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 
 | Ancient / Relic | Manual Check | Expected Result | Result |
 | --- | --- | --- | --- |
-| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `�?张牌`, `每回�?张`, `至少18点`. | Pending |
+| Pael's Horn | Pick up the reward and inspect the added cards. | Adds one `Relax` / `放松` and one `Relax+` / `放松+`. Regression text includes `5张牌`, `每回合7张`, `至少18点`. | Pending |
 | Black Star | Pick up in Act 3 or later, then kill an elite. | Pickup immediately grants one random relic; normal elite bonus remains. | Pending |
 | War Hammer | Pick up reward, then kill an elite. | Pickup chooses two cards to upgrade; elite kill upgrades remain. | Pending |
 | Jewelry Box | Pick up reward, inspect deck, then save/load or enter the next combat. | Adds `Apotheosis` / `神化` without `Innate` / `固有`; the added card must not start in opening hand from Innate. | Pending |
@@ -86,11 +91,11 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Distinguished Cape | Inspect Vakuu options and pick up the reward at max HP values around 80, 70, 30, 19, 18, and 10 if practical. | Uses `lose 30% of current Max HP, at least 18`; cannot be selected when current Max HP is not greater than the v4.3 cost; Vakuu must still show three normal reward options; localized locked Cape only as a defensive fallback; low-Max-HP Vakuu still shows three normal choices; zhs text should include `至少18点`; max HP loss is not damage; adds exactly 3 `Apparition` / `灵体` cards. | Pending |
 | Velvet Choker | Play 6 cards manually from hand, then inspect/play the 7th+ card. | No hard six-card cap; the 7th+ from-hand manual cards cost +1 after other cost changes; copied, autoplayed, or repeated plays do not advance the counter. | Pending |
 | Pael's Tooth | Remove five cards, run two non-boss combats, then act transition. | One stored card returns upgraded every two non-boss combats; remaining stored cards clear after act boss transition. | Pending |
-| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/锻�? then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
+| Sovereign Blade / Forge | Forge a temporary Sovereign Blade, hover Forge/锻造 then play Sovereign Blade. | Forge hover explains the blade's added boons. Forged temporary Sovereign Blade has Exhaust; permanent Refine Blade is unchanged. Playing Sovereign Blade grants 3 Strength, 3 Dexterity, 3 Plating, 3 Regen, and 3 Vigor. | Pending |
 | Seal of Gold / Debt | Pick up reward, draw/play/exhaust Debt. | Grants energy and two playable `Debt` / `债务` curses; gold loss occurs only on exhaust. | Pending |
 | Sozu | Pick up with empty potion slots, then attempt future potion gain. | Empty potion slots fill on pickup, then future potion gain is blocked. | Pending |
 | Ectoplasm | Pick up, then complete later gold rewards. | Grants immediate gold, then blocks future gold gain. | Pending |
-| Fiddle | Draw many cards in combat. | Draw stops while `每回�?张`; no card should be lost or stuck. | Pending |
+| Fiddle | Draw many cards in combat. | Draw stops while `每回合7张`; no card should be lost or stuck. | Pending |
 | Iron Club | Play Ironclad attacks and inspect dynamic text. | Uses current variable text; source guard expects 5 cards where applicable. | Pending |
 | Brilliant Scarf | Draw from the reward and inspect dynamic text. | Uses current variable text; source guard expects 6 cards where applicable. | Pending |
 | Beautiful Bracelet | Apply to selected cards and inspect enchantment. | Selected cards gain `Swift 2` / `迅捷2`; zhs text does not show raw `Swift`. | Pending |
@@ -107,7 +112,7 @@ Expected result: only standard monster card rewards advance and trigger Prismati
 | Area | Expected Text | Result |
 | --- | --- | --- |
 | Beautiful Bracelet relic text | `迅捷2`, no raw `Swift` | Pending |
-| Numeric formatting | No spaces between Chinese text, numbers, and units: `�?张牌`, `每回�?张`, `至少18点` | Pending |
+| Numeric formatting | No spaces between Chinese text, numbers, and units: `5张牌`, `每回合7张`, `至少18点` | Pending |
 | Prismatic Gem count hint | zhs hover uses `初始计数1/2` or `初始计数0/2`; trigger reward banner uses `本次标准卡牌奖励只会出现异色牌。` | Pending |
 | Jewelry Box | `神化`, no raw `Apotheosis`; `宝石面具` and 0-cost text | Pending |
 | Pael's Horn | `放松` and `放松+`, no raw `Relax` | Pending |

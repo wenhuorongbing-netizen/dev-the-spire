@@ -3,7 +3,7 @@
 Date: 2026-06-11; latest addendum: 2026-06-21
 Scope: Mandatory Overnight Run v19 continuation for `docs/goals/event.md`.
 
-Supersession note, 2026-06-21: this report remains the historical v19 coordination-blocker trace. Its beta.85 `v0.107.0` / RitsuLib `v0.4.16` facts below are no longer current runtime truth. Current status is beta.99 RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.32` in direct NuGet runtime layout: Off and AdditiveBatch1 loader/registration proof are clean, but gameplay, save-load, replacement, multiplayer, image/render, QA, release, and handoff proof remain pending. Use `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, `docs/goals/event.md`, and the v20 trace for current decisions.
+Supersession note, 2026-06-21: this report remains the historical v19 coordination-blocker trace. Its beta.85 `v0.107.0` / RitsuLib `v0.4.16` facts below are no longer current runtime truth. Current status is beta.99 RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `0.4.33` in direct NuGet runtime layout: Off and AdditiveBatch1 loader/registration proof are clean, but gameplay, save-load, replacement, multiplayer, image/render, QA, release, and handoff proof remain pending. Use `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, `docs/goals/event.md`, and the v20 trace for current decisions.
 
 This report records a coordination blocker for this thread only. It is not a completion claim and does not close CanaryOnly, AdditiveBatch1, gameplay, save/load, replacement, multiplayer, image/render, or QA gates.
 

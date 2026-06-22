@@ -52,4 +52,24 @@ internal static class AscensionSavedStateFields
 
     public static readonly SavedAttachedState<RootBud, int> RootBudSproutRound =
         new("EZMicroBalanceAscensionRootBudSproutRound", () => RootBud.DefaultSproutRound);
+
+    public static void EnsureRegistered()
+    {
+        _ = RootBeginsApplied;
+        _ = RootblightLevel;
+        _ = RootblightPendingCombatDowngrades;
+        _ = RootblightWasPresentAtCombatStart;
+        _ = RootblightHasSplit;
+        _ = RootblightPlantedInSeedbed;
+        _ = ForgeTokenHeld;
+        _ = StruggleBaitGeneratedEscape;
+        _ = RoyalDecreeMarkedCard;
+        _ = RoyalDecreePlayedCard;
+        _ = RoyalDecreePlayedBoundCard;
+        _ = RootBudEnteredHand;
+        _ = RootBudPlayed;
+        _ = RootBudSprouted;
+        _ = RootBudPlantedInSeedbed;
+        _ = RootBudSproutRound;
+    }
 }

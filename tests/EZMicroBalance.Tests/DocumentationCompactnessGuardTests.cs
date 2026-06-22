@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.99 package truth is RitsuLib-only",
+            "Current beta.104 package truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -296,9 +296,9 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             apiDiscovery,
             "2026-06-20 dependency supersession: the May discovery notes below recorded the then-active previous package project shape.",
-            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.32`",
+            "Current Spire Plus now compiles against `STS2.RitsuLib` `0.4.33`",
             "Historical runtime target in `docs/dev-environment.md`: public beta `v0.106.1`, source-refreshed locally on `2026-05-22`",
-            "Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.32`",
+            "Historical local project package at the time: `previous package` `3.1.4`; current local project package: `STS2.RitsuLib` `0.4.33`",
             "Current authoritative source is the refreshed local public beta `v0.107.1` assembly/source recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.",
             "The original Batch 2 inspection was performed against `v0.104.0` (`2026.04.23`)",
             "historical context only",
@@ -311,7 +311,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             manualChecklist,
             "- Target game version: public beta `v0.107.1`, source snapshot refreshed locally on `2026-06-20` per `docs/dev-environment.md` and `PROJECT_STATE.md`",
-            "- Runtime framework: `STS2-RitsuLib` `v0.4.32` in direct NuGet runtime layout",
+            "- Runtime framework: `STS2-RitsuLib` `v0.4.33` in direct NuGet runtime layout",
             "- Legacy baselines: `v0.104.0` (`2026.04.23`) and the later `v0.106.1` / previous package validation lane are historical only and are not the target for this checklist.");
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
@@ -383,8 +383,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.99`",
-            "`STS2-RitsuLib` `0.4.32`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.104`",
+            "`STS2-RitsuLib` `0.4.33`",
             "direct NuGet runtime layout",
             "previous package is previous-package or other-mod local context only",
             "`scripts\\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot`",
@@ -451,21 +451,21 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "AGENTS.md").Text,
-            "STS2-RitsuLib `v0.4.32`",
+            "STS2-RitsuLib `v0.4.33`",
             "no newer `STS2.RitsuLib` package",
             "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
             "inspect RitsuLib/template APIs",
-            "Install STS2-RitsuLib `v0.4.32`");
+            "Install STS2-RitsuLib `v0.4.33`");
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "PROJECT_STATE.md").Text,
-            "Current dependency configurations are aligned on STS2-RitsuLib `v0.4.32`",
+            "Current dependency configurations are aligned on STS2-RitsuLib `v0.4.33`",
             "2026-06-22 NuGet flat-container",
             "2026-06-22 source-workspace recheck passed 57 checks / 0 mismatches");
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "docs/goals/migration.md").Text,
             "Spire Plus is a RitsuLib-only mod.",
             "installed `STS2-RitsuLib` package docs/XML and the public RitsuLib docs",
-            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.32` as the latest package");
+            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.33` as the latest package");
     }
 
     [Fact]
@@ -490,8 +490,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docRestructureSpec,
             "**RitsuLib integration** (PR5/PR6+)",
-            "Current beta.99 RitsuLib-only compile/manifest/package/settings target active",
-            "beta.96 and beta.93 loader/settings proof retained only as previous-package evidence");
+            "Current beta.104 RitsuLib-only compile/manifest/package/clicked-UI target active",
+            "beta.99, beta.96, and beta.93 loader/settings proof retained only as previous-package evidence");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",
@@ -500,7 +500,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
             "Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.",
             "2026-06-22 recheck",
-            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.32`",
+            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`",
             "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "RegisterModSettings",
@@ -512,7 +512,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             migrationReadme,
             "# RitsuLib Migration",
             "This is the single entry point for RitsuLib migration work.",
-            "Spire Plus is RitsuLib-only for beta.99.",
+            "Spire Plus is RitsuLib-only for beta.104.",
             "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
             "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
             "Register settings data before the settings page: `BeginModDataRegistration`",

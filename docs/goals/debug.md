@@ -6,9 +6,9 @@ Use `PROJECT_STATE.md`, `docs/goals/migration.md`, `docs/features/ritsulib-migra
 
 ## Current Runtime Boundary
 
-Current beta.99 package truth is RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.32`: package parity, clicked RitsuLib settings UI proof, and direct Off loader proof are current. Beta.99 Off proof at `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` is startup/loading and default-Off StS1Events evidence only. Previous beta.96 Off proof at `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/` is previous-package startup/loading context only. Previous beta.93 AdditiveBatch1 proof remains previous-package enabled-mode registration context only.
+Current beta.104 package truth is RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.33`: package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are current. Beta.104 clicked UI proof at `.tools/runtime-evidence/monkey-stability-20260622-025733/` is smoke-level UI evidence only. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 AdditiveBatch1 proof remain previous-package context only.
 
-Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and beta.88/beta.93/beta.96 proof remains previous-package context. These rows are loader proof only; they do not prove beta.99 runtime, gameplay, clicked UI, save-load, current enabled-mode registration/gameplay, replacement behavior, multiplayer, independent QA, release readiness, or handoff readiness.
+Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and beta.88/beta.93/beta.96/beta.99 proof remains previous-package context. These rows are loader proof only; they do not prove beta.104 gameplay, save-load, current enabled-mode registration/gameplay, replacement behavior, multiplayer, independent QA, release readiness, or handoff readiness.
 
 ## Debug Decision
 

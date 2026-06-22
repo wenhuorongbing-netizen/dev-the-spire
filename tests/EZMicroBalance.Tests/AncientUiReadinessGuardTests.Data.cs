@@ -1,3 +1,5 @@
+using Xunit;
+
 namespace EZMicroBalance.Tests;
 
 public sealed partial class AncientUiReadinessGuardTests
@@ -100,4 +102,40 @@ public sealed partial class AncientUiReadinessGuardTests
         new("LothaPublicEvidenceOptionRelic", "LothaAssetPaths.PublicEvidenceOptionIcon", "EZMicroBalance/images/ancients/lotha/options/lotha_public_evidence.png", "EZMICROBALANCE-LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC"),
         new("VakuuFightOptionRelic", "VakuuFightAssetPaths.OptionIcon", "EZMicroBalance/images/ancients/vakuu/options/vakuu_fight.png", "EZMICROBALANCE-VAKUU_FIGHT_OPTION_RELIC")
     ];
+
+    private static string RitsuLibDefaultRelicKey(string relicClass)
+    {
+        var builder = new List<char>("EZ_MICRO_BALANCE_RELIC_");
+        for (var i = 0; i < relicClass.Length; i++)
+        {
+            var current = relicClass[i];
+            if (i > 0 && char.IsUpper(current))
+            {
+                var previous = relicClass[i - 1];
+                var nextIsLower = i + 1 < relicClass.Length && char.IsLower(relicClass[i + 1]);
+                if (char.IsLower(previous) || char.IsDigit(previous) || nextIsLower)
+                {
+                    builder.Add('_');
+                }
+            }
+
+            builder.Add(char.ToUpperInvariant(current));
+        }
+
+        return new string(builder.ToArray());
+    }
+
+    private static string AncientLocalizationStem(string ancient) =>
+        $"EZMB_{ancient.ToUpperInvariant()}";
+
+    private static string RitsuLibDefaultAncientEventKey(string ancient) =>
+        $"EZ_MICRO_BALANCE_EVENT_{AncientLocalizationStem(ancient)}";
+
+    private static string RitsuLibDefaultPowerKey(string legacyKey)
+    {
+        const string legacyPrefix = "EZMICROBALANCE-";
+        var suffixIndex = legacyKey.IndexOf('.');
+        Assert.True(suffixIndex > legacyPrefix.Length, $"Unexpected power localization key: {legacyKey}");
+        return "EZ_MICRO_BALANCE_POWER_" + legacyKey[legacyPrefix.Length..suffixIndex] + legacyKey[suffixIndex..];
+    }
 }

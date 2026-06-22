@@ -105,8 +105,8 @@ blocked | temporary-substitute | compile-excluded | special-stub | duplicate-wik
 
 | Gate | Status | Blocker |
 |------|--------|---------|
-| Runtime path report (O21) | **current prerequisite pass** | E-drive game root, STS2-RitsuLib v0.4.32 direct NuGet runtime layout, and Spire Plus beta.99 package-parity install are present. previous package is previous-package/other-mod context only. |
-| STS2-RitsuLib installed (O22) | **current prerequisite pass** | `STS2-RitsuLib` `v0.4.32` direct NuGet runtime layout is installed on E-drive. |
+| Runtime path report (O21) | **current prerequisite pass** | E-drive game root, STS2-RitsuLib v0.4.33 direct NuGet runtime layout, and Spire Plus beta.99 package-parity install are present. previous package is previous-package/other-mod context only. |
+| STS2-RitsuLib installed (O22) | **current prerequisite pass** | `STS2-RitsuLib` `v0.4.33` direct NuGet runtime layout is installed on E-drive. |
 | Active `godot.log` generated (O23) | **current packet exists** | Beta.93 AdditiveBatch1 direct smoke generated `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/godot.log.current-iteration` on `v0.107.1` and audited clean. Retained beta.87 `v0.107.0` proof and beta.87 `v0.107.1` previous package `v3.2.1` failure remain historical context. |
 | Loader proof (O24) | **previous pass for loader/registration** | Beta.93 AdditiveBatch1 direct smoke on `v0.107.1` / RitsuLib `v0.4.31` reached main menu, reported `v0.1.0-private-beta.93`, applied 25/25 Spire Plus ModPatcher patches, has a clean `godot-log-audit.json`, passed enabled-mode verifier 31 / 0, and passed packet verifier 61 / 0. This is not beta.96 loader or gameplay proof. |
 | Default Off runtime state (O13) | **previous-package pass** | Beta.85 Off smoke logs `Feature Sts1Events ... bootstrap=disabled, live=Disabled`; no enabled StS1 event registrations are claimed from this Off run. |

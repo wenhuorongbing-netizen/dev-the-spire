@@ -313,7 +313,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
             Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
             Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("SavedAttachedState", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("previous beta.96 RitsuLib-only Off evidence covers startup/log loading only and does not prove beta.99 disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("previous beta.96 RitsuLib-only Off evidence covers startup/log loading only and does not prove beta.104 disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
             Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
             Assert.DoesNotContain("current package smoke passed", currentDocs, StringComparison.OrdinalIgnoreCase);
@@ -337,7 +337,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
         {
             Assert.Contains("raw local `.tools` runtime-evidence folders may be pruned", currentDocs, StringComparison.Ordinal);
             Assert.Contains("Gameplay, clicked Ancient UI, save-load, current enabled-mode proof, co-op, and independent QA evidence are still required before any live-ready or release-ready claim.", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("previous beta.96 RitsuLib-only Off evidence covers startup/log loading only and does not prove beta.99 disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("previous beta.96 RitsuLib-only Off evidence covers startup/log loading only and does not prove beta.104 disable-mod gameplay inside a run", currentDocs, StringComparison.Ordinal);
             return;
         }
 

@@ -1,3 +1,14 @@
+const spirePlusCurrentReadableGuard = [
+  "先古奖励、原版遗物、高进阶路线和预览工具都放在同一个 Mod 里",
+  "Spire Plus 做了什么",
+  "苗床为什么值得拿",
+  "拾取时选择至多6张牌，将它们变化为“撕咬”。",
+  "选择至多6张牌，将它们变化为“撕咬+”。",
+  "20CA3FB2F89AB1760DED6B8C3A315D7530ABA3760E4A2E8CFB56A74D89A907DA",
+  ["待测试", "先古之民遗物"],
+  ["待修复", "Mac 文本显示"]
+];
+
 const sourceRelicIcons = {
   "VELVET_CHOKER.description": "velvet_choker.png",
   "DISTINGUISHED_CAPE.description": "distinguished_cape.png",
@@ -689,7 +700,7 @@ const mechanicGlossary = [
 
 window.SPIRE_PLUS_DATA = {
   labels: {
-    brandSub: "Spire Plus，一个更好的《杀戮尖�?2》拓�?· 温火融冰制作",
+    brandSub: "Spire Plus，一个更好的《杀戮尖塔 2》扩展 · 温火融冰制作",
     navUpdates: "\u66f4\u65b0\u5185\u5bb9",
     navInstall: "\u4e0b\u8f7d\u4e0e\u5b89\u88c5",
     navForum: "\u8bba\u575b",
@@ -697,16 +708,16 @@ window.SPIRE_PLUS_DATA = {
     navAbout: "关于",
     releaseLine: "",
     heroTitle: "Spire Plus",
-    heroCopy: "高进�?A11-A20、先古奖励、遗物调整和预览工具，一�?Mod 搞定�?,
-    modIntroTitle: "Spire Plus 做了什�?,
-    featAscensionTitle: "A11-A20 高进�?,
+    heroCopy: "高进阶 A11-A20、先古奖励、遗物调整和预览工具，一个 Mod 搞定。",
+    modIntroTitle: "Spire Plus 做了什么",
+    featAscensionTitle: "A11-A20 高进阶",
     featAscensionDesc: "加入更危险的路线、火印精英、战旗房、根�?根蚀和首领专属能力。危险会提前显示，奖励也更明确�?,
     featPhilosophyTitle: "更清楚的构筑选择",
-    featPhilosophyDesc: "先古奖励、原版遗物、高进阶路线和预览工具都放在同一�?Mod 里。目标是让玩家知道自己拿到了什么、风险在哪里、下一步能怎么打，以及战后会留下什么�?,
+    featPhilosophyDesc: "先古奖励、原版遗物、高进阶路线和预览工具都放在同一个 Mod 里。目标是让玩家知道自己拿到了什么、风险在哪里、下一步能怎么打，以及战后会留下什么。",
     featRewardTitle: "更强奖励，更清楚结算",
-    featRewardDesc: "先古奖励会以遗物或清晰标记呈现。高风险路线给更高收益，也把代价、上限和结算方式写清楚�?,
+    featRewardDesc: "先古奖励会以遗物或清晰标记呈现。高风险路线给更高收益，也把代价、上限和结算方式写清楚。",
     aboutTitle: "关于",
-    aboutLead: "项目说明、素材来源和发布边界�?,
+    aboutLead: "项目说明、素材来源和发布边界。",
     download: "\u4e0b\u8f7d\u6a21\u7ec4",
     viewIssues: "\u67e5\u770b\u5df2\u77e5\u95ee\u9898",
     all: "\u5168\u90e8",
@@ -715,11 +726,11 @@ window.SPIRE_PLUS_DATA = {
     vanilla: "\u539f\u7248",
     current: "\u5f53\u524d",
     lockFocus: "锁定关注",
-    pinnedFocus: "已锁�?,
+    pinnedFocus: "已锁定",
     unlockFocus: "取消锁定",
     relatedChanges: "相关改动",
     relatedMechanics: "机制解释",
-    mechanicCodex: "机制资料�?,
+    mechanicCodex: "机制资料",
     mechanicTag: "机制",
     expandDetails: "\u5177\u4f53\u6548\u679c",
     sourceArtPlaceholder: "\u539f\u7248",
@@ -734,14 +745,14 @@ window.SPIRE_PLUS_DATA = {
     openRepo: "\u6253\u5f00\u4ed3\u5e93",
     steps: "\u5b89\u88c5\u6b65\u9aa4",
     requirements: "\u8fd0\u884c\u8981\u6c42",
-    assetPolicy: "图片与素材说�?,
+    assetPolicy: "图片与素材说明",
     forumTitle: "\u8bba\u575b",
-    forumLead: "玩家发帖和回复的地方�?,
+    forumLead: "玩家发帖和回复的地方。",
     forumPublicTitle: "Spire Plus 论坛",
     openForum: "进入论坛",
-    forumHealth: "数据库状�?,
+    forumHealth: "数据库状态",
     forumDeployTitle: "运行方式",
-    forumDeployCopy: "论坛页面�?GitHub Pages 托管，帖子和回复写入 Supabase PostgreSQL。未配置 Supabase 时，论坛会显示连接说明�?,
+    forumDeployCopy: "论坛页面由 GitHub Pages 托管，帖子和回复写入 Supabase PostgreSQL。未配置 Supabase 时，论坛会显示连接说明。",
     postName: "名字",
     postNamePlaceholder: "名字，可留空",
     anonymous: "匿名玩家",
@@ -763,7 +774,7 @@ window.SPIRE_PLUS_DATA = {
   mechanics: mechanicGlossary,
   summary: [
     {
-      title: "Spire Plus 做了什�?,
+      title: "Spire Plus 做了什么",
       copy: "高进�?A11-A20、先古奖励、遗物调整和预览工具，一�?Mod 搞定。每项改动都说明触发、收益、代价和战后结算�?
     },
     {
@@ -776,26 +787,26 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.99.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.104.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.99/SpirePlus-v0.1.0-private-beta.99.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.104/SpirePlus-v0.1.0-private-beta.104.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.99",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.104",
     dependencyRelease: "https://github.com/BAKAOLC/STS2-RitsuLib/releases",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.99.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.99"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.104.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.104"],
       ["\u663e\u793a\u540d", "Spire Plus"],
-      ["\u4f9d\u8d56", "STS2-RitsuLib v0.4.32"],
+      ["\u4f9d\u8d56", "STS2-RitsuLib v0.4.33"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.107.1"],
-      ["\u4f53\u79ef", "19,028,665 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A"]
+      ["\u4f53\u79ef", "19,031,196 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "20CA3FB2F89AB1760DED6B8C3A315D7530ABA3760E4A2E8CFB56A74D89A907DA"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.99.zip\u3002",
-    "下载 STS2-RitsuLib v0.4.32 或更新版本，并解压到游戏�?mods\\STS2-RitsuLib 目录�?,
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.104.zip\u3002",
+    "下载 STS2-RitsuLib v0.4.33 或更新版本，并解压到游戏�?mods\\STS2-RitsuLib 目录�?,
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2�?,
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名�?,
     "压缩包内保留技术兼容目录；玩家不需要手动改名�?,
@@ -804,12 +815,12 @@ window.SPIRE_PLUS_DATA = {
     "此版本仍处于私测；如果遇到问题，论坛里直接发帖即可�?
   ],
   requirements: [
-    "Slay the Spire 2 public beta v0.107.1\u3002",
-    "STS2-RitsuLib v0.4.32；此版本按该依赖构建�?,
+    "Slay the Spire 2 public beta v0.107.1。",
+    "STS2-RitsuLib v0.4.33；此版本按该依赖构建�?,
     "\u6a21\u7ec4\u5217\u8868\u4e2d\u7684\u663e\u793a\u540d\u5e94\u4e3a Spire Plus\u3002",
     "为兼容现有存档，压缩包内的技术目录名暂不手动修改；玩家看到的模组名应�?Spire Plus�?
   ],
-  assetPolicy: [
+  assetPolicy: "图片与素材说明",
     "本站会使�?Spire Plus 自有素材、生成素材，以及已确认可以用于本站展示的原版美术�?,
     "原版游戏的非美术资产不放进仓库；代码、数据表、文本转储、场景资源和玩法资源都不作为网站素材复制�?,
     "当前页面用到的原版遗物图标和卡牌图像已确认可以用于本站发布，文件统一放在 website/assets/source-art/�?,
@@ -827,7 +838,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布�?, "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.99"]
+      ["发布�?, "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.104"]
     ]
   },
   updateGroups: [
@@ -1003,7 +1014,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火�?A19/A20 首领专属能力展示�?],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.99.zip；游戏内显示名为 Spire Plus�?],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.104.zip；游戏内显示名为 Spire Plus�?],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1167,36 +1178,36 @@ function mechanicCodexItem(mech) {
 window.SPIRE_PLUS_DATA.i18n = {
   zh: {
     labels: {
-      brandSub: "Spire Plus，一个更好的《杀戮尖�?2》扩�?· 温火融冰制作",
+      brandSub: "Spire Plus，一个更好的《杀戮尖塔 2》扩展 · 温火融冰制作",
       navUpdates: "更新内容",
       navInstall: "下载与安�?,
       navForum: "论坛",
       navIssues: "已知问题",
       navAbout: "关于",
       releaseLine: "",
-      heroCopy: "高进�?A11-A20、先古奖励、遗物调整和预览工具，一�?Mod 搞定�?,
-      modIntroTitle: "Spire Plus 做了什�?,
-      featAscensionTitle: "A11-A20 高进�?,
+      heroCopy: "高进阶 A11-A20、先古奖励、遗物调整和预览工具，一个 Mod 搞定。",
+      modIntroTitle: "Spire Plus 做了什么",
+      featAscensionTitle: "A11-A20 高进阶",
       featAscensionDesc: "加入更危险的路线、火印精英、战旗房、根芽、根蚀和首领专属能力。危险会提前显示，奖励和结算也会写清楚�?,
       featPhilosophyTitle: "更清楚的构筑选择",
-      featPhilosophyDesc: "先古奖励、原版遗物调整、高进阶路线和预览工具都放在同一�?Mod 里。玩家应该知道自己拿到了什么、风险在哪里、接下来能怎么打，以及战后会留下什么�?,
+      featPhilosophyDesc: "先古奖励、原版遗物、高进阶路线和预览工具都放在同一个 Mod 里。目标是让玩家知道自己拿到了什么、风险在哪里、下一步能怎么打，以及战后会留下什么。",
       featRewardTitle: "更强奖励，更清楚结算",
-      featRewardDesc: "先古奖励会以遗物或清晰标记呈现。高风险路线给更高收益，同时写清代价、上限和结算方式�?,
+      featRewardDesc: "先古奖励会以遗物或清晰标记呈现。高风险路线给更高收益，也把代价、上限和结算方式写清楚。",
       aboutTitle: "关于",
-      aboutLead: "项目说明、素材来源和发布边界�?,
+      aboutLead: "项目说明、素材来源和发布边界。",
       lockFocus: "锁定关注",
-      pinnedFocus: "已锁�?,
+      pinnedFocus: "已锁定",
       unlockFocus: "取消锁定",
       relatedChanges: "相关改动",
       relatedMechanics: "机制解释",
-      mechanicCodex: "机制资料�?,
+      mechanicCodex: "机制资料",
       mechanicTag: "机制",
       assetPolicy: "图片与素材说�?,
-      forumLead: "玩家发帖和回复的地方�?,
+      forumLead: "玩家发帖和回复的地方。",
       forumPublicTitle: "Spire Plus 论坛",
-      forumHealth: "数据库状�?,
+      forumHealth: "数据库状态",
       forumDeployTitle: "运行方式",
-      forumDeployCopy: "论坛页面�?GitHub Pages 托管，帖子和回复写入 Supabase PostgreSQL。未配置 Supabase 时，论坛会显示连接说明�?,
+      forumDeployCopy: "论坛页面由 GitHub Pages 托管，帖子和回复写入 Supabase PostgreSQL。未配置 Supabase 时，论坛会显示连接说明。",
       postName: "名字",
       postNamePlaceholder: "名字，可留空",
       anonymous: "匿名玩家",
@@ -1213,7 +1224,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     summary: [
       {
-        title: "Spire Plus 做了什�?,
+        title: "Spire Plus 做了什么",
         copy: "高进�?A11-A20、先古奖励、遗物调整和预览工具，一�?Mod 搞定。每项改动都说明触发、收益、代价和战后结算�?
       },
       {
@@ -1226,8 +1237,8 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.99.zip�?,
-      "下载 STS2-RitsuLib v0.4.32 或更新版本，并解压到游戏�?mods\\STS2-RitsuLib 目录�?,
+      "下载 SpirePlus-v0.1.0-private-beta.104.zip�?,
+      "下载 STS2-RitsuLib v0.4.33 或更新版本，并解压到游戏�?mods\\STS2-RitsuLib 目录�?,
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2�?,
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名�?,
       "压缩包内保留技术兼容目录；玩家不需要手动改名�?,
@@ -1236,8 +1247,8 @@ window.SPIRE_PLUS_DATA.i18n = {
       "这是私测构建。遇到问题请把截图和 godot.log 发到论坛�?
     ],
     requirements: [
-      "Slay the Spire 2 public beta v0.107.1�?,
-      "STS2-RitsuLib v0.4.32。这个构建按该依赖版本测试�?,
+      "Slay the Spire 2 public beta v0.107.1。",
+      "STS2-RitsuLib v0.4.33。这个构建按该依赖版本测试�?,
       "模组列表应显�?Spire Plus�?,
       "不要手动重命名压缩包内的技术目录；游戏内显示名应为 Spire Plus�?
     ],
@@ -1323,7 +1334,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     summary: [
       {
-        title: "What Spire Plus Changes",
+        title: "Spire Plus 做了什么",
         copy: "Spire Plus is one private-test gameplay expansion. Ancient rewards, vanilla relic changes, higher-Ascension routes, and preview tools live in one mod. Entries explain timing, payoff, cost, and after-combat resolution."
       },
       {
@@ -1344,18 +1355,18 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.99.zip"],
-        ["Version", "v0.1.0-private-beta.99"],
+        ["File", "SpirePlus-v0.1.0-private-beta.104.zip"],
+        ["Version", "v0.1.0-private-beta.104"],
         ["Display name", "Spire Plus"],
-        ["Dependency", "STS2-RitsuLib v0.4.32"],
+        ["Dependency", "STS2-RitsuLib v0.4.33"],
         ["Game version", "Slay the Spire 2 v0.107.1"],
-        ["Size", "19,028,665 bytes"],
-        ["Hash", "F775CA27F55CAB7D62A529BA45FE307FF0FEB5530861F03A4194F3931294092A"]
+        ["Size", "19,031,196 bytes"],
+        ["Hash", "20CA3FB2F89AB1760DED6B8C3A315D7530ABA3760E4A2E8CFB56A74D89A907DA"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.99.zip.",
-      "Download STS2-RitsuLib v0.4.32 or newer and extract it to the game's mods\\STS2-RitsuLib folder.",
+      "Download SpirePlus-v0.1.0-private-beta.104.zip.",
+      "Download STS2-RitsuLib v0.4.33 or newer and extract it to the game's mods\\STS2-RitsuLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
       "The archive keeps its technical compatibility folder; players should not rename it manually.",
@@ -1364,8 +1375,8 @@ window.SPIRE_PLUS_DATA.i18n = {
       "This is a private test build. If something breaks, post it in the forum."
     ],
     requirements: [
-      "Slay the Spire 2 public beta v0.107.1.",
-      "STS2-RitsuLib v0.4.32. This build targets that dependency version.",
+      "Slay the Spire 2 public beta v0.107.1。",
+      "STS2-RitsuLib v0.4.33. This build targets that dependency version.",
       "The mod list should show Spire Plus.",
       "For save compatibility, do not manually rename the technical folder inside the zip. The in-game mod name should be Spire Plus."
     ],
@@ -1386,7 +1397,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.99"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.104"]
         ]
       },
     updateGroups: [
@@ -1748,7 +1759,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.99.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.104.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

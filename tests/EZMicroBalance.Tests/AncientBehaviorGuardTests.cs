@@ -36,7 +36,7 @@ public sealed partial class AncientBehaviorGuardTests
                 dependency.TryGetProperty("id", out var id) &&
                 id.GetString() == "STS2-RitsuLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "0.4.32");
+                minVersion.GetString() == "0.4.33");
 
         var readme = ReadZipText(archive, "EZMicroBalance/README_INSTALL.txt");
         Assert.Contains("Spire Plus manual-test package", readme, StringComparison.Ordinal);

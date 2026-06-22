@@ -42,6 +42,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Get-CanonicalCommandScenarioTag",
             "Test-BytePrefix",
             "Test-CurrentSliceBinding",
+            "[long]$ScanOffsetBytes = -1",
+            "godot.log.current-iteration matches godot.log.after-launch from LogScanOffsetBytes after a log reset",
+            "LogScanOffsetBytes must equal retained godot.log.before length when the launch log appends, or 0 when Godot rewrites the launch log",
             "Get-JsonArrayProperty",
             "plan_unresponsive_sample_threshold_positive",
             "RuntimeProbeSamplesPath",
@@ -51,6 +54,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "runtime_probe_samples_log_growth_matches_runtime_observation",
             "runtime_probe_samples_log_length_within_recorded_after_launch",
             "runtime_probe_samples_log_length_within_retained_after_launch",
+            "$postCommandProbeSamples",
+            "post-command runtime probe samples must not report hung windows; startup transients are governed by MaxConsecutiveUnresponsiveSamples",
+            "post-command runtime probe samples must not report Responding=false; startup transients are governed by MaxConsecutiveUnresponsiveSamples",
             "runtime_observation_log_length_growth_matches_log_grew",
             "GodotLogBeforePath",
             "GodotLogBeforeLengthBytes",
@@ -63,6 +69,9 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "GodotLogCurrentIterationSha256",
             "CurrentIterationLogPath",
             "LogScanOffsetBytes",
+            "release=$expectedGameVersionWithV",
+            "Host Version: $expectedGameVersionWithV",
+            "Release Version: $expectedGameVersionWithV",
             "prepare-output.json",
             "LiveSessionPrepareOutputPath",
             "LiveSessionPrepareOutputSha256",
@@ -7389,7 +7398,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         const string fixtureSts1EventMode = "Off";
         const string fixturePackageVersion = "v0.1.0-private-beta.96";
         const string fixtureGameVersion = "0.107.1";
-        const string fixtureRitsuLibVersion = "0.4.32";
+        const string fixtureRitsuLibVersion = "0.4.33";
         const string fixtureRitsuCompatBranch = "0.107.1";
         const int fixtureExpectedPatchCount = 25;
 

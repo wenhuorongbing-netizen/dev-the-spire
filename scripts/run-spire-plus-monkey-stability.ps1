@@ -251,6 +251,36 @@ function Invoke-WindowCapture {
     }
 }
 
+function Invoke-PowerShellFileToOutput {
+    param(
+        [Parameter(Mandatory = $true)][string]$ScriptPath,
+        [Parameter(Mandatory = $true)][string[]]$ArgumentList,
+        [Parameter(Mandatory = $true)][string]$OutputPath
+    )
+
+    $powerShellExe = Get-PowerShellExecutable
+    $arguments = @(
+        '-NoProfile',
+        '-ExecutionPolicy',
+        'Bypass',
+        '-File',
+        $ScriptPath
+    ) + $ArgumentList
+    $output = & $powerShellExe @arguments 2>&1
+    $exitCode = if ($null -eq $LASTEXITCODE) { 0 } else { [int]$LASTEXITCODE }
+    @($output | ForEach-Object { $_.ToString() }) |
+        Set-Content -LiteralPath $OutputPath -Encoding UTF8
+
+    if ($exitCode -ne 0) {
+        throw "$ScriptPath exited with code $exitCode. See $OutputPath."
+    }
+
+    return [pscustomobject]@{
+        ExitCode = $exitCode
+        OutputPath = $OutputPath
+    }
+}
+
 function Test-Sha256Text {
     param([AllowEmptyString()][string]$Value)
 
@@ -513,7 +543,7 @@ function Get-SpireProcessSnapshot {
 
 function Add-ProbeSample {
     param(
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$Samples,
+        [Parameter(Mandatory = $true)]$Samples,
         [Parameter(Mandatory = $true)][string]$Phase,
         [Parameter(Mandatory = $true)]$LogSnapshot,
         [Parameter(Mandatory = $true)]$ProcessSnapshot
@@ -559,7 +589,7 @@ function Wait-ForMainMenuLog {
         [Parameter(Mandatory = $true)][int]$UnresponsiveSampleThreshold,
         [Parameter(Mandatory = $true)][long]$BaselineLogLengthBytes,
         [Parameter(Mandatory = $true)][datetime]$MinimumProcessStartTimeUtc,
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$ProbeSamples,
+        [Parameter(Mandatory = $true)]$ProbeSamples,
         [int]$ExpectedProcessId = 0,
         [AllowEmptyString()][string]$ExpectedProcessStartTimeUtc = '',
         [AllowEmptyString()][string]$ExpectedProcessPath = ''
@@ -730,7 +760,7 @@ function Watch-RuntimeHealth {
         [Parameter(Mandatory = $true)][int]$IntervalSeconds,
         [Parameter(Mandatory = $true)][int]$UnresponsiveSampleThreshold,
         [Parameter(Mandatory = $true)][datetime]$MinimumProcessStartTimeUtc,
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$ProbeSamples,
+        [Parameter(Mandatory = $true)]$ProbeSamples,
         [Parameter(Mandatory = $true)][bool]$RequireLogGrowth,
         [int]$ExpectedProcessId = 0,
         [AllowEmptyString()][string]$ExpectedProcessStartTimeUtc = '',
@@ -985,7 +1015,7 @@ function Test-CommandAck {
 
 function Add-FailureCode {
     param(
-        [Parameter(Mandatory = $true)][System.Collections.Generic.HashSet[string]]$Codes,
+        [Parameter(Mandatory = $true)]$Codes,
         [AllowEmptyString()][string]$Code
     )
 
@@ -1133,7 +1163,11 @@ function Get-FailureReasonCodes {
 }
 
 function Get-HangSignals {
-    param([Parameter(Mandatory = $true)][string[]]$FailureReasonCodes)
+    param([string[]]$FailureReasonCodes = @())
+
+    if ($null -eq $FailureReasonCodes) {
+        $FailureReasonCodes = @()
+    }
 
     $hangCodes = @(
         'game_process_missing',
@@ -1263,7 +1297,10 @@ function Invoke-Sts1ModeVerifier {
         '-OutFile', $OutFile
     )
 
-    & $sts1ModeVerifierScript @args | Out-File -LiteralPath $TextOutFile -Encoding UTF8
+    Invoke-PowerShellFileToOutput `
+        -ScriptPath $sts1ModeVerifierScript `
+        -ArgumentList $args `
+        -OutputPath $TextOutFile | Out-Null
     $report = Get-Content -LiteralPath $OutFile -Raw -Encoding UTF8 | ConvertFrom-Json
     return [pscustomobject]@{
         Passed = @($report.Mismatches).Count -eq 0
@@ -1274,7 +1311,7 @@ function Invoke-Sts1ModeVerifier {
 
 function Add-ExpectationCheck {
     param(
-        [Parameter(Mandatory = $true)][System.Collections.Generic.List[object]]$Checks,
+        [Parameter(Mandatory = $true)]$Checks,
         [Parameter(Mandatory = $true)][string]$Name,
         [Parameter(Mandatory = $true)][bool]$Passed,
         [Parameter(Mandatory = $true)][string]$Detail
@@ -1351,13 +1388,17 @@ function Test-LogExpectations {
 function Invoke-LiveSessionRestore {
     param([Parameter(Mandatory = $true)][string]$EvidenceDir)
 
-    & $liveSessionScript `
-        -Mode Restore `
-        -EvidenceDir $EvidenceDir `
-        -GameRoot $GameRoot `
-        -SteamExe $SteamExe `
-        -StopGameOnRestore `
-        -PreserveNewCurrentRunsOnRestore | Out-Null
+    $restoreOutputPath = Join-Path $EvidenceDir 'live-session-restore-output.txt'
+    Invoke-PowerShellFileToOutput `
+        -ScriptPath $liveSessionScript `
+        -ArgumentList @(
+            '-Mode', 'Restore',
+            '-EvidenceDir', $EvidenceDir,
+            '-GameRoot', $GameRoot,
+            '-SteamExe', $SteamExe,
+            '-StopGameOnRestore',
+            '-PreserveNewCurrentRunsOnRestore') `
+        -OutputPath $restoreOutputPath | Out-Null
 }
 
 function Update-LiveSessionRestoreStateFields {
@@ -1961,7 +2002,10 @@ try {
 
                 $prepareStarted = $true
                 $prepareOutputPath = [string]$result.LiveSessionPrepareOutputPath
-                & $liveSessionScript @prepareArgs | Out-File -LiteralPath $prepareOutputPath -Encoding UTF8
+                Invoke-PowerShellFileToOutput `
+                    -ScriptPath $liveSessionScript `
+                    -ArgumentList $prepareArgs `
+                    -OutputPath $prepareOutputPath | Out-Null
                 $result.LiveSessionPrepareOutputSha256 = Get-FileSha256OrEmpty -Path $prepareOutputPath
                 $result.LiveSessionSessionStateSha256 = Get-FileSha256OrEmpty -Path ([string]$result.LiveSessionSessionStatePath)
                 $prepareOutput = Read-JsonOrNull -Path $prepareOutputPath
@@ -2145,7 +2189,11 @@ try {
                     $result.GodotLogAfterLaunchSha256 = Get-FileSha256OrEmpty -Path $launchLog
                     $currentIterationLog = [string]$result.GodotLogCurrentIterationPath
                     $result.CurrentIterationLogPath = $currentIterationLog
-                    $result.LogScanOffsetBytes = [long]$result.GodotLogBeforeLengthBytes
+                    $sliceOffset = [long]$result.GodotLogBeforeLengthBytes
+                    if ($result.MainMenuObservation -and $null -ne $result.MainMenuObservation.LogScanOffsetBytes) {
+                        $sliceOffset = [long]$result.MainMenuObservation.LogScanOffsetBytes
+                    }
+                    $result.LogScanOffsetBytes = $sliceOffset
                     $result.CurrentIterationLogCopied = Write-CurrentIterationLogSlice `
                         -Source $launchLog `
                         -Destination $currentIterationLog `
@@ -2210,8 +2258,8 @@ try {
         }
 
         $result.FinishedAt = (Get-Date).ToString('o')
-        $failureCodes = Get-FailureReasonCodes -Result ([pscustomobject]$result)
-        $hangSignals = Get-HangSignals -FailureReasonCodes $failureCodes
+        $failureCodes = @(Get-FailureReasonCodes -Result ([pscustomobject]$result))
+        $hangSignals = @(Get-HangSignals -FailureReasonCodes $failureCodes)
         $result.FailureReasonCodes = @($failureCodes)
         $result.HangSignals = @($hangSignals)
 
