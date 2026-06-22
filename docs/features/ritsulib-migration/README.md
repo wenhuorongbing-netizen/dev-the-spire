@@ -47,6 +47,9 @@ Do not start future implementation from historical plans, archived prompt dumps,
   `Sts1EventRegistrationService.cs`, and each mode's RitsuLib content-pack
   calls belong in its matching partial file under
   `EZMicroBalanceCode/Sts1Events/Runtime`.
+- Treat StS1 event id lists as reporting and validation metadata only; they do
+  not register content unless the matching RitsuLib registration partial also
+  contains the explicit content-pack calls.
 - Register settings data before the settings page: `BeginModDataRegistration`
   / `ModDataStore.Register` first, then `RegisterModSettings`.
 - Keep settings entry ids stable; screenshots and future automation use them as

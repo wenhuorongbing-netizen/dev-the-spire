@@ -22,6 +22,8 @@ StS1 event mode registration lives in `EZMicroBalanceCode/Sts1Events/Runtime`:
 pack calls for each mode. `Sts1EventRegistry.*` is metadata and validation
 support only; changing that registry does not register content unless the
 matching RitsuLib content-pack call is also added.
+`Sts1EventFeatureGate.EventIds.cs` owns reporting/validation id lists only;
+mode resolution remains in `Sts1EventFeatureGate.cs`.
 Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file
 keeps public preview-tool settings and localization bootstrap,
 `SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data persistence,

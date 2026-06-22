@@ -519,6 +519,7 @@ public sealed partial class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1TheMausoleum.cs",
         "EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1TheWomanInBlue.cs",
         "EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1WheelOfChange.cs",
+        "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventFeatureGate.EventIds.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventFeatureGate.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventHelpers.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationMode.cs",

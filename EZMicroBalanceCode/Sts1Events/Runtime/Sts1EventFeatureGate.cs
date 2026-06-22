@@ -17,7 +17,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 ///   compile-symbol gated, and requires the unsafe-mode override.
 /// - Mode is determined by environment variable SPIREPLUS_STS1_EVENT_MODE.
 /// </summary>
-internal static class Sts1EventFeatureGate
+internal static partial class Sts1EventFeatureGate
 {
     private const string ModeEnvKey = "SPIREPLUS_STS1_EVENT_MODE";
     private const string UnsafeModeEnvKey = "SPIREPLUS_ALLOW_UNSAFE_STS1_EVENT_MODES";
@@ -90,31 +90,4 @@ internal static class Sts1EventFeatureGate
         && !string.Equals(value, "off", StringComparison.OrdinalIgnoreCase)
         && !string.Equals(value, "no", StringComparison.OrdinalIgnoreCase);
 
-    /// <summary>
-    /// Returns the canonical set of canary event IDs for <see cref="Sts1EventRegistrationMode.CanaryOnly"/>.
-    /// </summary>
-    public static IReadOnlyList<string> CanaryEventIds { get; } =
-    [
-        "sts1_big_fish",
-        "sts1_golden_idol",
-        "sts1_the_lab",
-        "sts1_divine_fountain",
-    ];
-
-    /// <summary>
-    /// Canonical event IDs for <see cref="Sts1EventRegistrationMode.AdditiveBatch1"/>.
-    /// </summary>
-    public static IReadOnlyList<string> AdditiveBatch1EventIds { get; } =
-    [
-        "sts1_big_fish",
-        "sts1_golden_idol",
-        "sts1_the_lab",
-        "sts1_divine_fountain",
-        "sts1_purifier",
-        "sts1_upgrade_shrine",
-        "sts1_golden_shrine",
-        "sts1_the_cleric",
-        "sts1_old_beggar",
-        "sts1_shining_light",
-    ];
 }
