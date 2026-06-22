@@ -119,7 +119,9 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'BrightestFlameExhaustDrawPatch.cs'; Classes = 3; PatchIds = 'brightest-flame-keywords, brightest-flame-vars, brightest-flame-exhaust-backstop'; Batch = '4b' },
     [pscustomobject]@{ File = 'DebtAndCardPatches.cs'; Classes = 8; PatchIds = 'debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust'; Batch = '4b' },
     [pscustomobject]@{ File = 'SealOfGoldPatches.cs'; Classes = 2; PatchIds = 'seal-of-gold-max-energy, seal-of-gold-turn'; Batch = '4b' },
-    [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' }
+    [pscustomobject]@{ File = 'PickupRewardPatches.cs'; Classes = 1; PatchIds = 'ancient-pickup-balance'; Batch = '4b' },
+    [pscustomobject]@{ File = 'UrdaOptionRelicClickPatch.cs'; Classes = 1; PatchIds = 'urda-option-relic-click'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'UrdaRootSightMapClickPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close'; Batch = 'clicked-ui' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count
@@ -160,7 +162,7 @@ $builder = [System.Text.StringBuilder]::new()
 [void]$builder.AppendLine('## Migrated Patches (RitsuLib ModPatcher)')
 [void]$builder.AppendLine()
 [void]$builder.AppendLine("These $migratedPatchCount patch classes implement ``IPatchMethod`` and are registered via")
-[void]$builder.AppendLine('`RitsuLibBootstrap.RegisterMigratedPatches()`. They use `ModPatcher.PatchAll()`')
+[void]$builder.AppendLine('`SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`')
 [void]$builder.AppendLine('and are NOT picked up by raw `Harmony.PatchAll()`.')
 [void]$builder.AppendLine()
 [void]$builder.AppendLine('| File | Classes | PatchIds | Batch |')

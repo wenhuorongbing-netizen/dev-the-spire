@@ -211,9 +211,13 @@ public sealed partial class EngineeringGovernanceGuardTests
         var sourcePatchCount = Directory
             .GetFiles(RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories)
             .Sum(path => Regex.Matches(File.ReadAllText(path), @"\[HarmonyPatch").Count);
+        var migratedPatchCount = Regex.Matches(
+            ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusMigratedPatchRegistry.cs"),
+            @"\.RegisterPatch<").Count;
 
         Assert.Contains($"| Total raw HarmonyPatch declarations | {sourcePatchCount} |", inventory, StringComparison.Ordinal);
-        Assert.Contains($"| Tracked patch units total | {sourcePatchCount + 25} |", inventory, StringComparison.Ordinal);
+        Assert.Contains($"| Migrated to RitsuLib ModPatcher | {migratedPatchCount} |", inventory, StringComparison.Ordinal);
+        Assert.Contains($"| Tracked patch units total | {sourcePatchCount + migratedPatchCount} |", inventory, StringComparison.Ordinal);
         Assert.Contains("| Unclassified owner | 0 |", inventory, StringComparison.Ordinal);
         Assert.DoesNotContain("$(", inventory, StringComparison.Ordinal);
         Assert.DoesNotContain("@{File=", inventory, StringComparison.Ordinal);

@@ -1,6 +1,6 @@
 # Harmony Patch Inventory
 
-Generated: 2026-06-20
+Generated: 2026-06-22
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 146 |
-| Migrated to RitsuLib ModPatcher | 25 |
-| Raw HarmonyPatch remaining | 146 |
+| Total raw HarmonyPatch declarations | 142 |
+| Migrated to RitsuLib ModPatcher | 29 |
+| Raw HarmonyPatch remaining | 142 |
 | Tracked patch units total | 171 |
 | High risk (raw Harmony) | 22 |
-| Medium risk (raw Harmony) | 35 |
-| Low risk (raw Harmony) | 89 |
+| Medium risk (raw Harmony) | 32 |
+| Low risk (raw Harmony) | 88 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,8 +32,8 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 25 patch classes implement `IPatchMethod` and are registered via
-`RitsuLibBootstrap.RegisterMigratedPatches()`. They use `ModPatcher.PatchAll()`
+These 29 patch classes implement `IPatchMethod` and are registered via
+`SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
 | File | Classes | PatchIds | Batch |
@@ -47,13 +47,15 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `DebtAndCardPatches.cs` | 8 | `debt-after-created, debt-from-save, debt-keywords, debt-vars, debt-turn-end-effect, debt-turn-end-in-hand, card-model-on-play, debt-exhaust` | 4b |
 | `SealOfGoldPatches.cs` | 2 | `seal-of-gold-max-energy, seal-of-gold-turn` | 4b |
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
+| `UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |
+| `UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 146 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 142 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -65,10 +67,6 @@ These 146 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 7 | `[HarmonyPatch(typeof(NNormalMapPoint), nameof(NNormalMapPoint._Ready))]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 31 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshState")]` |
 | Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaMapUiPatches.cs` | 43 | `[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaOptionRelicClickPatch.cs` | 6 | `[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 7 | `[HarmonyPatch(typeof(NMapPoint), "OnRelease")]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 23 | `[HarmonyPatch(typeof(NClickableControl), nameof(NClickableControl._GuiInput))]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightMapClickPatches.cs` | 43 | `[HarmonyPatch(typeof(NMapScreen), nameof(NMapScreen.Close))]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 5 | `[HarmonyPatch(typeof(RunManager), "RollRoomTypeFor")]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 21 | `[HarmonyPatch(typeof(RunManager), "CreateRoom")]` |
 | Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs` | 7 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |

@@ -49,13 +49,19 @@ public sealed class RitsuLibMigrationGuardTests
         "seal-of-gold-max-energy",
         "seal-of-gold-turn",
         // PickupRewardPatches (1) - Batch 4b
-        "ancient-pickup-balance"
+        "ancient-pickup-balance",
+        // Clicked UI patches (4) - owner-approved targeted migration
+        "urda-option-relic-click",
+        "urda-root-sight-map-point-click",
+        "urda-root-sight-disabled-map-point-click",
+        "urda-root-sight-map-close"
     ];
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedTotalMigratedCount = 25;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 146;
+    private const int ExpectedClickedUiCount = 4;
+    private const int ExpectedTotalMigratedCount = 29;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 142;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -113,13 +119,14 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 25 (9 Batch 4a + 16 Batch 4b).
+    /// The expected migrated patch count must be 29:
+    /// 9 Batch 4a + 16 Batch 4b + 4 clicked UI patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
-        Assert.Equal(ExpectedBatch4aCount + ExpectedBatch4bCount, ExpectedTotalMigratedCount);
+        Assert.Equal(ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedClickedUiCount, ExpectedTotalMigratedCount);
     }
 
     /// <summary>
@@ -230,7 +237,12 @@ public sealed class RitsuLibMigrationGuardTests
             "internal static class SpirePlusMigratedPatchRegistry",
             "public static void RegisterAll(ModPatcher patcher)",
             "RegisterBatch4a(patcher);",
-            "RegisterBatch4b(patcher);");
+            "RegisterBatch4b(patcher);",
+            "RegisterClickedUiPatches(patcher);",
+            "RegisterPatch<UrdaOptionRelicClickPatch>();",
+            "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
+            "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
+            "RegisterPatch<UrdaRootSightMapClosePatch>();");
     }
 
     [Fact]
@@ -443,16 +455,20 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (25).
+    /// state the correct total migrated count (29).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 25", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 29", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
+        AssertSourceContains(
+            inventory,
+            "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",
+            "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |");
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
+using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using STS2RitsuLib.Patching.Core;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -12,6 +13,7 @@ internal static class SpirePlusMigratedPatchRegistry
     {
         RegisterBatch4a(patcher);
         RegisterBatch4b(patcher);
+        RegisterClickedUiPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -29,6 +31,14 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterDebtAndCardPatches(patcher);
         RegisterSealOfGoldPatches(patcher);
         patcher.RegisterPatch<AncientPickupBalancePatch>();
+    }
+
+    private static void RegisterClickedUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<UrdaOptionRelicClickPatch>();
+        patcher.RegisterPatch<UrdaRootSightMapPointClickPatch>();
+        patcher.RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();
+        patcher.RegisterPatch<UrdaRootSightMapClosePatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

@@ -165,12 +165,14 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             urdaOptionRelics,
             "UrdaOptionRelicClickPatch",
-            "HarmonyPatch(typeof(NRelicInventory), \"OnRelicClicked\")",
+            "IPatchMethod.PatchId => \"urda-option-relic-click\"",
+            "new ModPatchTarget(typeof(NRelicInventory), \"OnRelicClicked\", [typeof(RelicModel)])",
             "UrdaBlessingService.GetSeedBankStoredCount(seedBank.Owner)",
             "TaskHelper.RunSafely(UrdaBlessingService.TryExtractSeedBankFromRelicClick(seedBank.Owner))",
             "RefreshStoredSeedDisplay",
             "CreateStoredSeedsHoverTip",
             "storedSeeds.descriptionPrefix");
+        Assert.Contains("RegisterPatch<UrdaOptionRelicClickPatch>();", ritsuRegistration, StringComparison.Ordinal);
         Assert.DoesNotContain("HoverTipFactory.FromCard(card)", urdaOptionRelics, StringComparison.Ordinal);
         Assert.DoesNotContain(".Concat(card.HoverTips)", urdaOptionRelics, StringComparison.Ordinal);
         Assert.DoesNotContain("[Pool(typeof(SharedRelicPool))]", urdaOptionRelics, StringComparison.Ordinal);
@@ -493,13 +495,22 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             "questIcon.Visible = true",
             "NHoverTipSet.CreateAndShow",
             "UrdaRootSightMapPointClickPatch",
-            "HarmonyPatch(typeof(NMapPoint), \"OnRelease\")",
+            "IPatchMethod.PatchId => \"urda-root-sight-map-point-click\"",
+            "new ModPatchTarget(typeof(NMapPoint), \"OnRelease\")",
             "UrdaRootSightDisabledMapPointClickPatch",
-            "HarmonyPatch(typeof(NClickableControl), nameof(NClickableControl._GuiInput))",
+            "IPatchMethod.PatchId => \"urda-root-sight-disabled-map-point-click\"",
+            "new ModPatchTarget(typeof(NClickableControl), nameof(NClickableControl._GuiInput), [typeof(InputEvent)])",
             "InputEventMouseButton { ButtonIndex: MouseButton.Left }",
             "__instance.GetViewport()?.SetInputAsHandled()",
             "UrdaRootSightMapClosePatch",
+            "IPatchMethod.PatchId => \"urda-root-sight-map-close\"",
+            "new ModPatchTarget(typeof(NMapScreen), nameof(NMapScreen.Close), [typeof(bool)])",
             "UrdaBlessingService.CancelRootSightSelection");
+        AssertSourceContains(
+            ritsuRegistration,
+            "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
+            "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
+            "RegisterPatch<UrdaRootSightMapClosePatch>();");
         var rootSightRoomPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightRoomPatches.cs");
         AssertSourceContains(
             rootSightRoomPatches,

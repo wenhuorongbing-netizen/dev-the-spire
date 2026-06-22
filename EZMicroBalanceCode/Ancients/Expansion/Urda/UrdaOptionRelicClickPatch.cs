@@ -1,11 +1,17 @@
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using MegaCrit.Sts2.Core.Nodes.Relics;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[HarmonyPatch(typeof(NRelicInventory), "OnRelicClicked")]
-internal static class UrdaOptionRelicClickPatch
+internal sealed class UrdaOptionRelicClickPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-option-relic-click";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Route Urda option relic clicks to Root Sight or Seed Bank actions before vanilla relic inspection";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NRelicInventory), "OnRelicClicked", [typeof(RelicModel)])];
+
     [HarmonyPrefix]
     private static bool ExtractStoredSeedInsteadOfInspecting(RelicModel model)
     {
