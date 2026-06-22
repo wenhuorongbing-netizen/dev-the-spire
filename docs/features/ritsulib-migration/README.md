@@ -97,7 +97,7 @@ Do not start future implementation from historical plans, archived prompt dumps,
 
 | File | Role |
 | --- | --- |
-| `monthly-dev-spec.md` | Compact boundary stub retained for guarded historical references. Not a default entry point. |
+| `monthly-dev-spec.md` | Compatibility stub retained for guarded historical references. Not a default entry point. |
 | `runtime-smoke-checklist.md` | Runtime evidence checklist and verifier command source. |
 | `next-overnight-run.md` | Future controlled runtime QA run order. |
 | `batch-4c-candidates.md` | Proposal-only list for the next possible low-risk patch migration batch. |

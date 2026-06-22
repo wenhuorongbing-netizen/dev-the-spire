@@ -1,32 +1,21 @@
-# RitsuLib Migration Current Boundary
+# RitsuLib Monthly Dev Spec Stub
 
-Status: compact active boundary for RitsuLib-only migration work. Historical planning detail remains in Git history and archived planning docs; future work should start from `PROJECT_STATE.md`, `docs/integrations/ritsulib.md`, `docs/reviews/current-validation.md`, and `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
+This file is retained only because guarded historical docs and scripts still
+reference `monthly-dev-spec.md`. It is not a planning source and must not grow
+new migration tables, runtime evidence ledgers, or package handoff notes.
 
-## Current State
+Use the current sources of truth instead:
 
-- Current target: Spire Plus `v0.1.0-private-beta.105`, Slay the Spire 2 `v0.107.1`, STS2-RitsuLib `v0.4.33`, direct NuGet runtime layout.
-- Spire Plus uses NuGet `STS2.RitsuLib` `0.4.33` and manifest dependency `STS2-RitsuLib >= 0.4.33`.
-- 25 patch classes use RitsuLib `IPatchMethod`; 146 raw `[HarmonyPatch]` declarations remain.
-- Beta.105 package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are current under `.tools/runtime-evidence/monkey-stability-20260622-025733/`; beta.99 direct Off loader smoke and clicked RitsuLib settings UI proof are previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/` and `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`, and previous beta.96 Off loader smoke is clean previous-package startup/loading context only.
-- Previous beta.93 AdditiveBatch1 enabled-mode smoke is clean with 10 event types / 14 registration calls and retained verifier reports for previous-package registration context only.
-- Handoff must recapture HEAD and worktree status after any later edits.
-- Live-ready and release-ready remain blocked by gameplay, save-load, replacement behavior, current beta.105 enabled-mode registration/gameplay proof, co-op, QA, and tester handoff.
+- `PROJECT_STATE.md` for the current package/runtime state and blockers.
+- `docs/features/ritsulib-migration/README.md` for RitsuLib-first migration
+  rules and read order.
+- `docs/goals/migration.md` for migration success criteria and validation.
+- `docs/integrations/ritsulib.md` for RitsuLib version/API evidence.
+- `runtime-smoke-checklist.md` for future runtime evidence commands.
+- `batch-4c-candidates.md` for the proposal-only patch list.
 
-## Evidence Rules
-
-- Use previous beta.96 Off proof only for historical startup/loading and default-Off StS1Events context; do not advance to CanaryOnly, AdditiveBatch1, replacement, or gameplay proof from the Off smoke alone.
-- Use the retained CanaryOnly enabled-mode smoke at `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` only as beta.85 / `v0.107.0` previous-package proof; recapture before making a current-version CanaryOnly claim.
-- Use the retained AdditiveBatch1 enabled-mode smoke at `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/` only as beta.93 / `v0.107.1` 10 event types / 14 registration-call proof; recapture it after any package/source change before using it for a new claim.
-- Only after those enabled-mode smokes match current source shape, capture CanaryOnly gameplay evidence for Big Fish, Golden Idol, The Lab, and Divine Fountain.
-- Settings screenshots prove RitsuLib Mod Settings visibility only.
-
-## Batch 4c
-
-Batch 4c is proposal-only. Review `docs/features/ritsulib-migration/batch-4c-candidates.md`; do not migrate any candidate without explicit owner approval and fresh validation. Forbidden migration surfaces remain run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, and reward-state mutation.
-
-## Next Actions
-
-1. Keep docs and tests pointed at RitsuLib-only APIs.
-2. Keep beta.105 clicked UI smoke and beta.99 previous-package Off proof scoped to startup/loading/UI behavior; capture enabled-mode and gameplay proof separately before making those claims.
-3. Capture current enabled-mode, gameplay/save-load/co-op evidence after loader proof.
-4. Record owner decision for Batch 4c before any source migration.
+Current boundary: beta.105 is RitsuLib-only and has package parity, runtime
+preflight, source-workspace validation, and smoke-level clicked Ancient UI
+proof. Settings, loader, and screenshot evidence remain scoped evidence only;
+gameplay, enabled-mode, save-load, replacement, co-op, QA, release readiness,
+handoff, and Batch 4c owner approval require separate current proof.
