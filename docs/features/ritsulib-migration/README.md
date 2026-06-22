@@ -55,6 +55,9 @@ Do not start future implementation from historical plans, archived prompt dumps,
 - Keep settings entry ids stable; screenshots and future automation use them as
   evidence anchors. The current ids live in
   `SpirePlusModConfig.Constants.cs`.
+- Keep RitsuLib settings localization bootstrap in
+  `SpirePlusModConfig.SettingsLocalization.cs`; registration and page/entry
+  files should not call `CreateModLocalization` directly.
 - Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`;
   preview code should not call RitsuLib stores or settings-page builders
   directly.

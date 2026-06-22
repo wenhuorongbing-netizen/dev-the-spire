@@ -25,8 +25,9 @@ matching RitsuLib content-pack call is also added.
 `Sts1EventFeatureGate.EventIds.cs` owns reporting/validation id lists only;
 mode resolution remains in `Sts1EventFeatureGate.cs`.
 Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file
-keeps only localization/bootstrap order, `SpirePlusModConfig.Constants.cs` owns
-stable page/entry ids and slider bounds,
+keeps only registration order, `SpirePlusModConfig.Constants.cs` owns stable
+page/entry ids and slider bounds,
+`SpirePlusModConfig.SettingsLocalization.cs` owns RitsuLib I18N creation,
 `SpirePlusModConfig.PreviewSettings.cs` owns the public runtime accessors used
 by preview code, `SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data-store
 registration, `SpirePlusModConfig.SettingsAccess.cs` owns fallback-aware store

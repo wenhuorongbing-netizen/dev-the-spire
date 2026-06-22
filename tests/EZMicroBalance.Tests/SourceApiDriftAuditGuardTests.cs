@@ -179,6 +179,7 @@ public sealed class SourceApiDriftAuditGuardTests
     {
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
         var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
+        var localization = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsLocalization.cs");
         var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
         var runtimeState = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsRuntimeState.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
@@ -195,15 +196,30 @@ public sealed class SourceApiDriftAuditGuardTests
         AssertSourceContains(
             entry,
             "internal static partial class SpirePlusModConfig",
-            "RitsuLibFramework.CreateModLocalization",
+            "settingsLocalization = CreateSettingsLocalization(modId)",
             "RegisterSettingsStore(modId);",
             "RegisterSettingsPage(modId);");
+        Assert.DoesNotContain("RitsuLibFramework", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("RegisterModSettings", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("BeginModDataRegistration", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("EnableCrystalSpherePeek", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("private static readonly SettingsState FallbackState", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("private static I18N?", entry, StringComparison.Ordinal);
+        Assert.DoesNotContain("SettingsLocalizationPckRoot", entry, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            localization,
+            "RitsuLib settings labels use a dedicated I18N root",
+            "private static I18N CreateSettingsLocalization(string modId)",
+            "RitsuLibFramework.CreateModLocalization",
+            "SettingsLocalizationStem",
+            "SettingsLocalizationPckRoot",
+            "typeof(SpirePlusModConfig).Assembly");
+        Assert.DoesNotContain("RegisterModSettings", localization, StringComparison.Ordinal);
+        Assert.DoesNotContain("BeginModDataRegistration", localization, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddMigrationStatusSection", localization, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewToolsSection", localization, StringComparison.Ordinal);
 
         AssertSourceContains(
             runtimeState,
