@@ -180,6 +180,7 @@ public sealed class SourceApiDriftAuditGuardTests
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
         var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
         var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
+        var runtimeState = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsRuntimeState.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
         var text = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsText.cs");
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
@@ -201,6 +202,20 @@ public sealed class SourceApiDriftAuditGuardTests
         Assert.DoesNotContain("BeginModDataRegistration", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("EnableCrystalSpherePeek", entry, StringComparison.Ordinal);
+        Assert.DoesNotContain("private static readonly SettingsState FallbackState", entry, StringComparison.Ordinal);
+        Assert.DoesNotContain("private static I18N?", entry, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            runtimeState,
+            "RitsuLib owns the persisted store",
+            "private static readonly SettingsState FallbackState = new()",
+            "preview code never reaches into page builders or raw stores",
+            "private static I18N? settingsLocalization",
+            "private static string? registeredModId");
+        Assert.DoesNotContain("RegisterModSettings", runtimeState, StringComparison.Ordinal);
+        Assert.DoesNotContain("BeginModDataRegistration", runtimeState, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddMigrationStatusSection", runtimeState, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewToolsSection", runtimeState, StringComparison.Ordinal);
 
         AssertSourceContains(
             constants,

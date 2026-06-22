@@ -31,7 +31,9 @@ stable page/entry ids and slider bounds,
 by preview code, `SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data-store
 registration, `SpirePlusModConfig.SettingsAccess.cs` owns fallback-aware store
 reads/writes, `SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings
-bindings and value normalization, `SpirePlusModConfig.SettingsState.cs` owns
+bindings and value normalization,
+`SpirePlusModConfig.SettingsRuntimeState.cs` owns the RitsuLib bootstrap
+runtime cache and in-memory fallback, `SpirePlusModConfig.SettingsState.cs` owns
 the persisted settings shape, `SpirePlusModConfig.SettingsPage.cs` owns page
 registration, `SpirePlusModConfig.SettingsText.cs` owns RitsuLib settings text
 construction and localization fallbacks,

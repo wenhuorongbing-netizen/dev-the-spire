@@ -576,6 +576,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
             "Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`",
+            "Keep RitsuLib bootstrap runtime cache and fallback settings in",
             "Keep RitsuLib settings text construction in `SpirePlusModConfig.SettingsText.cs`",
             "Keep read-only migration status UI split the same way",
             "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
@@ -590,6 +591,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data-store",
             "`SpirePlusModConfig.SettingsAccess.cs` owns fallback-aware store",
             "`SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings",
+            "`SpirePlusModConfig.SettingsRuntimeState.cs` owns",
             "`SpirePlusModConfig.SettingsState.cs` owns",
             "`SpirePlusModConfig.SettingsPage.cs` owns page",
             "`SpirePlusModConfig.SettingsText.cs` owns",
