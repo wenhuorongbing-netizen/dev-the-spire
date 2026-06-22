@@ -36,7 +36,7 @@ This goal is not complete. Previous beta.93 proof under `.tools/runtime-evidence
 - Events must live inside `EZMicroBalanceCode/Sts1Events/` (no separate mod)
 - Localization must live inside `EZMicroBalance/localization/`
 - No original StS1 art committed to the repository
-- Events must compile against the current repository package reference: `STS2.RitsuLib` `0.4.33`; Spire Plus must not require previous package.
-- Current runtime reproof targets the installed official `STS2-RitsuLib` `v0.4.33` direct NuGet runtime layout.
+- Events must compile against the current repository package reference: `STS2.RitsuLib` `0.4.34`; Spire Plus must not require previous package.
+- Current runtime reproof targets the installed official `STS2-RitsuLib` `v0.4.34` direct NuGet runtime layout.
 - Normal StS1 event models inherit `EventModel` and are registered through RitsuLib content-builder APIs.
   Ancient-style events remain outside the StS1 unknown-room prototype scope.

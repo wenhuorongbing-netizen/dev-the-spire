@@ -5,14 +5,17 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.108.
-- Compile dependency: NuGet `STS2.RitsuLib` `0.4.33`.
-- Runtime dependency: manifest `STS2-RitsuLib >= 0.4.33`.
+- Spire Plus is RitsuLib-only for beta.110.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.110`.
+- Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
+- Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.108 package parity, runtime preflight, and
-  source-workspace validation.
-- Previous-package UI proof: beta.107 smoke-level clicked Ancient UI for Urda,
-  Morvi, Lotha, and normal Vakuu.
+- Current packaged proof: beta.110 package parity, runtime preflight, and
+  source-workspace validation. Previous beta.108 clicked Ancient UI smoke covers
+  Urda, Morvi, Lotha, and normal Vakuu only for the previous package.
+- Packaged beta.110 evidence covers build, publish, package parity, runtime preflight, and source-workspace validation.
+- Previous beta.108 clicked Ancient UI smoke proves forced clicked UI visibility
+  only for that previous package.
 - Current source migration: Urda option-relic, Root Sight map-click, Root Sight
   map-visual, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
   event-option/relic-node, Crystal Sphere peek, transform preview,
@@ -29,14 +32,13 @@ read only the support file that matches the task.
   `ModPatcher` as the visual-hover UI batch.
 - Current inventory: 64 migrated patch classes and 107 raw Harmony declarations
   remain in `docs/patch-inventory.md`.
-- Boundary: beta.108 was rebuilt, published, packaged, and package-checked after
-  the Batch 4c localization and visual-hover UI migrations. The retained
-  beta.107 clicked UI smoke applied the then-current 46 Spire Plus ModPatcher
-  patches, so a future game smoke must recapture 64 migrated patches before
-  claiming runtime coverage for this source state.
+- Boundary: beta.110 was rebuilt, published, packaged, and package-checked after
+  the RitsuLib `0.4.34` dependency refresh.
+  The retained beta.108 clicked UI smoke applied all 64 migrated Spire Plus
+  ModPatcher patches in the installed game.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
-- Not proved: beta.108 enabled-mode registration, gameplay, save-load,
+- Not proved: beta.110 clicked UI, enabled-mode registration, gameplay, save-load,
   replacement behavior, co-op, independent QA, release readiness, or tester
   handoff.
 

@@ -45,7 +45,7 @@ Use this order before adding wrappers, fallback helpers, or Harmony patches:
 6. Search existing Spire Plus source for the same RitsuLib entry point before adding a new pattern.
 7. Record any source/API evidence in the feature doc that owns the behavior.
 
-Current RitsuLib entry points already verified in the local `0.4.33` XML include:
+Current RitsuLib entry points already verified in the local `0.4.34` XML include:
 
 - `RitsuLibFramework.CreateContentPack(...)` for content-pack registration.
 - `RitsuLibFramework.CreatePatcher(...)` and `RegisterPatch(...)` for migrated patch classes.

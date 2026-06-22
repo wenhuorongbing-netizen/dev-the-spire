@@ -129,7 +129,7 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             project,
-            "STS2.RitsuLib\" Version=\"0.4.33",
+            "STS2.RitsuLib\" Version=\"0.4.34",
             "Include=\"0Harmony\"",
             "Include=\"sts2\"");
 
@@ -167,7 +167,7 @@ public sealed class SourceApiDriftAuditGuardTests
             "SPIREPLUS-MIGRATION_STATUS.title",
             "SPIREPLUS-PREVIEW_TOOLS.title",
             "RitsuLib-only mod surface",
-            "STS2-RitsuLib >= 0.4.33",
+            "STS2-RitsuLib >= 0.4.34",
             "Settings screenshots prove UI visibility only.");
         Assert.DoesNotContain("private static ModSettingsText Text(string value)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("Math.Clamp(value, 0.05, 0.95)", settings, StringComparison.Ordinal);
@@ -250,7 +250,7 @@ public sealed class SourceApiDriftAuditGuardTests
             "Stable persisted/localization keys and package-facing status values stay",
             "private const string SettingsKey = \"spire-plus-settings\"",
             "private const string SettingsLocalizationPckRoot = \"res://EZMicroBalance/localization/settings_ui\"",
-            "private const string RequiredRuntimeDependency = \"STS2-RitsuLib >= 0.4.33\"",
+            "private const string RequiredRuntimeDependency = \"STS2-RitsuLib >= 0.4.34\"",
             "private const string StableTechnicalId = \"EZMicroBalance\"");
         Assert.DoesNotContain("MigrationStatusSectionId", constants, StringComparison.Ordinal);
         Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", constants, StringComparison.Ordinal);

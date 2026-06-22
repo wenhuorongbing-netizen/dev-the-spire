@@ -2,11 +2,11 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 64 migrated RitsuLib `IPatchMethod` patch classes and 107 raw Harmony declarations remaining after the Batch 4c localization and visual-hover UI migrations. Current beta.108 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.33` in direct NuGet runtime layout. Previous beta.107 clicked Ancient UI smoke covers the earlier 46-patch migrated package under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 64 migrated RitsuLib `IPatchMethod` patch classes and 107 raw Harmony declarations remaining after the Batch 4c localization and visual-hover UI migrations. Current beta.110 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. Previous beta.108 clicked Ancient UI smoke covers the 64-patch migrated package under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` but must be recaptured for beta.110. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
 
-- Compile package: `STS2.RitsuLib` `0.4.33` from NuGet.
-- Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.33`.
-- Installed runtime: official `STS2-RitsuLib` `v0.4.33` direct NuGet layout under the E-drive game root.
+- Compile package: `STS2.RitsuLib` `0.4.34` from NuGet.
+- Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.34`.
+- Installed runtime: official `STS2-RitsuLib` `v0.4.34` direct NuGet layout under the E-drive game root.
 - Historical validated game target: Slay the Spire 2 `v0.106.1`.
 - Current local installed game: Slay the Spire 2 `v0.107.1`.
 - Only current runtime dependency target: `STS2-RitsuLib` for Spire Plus.
@@ -15,11 +15,11 @@ Future migration work has two first checks: confirm the latest stable RitsuLib
 package line, then inspect the unpacked local game source under
 `source code/src/Core/` before changing game-facing behavior.
 
-The current `v0.107.1` game install uses the official RitsuLib `v0.4.33` direct NuGet runtime files. Installed beta.108 package parity is recorded on 2026-06-22. Packaged beta.108 evidence covers build, focused guards, publish, package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only. Previous beta.107 clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/` covered `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all then-current 46 Spire Plus ModPatcher patches applied, and packet verification 1620 / 0. That smoke predates the Batch 4c localization and visual-hover UI source migrations to 64 migrated patch classes. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
+The current `v0.107.1` game install uses the official RitsuLib `v0.4.34` direct NuGet runtime files. Installed beta.110 package parity is recorded on 2026-06-22. Packaged beta.110 evidence covers build, publish, package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only. Previous beta.108 clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` covered `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. This smoke was captured after the Batch 4c localization and visual-hover UI migrations and is previous-package smoke-level clicked Ancient UI proof only. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
 
-Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.108 proof includes package parity, runtime preflight, and source-workspace validation; previous beta.107 clicked Ancient UI smoke remains previous-package UI evidence. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
+Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.110 proof includes package parity, runtime preflight, and source-workspace validation; previous beta.108 clicked Ancient UI smoke remains previous-package smoke-level UI evidence. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
 
-Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.33` after NuGet and Nexus showed `0.4.33` as the latest available package line. The current package version is `v0.1.0-private-beta.108` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, and beta.108 package refresh.
+Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.34` after NuGet and Nexus showed `0.4.34` as the latest available package line. The current package version is `v0.1.0-private-beta.110` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, and beta.110 package refresh.
 
 ## What Is RitsuLib
 
@@ -44,11 +44,11 @@ References:
 - The focused repeatable check for the NuGet latest package, the project
   `PackageReference`, and the manifest `STS2-RitsuLib` runtime minimum is:
   ```powershell
-  scripts/check-ritsulib-latest-package.ps1 -ExpectedLatestVersion 0.4.33 -FailOnMismatch
+  scripts/check-ritsulib-latest-package.ps1 -ExpectedLatestVersion 0.4.34 -FailOnMismatch
   ```
-- The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`
-  across 164 listed versions, with last five `0.4.28` through `0.4.33`.
-- The Nexus files page also lists `0.4.33` for the current public package line.
+- The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.34`
+  across 165 listed versions, with last five `0.4.28` through `0.4.34`.
+- The Nexus files page also lists `0.4.34` for the current public package line.
   GitHub releases can lag those package channels; GitHub is not the dependency-floor source for this pass.
 - A live 2026-06-21 check of the raw `main` branch `mod_manifest.json` returned
   an older version string, so the main branch manifest is not the dependency-floor source.
@@ -88,7 +88,7 @@ References:
 
 ## Runtime Installation
 
-The official runtime files should be installed to the game mods directory, not the repo. The current local install was produced from the `STS2.RitsuLib` `0.4.33` NuGet deploy target:
+The official runtime files should be installed to the game mods directory, not the repo. The current local install was produced from the `STS2.RitsuLib` `0.4.34` NuGet deploy target:
 
 ```text
 <GameRoot>/mods/STS2-RitsuLib/
@@ -106,22 +106,22 @@ tracked-reference scan showed no current docs or code depend on them.
 
 ## Runtime Contents
 
-The installed official `STS2.RitsuLib` `0.4.33` NuGet runtime deploy contains the direct runtime DLL, XML docs, manifest, and viewer assets:
+The installed official `STS2.RitsuLib` `0.4.34` NuGet runtime deploy contains the direct runtime DLL, XML docs, manifest, and viewer assets:
 
 | File | Size | Purpose |
 | --- | ---: | --- |
 | `STS2-RitsuLib.dll` | 5.4 MB | Runtime assembly deployed into the mod folder |
 | `STS2-RitsuLib.xml` | 1.9 MB | API XML docs |
-| `mod_manifest.json` | 408 B | Mod manifest, id `STS2-RitsuLib`, version `0.4.33` |
+| `mod_manifest.json` | 408 B | Mod manifest, id `STS2-RitsuLib`, version `0.4.34` |
 | `viewer/` | directory | Runtime viewer assets shipped by RitsuLib |
 
 ## NuGet Package Status
 
-The installed runtime now covers the current local `v0.107.1` game target through the main `STS2.RitsuLib` package `0.4.33`; no separate compat NuGet package is used.
+The installed runtime now covers the current local `v0.107.1` game target through the main `STS2.RitsuLib` package `0.4.34`; no separate compat NuGet package is used.
 
 | NuGet Package | Version | Status |
 | --- | --- | --- |
-| `STS2.RitsuLib` | `0.4.33` | Current repo compile package |
+| `STS2.RitsuLib` | `0.4.34` | Current repo compile package |
 | `STS2.RitsuLib.Compat.0.103.2` | `0.3.2` | Available |
 | `STS2.RitsuLib.Compat.0.104.0` | `0.2.40` | Available |
 | `STS2.RitsuLib.Compat.0.105.1` | `0.3.2` | Available |
@@ -131,18 +131,18 @@ The installed runtime now covers the current local `v0.107.1` game target throug
 Current compile dependency:
 
 ```xml
-<PackageReference Include="STS2.RitsuLib" Version="0.4.33" PrivateAssets="All" />
+<PackageReference Include="STS2.RitsuLib" Version="0.4.34" PrivateAssets="All" />
 ```
 
 Current manifest dependency:
 
 ```json
-{ "id": "STS2-RitsuLib", "min_version": "0.4.33" }
+{ "id": "STS2-RitsuLib", "min_version": "0.4.34" }
 ```
 
 ## RitsuLib API Adoption Plan
 
-- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.108 package parity/source validation is current on `v0.107.1` with RitsuLib `v0.4.33`, previous beta.107 clicked Ancient UI smoke is previous-package UI context, enabled-mode recapture is pending, and beta.99/beta.96/beta.93 loader proof remains previous-package evidence.
+- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.110 package parity/source validation is current on `v0.107.1` with RitsuLib `v0.4.34`, previous beta.108 clicked Ancient UI smoke is previous-package smoke-level UI context, enabled-mode recapture is pending, and beta.99/beta.96/beta.93 loader proof remains previous-package evidence.
 - Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
 - StS1 event registration is mode-split under
   `EZMicroBalanceCode/Sts1Events/Runtime`: the dispatcher selects Off,
@@ -171,7 +171,7 @@ Current manifest dependency:
 - Visual-hover UI: Sere Talon relic icon/texture getters, Prismatic Gem hover
   tips, and Jewelry Box hover tips now use `IPatchMethod` getter targets with
   `MethodType.Getter` instead of compiler getter names.
-  Runtime proof for the new 64-patch source state remains pending.
+  Previous beta.108 clicked Ancient UI smoke applied all 64 migrated patch classes; gameplay and enabled-mode proof remain pending.
 - Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
 Current migrated total: 64 patch classes.

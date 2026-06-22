@@ -1,6 +1,6 @@
 # Spire Plus Test-Ready Completion Audit
 
-Original audit date: 2026-05-14; latest beta.108 RitsuLib-only package refresh: 2026-06-22; previous beta.99, beta.96, and beta.93 evidence remains historical loader/registration/settings proof only.
+Original audit date: 2026-05-14; latest beta.110 RitsuLib-only package refresh: 2026-06-22; previous beta.99, beta.96, and beta.93 evidence remains historical loader/registration/settings proof only.
 
 Current note: this audit started from the earlier packaged candidate where Lotha and Vakuu were explicitly outside the implementation target. It now records Urda eleven-blessing source implementation, Morvi source implementation, Lotha source implementation, and the hidden-by-default dedicated Vakuu fight slice as present in source.
 
@@ -8,13 +8,13 @@ Beta.19 loader parity is covered by `.tools/runtime-evidence/beta19-loader-smoke
 
 The beta.88 `v0.107.1` AdditiveBatch1 loader smoke is clean previous-package
 context evidence only. The previous beta.90 RitsuLib-only package is historical
-context after the earlier RitsuLib `0.4.31` update. The current beta.108 package
-is hash-refreshed against STS2-RitsuLib `0.4.33`, and current clicked Ancient UI
-smoke is captured under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`.
+context after the earlier RitsuLib `0.4.31` update. The current beta.110 package
+is hash-refreshed against STS2-RitsuLib `0.4.34`. Previous beta.108 clicked
+Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`.
 Beta.99 settings/Off proof, previous beta.96 Off proof, and beta.93 AdditiveBatch1
 registration proof remain previous-package context only.
 
-Installed-PCK resource smoke under `.tools/runtime-evidence/current-package-smoke-20260514-015901` remains resource-only evidence. Live gameplay, save-load, death/failure-path, and co-op remain pending; beta.107 clicked Ancient UI smoke is recorded separately.
+Installed-PCK resource smoke under `.tools/runtime-evidence/current-package-smoke-20260514-015901` remains resource-only evidence. Live gameplay, save-load, death/failure-path, and co-op remain pending; beta.108 clicked Ancient UI smoke is recorded separately.
 
 This audit maps `docs/test-ready-development-goal.md` to concrete artifacts and evidence. It treats "test-ready" as that document defines it: source-complete, packaged, and ready for the user to manually test. It does not mean private-beta release-ready. Live gameplay, save/load, and co-op claims remain pending unless explicitly listed as runtime evidence.
 
@@ -25,10 +25,10 @@ Update note, 2026-05-14 Vakuu Temptation pass: Vakuu now has source-backed hidde
 Update note, 2026-05-14 source red-team pass: Morvi/Open-Book saved markers, generated-card cleanup, Forbidden Loan add-result checks, Red Ink fallback settlement, nonlethal Debt Settlement HP fallback, Urda gate aliases, Seed Bank marker cleanup, and player-facing text guards were hardened. Build, normal tests, format, diff check, publish, and post-publish normal tests passed; package scripting and opt-in artifact hash checks passed in the follow-up hash refresh. Live gameplay, save-load, death/failure path, and co-op verification were not run.
 
 Update note, 2026-06-22 RitsuLib-only package hash refresh: after the final
-previous package removal migration, the later RitsuLib `0.4.33` update, and the
+previous package removal migration, the later RitsuLib `0.4.34` update, and the
 clicked UI smoke pass,
 package staging, the installed mod folder, the game-root zip, and
-`publish/SpirePlus-v0.1.0-private-beta.108.zip` were refreshed from installed
+`publish/SpirePlus-v0.1.0-private-beta.110.zip` were refreshed from installed
 artifacts. The direct `v0.107.1` beta.96 Off smoke and beta.99 settings/Off proof
 are previous-package startup/loading/settings proof only.
 These hashes and earlier loader proof do not close live gameplay, save-load, death/failure path, or co-op verification.
@@ -59,7 +59,7 @@ Concrete deliverables:
 | --- | --- | --- |
 | Required reading order exists and was used | `PROJECT_STATE.md`, `AGENTS.md`, `docs/test-ready-development-goal.md`, `docs/README.md`, `docs/PROJECT_MAP.md`, `docs/issues.md`, issue files, v2.2 audit/design/plan/roadmap/safety/risk/manual docs, Urda README, Ancient v4 README, Ascension README, localization style guide, and repo skill doc were read before edits in this pass. | Pass |
 | Stable technical id and display-name split | `EZMicroBalance.json` keeps `"id": "EZMicroBalance"` and uses `"name": "Spire Plus"`; settings localization has `EZMICROBALANCE.mod_title` as `Spire Plus` in eng/zhs; tests guard id/name distinction. | Pass |
-| Single package structure | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, `EZMicroBalance.json`, and `publish/SpirePlus-v0.1.0-private-beta.108.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
+| Single package structure | `EZMicroBalance/`, `EZMicroBalanceCode/`, `EZMicroBalance.csproj`, `EZMicroBalance.json`, and `publish/SpirePlus-v0.1.0-private-beta.110.zip` with `EZMicroBalance/` as the install folder; duplicate root mod surfaces are removed from the active tree. | Pass |
 | Phase 0 naming hygiene | `README.md`, `PROJECT_STATE.md`, `docs/mod-changelog.md`, release checklist, handoff, manifest, settings UI JSON, and package README all describe `Spire Plus` as display name and `EZMicroBalance` as technical id. | Pass |
 | Phase 1 saved-state foundation | `AncientSavedStateFields.cs` defines 14 Ancient `SavedAttachedState` fields after the Morvi Open-Book sealed-card marker, `AscensionSavedStateFields.cs` defines 12 Ascension `SavedAttachedState` fields after Rootblight pending-downgrade persistence, and historical beta.19 loader smoke reports `Found 30 previous saved-state registrations` from the former previous-package context. `AncientPlayerState.cs` mirrors Urda/Morvi/Lotha player state onto deck card markers for reload-recovery testing. | Pass for source guards; live save-load remains pending |
 | Phase 1 reward reentry hardening | Urda Humus and Morvi Debt payoff state clears only after resolver success; Seedbed counts only accepted alternatives; Prismatic Gem reroll/screen state is guarded; source tests cover reward reentry constraints. | Pass for source guards; reward-screen save/load remains pending |
@@ -69,23 +69,23 @@ Concrete deliverables:
 | Phase 5 Vakuu fight | A single-player source slice adds Fight Vakuu, enters a custom `RoomType.Monster` combat with normal rewards disabled, resumes the parent Vakuu event on victory, and offers three non-Vakuu Act 3 Ancient blessings. Disable/force gates, option art, localization, and static guards exist. Live UI/gameplay, save/load, failure/death, and co-op evidence remain pending. | Source-complete / live-pending |
 | Phase 6 Ascension A11-A20 | `EZMicroBalanceCode/Ascension/**` implements default-on private-beta slices with public/multiplayer disable env vars, A20 co-op downgrade warnings, map/reward/combat source guards, and manual checklist/runbook rows. | Pass for test-ready source; full live/co-op pending |
 | Phase 7 art and UI text | Rootblight-family generated portraits are integrated and packaged; active zhs JSON has no known mojibake fragments; EN/zhs key parity and text guards pass. Urda, Morvi, and Lotha event art now uses 1831x859 source-local middle-draft resources with full-scene cover fitting. Active Ancient option/icon/power/fight/card art, Ascension indicators, and neutral fallback power/relic assets now use browser ChatGPT/GPTimage2 rebuilt `final_generated` files with transparent icon backgrounds where applicable. Live clicked-UI preview remains pending. | Pass |
-| Phase 8 required commands | Latest validation passed for source/package automation after the RitsuLib-only migration; beta.19 loader smoke is captured as historical startup evidence. The beta.108 package refresh evidence includes package/PCK text checks and RitsuLib visual-hover migration artifacts, while beta.99/beta.96/beta.93 proof remains previous-package loader/registration/settings context only. Gameplay, save-load, route-click, death/failure, and co-op remain pending. | Pass for source/package validation; live manual gameplay pending |
-| Package artifacts | `publish/SpirePlus-v0.1.0-private-beta.108.zip` SHA256 `3CE35F9827E7C3B5B8D7D91C9D1F4603EB351F528B88AF987E8EBFE22D6DFEEF`; DLL `7DF59D672867E00922D83B39D1C2D6B2F97CF69EC7748CB5DAED5FC9C7133A83`; manifest `EBA6360D4E8E4A26D649A01EB23E1FAE36A0B874C7DB5EE4F5470A1E65E7F7E4`; PCK `4579B82E7A117EEED65A3E0BF29C87D7717F0456BA5001697C92FEA95425930B`; README `122871E2935965BFC5A19316DABE481E6A6195EEF2C1E04BD029ABBBEBA2CDBD`. The README is now a short manual-test install note and says Ancient selections grant visible marker relics. | Pass for local package hash parity; live proof pending |
-| Runtime smoke and Mod Settings UI | Previous beta.107 clicked Ancient UI smoke is `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`. Beta.99 settings proof, beta.99 Off proof, previous beta.96 Off, and beta.93 AdditiveBatch1 smokes remain previous-package loader/registration context only. | Pass for previous beta.107 smoke-level clicked UI only; beta.108 live recapture, gameplay, save-load, and current enabled-mode verification pending |
+| Phase 8 required commands | Latest validation passed for source/package automation after the RitsuLib-only migration; beta.19 loader smoke is captured as historical startup evidence. The beta.110 package refresh evidence includes package/PCK text checks and RitsuLib visual-hover migration artifacts, while beta.99/beta.96/beta.93 proof remains previous-package loader/registration/settings context only. Gameplay, save-load, route-click, death/failure, and co-op remain pending. | Pass for source/package validation; live manual gameplay pending |
+| Package artifacts | `publish/SpirePlus-v0.1.0-private-beta.110.zip` SHA256 `57C70558FD99CA710BA245E539F4657083C5A4733DACF60503CC1E9609F21A2A`; DLL `6E8F497A8667D1507528A06E74DA5EA1291C93E6EB2D81DE1D1453CD588201E9`; manifest `90E06FABB07AE6F46C5DA34F094B8865037D54084582DA8822A7E52638BB3402`; PCK `5DC8247C80D157975ACDE0F76D777CF4B452DEEFD86CC1E9E31632C0B0B9D7DF`; README `E3465CB56C6F1D4C8269FA35F1A0BFE1954BACF4CF0D00A844D7CC1B3E0E8EF2`. The README is now a short manual-test install note and says Ancient selections grant visible marker relics. | Pass for local package hash parity; live proof pending |
+| Runtime smoke and Mod Settings UI | Previous beta.108 clicked Ancient UI smoke is `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`. Beta.99 settings proof, beta.99 Off proof, previous beta.96 Off, and beta.93 AdditiveBatch1 smokes remain previous-package loader/registration context only. | Pass for previous beta.108 smoke-level clicked UI only; gameplay, save-load, and current enabled-mode verification pending |
 | Documentation truthfulness | `PROJECT_STATE.md`, `docs/test-plan.md`, `docs/release-checklist.md`, `docs/private-beta-verification-handoff.md`, feature docs, issues, work logs, and this audit keep live/manual gates pending. | Pass |
 
 ## Missing Or Weakly Verified Items
 
 These do not block the source-complete test-ready package because the goal doc explicitly separates test-ready from release-ready. They still block private beta release readiness and any live gameplay claim:
 
-- Historical beta.19 normal Steam-client startup/log verification reports `Found 30 previous saved-state registrations`; this remains historical beta.19 loader evidence only. Previous beta.96 RitsuLib-only Off startup/log verification applies 25/25 patches, audits clean, and passes packet verification; previous beta.93 AdditiveBatch1 registration proof is clean. Previous beta.99 Mod Settings UI list/page capture shows `Spire Plus`; beta.107 clicked UI smoke exists, but gameplay, save-load, and co-op rows remain pending.
+- Historical beta.19 normal Steam-client startup/log verification reports `Found 30 previous saved-state registrations`; this remains historical beta.19 loader evidence only. Previous beta.96 RitsuLib-only Off startup/log verification applies 25/25 patches, audits clean, and passes packet verification; previous beta.93 AdditiveBatch1 registration proof is clean. Previous beta.99 Mod Settings UI list/page capture shows `Spire Plus`; beta.108 clicked UI smoke exists, but gameplay, save-load, and co-op rows remain pending.
 - Full Ancient reward runtime matrix is pending.
 - Ancient/Urda/Morvi reward-screen save/load rows are pending.
 - Disable-mod gameplay behavior in an actual run is pending.
 - Natural A11 click-by-click traversal remains pending; saved-map boss-reachability proof exists for the current A11 Act 1 spot-check save.
 - Full Rootblight combat-end behavior, generated-art in-game visual check, and co-op ownership/desync checks are pending.
 - The 2026-05-13 A14 Rootblight art-hover probe found pre-fix Urda missing asset paths before combat. The source/package fix is in place and `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` verifies installed-PCK resource resolution for the custom Urda scene/icon, but post-fix live Urda and Rootblight visual/gameplay checks remain pending.
-- Urda, Morvi, Lotha, and Vakuu source/art/localization are implemented, and beta.108 package parity plus previous beta.107 clicked UI smoke and historical resource smoke exist, but live gameplay, save-load, death/failure-path, current enabled-mode proof, and co-op checks are pending.
+- Urda, Morvi, Lotha, and Vakuu source/art/localization are implemented, and beta.110 package parity plus previous beta.108 clicked UI smoke and historical resource smoke exist, but live gameplay, save-load, death/failure-path, current enabled-mode proof, and co-op checks are pending.
 - Two-client multiplayer matrix is pending.
 - Worktree is not clean and no commit/push has been performed; push is expected after validation and an intentional commit.
 

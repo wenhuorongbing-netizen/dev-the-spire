@@ -10,6 +10,6 @@ internal static partial class SpirePlusModConfig
     private const string SettingsLocalizationStem = "settings_ui";
     private const string SettingsLocalizationPckRoot = "res://EZMicroBalance/localization/settings_ui";
 
-    private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.33";
+    private const string RequiredRuntimeDependency = "STS2-RitsuLib >= 0.4.34";
     private const string StableTechnicalId = "EZMicroBalance";
 }

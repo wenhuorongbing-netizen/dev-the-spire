@@ -53,7 +53,7 @@ public sealed partial class ReleaseArtifactTests
                 dependency.TryGetProperty("id", out var id) &&
                 id.GetString() == "STS2-RitsuLib" &&
                 dependency.TryGetProperty("min_version", out var minVersion) &&
-                minVersion.GetString() == "0.4.33");
+                minVersion.GetString() == "0.4.34");
 
         foreach (var removedRootSurface in new[]
         {

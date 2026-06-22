@@ -5,24 +5,24 @@
 Current compatibility work targets:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.108`
-- STS2-RitsuLib `v0.4.33` in direct NuGet runtime layout
+- Spire Plus `v0.1.0-private-beta.110`
+- STS2-RitsuLib `v0.4.34` in direct NuGet runtime layout
 - Stable technical manifest id `EZMicroBalance`
 
 Spire Plus is RitsuLib-only for the current package line. The project
-references `STS2.RitsuLib` `0.4.33`, and `EZMicroBalance.json` declares
-only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
+references `STS2.RitsuLib` `0.4.34`, and `EZMicroBalance.json` declares
+only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 
 Current evidence:
 
-- beta.108 build, publish, package refresh, and installed package parity are
+- beta.110 build, publish, package refresh, and installed package parity are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
 - beta.108 runtime preflight passed 28 / 0, source-workspace validation passed
   58 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
   coverage, and clicked Ancient UI smoke is
-  retained at `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`.
+  retained at `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`.
   The smoke covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations
-  and packet verification 1620 / 0.
+  and packet verification 1621 / 0.
 - beta.99 clicked settings UI proof is previous-package context retained at
   `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
   It shows Settings -> `Mod Settings (RitsuLib)`, the RitsuLib Mods tree with
@@ -37,7 +37,7 @@ Current evidence:
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 loader packets are retained only as older
-  package loader/registration context. They do not prove beta.108 enabled-mode
+  package loader/registration context. They do not prove beta.110 enabled-mode
   gameplay or tester readiness.
 
 Treat loader, settings, and clicked-UI smoke evidence as scoped proof only:

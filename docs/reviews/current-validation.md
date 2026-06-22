@@ -5,27 +5,27 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 
 ## Current Target
 
-- Date: 2026-06-22; latest addendum: source now has 64 RitsuLib `IPatchMethod` classes and 107 raw Harmony declarations after the Batch 4c ascension-localization fallback and visual-hover UI migrations. Beta.108 package artifacts were rebuilt after those source migrations; beta.107 runtime proof remains previous-package clicked UI evidence for the earlier 46-patch state.
-- Current package target is Spire Plus `v0.1.0-private-beta.108` on Slay the Spire 2 `v0.107.1`.
-- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.33`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
+- Date: 2026-06-22; latest addendum: source now has 64 RitsuLib `IPatchMethod` classes and 107 raw Harmony declarations after the Batch 4c ascension-localization fallback and visual-hover UI migrations. beta.110 package/source validation is current; beta.108 clicked UI smoke is retained as previous-package evidence only.
+- Current package target is Spire Plus `v0.1.0-private-beta.110` on Slay the Spire 2 `v0.107.1`.
+- `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 - The unpacked local game source under `source code/src/Core/` is the primary API authority for game behavior. RitsuLib docs/XML are the modding API authority.
 
 ## Latest Dependency Recheck
 
-- NuGet flat-container `https://api.nuget.org/v3-flatcontainer/sts2.ritsulib/index.json` still reports `0.4.33` as the latest `STS2.RitsuLib` package across 164 listed versions.
+- NuGet flat-container `https://api.nuget.org/v3-flatcontainer/sts2.ritsulib/index.json` still reports `0.4.34` as the latest `STS2.RitsuLib` package across 165 listed versions.
 - `dotnet list EZMicroBalance.csproj package --outdated --include-transitive` found no newer `STS2.RitsuLib`; it reported only transitive `System.IO.Hashing 9.0.0 -> 10.0.9`.
-- Keep the stable `0.4.33` dependency target unless the owner explicitly approves a separate dev-runtime validation lane.
+- Keep the stable `0.4.34` dependency target unless the owner explicitly approves a separate dev-runtime validation lane.
 
 ## Current Evidence
 
-- Beta.108 package refresh passed `dotnet build` with 0 warnings / 0 errors, `dotnet publish` with only the known Godot ignored `source code` project warning, `scripts/package-spire-plus.ps1`, installed-package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only.
-- The 64-patch visual-hover UI source pass passed focused RitsuLib/Ancient UI guards 66 / 0 / 3 / 69, current-doc claims 1321 / 0, repository hygiene, static-file hygiene, format, diff-check, RitsuLib latest check, retired-runtime-name scan, and compiler-getter target scan before the beta.108 package refresh.
-- Source-workspace validation passed 58 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.108`, and STS2-RitsuLib `0.4.33`, with retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
-- Previous beta.107 clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1620 / 0. It does not prove the beta.108 package or 64-patch source state in game.
+- beta.110 package refresh passed `dotnet build` with 0 warnings / 0 errors, `dotnet publish` with only the known Godot ignored `source code` project warning, `scripts/package-spire-plus.ps1`, installed-package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only.
+- The 64-patch visual-hover UI source pass passed focused RitsuLib/Ancient UI guards 66 / 0 / 3 / 69, current-doc claims 1321 / 0, repository hygiene, static-file hygiene, format, diff-check, RitsuLib latest check, retired-runtime-name scan, and compiler-getter target scan before the beta.110 package refresh.
+- Source-workspace validation passed 58 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.110`, and STS2-RitsuLib `0.4.34`, with retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
+- Previous beta.108 clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 migrated Spire Plus ModPatcher patches applied, and packet verification 1621 / 0.
 
 ## Evidence Boundary
 
-- This closes smoke-level clicked Ancient UI migration proof only for the previous beta.107 package.
+- This is previous-package smoke-level clicked Ancient UI migration proof; recapture it for beta.110 before tester handoff or release claims.
 - It does not prove event encounter gameplay, gated Vakuu fight-option/victory return, live gameplay, save-load, image rendering, replacement functional behavior, multiplayer fail-closed behavior, independent QA, release handoff, live-ready, or private-beta release readiness.
 - Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
 

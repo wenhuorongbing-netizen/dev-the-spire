@@ -47,16 +47,16 @@ public sealed partial class AncientBehaviorGuardTests
             "- [x] The active release surface is one mod: `Spire Plus`.",
             "- [x] Legacy `EzDailyContent` and standalone `EZFuturePeek` root mod surfaces have been removed from the active tree.",
             "- [x] `EZMicroBalance` has its own manifest, project, code folder, resource folder, DLL, and PCK.",
-            "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.33`.",
+            "- [x] Manifest declares structured `STS2-RitsuLib` dependency with `min_version: 0.4.34`.",
             "- [x] PCK audit packages only `EZMicroBalance` installable resources and excludes C# source, docs, art, asset, and archive folders.",
-            "- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.108 because settings code/resources did not change in the beta.108 pass.",
+            "- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.110 because settings code/resources did not change in the beta.108 pass.",
             "- [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.",
             "- [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.",
             "- [x] Previous beta.99 Mod Settings list plus Spire Plus config page screenshots are captured under release-evidence row `mod-settings-current-display`.",
             "current-spire-plus-modsettings-20260513-111342",
-            "- [x] Previous beta.107 RitsuLib-only clicked Ancient UI smoke is retained as prior package proof after the latest RitsuLib package refresh.",
+            "- [x] Previous beta.108 RitsuLib-only clicked Ancient UI smoke is retained as previous-package smoke-level UI proof after the latest RitsuLib package refresh.",
             "- [x] Previous RitsuLib-only AdditiveBatch1 registration smoke for the beta.93 ZIP hash is captured",
-            "- [x] Latest retained clicked Ancient UI smoke is beta.107 previous-package proof on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90/beta.96/beta.99 loader evidence is historical or previous-package context only.",
+            "- [x] Latest retained clicked Ancient UI smoke is beta.108 previous-package smoke-level UI proof on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90/beta.96/beta.99 loader evidence is historical or previous-package context only.",
             "- [x] `godot.log` reviewed after fresh beta.99 RitsuLib-only Off isolated startup/log verification.",
             "- [ ] `godot.log` reviewed after full normal Steam-client gameplay/manual verification.",
             "- [ ] Every implemented Ancient reward change has a completed manual runtime result.",
@@ -90,8 +90,8 @@ public sealed partial class AncientBehaviorGuardTests
             Assert.Contains($"| {row} |", manualMatrix, StringComparison.Ordinal);
         }
 
-        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.108 package shape.", manualMatrix, StringComparison.Ordinal);
-        Assert.Contains("Beta.107 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/`", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Status: automated gates passed for the current RitsuLib-only beta.110 package shape.", manualMatrix, StringComparison.Ordinal);
+        Assert.Contains("Previous beta.108 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Beta.99 clicked settings UI and direct Off loader proof remain previous-package context only.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.", manualMatrix, StringComparison.Ordinal);
         Assert.Contains("Natural route-click first-node path remains pending.", manualMatrix, StringComparison.Ordinal);

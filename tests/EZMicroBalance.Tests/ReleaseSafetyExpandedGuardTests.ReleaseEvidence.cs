@@ -23,7 +23,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "current-doc claims 1314 / 0",
             "static suite 15 / 0",
             "beta.108 RitsuLib-only source/build/publish/package refresh",
-            "runtime preflight, and source-workspace validation. Previous beta.107 clicked Ancient UI smoke remains previous-package proof.",
+            "runtime preflight, and source-workspace validation. Previous beta.108 clicked Ancient UI smoke remains previous-package smoke-level UI proof.",
             "Beta.99 settings UI proof, beta.99 direct Off loader proof, previous beta.96 Off loader proof, previous beta.93 AdditiveBatch1 loader/registration proof",
             "current-package-smoke-20260514-015901",
             "urda-pck-resource-load-20260513-123345",

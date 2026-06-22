@@ -11,10 +11,10 @@ This migration is source/registration work only; it is not gameplay, save-load, 
 
 ## Gate
 
-- STS2-RitsuLib `v0.4.33` is installed on the E-drive game root in direct NuGet runtime layout.
-- The latest dependency recheck still reports `STS2.RitsuLib` `0.4.33` as the stable NuGet target.
-- installed beta.108 package parity passed; previous beta.107 clicked Ancient UI smoke applied the previous 46 migrated patch classes.
-- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; a later visual-hover UI pass raised the current source count to 64 migrated patches. A future package/runtime proof must recapture that current patch count before claiming runtime coverage for this source state.
+- STS2-RitsuLib `v0.4.34` is installed on the E-drive game root in direct NuGet runtime layout.
+- The latest dependency recheck still reports `STS2.RitsuLib` `0.4.34` as the stable NuGet target.
+- installed beta.110 package parity passed; previous beta.108 clicked Ancient UI smoke applied the current 64 migrated patch classes.
+- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; a later visual-hover UI pass raised the current source count to 64 migrated patches, and the beta.108 clicked UI smoke covers that current patch count for forced Ancient UI only.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 ## Migration Self-Check

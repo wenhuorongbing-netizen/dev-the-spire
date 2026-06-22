@@ -9,19 +9,19 @@ Full historical review details are archived at `docs/archive/feature-audits/revi
 
 No current static P0/P1 source blocker is known from the latest no-game review passes. This does not prove release readiness.
 
-Beta.107 RitsuLib-only package parity, runtime preflight, source-workspace validation, and 4 / 4 forced Ancient UI smoke iterations passed for Urda, Morvi, Lotha, and normal Vakuu under `.tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051/` with packet verification 1620 / 0. This closes smoke-level clicked Ancient UI migration proof only; gameplay, gated Vakuu fight-option/victory return, save-load, current enabled-mode proof, replacement, multiplayer, QA, and handoff proof remain pending.
+Beta.110 RitsuLib-only package parity, runtime preflight, and source-workspace validation are current. Previous beta.108 clicked Ancient UI smoke passed 4 / 4 forced iterations for Urda, Morvi, Lotha, and normal Vakuu under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` with packet verification 1621 / 0 and all 64 migrated Spire Plus patches applied. This closes smoke-level clicked Ancient UI migration proof only; gameplay, gated Vakuu fight-option/victory return, save-load, current enabled-mode proof, replacement, multiplayer, QA, and handoff proof remain pending.
 
 Clicked UI is limited to beta.108 forced Ancient smoke. Current smoke proof covers forced Urda, Morvi, Lotha, and normal Vakuu only; gated Vakuu fight-option UI, relic hover/readability, and gameplay follow-through remain pending.
 
 ## Current Migration Evidence
 
-- Spire Plus targets `STS2.RitsuLib` `0.4.33`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
+- Spire Plus targets `STS2.RitsuLib` `0.4.34`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 - Current source has completed the clicked/input UI migration, visual-hover UI getter migration, and Batch 4c ascension-localization fallback migration to RitsuLib `IPatchMethod` / `ModPatcher`: 64 migrated patch classes and 107 raw Harmony declarations remain in `docs/patch-inventory.md`.
 - `check-local-godot-source-workspace.ps1` verifies the unpacked local source snapshot, installed game identity, package parity, and installed `STS2-RitsuLib.xml` markers for the RitsuLib APIs Spire Plus uses. The current refreshed run passed 58 / 0 with the retained GDRE warnings only.
 - The repository entry docs are free of the retired framework name and route future implementation through RitsuLib docs/XML plus the unpacked local game source under `source code/src/Core/`.
-- The beta.108 package proof covers the refreshed package after later RitsuLib source migrations. Previous beta.107 clicked UI smoke applied all then-current 46 Spire Plus ModPatcher patches. It predates the source-only Batch 4c localization and visual-hover UI migrations to 64 migrated patch classes; gameplay and handoff proof remain separate pending gates.
-- Previous enabled-mode packets remain historical or previous-package context and do not close current beta.108 enabled-mode gameplay proof.
-- AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.108 gameplay or handoff proof.
+- The beta.110 package proof covers the refreshed package after later RitsuLib source migrations. Previous beta.108 clicked UI smoke applied all 64 migrated Spire Plus ModPatcher patches; gameplay and handoff proof remain separate pending gates.
+- Previous enabled-mode packets remain historical or previous-package context and do not close current beta.110 enabled-mode gameplay proof.
+- AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.110 gameplay or handoff proof.
 
 ## Current Manual-Proof Focus
 

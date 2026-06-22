@@ -374,7 +374,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.108", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.110", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches and the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
@@ -462,7 +462,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.108 package parity passed; previous beta.107 clicked Ancient UI smoke applied the previous 46 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.110 package parity passed; previous beta.108 clicked Ancient UI smoke applied the current 64 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -500,15 +500,15 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             migrationGoal,
-            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.33` as the latest package",
-            "The flat-container index lists 164 versions and ends at `0.4.33`",
+            "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.34` as the latest package",
+            "The flat-container index lists 164 versions and ends at `0.4.34`",
             "found no `STS2.RitsuLib` update",
-            "Nexus files list the variant-pack main file as `0.4.33`",
+            "Nexus files list the variant-pack main file as `0.4.34`",
             "The GitHub release page/API can lag the NuGet/Nexus package version",
             "do not use a lagging GitHub release marker as the dependency-floor source",
             "official NuGet package via `RitsuLibDeployDir`",
             "dependency-floor source",
-            "Keep Spire Plus on stable `0.4.33`, not a dev build");
+            "Keep Spire Plus on stable `0.4.34`, not a dev build");
 
         AssertSourceContains(
             integrationDoc,
@@ -516,8 +516,8 @@ public sealed class RitsuLibMigrationGuardTests
             "2026-06-22 recheck",
             "`dotnet list EZMicroBalance.csproj package --outdated --include-transitive`",
             "found no `STS2.RitsuLib` update",
-            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`",
-            "across 164 listed versions",
+            "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.34`",
+            "across 165 listed versions",
             "GitHub releases can lag those package channels",
             "the main branch manifest is not the dependency-floor source",
             "NuGet package",

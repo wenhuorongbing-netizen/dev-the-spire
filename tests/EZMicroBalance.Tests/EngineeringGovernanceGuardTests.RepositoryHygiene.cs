@@ -219,7 +219,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "The active Spire Plus package must remain RitsuLib-only",
             "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
             "inspect RitsuLib/template APIs",
-            "Install STS2-RitsuLib `v0.4.33` under `<GameRoot>\\mods\\STS2-RitsuLib`",
+            "Install STS2-RitsuLib `v0.4.34` under `<GameRoot>\\mods\\STS2-RitsuLib`",
             "Before release: verify STS2-RitsuLib and Spire Plus load in-game",
             "## RitsuLib Dependency Rule");
 

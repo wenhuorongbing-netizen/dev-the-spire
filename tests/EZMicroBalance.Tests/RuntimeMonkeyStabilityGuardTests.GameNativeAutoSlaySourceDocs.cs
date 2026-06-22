@@ -102,7 +102,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
         AssertSourceContains(
             docs,
-            "- Current runtime dependency: `STS2-RitsuLib v0.4.33` in direct NuGet runtime layout.",
+            "- Current runtime dependency: `STS2-RitsuLib v0.4.34` in direct NuGet runtime layout.",
             "Current source snapshot: `source code\\release_info.json` matches the installed",
             "`v0.107.1` game identity after the 2026-06-20 GDRE refresh",
             "commit `59260271`",
@@ -163,7 +163,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Target coverage compares expected, plan, summary, and traversed Ancient ids",
             "case-insensitively after normalizing them to uppercase",
             "`run-result.json` and `autoslay-summary.json` `AncientId` values must still",
-            "-ExpectedPatchCount 46");
+            "-ExpectedPatchCount 64");
 
         Assert.DoesNotContain("Current runtime dependency: `STS2-RitsuLib v0.4.31` with `lib\\0.107.0`", docs, StringComparison.Ordinal);
         Assert.DoesNotContain("currently reports `v0.106.0`", docs, StringComparison.Ordinal);

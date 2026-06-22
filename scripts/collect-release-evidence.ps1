@@ -641,7 +641,7 @@ foreach ($row in $manualRows) {
             '| spire-plus-list-display-name | The Mods list shows the player-facing name Spire Plus for the current package. |  |  |',
             '| spire-plus-config-page-current-name | Opening the Spire Plus config page shows current Spire Plus display text, not the older EZ Micro Balance page-level text. |  |  |',
             '| ritsulib-migration-status-section | The Spire Plus config page shows the Migration Status section from the RitsuLib-only settings surface. |  |  |',
-            '| ritsulib-runtime-dependency-card | The Migration Status section shows `STS2-RitsuLib >= 0.4.33` as the required runtime dependency. |  |  |',
+            '| ritsulib-runtime-dependency-card | The Migration Status section shows `STS2-RitsuLib >= 0.4.34` as the required runtime dependency. |  |  |',
             '| ritsulib-proof-boundary-card | The page states that settings screenshots prove UI visibility only and do not prove gameplay or release readiness. |  |  |',
             '| preview-tools-controls-render | The Preview Tools section renders Crystal Sphere peek, mask alpha, transform prediction, always-show prediction, and preview debug log controls. |  |  |',
             '| technical-id-compatibility | EZMicroBalance appears only as the technical manifest id, folder, or log/config id where applicable; it is not the primary player-facing mod name. |  |  |',
