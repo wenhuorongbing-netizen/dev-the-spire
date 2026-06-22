@@ -34,7 +34,9 @@ reads/writes, `SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings
 bindings and value normalization, `SpirePlusModConfig.SettingsState.cs` owns
 the persisted settings shape, `SpirePlusModConfig.SettingsPage.cs` owns page
 registration, `SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the
-read-only migration status section,
+read-only migration status section assembly,
+`SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the
+individual read-only RitsuLib paragraph/info-card entry builders,
 `SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section
 assembly, and `SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs` owns the
 individual RitsuLib toggle/slider entry builders.

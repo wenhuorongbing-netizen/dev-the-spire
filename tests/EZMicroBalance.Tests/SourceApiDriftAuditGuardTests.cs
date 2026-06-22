@@ -182,6 +182,7 @@ public sealed class SourceApiDriftAuditGuardTests
         var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
+        var migrationStatusEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs");
         var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
         var previewToolEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs");
         var store = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStore.cs");
@@ -239,10 +240,30 @@ public sealed class SourceApiDriftAuditGuardTests
             "private static void AddMigrationStatusSection(ModSettingsPageBuilder page)",
             "page.AddSection(MigrationStatusSectionId",
             "SPIREPLUS-MIGRATION_STATUS.title",
+            "AddRitsuLibSummaryParagraph(section)",
+            "AddRequiredRuntimeDependencyCard(section)",
+            "AddStableManifestIdCard(section)",
+            "AddProofBoundaryCard(section)");
+        Assert.DoesNotContain("section.AddParagraph(", migrationStatus, StringComparison.Ordinal);
+        Assert.DoesNotContain("section.AddInfoCard(", migrationStatus, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewToolsSection", migrationStatus, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            migrationStatusEntries,
+            "private static void AddRitsuLibSummaryParagraph(ModSettingsSectionBuilder section)",
+            "private static void AddRequiredRuntimeDependencyCard(ModSettingsSectionBuilder section)",
+            "private static void AddStableManifestIdCard(ModSettingsSectionBuilder section)",
+            "private static void AddProofBoundaryCard(ModSettingsSectionBuilder section)",
+            "RitsuLibSummaryEntryId",
+            "RequiredRuntimeDependencyEntryId",
+            "StableManifestIdEntryId",
+            "ProofBoundaryEntryId",
             "RitsuLib-only mod surface",
+            "Spire Plus uses RitsuLib for settings persistence, content registration, patch metadata, and saved marker state.",
             "LiteralText(RequiredRuntimeDependency)",
             "Settings screenshots prove UI visibility only.");
-        Assert.DoesNotContain("AddPreviewToolsSection", migrationStatus, StringComparison.Ordinal);
+        Assert.DoesNotContain("page.AddSection", migrationStatusEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewToolsSection", migrationStatusEntries, StringComparison.Ordinal);
 
         AssertSourceContains(
             previewTools,

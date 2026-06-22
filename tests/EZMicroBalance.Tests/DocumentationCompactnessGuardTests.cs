@@ -576,6 +576,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
             "Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`",
+            "Keep read-only migration status UI split the same way",
             "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
         AssertSourceContains(
             coreIntegrationReadme,
@@ -591,6 +592,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`SpirePlusModConfig.SettingsState.cs` owns",
             "`SpirePlusModConfig.SettingsPage.cs` owns page",
             "`SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the",
+            "`SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the",
             "`SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section",
             "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs` owns the",
             "Current beta.105 evidence covers package parity, runtime preflight,",
