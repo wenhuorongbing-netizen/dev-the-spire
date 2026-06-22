@@ -219,6 +219,13 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("SpirePlusMigratedPatchRegistry.RegisterAll(patcher);", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain(".RegisterPatch<", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
+            bootstrap,
+            "ApplyMigratedRitsuLibPatches();",
+            "ApplyLegacyHarmonyFallbackPatches();",
+            "AuditRitsuLibRuntimeState();",
+            "RitsuLib ModPatcher owns every migrated patch class",
+            "fallback to another mod framework");
+        AssertSourceContains(
             registry,
             "internal static class SpirePlusMigratedPatchRegistry",
             "public static void RegisterAll(ModPatcher patcher)",
