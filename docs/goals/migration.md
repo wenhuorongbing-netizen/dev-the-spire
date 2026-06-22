@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.111`
+Current package target: Spire Plus `v0.1.0-private-beta.112`
 
 Installed game target: Slay the Spire 2 `v0.107.1`
 
@@ -36,7 +36,7 @@ Do not add any runtime dependency besides STS2-RitsuLib unless the owner explici
 
 ## Current Conclusion
 
-The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration, the visual-hover UI getter migration, and the Batch 4c ascension-localization fallback migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 65 migrated patch classes and 106 raw Harmony declarations remaining. The current manifest/package target is beta.111 after moving Sovereign Blade hover previews to RitsuLib ModPatcher and keeping STS2-RitsuLib `0.4.34` as the sole runtime dependency. Beta.108 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
+The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. Current source has completed the clicked/input UI migration, the visual-hover UI getter migration, and the Batch 4c ascension-localization fallback migration to RitsuLib `IPatchMethod` / `ModPatcher`, with 66 migrated patch classes and 105 raw Harmony declarations remaining. The current manifest/package target is beta.112 after moving Sovereign Blade hover previews to RitsuLib ModPatcher and keeping STS2-RitsuLib `0.4.34` as the sole runtime dependency. Beta.108 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 64 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
 
 Current developer entry points and tracked text files are guarded so future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and unpacked local game source instead of retired runtime-framework assumptions.
 
@@ -68,7 +68,7 @@ git status --short --branch
 dotnet list EZMicroBalance.csproj package --include-transitive
 dotnet list EZMicroBalance.csproj package --outdated --include-transitive
 $blocked = -join ([char[]](66,97,115,101,76,105,98)); git grep -n -i $blocked -- ':!docs/archive/**' ':!source code/**' ':!bin/**' ':!obj/**' ':!.tools/**' ':!publish/**'
-scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.111' -ExpectedRitsuLibVersion '0.4.34' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
+scripts/check-local-godot-source-workspace.ps1 -SourceRoot 'source code' -GameRoot 'E:\Steam\steamapps\common\Slay the Spire 2' -ExpectedGameVersion 'v0.107.1' -ExpectedPackageVersion 'v0.1.0-private-beta.112' -ExpectedRitsuLibVersion '0.4.34' -ExpectedRitsuCompatBranch '0.107.1' -RequireCurrentSourceSnapshot -FailOnMismatch
 dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false
 scripts/check-sts1-event-current-doc-claims.ps1 -FailOnMismatch
 dotnet format EZMicroBalance.sln --verify-no-changes --no-restore

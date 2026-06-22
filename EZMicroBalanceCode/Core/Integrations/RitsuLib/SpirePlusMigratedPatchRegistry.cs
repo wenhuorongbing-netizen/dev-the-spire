@@ -97,6 +97,7 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<PrismaticGemRewardScreenHintPatch>();
         patcher.RegisterPatch<AscensionA20RewardScreenReadyPatch>();
         patcher.RegisterPatch<AscensionA20RewardScreenStatePatch>();
+        patcher.RegisterPatch<AscensionA20CourtyardProceedPatch>();
         patcher.RegisterPatch<ModInfoLocalizationPatches>();
         patcher.RegisterPatch<CombatHandInputSafetyPatch>();
     }

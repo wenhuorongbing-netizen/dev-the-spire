@@ -54,7 +54,9 @@ public sealed partial class AscensionV2MilestoneGuardTests
             "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "finalAct.HasSecondBoss",
             "finalAct.SetSecondBossEncounter(secondBoss)",
-            "HarmonyPatch(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))",
+            "AscensionA20CourtyardProceedPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"ascension-a20-courtyard-proceed\"",
+            "new ModPatchTarget(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))",
             "AscensionA20CourtyardService.ShouldEnterCourtyard(runState)",
             "AscensionA20CourtyardService.EnterCourtyard(__instance, runState)",
             "vanilla double-boss map path");

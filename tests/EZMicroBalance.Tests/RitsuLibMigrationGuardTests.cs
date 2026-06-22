@@ -84,6 +84,7 @@ public sealed class RitsuLibMigrationGuardTests
         "prismatic-gem-reward-screen-hint",
         "ascension-a20-reward-screen-ready",
         "ascension-a20-reward-screen-state",
+        "ascension-a20-courtyard-proceed",
         "spire-plus-mod-info-localization",
         "combat-hand-input-safety",
         // Batch 4c localization fallback patches
@@ -97,11 +98,11 @@ public sealed class RitsuLibMigrationGuardTests
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 21;
+    private const int ExpectedClickedUiCount = 22;
     private const int ExpectedVisualHoverUiCount = 13;
     private const int ExpectedBatch4cLocalizationCount = 6;
-    private const int ExpectedTotalMigratedCount = 65;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 106;
+    private const int ExpectedTotalMigratedCount = 66;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 105;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -141,8 +142,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 65:
-    /// 9 Batch 4a + 16 Batch 4b + 21 clicked/UI patches
+    /// The expected migrated patch count must be 66:
+    /// 9 Batch 4a + 16 Batch 4b + 22 clicked/UI patches
     /// + 13 visual/hover UI patches + 6 Batch 4c localization patches.
     /// </summary>
     [Fact]
@@ -311,6 +312,7 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<PrismaticGemRewardScreenHintPatch>();",
             "RegisterPatch<AscensionA20RewardScreenReadyPatch>();",
             "RegisterPatch<AscensionA20RewardScreenStatePatch>();",
+            "RegisterPatch<AscensionA20CourtyardProceedPatch>();",
             "RegisterPatch<ModInfoLocalizationPatches>();",
             "RegisterPatch<CombatHandInputSafetyPatch>();",
             "RegisterBatch4cLocalizationPatches(patcher);",
@@ -375,7 +377,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.111", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.112", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches and the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
@@ -463,7 +465,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.111 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.112 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -533,14 +535,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (65).
+    /// state the correct total migrated count (66).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 65", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 66", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -560,6 +562,7 @@ public sealed class RitsuLibMigrationGuardTests
             "`SovereignBladeForgePatches.cs` | 1 | `sovereign-blade-jade-boons-hover-tips` | visual-hover-ui |",
             "`PrismaticGemRewardScreenHintPatch.cs` | 1 | `prismatic-gem-reward-screen-hint` | clicked-ui |",
             "`AscensionA20RewardScreenPatches.cs` | 2 | `ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state` | clicked-ui |",
+            "`AscensionA20Patches.cs` | 1 | `ascension-a20-courtyard-proceed` | clicked-ui |",
             "`ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |",
             "`CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |",
             "`AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |");

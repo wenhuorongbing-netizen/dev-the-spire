@@ -5,15 +5,15 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.111.
-- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.111`.
+- Spire Plus is RitsuLib-only for beta.112.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.112`.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.111 package parity, runtime preflight, and
+- Current packaged proof: beta.112 package parity, runtime preflight, and
   source-workspace validation. Previous beta.108 clicked Ancient UI smoke covers
   Urda, Morvi, Lotha, and normal Vakuu only for the previous package.
-- Packaged beta.111 evidence covers build, publish, package parity, runtime preflight, and source-workspace validation.
+- Packaged beta.112 evidence covers build, publish, package parity, runtime preflight, and source-workspace validation.
 - Previous beta.108 clicked Ancient UI smoke proves forced clicked UI visibility
   only for that previous package.
 - Current source migration: Urda option-relic, Root Sight map-click, Root Sight
@@ -30,15 +30,15 @@ read only the support file that matches the task.
 - Sere Talon relic icon/texture getter patches, Prismatic Gem hover patches,
   and Jewelry Box hover patches now also use RitsuLib `IPatchMethod` /
   `ModPatcher` as the visual-hover UI batch.
-- Current inventory: 65 migrated patch classes and 106 raw Harmony declarations
+- Current inventory: 66 migrated patch classes and 105 raw Harmony declarations
   remain in `docs/patch-inventory.md`.
-- Boundary: beta.111 was rebuilt, published, packaged, and package-checked after
+- Boundary: beta.112 was rebuilt, published, packaged, and package-checked after
   the RitsuLib `0.4.34` dependency refresh.
   The retained beta.108 clicked UI smoke applied all 64 migrated Spire Plus
   ModPatcher patches in the installed game.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
-- Not proved: beta.111 clicked UI, enabled-mode registration, gameplay, save-load,
+- Not proved: beta.112 clicked UI, enabled-mode registration, gameplay, save-load,
   replacement behavior, co-op, independent QA, release readiness, or tester
   handoff.
 

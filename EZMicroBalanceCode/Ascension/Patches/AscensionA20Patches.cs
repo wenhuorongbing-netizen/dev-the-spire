@@ -3,6 +3,7 @@ using EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Runs;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -47,9 +48,15 @@ internal static class AscensionA20GenerateRoomsPatch
     }
 }
 
-[HarmonyPatch(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))]
-internal static class AscensionA20CourtyardProceedPatch
+internal sealed class AscensionA20CourtyardProceedPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-a20-courtyard-proceed";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Route the A20 Boss 1 reward-screen proceed click into the courtyard intermission";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RunManager), nameof(RunManager.ProceedFromTerminalRewardsScreen))];
+
+    [HarmonyPrefix]
     private static bool Prefix(RunManager __instance, ref Task __result)
     {
         var runState = __instance.DebugOnlyGetState();
@@ -58,6 +65,9 @@ internal static class AscensionA20CourtyardProceedPatch
             return true;
         }
 
+        // NRewardsScreen.OnProceedButtonPressed reaches this RunManager method
+        // only after the terminal reward screen is complete, so replacing the
+        // returned task preserves the vanilla button gate and reward cleanup.
         __result = AscensionA20CourtyardService.EnterCourtyard(__instance, runState);
         return false;
     }
