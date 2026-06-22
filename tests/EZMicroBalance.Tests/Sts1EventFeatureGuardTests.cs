@@ -242,7 +242,7 @@ public sealed partial class Sts1EventFeatureGuardTests
     [Fact]
     public void RegistryDoesNotClassifyNonCombatAct1EventsAsCombat()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
+        var source = ReadSts1RuntimeSources();
 
         AssertSourceContains(source,
             "new(\"sts1_joust\", \"Joust\", Sts1EventPhase.Simple, Sts1EventAct.Act1)",
@@ -272,7 +272,7 @@ public sealed partial class Sts1EventFeatureGuardTests
     public void RegistryEntryCountIs50()
     {
         // 50 entries: 47 compiling + 1 compile-excluded (Duplicator) + 2 Special stubs (Neow, Combat Start).
-        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
+        var source = ReadSts1RuntimeSources();
         var entriesBlock = SliceBetween(source, "private static readonly List<Sts1EventEntry> Events = new()", "};");
         var entryCount = CountOccurrences(entriesBlock, "new(\"");
         Assert.Equal(50, entryCount);
@@ -281,7 +281,7 @@ public sealed partial class Sts1EventFeatureGuardTests
     [Fact]
     public void RegistryCanaryPhaseMatchesCanaryEventIds()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1EventRegistry.cs");
+        var source = ReadSts1RuntimeSources();
         var entriesBlock = SliceBetween(source, "private static readonly List<Sts1EventEntry> Events = new()", "// Phase 2: Simple batch");
 
         AssertSourceContains(entriesBlock,

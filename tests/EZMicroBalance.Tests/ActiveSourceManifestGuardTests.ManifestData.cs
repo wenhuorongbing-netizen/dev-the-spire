@@ -526,6 +526,8 @@ public sealed partial class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.AllDraft.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.Canary.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistrationService.cs",
+        "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistry.Entries.cs",
+        "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistry.Types.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1EventRegistry.cs",
         "EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs",
         "EZMicroBalanceCode/Sts1Events/Sts1EventsFeatureModule.cs",
