@@ -465,6 +465,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             entryDocs.Single(entry => entry.Path == "docs/goals/migration.md").Text,
             "Spire Plus is a RitsuLib-only mod.",
             "installed `STS2-RitsuLib` package docs/XML and the public RitsuLib docs",
+            "Git-tracked text surfaces stay free of retired shared-runtime names",
+            "future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and local game source",
             "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.33` as the latest package");
     }
 
@@ -522,6 +524,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Spire Plus is RitsuLib-only for beta.105.",
             "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
             "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
+            "The repository hygiene",
+            "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
             "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
 

@@ -30,12 +30,15 @@ Do not add another shared runtime framework dependency unless the owner explicit
 - `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.33` as the shared runtime framework dependency.
 - Spire Plus settings, content/model registration, lifecycle hooks, and saved marker fields use RitsuLib or game-native APIs.
 - Active setup docs and developer guides direct agents to RitsuLib documentation and local game source.
+- Git-tracked text surfaces stay free of retired shared-runtime names; `EngineeringGovernanceGuardTests.RetiredSharedRuntimeNameDoesNotReappearInTrackedText` is the automated guard for this.
 - Current validation includes build, publish/package refresh when artifacts change, installed package parity, focused migration/source guards, and current RitsuLib loader evidence.
 - Loader evidence is not treated as gameplay, save-load, multiplayer, QA, release, or handoff proof.
 
 ## Current Conclusion
 
 The code, manifest, package metadata, and current setup docs have moved to the RitsuLib-only target. The current manifest/package target is beta.105 after updating to STS2-RitsuLib `0.4.33`, refreshing package hashes, and adding RitsuLib default public-entry localization aliases for Ancient event, option relic, and power text. Beta.105 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`: 4 / 4 `AncientUiSmoke` iterations passed for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, with command ACKs, screenshots, clean log audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof remain previous-package context only.
+
+Current developer entry points and tracked text files are guarded so future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and local game source instead of retired runtime-framework assumptions.
 
 The migration is not release-ready. Smoke-level clicked Ancient UI is covered, but gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and tester-package handoff remain pending.
 

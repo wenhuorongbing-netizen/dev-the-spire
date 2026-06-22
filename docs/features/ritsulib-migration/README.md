@@ -39,6 +39,8 @@ Do not start future implementation from historical plans, archived prompt dumps,
   behavior.
 - Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs to confirm the
   RitsuLib API shape before adding wrappers.
+- Keep future developer guidance on the RitsuLib lane. The repository hygiene
+  guard scans Git-tracked text files and rejects retired shared-runtime wording.
 - Register mod content through `RitsuLibFramework.CreateContentPack(...)` and
   `SpirePlusContentRegistrationService`.
 - Register settings data before the settings page: `BeginModDataRegistration`
