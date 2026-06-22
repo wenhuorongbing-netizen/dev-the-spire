@@ -77,7 +77,7 @@ public sealed partial class EngineeringGovernanceGuardTests
     [Fact]
     public void DebugDiagnosticsStayScopedAndExplicitlyGated()
     {
-        var config = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
+        var config = ReadSourceTree("EZMicroBalanceCode", "Config");
         var debug = ReadRepoText("EZMicroBalanceCode", "Diagnostics", "SpirePlusDebug.cs");
         var previewLog = ReadRepoText("EZMicroBalanceCode", "Preview", "PreviewLog.cs");
         var sourceTree = ReadSourceTree("EZMicroBalanceCode");

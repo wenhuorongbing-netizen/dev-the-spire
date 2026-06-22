@@ -125,7 +125,7 @@ public sealed class SourceApiDriftAuditGuardTests
     {
         var project = ReadRepoText("EZMicroBalance.csproj");
         var mainFile = ReadRepoText("EZMicroBalanceCode", "MainFile.cs");
-        var settings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
+        var settings = ReadSourceTree("EZMicroBalanceCode", "Config");
 
         AssertSourceContains(
             project,
@@ -172,6 +172,40 @@ public sealed class SourceApiDriftAuditGuardTests
         Assert.DoesNotContain("private static ModSettingsText Text(string value)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("Math.Clamp(value, 0.05, 0.95)", settings, StringComparison.Ordinal);
         Assert.DoesNotContain("store.InitializeGlobal();", settings, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RitsuLibModConfigKeepsStoreAndSettingsPageSplit()
+    {
+        var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
+        var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
+        var store = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStore.cs");
+
+        AssertSourceContains(
+            entry,
+            "internal static partial class SpirePlusModConfig",
+            "RitsuLibFramework.CreateModLocalization",
+            "RegisterSettingsStore(modId);",
+            "RegisterSettingsPage(modId);");
+        Assert.DoesNotContain("RegisterModSettings", entry, StringComparison.Ordinal);
+        Assert.DoesNotContain("BeginModDataRegistration", entry, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            page,
+            "RitsuLibFramework.RegisterModSettings",
+            "AddMigrationStatusSection(page)",
+            "AddPreviewToolsSection(page, modId)",
+            "ModSettingsText.I18N(i18n, key, fallback)");
+        Assert.DoesNotContain("BeginModDataRegistration", page, StringComparison.Ordinal);
+        Assert.DoesNotContain("store.Register", page, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            store,
+            "RitsuLibFramework.BeginModDataRegistration(modId)",
+            "store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true)",
+            "ModSettingsValueBinding<SettingsState, TValue>",
+            "public bool ShowPreviewDebugLogs { get; set; }");
+        Assert.DoesNotContain("RegisterModSettings", store, StringComparison.Ordinal);
     }
 
 }

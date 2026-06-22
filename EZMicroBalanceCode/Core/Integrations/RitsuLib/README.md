@@ -14,8 +14,10 @@ fallback boundaries.
 pack; its sibling partial files own the Ancient/encounter, card, relic, power,
 and enchantment registration lists so future content has a direct RitsuLib
 home instead of drifting into scattered registration code.
-Settings UI registration lives in `EZMicroBalanceCode/Config` but also uses
-RitsuLib APIs.
+Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file
+keeps public preview-tool settings and localization bootstrap, while
+`SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data persistence and
+`SpirePlusModConfig.SettingsPage.cs` owns clicked Mod Settings UI sections.
 
 Current beta.105 evidence covers package parity, runtime preflight,
 source-workspace validation, and smoke-level clicked Ancient UI for Urda,
