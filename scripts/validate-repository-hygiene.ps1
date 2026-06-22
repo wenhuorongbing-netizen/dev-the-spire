@@ -64,10 +64,72 @@ function Assert-PathPresent {
     }
 }
 
+function Assert-RetiredSharedRuntimeAbsent {
+    $retiredRuntimeTokens = @(
+        ('Base' + 'Lib'),
+        ('base ' + 'lib'),
+        ('base-' + 'lib')
+    )
+    $textExtensions = @(
+        '.cfg',
+        '.cs',
+        '.csproj',
+        '.css',
+        '.csv',
+        '.editorconfig',
+        '.example',
+        '.gitattributes',
+        '.gitignore',
+        '.html',
+        '.json',
+        '.md',
+        '.props',
+        '.ps1',
+        '.sln',
+        '.targets',
+        '.ts',
+        '.txt',
+        '.xml',
+        '.yaml',
+        '.yml'
+    )
+
+    $trackedFiles = & git -C $repoRoot ls-files --
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Unable to list tracked files for retired shared-runtime scan.'
+    }
+
+    $violations = New-Object System.Collections.Generic.List[string]
+    foreach ($trackedFile in $trackedFiles) {
+        $extension = [System.IO.Path]::GetExtension($trackedFile)
+        if ($textExtensions -notcontains $extension) {
+            continue
+        }
+
+        $path = Join-Path $repoRoot $trackedFile
+        if (-not (Test-Path -LiteralPath $path)) {
+            continue
+        }
+
+        $text = Get-Content -Raw -LiteralPath $path -Encoding UTF8
+        foreach ($token in $retiredRuntimeTokens) {
+            if ($text.IndexOf($token, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+                $violations.Add($trackedFile)
+                break
+            }
+        }
+    }
+
+    if ($violations.Count -gt 0) {
+        throw "Retired shared-runtime guidance must stay out of tracked text files. Use STS2-RitsuLib docs and APIs instead:`n$($violations -join "`n")"
+    }
+}
+
 $ezmbManifest = Read-JsonFile (Join-Path $repoRoot 'EZMicroBalance.json')
 Assert-Equal $ezmbManifest.id 'EZMicroBalance' 'Spire Plus stable manifest id changed.'
 Assert-Equal $ezmbManifest.name 'Spire Plus' 'Spire Plus player-facing manifest name changed.'
 Assert-Equal $ezmbManifest.affects_gameplay $true 'Spire Plus must remain gameplay-affecting.'
+Assert-RetiredSharedRuntimeAbsent
 
 Get-ChildItem -LiteralPath $repoRoot -Recurse -File -Filter '*.json' |
     Where-Object {

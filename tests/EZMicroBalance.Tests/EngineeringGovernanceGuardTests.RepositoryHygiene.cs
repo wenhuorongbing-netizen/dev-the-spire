@@ -22,6 +22,7 @@ public sealed partial class EngineeringGovernanceGuardTests
         AssertRepoFileExists("scripts", "report-worktree-batches.ps1");
         AssertRepoFileExists("scripts", "prune-generated-sidecars.ps1");
         AssertRepoFileExists("scripts", "prune-stale-publish-packages.ps1");
+        AssertRepoFileExists("AGENTS.md");
 
         var gitignore = ReadRepoText(".gitignore");
         Assert.Contains("/EZMicroBalanceCode/**/*.cs.uid", gitignore, StringComparison.Ordinal);
@@ -80,6 +81,15 @@ public sealed partial class EngineeringGovernanceGuardTests
             "@('publish', 'EZMicroBalance.sln') + $msbuildProps",
             "package-spire-plus.ps1 -GameRoot $sts2FullPath",
             "SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS");
+
+        var repositoryHygieneScript = ReadRepoText("scripts", "validate-repository-hygiene.ps1");
+        AssertSourceContains(
+            repositoryHygieneScript,
+            "Assert-RetiredSharedRuntimeAbsent",
+            "git -C $repoRoot ls-files --",
+            "Retired shared-runtime guidance must stay out of tracked text files",
+            "Use STS2-RitsuLib docs and APIs instead",
+            ".csproj");
 
         var workflowRunCheckScript = ReadRepoText("scripts", "check-github-workflow-runs.ps1");
         AssertSourceContains(
@@ -180,17 +190,33 @@ public sealed partial class EngineeringGovernanceGuardTests
     }
 
     [Fact]
+    public void AgentInstructionsKeepFutureWorkOnRitsuLibLane()
+    {
+        var agentGuidance = ReadRepoText("AGENTS.md");
+
+        AssertSourceContains(
+            agentGuidance,
+            "STS2-RitsuLib",
+            "The active Spire Plus package must remain RitsuLib-only",
+            "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
+            "inspect RitsuLib/template APIs",
+            "Install STS2-RitsuLib `v0.4.33` under `<GameRoot>\\mods\\STS2-RitsuLib`",
+            "Before release: verify STS2-RitsuLib and Spire Plus load in-game",
+            "## RitsuLib Dependency Rule");
+
+        foreach (var token in RetiredSharedRuntimeTokens())
+        {
+            Assert.DoesNotContain(token, agentGuidance, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
+    [Fact]
     public void RetiredSharedRuntimeNameDoesNotReappearInTrackedText()
     {
-        var retiredRuntimeTokens = new[]
-        {
-            string.Concat("Base", "Lib"),
-            string.Concat("base ", "lib"),
-            string.Concat("base-", "lib")
-        };
         var textExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             ".cs",
+            ".csproj",
             ".css",
             ".cfg",
             ".editorconfig",
@@ -210,6 +236,8 @@ public sealed partial class EngineeringGovernanceGuardTests
             ".yml"
         };
 
+        Assert.Contains("AGENTS.md", GitLsFiles(), StringComparer.Ordinal);
+
         var violations = new List<string>();
         foreach (var trackedFile in GitLsFiles())
         {
@@ -221,7 +249,7 @@ public sealed partial class EngineeringGovernanceGuardTests
 
             var path = RepoPath(trackedFile.Split('/'));
             var text = File.ReadAllText(path);
-            foreach (var token in retiredRuntimeTokens)
+            foreach (var token in RetiredSharedRuntimeTokens())
             {
                 if (text.Contains(token, StringComparison.OrdinalIgnoreCase))
                 {
@@ -237,6 +265,13 @@ public sealed partial class EngineeringGovernanceGuardTests
             + Environment.NewLine
             + string.Join(Environment.NewLine, violations.Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(path => path)));
     }
+
+    private static string[] RetiredSharedRuntimeTokens() =>
+    [
+        string.Concat("Base", "Lib"),
+        string.Concat("base ", "lib"),
+        string.Concat("base-", "lib")
+    ];
 
     private static string[] GitLsFiles(params string[] pathspecs)
     {
