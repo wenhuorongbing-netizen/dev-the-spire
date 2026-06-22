@@ -179,10 +179,12 @@ public sealed class SourceApiDriftAuditGuardTests
     {
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
         var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
+        var previewDefaults = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewDefaults.cs");
         var localization = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsLocalization.cs");
         var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
         var runtimeState = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsRuntimeState.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
+        var settingsPageIds = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.Ids.cs");
         var text = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsText.cs");
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
         var migrationStatusEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs");
@@ -235,14 +237,34 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             constants,
+            "Stable persisted/localization keys and package-facing status values stay",
             "private const string SettingsKey = \"spire-plus-settings\"",
             "private const string SettingsLocalizationPckRoot = \"res://EZMicroBalance/localization/settings_ui\"",
+            "private const string RequiredRuntimeDependency = \"STS2-RitsuLib >= 0.4.33\"",
+            "private const string StableTechnicalId = \"EZMicroBalance\"");
+        Assert.DoesNotContain("MigrationStatusSectionId", constants, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", constants, StringComparison.Ordinal);
+        Assert.DoesNotContain("CrystalSphereMaskAlphaStep", constants, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            settingsPageIds,
+            "RitsuLib section and entry ids are persisted UI bindings and evidence",
             "private const string MigrationStatusSectionId = \"migration_status\"",
             "private const string PreviewToolsSectionId = \"preview_tools\"",
-            "These RitsuLib setting-entry ids are persisted bindings and evidence anchors.",
             "private const string EnableCrystalSpherePeekEntryId = \"enable_crystal_sphere_peek\"",
-            "private const string RequiredRuntimeDependency = \"STS2-RitsuLib >= 0.4.33\"",
+            "private const string ShowPreviewDebugLogsEntryId = \"show_preview_debug_logs\"");
+        Assert.DoesNotContain("RequiredRuntimeDependency = ", settingsPageIds, StringComparison.Ordinal);
+        Assert.DoesNotContain("DefaultCrystalSphereMaskAlpha", settingsPageIds, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            previewDefaults,
+            "The RitsuLib slider and fallback normalization share these bounds",
+            "private const double DefaultCrystalSphereMaskAlpha = 0.32",
+            "private const double CrystalSphereMaskAlphaMin = 0.05",
+            "private const double CrystalSphereMaskAlphaMax = 0.95",
             "private const double CrystalSphereMaskAlphaStep = 0.05");
+        Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", previewDefaults, StringComparison.Ordinal);
+        Assert.DoesNotContain("SettingsKey", previewDefaults, StringComparison.Ordinal);
 
         AssertSourceContains(
             previewSettings,

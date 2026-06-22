@@ -54,7 +54,10 @@ Do not start future implementation from historical plans, archived prompt dumps,
   / `ModDataStore.Register` first, then `RegisterModSettings`.
 - Keep settings entry ids stable; screenshots and future automation use them as
   evidence anchors. The current ids live in
-  `SpirePlusModConfig.Constants.cs`.
+  `SpirePlusModConfig.SettingsPage.Ids.cs`.
+- Keep Crystal Sphere preview defaults and RitsuLib slider bounds in
+  `SpirePlusModConfig.PreviewDefaults.cs`; binding normalization and UI
+  construction should share those constants instead of duplicating numbers.
 - Keep RitsuLib settings localization bootstrap in
   `SpirePlusModConfig.SettingsLocalization.cs`; registration and page/entry
   files should not call `CreateModLocalization` directly.

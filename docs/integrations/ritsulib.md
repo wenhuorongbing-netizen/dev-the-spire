@@ -60,7 +60,7 @@ References:
   visibility matters.
 - Official Mod Settings docs also state that interactive controls need stable
   entry ids. Spire Plus keeps these ids as source constants in
-  `SpirePlusModConfig` because clicked UI screenshots and future automation use
+  `SpirePlusModConfig.SettingsPage.Ids.cs` because clicked UI screenshots and future automation use
   them as evidence anchors.
 - Local NuGet XML confirms `BeginModDataRegistration`, `ModDataStore.Register`,
   and scoped global initialization for persisted data slots. Spire Plus settings
