@@ -1,17 +1,17 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.110.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.111.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `57C70558FD99CA710BA245E539F4657083C5A4733DACF60503CC1E9609F21A2A` |
-| DLL | `6E8F497A8667D1507528A06E74DA5EA1291C93E6EB2D81DE1D1453CD588201E9` |
-| PCK | `5DC8247C80D157975ACDE0F76D777CF4B452DEEFD86CC1E9E31632C0B0B9D7DF` |
-| Manifest | `90E06FABB07AE6F46C5DA34F094B8865037D54084582DA8822A7E52638BB3402` |
-| README_INSTALL | `E3465CB56C6F1D4C8269FA35F1A0BFE1954BACF4CF0D00A844D7CC1B3E0E8EF2` |
+| ZIP | `332A1829545337E3786A1CA0CBA7D436E4F4A0E77BFD91BECED118678D65F3E5` |
+| DLL | `82AE5A351C592929EF963B067396B84406A52DFFB51D09BDD92B1504E050A9BE` |
+| PCK | `40A6298616B09AD4082DB7D03F43C9BD22FFFA1F80750EDFD5F66D5FBCC64817` |
+| Manifest | `C1948F2E1B77A0EA5E2B98585FB20C4EA669F2035D03F77EF10719A9E50A4960` |
+| README_INSTALL | `735895ACABC23432209B627C1BEAF46F47783CB05ADB1FD5C0358AD3F6D0BD43` |
 
-Latest validation snapshot: beta.110 build, publish/package refresh, installed-package parity, runtime preflight, and source-workspace check are the current package target; beta.108 clicked Ancient UI smoke is previous-package smoke-level UI context.
+Latest validation snapshot: beta.111 build, publish/package refresh, installed-package parity, runtime preflight, and source-workspace check are the current package target; beta.108 clicked Ancient UI smoke is previous-package smoke-level UI context.
 
 Previous beta.108 clicked UI proof is `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` with 4 / 4 iterations, clean audit, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verifier 1621 / 0. Previous beta.99 settings/Off proof is previous-package context. Previous beta.96 Off proof and beta.93 AdditiveBatch1 proof remain previous-package loader/registration context only. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, beta.88 AdditiveBatch1, beta.90 RitsuLib-only proof, and beta.19 startup proof remain previous-package or historical context. Gameplay, save-load, preview-tools, Vakuu fight, current enabled-mode proof, and co-op proof remain pending.
 

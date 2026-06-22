@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.HoverTips;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
@@ -82,9 +83,14 @@ internal static class SovereignBladeJadeBoonsOnPlayPatch
     }
 }
 
-[HarmonyPatch(typeof(CardModel), "get_HoverTips")]
-internal static class SovereignBladeJadeBoonsHoverTipsPatch
+internal sealed class SovereignBladeJadeBoonsHoverTipsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "sovereign-blade-jade-boons-hover-tips";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Expose Sovereign Blade's five jade boon power previews in card hover text";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardModel), nameof(CardModel.HoverTips), MethodType.Getter)];
+
     [HarmonyPostfix]
     private static void Postfix(CardModel __instance, ref IEnumerable<IHoverTip> __result)
     {

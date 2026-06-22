@@ -89,6 +89,7 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<JewelryBoxExtraHoverTipsPatch>();
         patcher.RegisterPatch<JewelryBoxHoverTipsPatch>();
         patcher.RegisterPatch<JewelryBoxHoverTipsExcludingRelicPatch>();
+        patcher.RegisterPatch<SovereignBladeJadeBoonsHoverTipsPatch>();
     }
 
     private static void RegisterRemainingUiPatches(ModPatcher patcher)

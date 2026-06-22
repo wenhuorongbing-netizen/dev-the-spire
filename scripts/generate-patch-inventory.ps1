@@ -132,6 +132,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'SereTalonVisualPatches.cs'; Classes = 7; PatchIds = 'sere-talon-icon-path, sere-talon-packed-icon-path, sere-talon-packed-icon-outline-path, sere-talon-big-icon-path, sere-talon-icon-texture, sere-talon-icon-outline-texture, sere-talon-big-icon-texture'; Batch = 'visual-hover-ui' },
     [pscustomobject]@{ File = 'PrismaticGemHoverPatches.cs'; Classes = 2; PatchIds = 'prismatic-gem-hover-tips, prismatic-gem-hover-tips-excluding-relic'; Batch = 'visual-hover-ui' },
     [pscustomobject]@{ File = 'JewelryBoxPatches.cs'; Classes = 3; PatchIds = 'jewelry-box-extra-hover-tips, jewelry-box-hover-tips, jewelry-box-hover-tips-excluding-relic'; Batch = 'visual-hover-ui' },
+    [pscustomobject]@{ File = 'SovereignBladeForgePatches.cs'; Classes = 1; PatchIds = 'sovereign-blade-jade-boons-hover-tips'; Batch = 'visual-hover-ui' },
     [pscustomobject]@{ File = 'PrismaticGemRewardScreenHintPatch.cs'; Classes = 1; PatchIds = 'prismatic-gem-reward-screen-hint'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionA20RewardScreenPatches.cs'; Classes = 2; PatchIds = 'ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'ModInfoLocalizationPatches.cs'; Classes = 1; PatchIds = 'spire-plus-mod-info-localization'; Batch = 'clicked-ui' },
