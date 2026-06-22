@@ -67,6 +67,12 @@ public sealed partial class PreviewToolsGuardTests
 
         Assert.Contains("RegisterEventRng(__instance", eventSource, StringComparison.Ordinal);
         Assert.Contains("\"{sourceName}.Rng\"", eventSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionAromaOfChaosRngPatch : IPatchMethod", eventSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionEndlessConveyorRngPatch : IPatchMethod", eventSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionSymbioteRngPatch : IPatchMethod", eventSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionWhisperingHollowRngPatch : IPatchMethod", eventSource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-prediction-aroma-of-chaos-rng\"", eventSource, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(AromaOfChaos), \"LetGo\")", eventSource, StringComparison.Ordinal);
 
         foreach (var nicheRngSource in new[]
         {
@@ -82,6 +88,12 @@ public sealed partial class PreviewToolsGuardTests
         Assert.Contains("RegisterNicheRng(__instance.Owner", nicheSource, StringComparison.Ordinal);
         Assert.Contains("\"{sourceName}.RunState.Rng.Niche\"", nicheSource, StringComparison.Ordinal);
         Assert.Contains("upgradeReplacementPreview: true", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionMorphicGroveNicheRngPatch : IPatchMethod", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionTrialNicheRngPatch : IPatchMethod", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionNewLeafNicheRngPatch : IPatchMethod", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionAstrolabeNicheRngPatch : IPatchMethod", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-prediction-astrolabe-niche-rng\"", nicheSource, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))", nicheSource, StringComparison.Ordinal);
 
         Assert.Contains("new Rng(snapshot.Seed, snapshot.Counter)", contextSource, StringComparison.Ordinal);
         Assert.Contains("snapshot.Source.Counter != snapshot.Counter", contextSource, StringComparison.Ordinal);
@@ -89,8 +101,16 @@ public sealed partial class PreviewToolsGuardTests
         Assert.Contains("SnapshotsByPlayer.TryGetValue(player", contextSource, StringComparison.Ordinal);
         Assert.DoesNotContain("Dictionary<Player, Snapshot>", contextSource, StringComparison.Ordinal);
         Assert.Contains("TransformPredictionSelectionLifetimePatch", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("TransformPredictionSelectionLifetimePatch : IPatchMethod", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"transform-prediction-selection-lifetime\"", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("nameof(CardSelectCmd.FromDeckForTransformation)", lifetimeSource, StringComparison.Ordinal);
+        Assert.Contains("typeof(Func<CardModel, CardTransformation>)", lifetimeSource, StringComparison.Ordinal);
         Assert.Contains("ClearContextWhenSelectionCompletes", lifetimeSource, StringComparison.Ordinal);
         Assert.Contains("TransformPredictionRngContext.Clear(player)", lifetimeSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", eventSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", nicheSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch", lifetimeSource, StringComparison.Ordinal);
         Assert.DoesNotContain("NextItem", combinedSource, StringComparison.Ordinal);
         Assert.DoesNotContain("FastForward", combinedSource, StringComparison.Ordinal);
     }

@@ -73,6 +73,15 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<CrystalSpherePeekFinishedPatch>();
         patcher.RegisterPatch<TransformPreviewInitializePatch>();
         patcher.RegisterPatch<TransformPreviewCyclePatch>();
+        patcher.RegisterPatch<TransformPredictionAromaOfChaosRngPatch>();
+        patcher.RegisterPatch<TransformPredictionEndlessConveyorRngPatch>();
+        patcher.RegisterPatch<TransformPredictionSymbioteRngPatch>();
+        patcher.RegisterPatch<TransformPredictionWhisperingHollowRngPatch>();
+        patcher.RegisterPatch<TransformPredictionMorphicGroveNicheRngPatch>();
+        patcher.RegisterPatch<TransformPredictionTrialNicheRngPatch>();
+        patcher.RegisterPatch<TransformPredictionNewLeafNicheRngPatch>();
+        patcher.RegisterPatch<TransformPredictionAstrolabeNicheRngPatch>();
+        patcher.RegisterPatch<TransformPredictionSelectionLifetimePatch>();
     }
 
     private static void RegisterRelicVisualHoverPatches(ModPatcher patcher)

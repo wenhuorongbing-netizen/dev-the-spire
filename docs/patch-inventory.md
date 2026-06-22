@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 102 |
-| Migrated to RitsuLib ModPatcher | 69 |
-| Raw HarmonyPatch remaining | 102 |
-| Tracked patch units total | 171 |
+| Total raw HarmonyPatch declarations | 91 |
+| Migrated to RitsuLib ModPatcher | 78 |
+| Raw HarmonyPatch remaining | 91 |
+| Tracked patch units total | 169 |
 | High risk (raw Harmony) | 21 |
 | Medium risk (raw Harmony) | 8 |
-| Low risk (raw Harmony) | 73 |
+| Low risk (raw Harmony) | 62 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 69 patch classes implement `IPatchMethod` and are registered via
+These 78 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -56,6 +56,9 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |
 | `CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |
 | `TransformPreviewPatch.cs` | 2 | `transform-preview-initialize, transform-preview-cycle-display` | clicked-ui |
+| `TransformPredictionEventRngSourcePatches.cs` | 4 | `transform-prediction-aroma-of-chaos-rng, transform-prediction-endless-conveyor-rng, transform-prediction-symbiote-rng, transform-prediction-whispering-hollow-rng` | clicked-ui |
+| `TransformPredictionNicheRngSourcePatches.cs` | 4 | `transform-prediction-morphic-grove-niche-rng, transform-prediction-trial-niche-rng, transform-prediction-new-leaf-niche-rng, transform-prediction-astrolabe-niche-rng` | clicked-ui |
+| `TransformPredictionSelectionLifetimePatch.cs` | 1 | `transform-prediction-selection-lifetime` | clicked-ui |
 | `SereTalonVisualPatches.cs` | 7 | `sere-talon-icon-path, sere-talon-packed-icon-path, sere-talon-packed-icon-outline-path, sere-talon-big-icon-path, sere-talon-icon-texture, sere-talon-icon-outline-texture, sere-talon-big-icon-texture` | visual-hover-ui |
 | `PrismaticGemHoverPatches.cs` | 2 | `prismatic-gem-hover-tips, prismatic-gem-hover-tips-excluding-relic` | visual-hover-ui |
 | `JewelryBoxPatches.cs` | 3 | `jewelry-box-extra-hover-tips, jewelry-box-hover-tips, jewelry-box-hover-tips-excluding-relic` | visual-hover-ui |
@@ -73,7 +76,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 102 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 91 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -167,15 +170,4 @@ These 102 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 30 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
 | Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 52 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
 | Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 64 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 6 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 9 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 14 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 19 | `[HarmonyPatch(typeof(Symbiote), "KillWithFire")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 24 | `[HarmonyPatch(typeof(WhisperingHollow), "Hug")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 8 | `[HarmonyPatch]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 11 | `[HarmonyPatch(typeof(MorphicGrove), "Group")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 16 | `[HarmonyPatch(typeof(Trial), "NondescriptInnocent")]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 21 | `[HarmonyPatch(typeof(NewLeaf), nameof(NewLeaf.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionNicheRngSourcePatches.cs` | 26 | `[HarmonyPatch(typeof(Astrolabe), nameof(Astrolabe.AfterObtained))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionSelectionLifetimePatch.cs` | 8 | `[HarmonyPatch(typeof(CardSelectCmd), nameof(CardSelectCmd.FromDeckForTransformation))]` |
 | STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 45 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |
