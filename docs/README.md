@@ -122,6 +122,7 @@ These files are current support records but are not part of the default next-dev
 | `archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Historical v2.2 audit matrices moved out of the active reading path. |
 | `archive/feature-audits/review-pre-slim-20260518.md` | Full historical source-review log before `docs/review.md` was reduced to current findings. |
 | `archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the active review summary. |
+| `archive/feature-audits/review-current-fixed-findings-history-20260622.md` | Full pre-compact current fixed-finding ledger moved out of active `docs/review.md`. |
 | `archive/feature-audits/current-validation-full-20260622.md` | Full historical validation ledger moved out of active `docs/reviews/current-validation.md`. |
 | `archive/feature-audits/event-goal-full-20260622.md` | Full historical StS1 event-goal ledger moved out of active `docs/goals/event.md`. |
 | `archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md` | Full May 20 red-team goal-completion review; active `docs/reviews/` file is a compact boundary stub only. |

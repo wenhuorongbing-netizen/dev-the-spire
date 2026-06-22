@@ -39,6 +39,7 @@
 | `docs/archive/feature-audits/ancient-expansion-v2.2/2026-05-13/` | Archive | Historical v2.2 source-audit matrices; do not use as default next-development input. |
 | `docs/archive/feature-audits/review-pre-slim-20260518.md` | Archive | Full historical source-review log before the compact current `docs/review.md`. |
 | `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md` | Archive | Full 2026-05-26 beta.41-beta.54 source/package pass history moved out of the compact current review. |
+| `docs/archive/feature-audits/review-current-fixed-findings-history-20260622.md` | Archive | Full pre-compact current fixed-finding ledger moved out of active `docs/review.md`. |
 | `docs/archive/feature-audits/current-validation-full-20260622.md` | Archive | Full historical validation ledger moved out of the compact active `docs/reviews/current-validation.md`. |
 | `docs/archive/feature-audits/event-goal-full-20260622.md` | Archive | Full historical StS1 event-goal ledger moved out of the compact active `docs/goals/event.md`. |
 | `docs/archive/feature-audits/overnight-run-20260529.md` | Archive | Historical StS1 overnight no-game/source-governance report; active `docs/reviews/overnight-run-20260529.md` is a compact guarded stub only. |

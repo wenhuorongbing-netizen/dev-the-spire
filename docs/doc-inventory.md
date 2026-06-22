@@ -139,7 +139,7 @@ Current support docs, not default reading path:
 - `docs/介绍.md` -> `docs/intro.zh.md` to keep the Chinese intro active while avoiding quoted non-ASCII paths in Git/script output.
 - root `web_issue.md` -> `docs/archive/implementation-records/forum-public-integration-qa-20260526.md`; current forum follow-up remains in `website/web_issue.md` and `docs/features/forum/`.
 - `website/localization_qa.md` -> `docs/archive/implementation-records/website-localization-qa-20260522.md`; current website package/download state is guarded by `website/content-data.js`, `website/README.md`, and website tests.
-- Detailed 2026-05-26 source/package fixed-finding list from `docs/review.md` -> `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`; current review now keeps only the latest conclusions, rollups, and manual-proof focus.
+- Detailed 2026-05-26 source/package fixed-finding list from `docs/review.md` -> `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`; the later pre-compact current fixed-finding ledger now lives at `docs/archive/feature-audits/review-current-fixed-findings-history-20260622.md`. Current review now keeps only current conclusions, migration evidence, and manual-proof focus.
 - Historical StS1 overnight no-game/source-governance report `docs/reviews/overnight-run-20260529.md` -> `docs/archive/feature-audits/overnight-run-20260529.md`; active review file is a compact guarded stub retaining no-overclaim boundaries.
 - Historical StS1 loader-gate QA reports `docs/reviews/refactor-qa-20260602.md` and `docs/reviews/refactor-qa-20260602-round2.md` -> `docs/archive/feature-audits/refactor-qa-20260602.md` and `docs/archive/feature-audits/refactor-qa-20260602-round2.md`; active review files are compact guarded stubs retaining no-overclaim boundaries.
 - Historical May 20 goal-completion red-team review `docs/reviews/red-team-goal-implementation-pass-1.md` -> `docs/archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md`; active review file is a compact boundary stub routing current status to `docs/review.md`, `docs/issues.md`, and `PROJECT_STATE.md`.
@@ -171,6 +171,7 @@ Current support docs, not default reading path:
 - `docs/archive/feature-audits/event-goal-full-20260622.md`
 - `docs/archive/feature-audits/review-pre-slim-20260518.md`
 - `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`
+- `docs/archive/feature-audits/review-current-fixed-findings-history-20260622.md`
 - `docs/archive/feature-audits/overnight-run-20260529.md`
 - `docs/archive/feature-audits/refactor-qa-20260602.md`
 - `docs/archive/feature-audits/refactor-qa-20260602-round2.md`
