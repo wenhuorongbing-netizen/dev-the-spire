@@ -274,7 +274,7 @@ public sealed partial class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("Current package hashes, 2026-06-22 beta.107:", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-06-22 beta.108:", issues, StringComparison.Ordinal);
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
@@ -295,8 +295,9 @@ public sealed partial class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package target is beta.107", projectState, StringComparison.Ordinal);
-        Assert.Contains("clicked Ancient UI smoke proof are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.108", projectState, StringComparison.Ordinal);
+        Assert.Contains("package parity, runtime preflight, and source-workspace validation are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("beta.107 clicked Ancient UI smoke is previous-package proof", projectState, StringComparison.Ordinal);
         Assert.Contains("beta.99 RitsuLib settings UI and direct Off loader rows are previous-package context only", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);

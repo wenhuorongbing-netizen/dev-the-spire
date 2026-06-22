@@ -21,6 +21,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterMapUiPatches(patcher);
         RegisterSereTalonUiPatches(patcher);
         RegisterPreviewUiPatches(patcher);
+        RegisterRelicVisualHoverPatches(patcher);
         RegisterRemainingUiPatches(patcher);
         RegisterBatch4cLocalizationPatches(patcher);
     }
@@ -72,6 +73,22 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<CrystalSpherePeekFinishedPatch>();
         patcher.RegisterPatch<TransformPreviewInitializePatch>();
         patcher.RegisterPatch<TransformPreviewCyclePatch>();
+    }
+
+    private static void RegisterRelicVisualHoverPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<SereTalonIconPathPatch>();
+        patcher.RegisterPatch<SereTalonPackedIconPathPatch>();
+        patcher.RegisterPatch<SereTalonPackedIconOutlinePathPatch>();
+        patcher.RegisterPatch<SereTalonBigIconPathPatch>();
+        patcher.RegisterPatch<SereTalonIconTexturePatch>();
+        patcher.RegisterPatch<SereTalonIconOutlineTexturePatch>();
+        patcher.RegisterPatch<SereTalonBigIconTexturePatch>();
+        patcher.RegisterPatch<PrismaticGemHoverTipsPatch>();
+        patcher.RegisterPatch<PrismaticGemHoverTipsExcludingRelicPatch>();
+        patcher.RegisterPatch<JewelryBoxExtraHoverTipsPatch>();
+        patcher.RegisterPatch<JewelryBoxHoverTipsPatch>();
+        patcher.RegisterPatch<JewelryBoxHoverTipsExcludingRelicPatch>();
     }
 
     private static void RegisterRemainingUiPatches(ModPatcher patcher)

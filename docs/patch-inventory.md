@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 119 |
-| Migrated to RitsuLib ModPatcher | 52 |
-| Raw HarmonyPatch remaining | 119 |
+| Total raw HarmonyPatch declarations | 107 |
+| Migrated to RitsuLib ModPatcher | 64 |
+| Raw HarmonyPatch remaining | 107 |
 | Tracked patch units total | 171 |
 | High risk (raw Harmony) | 22 |
-| Medium risk (raw Harmony) | 20 |
-| Low risk (raw Harmony) | 77 |
+| Medium risk (raw Harmony) | 9 |
+| Low risk (raw Harmony) | 76 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 52 patch classes implement `IPatchMethod` and are registered via
+These 64 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -56,6 +56,9 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |
 | `CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |
 | `TransformPreviewPatch.cs` | 2 | `transform-preview-initialize, transform-preview-cycle-display` | clicked-ui |
+| `SereTalonVisualPatches.cs` | 7 | `sere-talon-icon-path, sere-talon-packed-icon-path, sere-talon-packed-icon-outline-path, sere-talon-big-icon-path, sere-talon-icon-texture, sere-talon-icon-outline-texture, sere-talon-big-icon-texture` | visual-hover-ui |
+| `PrismaticGemHoverPatches.cs` | 2 | `prismatic-gem-hover-tips, prismatic-gem-hover-tips-excluding-relic` | visual-hover-ui |
+| `JewelryBoxPatches.cs` | 3 | `jewelry-box-extra-hover-tips, jewelry-box-hover-tips, jewelry-box-hover-tips-excluding-relic` | visual-hover-ui |
 | `PrismaticGemRewardScreenHintPatch.cs` | 1 | `prismatic-gem-reward-screen-hint` | clicked-ui |
 | `AscensionA20RewardScreenPatches.cs` | 2 | `ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state` | clicked-ui |
 | `ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |
@@ -67,7 +70,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 119 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 107 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -91,11 +94,8 @@ These 119 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Vakuu | Low | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 121 | `[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 140 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JeweledMaskPatches.cs` | 3 | `[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 3 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 37 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 75 | `[HarmonyPatch(typeof(JewelryBox), "get_ExtraHoverTips")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 86 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 103 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTipsExcludingRelic")]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 5 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
+| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 39 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 3 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_IsEnabled")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 20 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_Description")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 41 | `[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]` |
@@ -107,19 +107,10 @@ These 119 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 31 | `[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ModifyGoldGained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 3 | `[HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 29 | `[HarmonyPatch(typeof(Folly), "get_CanonicalKeywords")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs` | 19 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemHoverPatches.cs` | 39 | `[HarmonyPatch(typeof(RelicModel), "get_HoverTipsExcludingRelic")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemPatches.cs` | 5 | `[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 3 | `[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 14 | `[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 6 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 15 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 24 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 33 | `[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 42 | `[HarmonyPatch(typeof(RelicModel), "get_Icon")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 51 | `[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 60 | `[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 42 | `[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 75 | `[HarmonyPatch(typeof(SovereignBlade), "OnPlay")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 85 | `[HarmonyPatch(typeof(CardModel), "get_HoverTips")]` |

@@ -13,8 +13,8 @@ This migration is source/registration work only; it is not gameplay, save-load, 
 
 - STS2-RitsuLib `v0.4.33` is installed on the E-drive game root in direct NuGet runtime layout.
 - The latest dependency recheck still reports `STS2.RitsuLib` `0.4.33` as the stable NuGet target.
-- installed beta.107 package parity and clicked Ancient UI smoke pass, but that package proof applied the previous 46 migrated patch classes.
-- This source pass moves the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; a future package/runtime proof must recapture the new 52 migrated patch count before claiming runtime coverage for this source state.
+- installed beta.108 package parity passed; previous beta.107 clicked Ancient UI smoke applied the previous 46 migrated patch classes.
+- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; a later visual-hover UI pass raised the current source count to 64 migrated patches. A future package/runtime proof must recapture that current patch count before claiming runtime coverage for this source state.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 ## Migration Self-Check
@@ -54,6 +54,6 @@ Dependency gate checked: 2026-06-22.
 ## Stop Lines
 
 - High-risk migration remains out of scope without a new owner decision: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, and reward-state patches stay on their current guarded path.
-- Before citing this source migration as current runtime coverage, rebuild/package and capture a fresh loader packet that proves the 52 migrated Spire Plus patch classes apply in the installed game.
+- Before citing this source migration as current runtime coverage, rebuild/package and capture a fresh loader packet that proves the current 64 migrated Spire Plus patch classes apply in the installed game.
 - Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite current enabled-mode evidence with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
 - Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

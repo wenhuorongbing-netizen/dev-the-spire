@@ -76,7 +76,10 @@ public sealed partial class AncientBehaviorGuardTests
 
         AssertSourceContains(
             source,
-            "[HarmonyPatch(typeof(RelicModel), \"get_HoverTips\")]",
+            "IPatchMethod.PatchId => \"prismatic-gem-hover-tips\"",
+            "ModPatchTarget(typeof(RelicModel), nameof(RelicModel.HoverTips), MethodType.Getter)",
+            "IPatchMethod.PatchId => \"prismatic-gem-hover-tips-excluding-relic\"",
+            "ModPatchTarget(typeof(RelicModel), nameof(RelicModel.HoverTipsExcludingRelic), MethodType.Getter)",
             "PRISMATIC_GEM.countHint.title",
             "PRISMATIC_GEM.countHint.nextNormal",
             "PRISMATIC_GEM.countHint.nextOffColor",

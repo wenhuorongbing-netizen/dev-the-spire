@@ -232,7 +232,7 @@ public sealed partial class AncientUiReadinessGuardTests
 
         Assert.Contains("smoke-level clicked Ancient UI migration proof", activeDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(".tools/runtime-evidence/monkey-stability-beta107-rerun-20260622-144051", activeDocs, StringComparison.Ordinal);
-        Assert.Contains("Clicked UI is limited to beta.107 forced Ancient smoke", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("Clicked UI is limited to beta.108 forced Ancient smoke", activeDocs, StringComparison.Ordinal);
         Assert.Contains("gated Vakuu fight-option", activeDocs, StringComparison.Ordinal);
         Assert.Contains("pending", activeDocs, StringComparison.OrdinalIgnoreCase);
         foreach (var prohibited in new[]

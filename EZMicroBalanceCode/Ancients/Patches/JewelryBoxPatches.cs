@@ -1,5 +1,7 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
+using STS2RitsuLib.Patching.Models;
+
 [HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]
 internal static class JewelryBoxPatch
 {
@@ -72,9 +74,14 @@ internal static class JewelryBoxApotheosisMarker
     }
 }
 
-[HarmonyPatch(typeof(JewelryBox), "get_ExtraHoverTips")]
-internal static class JewelryBoxExtraHoverTipsPatch
+internal sealed class JewelryBoxExtraHoverTipsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "jewelry-box-extra-hover-tips";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Show Jewelry Box's non-Innate Apotheosis preview in relic extra hover tips";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(JewelryBox), "ExtraHoverTips", MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(ref IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip> __result)
     {
@@ -83,9 +90,14 @@ internal static class JewelryBoxExtraHoverTipsPatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_HoverTips")]
-internal static class JewelryBoxHoverTipsPatch
+internal sealed class JewelryBoxHoverTipsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "jewelry-box-hover-tips";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Include Jewelry Box's non-Innate Apotheosis preview in full relic hover tips";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), nameof(RelicModel.HoverTips), MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(RelicModel __instance, ref IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip> __result)
     {
@@ -100,9 +112,14 @@ internal static class JewelryBoxHoverTipsPatch
     }
 }
 
-[HarmonyPatch(typeof(RelicModel), "get_HoverTipsExcludingRelic")]
-internal static class JewelryBoxHoverTipsExcludingRelicPatch
+internal sealed class JewelryBoxHoverTipsExcludingRelicPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "jewelry-box-hover-tips-excluding-relic";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Show only Jewelry Box's Apotheosis preview in option hover surfaces";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RelicModel), nameof(RelicModel.HoverTipsExcludingRelic), MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(RelicModel __instance, ref IEnumerable<MegaCrit.Sts2.Core.HoverTips.IHoverTip> __result)
     {

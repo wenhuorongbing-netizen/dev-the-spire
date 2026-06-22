@@ -3,7 +3,7 @@
 RitsuLib bootstrap integration lives here.
 
 Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
-`0.4.33`, and Spire Plus `v0.1.0-private-beta.107`.
+`0.4.33`, and Spire Plus `v0.1.0-private-beta.108`.
 
 This directory owns the RitsuLib bootstrap, migrated patch registration,
 content-pack registration, and SavedAttachedState field registration helper.
@@ -51,11 +51,12 @@ assembly, while the `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`
 partials own Crystal Sphere, transform, and preview-diagnostic RitsuLib entry
 builders separately.
 
-Current beta.107 evidence covers package parity, runtime preflight,
-source-workspace validation, and smoke-level clicked Ancient UI for Urda,
-Morvi, Lotha, and normal Vakuu. That proves forced clicked UI visibility only;
-gameplay, save-load, gated Vakuu fight-option/victory return, co-op, release,
-and handoff proof remain separate gates.
+Current beta.108 evidence covers package parity, runtime preflight, and
+source-workspace validation. Previous beta.107 clicked UI smoke covered Urda,
+Morvi, Lotha, and normal Vakuu for the earlier 46-patch source state. That
+proves forced clicked UI visibility only for that previous package; gameplay,
+save-load, gated Vakuu fight-option/victory return, co-op, release, and handoff
+proof remain separate gates.
 
 Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93
 AdditiveBatch1 proof are retained only as previous-package context. Use

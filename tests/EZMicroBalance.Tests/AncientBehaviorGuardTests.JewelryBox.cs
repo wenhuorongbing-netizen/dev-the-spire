@@ -22,8 +22,11 @@ public sealed partial class AncientBehaviorGuardTests
             "JewelryBoxApotheosisMarker.IsMarked(__instance)",
             "keyword => keyword != CardKeyword.Innate",
             "CreateNonInnateApotheosisHoverTips",
-            "[HarmonyPatch(typeof(JewelryBox), \"get_ExtraHoverTips\")]",
-            "[HarmonyPatch(typeof(RelicModel), \"get_HoverTips\")]",
-            "[HarmonyPatch(typeof(RelicModel), \"get_HoverTipsExcludingRelic\")]");
+            "IPatchMethod.PatchId => \"jewelry-box-extra-hover-tips\"",
+            "ModPatchTarget(typeof(JewelryBox), \"ExtraHoverTips\", MethodType.Getter)",
+            "IPatchMethod.PatchId => \"jewelry-box-hover-tips\"",
+            "ModPatchTarget(typeof(RelicModel), nameof(RelicModel.HoverTips), MethodType.Getter)",
+            "IPatchMethod.PatchId => \"jewelry-box-hover-tips-excluding-relic\"",
+            "ModPatchTarget(typeof(RelicModel), nameof(RelicModel.HoverTipsExcludingRelic), MethodType.Getter)");
     }
 }
