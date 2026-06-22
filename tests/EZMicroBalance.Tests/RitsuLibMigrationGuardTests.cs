@@ -319,6 +319,60 @@ public sealed class RitsuLibMigrationGuardTests
             string.Join(Environment.NewLine, conflicts));
     }
 
+    [Fact]
+    public void ClickedUiMigrationBoundaryStaysRitsuLibOnly()
+    {
+        var inventory = ReadRepoText("docs", "patch-inventory.md");
+        var nextRun = ReadRepoText("docs", "features", "ritsulib-migration", "next-overnight-run.md");
+        var currentValidation = ReadRepoText("docs", "reviews", "current-validation.md");
+        var projectState = ReadRepoText("PROJECT_STATE.md");
+        var source = ReadSourceTree("EZMicroBalanceCode");
+        var rawInventory = inventory[
+            inventory.IndexOf(
+                "## Raw HarmonyPatch Declarations (Unmigrated)",
+                StringComparison.Ordinal)..];
+
+        AssertSourceContains(
+            nextRun,
+            "Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.",
+            "- [x] Current beta.123 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260622-235746/`",
+            "- [ ] Gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.");
+        Assert.DoesNotContain("Capture gameplay, clicked UI, save-load", nextRun, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gameplay, clicked UI, save-load", nextRun, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            currentValidation,
+            "This is current-package smoke-level clicked Ancient UI migration proof",
+            "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
+        AssertSourceContains(
+            projectState,
+            "Clicked Ancient UI smoke verification exists for Urda, Morvi, Lotha, and normal Vakuu",
+            "gated Vakuu fight-option UI, victory return, and natural gameplay verification remain pending.");
+
+        foreach (var target in new[]
+        {
+            "NNormalMapPoint",
+            "NRelicInventory",
+            "NMapPoint",
+            "NClickableControl",
+            "NMapScreen",
+            "NEventOptionButton",
+            "NRelic",
+            "NRewardsScreen",
+            "NBossMapPoint",
+            "NPlayerHand",
+            "NModInfoContainer",
+            "NCrystalSphereScreen",
+            "NTransformPreview"
+        })
+        {
+            Assert.DoesNotContain(target, rawInventory, StringComparison.Ordinal);
+            Assert.False(
+                Regex.IsMatch(source, $@"\[HarmonyPatch\s*\(\s*typeof\s*\(\s*{Regex.Escape(target)}\s*\)", RegexOptions.CultureInvariant),
+                $"Clicked/visual UI target {target} must stay on RitsuLib ModPatcher instead of raw HarmonyPatch.");
+        }
+    }
+
     /// <summary>
     /// The migrated patch registry call count must match
     /// the expected total. This guards against source drift.

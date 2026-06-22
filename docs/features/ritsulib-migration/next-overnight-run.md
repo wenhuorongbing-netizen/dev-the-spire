@@ -29,7 +29,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 2. Run no-game validation in one controlled lane if source changed.
 3. Capture current beta.123 enabled-mode loader/registration proof separately before any current enabled-mode claim.
 4. Capture current StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
-5. Capture gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
+5. Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 
 ## Batch 4c Runtime Boundary
 
@@ -45,4 +45,4 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 - [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.
 - [x] Current beta.123 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260622-235746/`; previous beta.99 Off loader proof remains previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 - [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
-- [ ] Gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.
+- [ ] Gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.
