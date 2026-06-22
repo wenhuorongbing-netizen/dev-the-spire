@@ -32,10 +32,12 @@ by preview code, `SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data-store
 registration, `SpirePlusModConfig.SettingsAccess.cs` owns fallback-aware store
 reads/writes, `SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings
 bindings and value normalization, `SpirePlusModConfig.SettingsState.cs` owns
-the persisted settings shape, `SpirePlusModConfig.SettingsPage.cs` owns page registration,
-`SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the read-only
-migration status section, and `SpirePlusModConfig.SettingsPage.PreviewTools.cs`
-owns interactive preview-tool controls.
+the persisted settings shape, `SpirePlusModConfig.SettingsPage.cs` owns page
+registration, `SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the
+read-only migration status section,
+`SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section
+assembly, and `SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs` owns the
+individual RitsuLib toggle/slider entry builders.
 
 Current beta.105 evidence covers package parity, runtime preflight,
 source-workspace validation, and smoke-level clicked Ancient UI for Urda,

@@ -61,6 +61,9 @@ Do not start future implementation from historical plans, archived prompt dumps,
 - Keep settings persistence split by role: store registration, fallback-aware
   access, UI bindings, and persisted state shape each live in their matching
   `SpirePlusModConfig.Settings*.cs` partial.
+- Keep RitsuLib settings page assembly separate from individual entry builders:
+  the preview section orders entries, while `PreviewToolEntries` owns the
+  toggle/slider calls and their stable entry ids.
 - Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
   flow through game saved properties; use `ModDataStore` for global mod
   settings.
