@@ -33,7 +33,23 @@ internal static class RitsuLibBootstrap
             // Harmony.PatchAll() discovery.
             var patcher = RitsuLibFramework.CreatePatcher(modId, "SpirePlus");
             SpirePlusMigratedPatchRegistry.RegisterAll(patcher);
-            patcher.PatchAll();
+            var applied = RitsuLibFramework.ApplyRequiredPatcher(
+                patcher,
+                () =>
+                {
+                    // Required migrated patches are the mod's current runtime contract.
+                    // Continuing into saved-state, content, and feature initialization
+                    // after a failed ModPatcher apply would create a half-booted mod.
+                    logger.Warn("Required RitsuLib ModPatcher apply failed; aborting Spire Plus bootstrap.");
+                    SpirePlusDebug.Warn("RitsuLib", "Required ModPatcher apply failed; aborting bootstrap.");
+                },
+                "Spire Plus migrated patches");
+
+            if (!applied)
+            {
+                throw new InvalidOperationException(
+                    "Required RitsuLib ModPatcher apply failed; Spire Plus bootstrap stopped before feature initialization.");
+            }
 
             logger.Info($"ModPatcher applied {patcher.AppliedPatchCount} patches ({patcher.RegisteredPatchCount} registered).");
             SpirePlusDebug.Log("RitsuLib", $"ModPatcher applied {patcher.AppliedPatchCount} patches.");

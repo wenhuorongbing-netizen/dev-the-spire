@@ -5,16 +5,16 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.122.
-- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.122`.
+- Spire Plus is RitsuLib-only for beta.123.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.123`.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.122 package parity, runtime preflight,
-  source-workspace validation, and clicked Ancient UI smoke. Current beta.122
+- Current packaged proof: beta.123 package parity, runtime preflight,
+  source-workspace validation, and clicked Ancient UI smoke. Current beta.123
   clicked Ancient UI smoke covers Urda, Morvi, Lotha, and normal Vakuu only.
-- Packaged beta.122 evidence covers build, publish, package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke.
-- Current beta.122 clicked Ancient UI smoke proves forced clicked UI visibility
+- Packaged beta.123 evidence covers build, publish, package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke.
+- Current beta.123 clicked Ancient UI smoke proves forced clicked UI visibility
   only for the current package.
 - Current source migration: Neow reroll option, Urda option-relic, Root Sight map-click,
   Root Sight map-visual, Vakuu fight option, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
@@ -41,8 +41,8 @@ read only the support file that matches the task.
   Phantasmal Gardener now also use RitsuLib `IPatchMethod` / `ModPatcher`.
 - Current inventory: 127 migrated patch classes and 43 raw Harmony declarations
   remain in `docs/patch-inventory.md`.
-- Boundary: beta.122 was rebuilt, published, packaged, and package-checked after
-  the RitsuLib `0.4.34` dependency refresh. The current beta.122 clicked UI
+- Boundary: beta.123 was rebuilt, published, packaged, and package-checked after
+  the RitsuLib `0.4.34` dependency refresh. The current beta.123 clicked UI
   smoke applied all 127 migrated Spire Plus ModPatcher patches in the installed
   game.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off

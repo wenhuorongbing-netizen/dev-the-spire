@@ -313,7 +313,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
             Assert.Contains("fresh-current-package-loader-smoke", currentDocs, StringComparison.Ordinal);
             Assert.Contains("RitsuLib-only Off proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("SavedAttachedState", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("current beta.122 clicked Ancient UI smoke covers only the forced UI paths.", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("current beta.123 clicked Ancient UI smoke covers only the forced UI paths.", currentDocs, StringComparison.Ordinal);
             Assert.Contains("Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evidence are still required before any live-ready or release-ready claim.", currentDocs, StringComparison.Ordinal);
             Assert.Contains("Previous beta.93 AdditiveBatch1 registration proof has been recaptured", currentDocs, StringComparison.Ordinal);
             Assert.Contains("loader/registration evidence, not gameplay proof", currentDocs, StringComparison.Ordinal);
@@ -337,7 +337,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
         if (!Directory.Exists(evidenceDir))
         {
             Assert.Contains("raw local `.tools` runtime-evidence folders may be pruned", currentDocs, StringComparison.Ordinal);
-            Assert.Contains("current beta.122 clicked Ancient UI smoke covers only the forced UI paths.", currentDocs, StringComparison.Ordinal);
+            Assert.Contains("current beta.123 clicked Ancient UI smoke covers only the forced UI paths.", currentDocs, StringComparison.Ordinal);
             Assert.Contains("Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evidence are still required before any live-ready or release-ready claim.", currentDocs, StringComparison.Ordinal);
             return;
         }

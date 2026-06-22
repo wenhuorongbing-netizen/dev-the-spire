@@ -5,14 +5,14 @@ Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.
 
 ## Current Truth
 
-- Current package truth is beta.122 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`.
+- Current package truth is beta.123 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`.
 - Spire Plus is RitsuLib-only. `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`, and `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 - Future StS1 event work must start from RitsuLib docs/XML, active StS1 feature docs, and the unpacked local game source under `source code/src/Core/`.
 - The StS1 event prototype remains default Off. Do not use StS1 event work to widen Ancient, Ascension, save/load, replacement, or multiplayer claims.
 
 ## Current Evidence Boundary
 
-- Current beta.122 clicked Ancient UI smoke is retained at `.tools/runtime-evidence/monkey-stability-beta122-20260622-230109/`: 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 migrated Spire Plus patches applied, and packet verification 1621 / 0.
+- Current beta.123 clicked Ancient UI smoke is retained at `.tools/runtime-evidence/monkey-stability-20260622-235746/`: 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 migrated Spire Plus patches applied, and packet verification 1621 / 0.
 - This is Ancient clicked-UI smoke evidence only. It does not close StS1 event gameplay, game-native AutoSlay batch proof, save-load, EN/ZHS runtime render, image/license/render, replacement functional behavior, multiplayer/fail-closed behavior, independent QA, release, or tester handoff gates.
 - Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, beta.88 smoke-level UI proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
 - Retained beta.85 CanaryOnly loader proof remains previous-package/game-version context and used 4 event types / 6 registration calls. Recapture current CanaryOnly before broader current-runtime claims.
@@ -26,7 +26,7 @@ Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.
 
 ## Runtime Proof Rules
 
-- Game-native AutoSlay and runtime-monkey packets must use current package/game/Ritsu target switches, including Spire Plus `v0.1.0-private-beta.122`, Slay the Spire 2 `v0.107.1`, and STS2-RitsuLib `0.4.34`.
+- Game-native AutoSlay and runtime-monkey packets must use current package/game/Ritsu target switches, including Spire Plus `v0.1.0-private-beta.123`, Slay the Spire 2 `v0.107.1`, and STS2-RitsuLib `0.4.34`.
 - Proof-mode AutoSlay commands must include `-ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA`; retained `autoslay-plan.json`, retained `autoslay-summary.json`, and sidecar-plus-current-log event traversal must bind to the same Ancient id before future gameplay proof can count.
 - A clean static suite, current-doc scan, v19 ledger, v20 overlay, or subagent coverage run is no-launch governance evidence only. It is not gameplay, save-load, replacement, multiplayer, QA, release, or handoff proof.
 - Do not start overlapping validation lanes when a long `dotnet`, package, or game-runtime validation lane is already active.

@@ -3,13 +3,20 @@
 RitsuLib bootstrap integration lives here.
 
 Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
-`0.4.34`, and Spire Plus `v0.1.0-private-beta.122`.
+`0.4.34`, and Spire Plus `v0.1.0-private-beta.123`.
 
 This directory owns the RitsuLib bootstrap, migrated patch registration,
 content-pack registration, and SavedAttachedState field registration helper.
 `SpirePlusMigratedPatchRegistry` owns the explicit migrated patch list so
 `RitsuLibBootstrap` can stay focused on startup order and legacy Harmony
-fallback boundaries.
+fallback boundaries. `SpirePlusMigratedPatchRegistry.Ui.cs` owns click, hover,
+settings, and other UI-facing migrated patch registrations separately from
+reward/content patch groups so the completed clicked-UI migration has a compact
+source audit surface.
+`RitsuLibBootstrap` applies the migrated registry with
+`RitsuLibFramework.ApplyRequiredPatcher(...)`; if that required patcher fails,
+startup stops before saved-state, content, settings, or feature initialization
+can create a half-booted Spire Plus session.
 `SpirePlusContentRegistrationService` creates and applies the RitsuLib content
 pack; its sibling partial files own the Ancient/encounter, card, relic, power,
 and enchantment registration lists so future content has a direct RitsuLib
@@ -51,9 +58,11 @@ assembly, while the `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`
 partials own Crystal Sphere, transform, and preview-diagnostic RitsuLib entry
 builders separately.
 
-Packaged beta.122 evidence covers build, publish, package parity, runtime preflight,
-and source-workspace validation. Previous beta.108 clicked UI smoke covered Urda,
-Morvi, Lotha, and normal Vakuu for the previous 64-patch source state. That proves forced clicked UI visibility only for that previous package; gameplay, save-load, gated Vakuu fight-option/victory return, co-op, release, and handoff proof remain separate gates.
+Packaged beta.123 evidence covers build, publish, package parity, runtime
+preflight, source-workspace validation, and forced clicked Ancient UI smoke for
+Urda, Morvi, Lotha, and normal Vakuu. That proves forced clicked UI visibility only for the current package;
+gameplay, save-load, gated Vakuu fight-option and victory return, co-op, release,
+and handoff proof remain separate gates.
 
 Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93
 AdditiveBatch1 proof are retained only as previous-package context. Use

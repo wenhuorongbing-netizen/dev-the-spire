@@ -336,7 +336,7 @@ public sealed class RitsuLibMigrationGuardTests
     public void RitsuLibBootstrapDelegatesMigratedPatchRegistration()
     {
         var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
-        var registry = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "SpirePlusMigratedPatchRegistry.cs");
+        var registry = ReadRitsuLibIntegrationSource();
 
         Assert.Contains("SpirePlusMigratedPatchRegistry.RegisterAll(patcher);", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain(".RegisterPatch<", bootstrap, StringComparison.Ordinal);
@@ -345,11 +345,14 @@ public sealed class RitsuLibMigrationGuardTests
             "ApplyMigratedRitsuLibPatches();",
             "ApplyLegacyHarmonyFallbackPatches();",
             "AuditRitsuLibRuntimeState();",
+            "RitsuLibFramework.ApplyRequiredPatcher(",
+            "Required RitsuLib ModPatcher apply failed; Spire Plus bootstrap stopped before feature initialization.",
             "RitsuLib ModPatcher owns every migrated patch class",
             "fallback to another mod framework");
+        Assert.DoesNotContain("patcher.PatchAll();", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
             registry,
-            "internal static class SpirePlusMigratedPatchRegistry",
+            "internal static partial class SpirePlusMigratedPatchRegistry",
             "public static void RegisterAll(ModPatcher patcher)",
             "RegisterBatch4a(patcher);",
             "RegisterBatch4b(patcher);",
@@ -521,7 +524,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.122", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.123", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -611,7 +614,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.122 package parity passed; current beta.122 clicked Ancient UI smoke applied all 127 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.123 package parity passed; current beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);

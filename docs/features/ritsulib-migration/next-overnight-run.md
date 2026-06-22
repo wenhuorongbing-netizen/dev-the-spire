@@ -11,8 +11,8 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 
 - Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.122 package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
-- Current beta.122 smoke applied all 127 migrated RitsuLib patch classes after the later localization, UI, reward, intent, enemy-damage, and RitsuLib compatibility migrations.
+- Latest beta.123 package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
+- Current beta.123 smoke applied all 127 migrated RitsuLib patch classes after the later localization, UI, reward, intent, enemy-damage, and RitsuLib compatibility migrations.
 - Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 
 ## Retained Evidence Boundaries
@@ -21,13 +21,13 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 - AdditiveBatch1: `.tools\runtime-evidence\additive-batch1-20260602-150445`, 10 event types through the old 11 registration calls, clean audit. Current source expects 10 event types through 14 registration calls.
 - Retained CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines with retained verifier reports.
 - Before any StS1 canary gameplay claim, recapture current-version CanaryOnly loader proof; `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` is retained previous-package/game-version context only.
-- Before any AdditiveBatch1 gameplay claim, confirm the beta.122 package and STS2-RitsuLib `v0.4.34` direct NuGet runtime are installed and recapture current-package enabled-mode proof.
+- Before any AdditiveBatch1 gameplay claim, confirm the beta.123 package and STS2-RitsuLib `v0.4.34` direct NuGet runtime are installed and recapture current-package enabled-mode proof.
 
 ## Required Run Order
 
 1. Recapture HEAD/worktree and installed game/RitsuLib versions.
 2. Run no-game validation in one controlled lane if source changed.
-3. Capture current beta.122 enabled-mode loader/registration proof separately before any current enabled-mode claim.
+3. Capture current beta.123 enabled-mode loader/registration proof separately before any current enabled-mode claim.
 4. Capture current StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
 5. Capture gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 
@@ -43,6 +43,6 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
 - [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.
-- [x] Current beta.122 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-beta122-20260622-230109/`; previous beta.99 Off loader proof remains previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
+- [x] Current beta.123 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260622-235746/`; previous beta.99 Off loader proof remains previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 - [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
 - [ ] Gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.
