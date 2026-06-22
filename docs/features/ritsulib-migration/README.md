@@ -55,6 +55,9 @@ Do not start future implementation from historical plans, archived prompt dumps,
 - Keep settings entry ids stable; screenshots and future automation use them as
   evidence anchors. The current ids live in
   `SpirePlusModConfig.Constants.cs`.
+- Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`;
+  preview code should not call RitsuLib stores or settings-page builders
+  directly.
 - Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
   flow through game saved properties; use `ModDataStore` for global mod
   settings.

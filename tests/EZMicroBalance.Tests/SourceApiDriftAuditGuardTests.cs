@@ -179,6 +179,7 @@ public sealed class SourceApiDriftAuditGuardTests
     {
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
         var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
+        var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
         var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
@@ -193,6 +194,7 @@ public sealed class SourceApiDriftAuditGuardTests
         Assert.DoesNotContain("RegisterModSettings", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("BeginModDataRegistration", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", entry, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnableCrystalSpherePeek", entry, StringComparison.Ordinal);
 
         AssertSourceContains(
             constants,
@@ -204,6 +206,19 @@ public sealed class SourceApiDriftAuditGuardTests
             "private const string EnableCrystalSpherePeekEntryId = \"enable_crystal_sphere_peek\"",
             "private const string RequiredRuntimeDependency = \"STS2-RitsuLib >= 0.4.33\"",
             "private const double CrystalSphereMaskAlphaStep = 0.05");
+
+        AssertSourceContains(
+            previewSettings,
+            "Preview runtime code reads these accessors instead of reaching into the",
+            "public static bool EnableCrystalSpherePeek",
+            "public static double CrystalSphereMaskAlpha",
+            "NormalizeCrystalSphereMaskAlpha(value)",
+            "public static bool EnableTransformPrediction",
+            "public static bool TransformPredictionAlwaysOn",
+            "public static bool ShowPreviewDebugLogs");
+        Assert.DoesNotContain("RegisterModSettings", previewSettings, StringComparison.Ordinal);
+        Assert.DoesNotContain("BeginModDataRegistration", previewSettings, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewToolsSection", previewSettings, StringComparison.Ordinal);
 
         AssertSourceContains(
             page,

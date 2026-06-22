@@ -11,36 +11,6 @@ internal static partial class SpirePlusModConfig
     private static I18N? settingsLocalization;
     private static string? registeredModId;
 
-    public static bool EnableCrystalSpherePeek
-    {
-        get => State.EnableCrystalSpherePeek;
-        set => UpdateState(state => state.EnableCrystalSpherePeek = value);
-    }
-
-    public static double CrystalSphereMaskAlpha
-    {
-        get => State.CrystalSphereMaskAlpha;
-        set => UpdateState(state => state.CrystalSphereMaskAlpha = NormalizeCrystalSphereMaskAlpha(value));
-    }
-
-    public static bool EnableTransformPrediction
-    {
-        get => State.EnableTransformPrediction;
-        set => UpdateState(state => state.EnableTransformPrediction = value);
-    }
-
-    public static bool TransformPredictionAlwaysOn
-    {
-        get => State.TransformPredictionAlwaysOn;
-        set => UpdateState(state => state.TransformPredictionAlwaysOn = value);
-    }
-
-    public static bool ShowPreviewDebugLogs
-    {
-        get => State.ShowPreviewDebugLogs;
-        set => UpdateState(state => state.ShowPreviewDebugLogs = value);
-    }
-
     public static void Register(string modId)
     {
         registeredModId = modId;

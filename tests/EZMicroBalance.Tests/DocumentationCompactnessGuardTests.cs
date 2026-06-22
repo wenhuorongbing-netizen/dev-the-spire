@@ -575,6 +575,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "The repository hygiene",
             "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
+            "Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`",
             "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
         AssertSourceContains(
             coreIntegrationReadme,
@@ -582,8 +583,10 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`0.4.33`, and Spire Plus `v0.1.0-private-beta.105`.",
             "This directory owns the RitsuLib bootstrap, migrated patch registration,",
             "Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file",
-            "`SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data persistence",
-            "`SpirePlusModConfig.SettingsPage.cs` owns page registration",
+            "keeps only localization/bootstrap order, `SpirePlusModConfig.Constants.cs` owns",
+            "`SpirePlusModConfig.PreviewSettings.cs` owns the public runtime accessors used",
+            "`SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data",
+            "persistence, `SpirePlusModConfig.SettingsPage.cs` owns page registration",
             "`SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the read-only",
             "migration status section, and `SpirePlusModConfig.SettingsPage.PreviewTools.cs`",
             "owns interactive preview-tool controls.",
