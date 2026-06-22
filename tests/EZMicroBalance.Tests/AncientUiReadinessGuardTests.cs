@@ -213,7 +213,7 @@ public sealed partial class AncientUiReadinessGuardTests
     }
 
     [Fact]
-    public void ActiveDocsDoNotClaimClickedAncientUiVerifiedWithoutRuntimeEvidence()
+    public void ActiveDocsKeepClickedAncientUiSmokeScopedToRuntimeEvidence()
     {
         var activeDocs = string.Join(
             Environment.NewLine,
@@ -224,7 +224,9 @@ public sealed partial class AncientUiReadinessGuardTests
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md"),
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md"));
 
-        Assert.Contains("clicked Ancient UI", activeDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("smoke-level clicked Ancient UI migration proof", activeDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(".tools/runtime-evidence/monkey-stability-20260622-025733", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("gated Vakuu fight-option", activeDocs, StringComparison.Ordinal);
         Assert.Contains("pending", activeDocs, StringComparison.OrdinalIgnoreCase);
         foreach (var prohibited in new[]
         {
@@ -233,7 +235,8 @@ public sealed partial class AncientUiReadinessGuardTests
             "Ancient UI verified",
             "clicked Ancient UI passed",
             "clicked live Ancient UI passed",
-            "clicked UI verification passed"
+            "clicked UI verification passed",
+            "clicked UI fully verified"
         })
         {
             Assert.DoesNotContain(prohibited, activeDocs, StringComparison.OrdinalIgnoreCase);

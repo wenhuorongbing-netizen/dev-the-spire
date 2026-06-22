@@ -38,7 +38,7 @@
   Beta.105 package parity, runtime preflight 28 / 0, source-workspace validation 57 / 0, and clicked UI smoke are current; packet verification passed 1621 / 0.
   Evidence: `.tools/runtime-evidence/monkey-stability-20260622-025733/`; beta.99/beta.96/beta.93 and earlier smokes are previous-version or previous-package context.
   Enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.
-## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY` needs screenshots/logs for Ancient choices, A11-A20, Rootblight, Root Eyes, Seed Bank, Morvi, Lotha, and Vakuu; use scripts/collect-ancient-ui-evidence.ps1.
+## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: beta.105 Ancient smoke covers Urda/Morvi/Lotha/normal Vakuu; gated Vakuu fight, hover/readability, A11-A20, save-load, co-op, gameplay proof remain pending; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.
 ## Issue detail links: `docs/issues/ancient-expansion-v2.2.md`, `docs/issues/urda.md`, `docs/issues/waiting-tests.md`, `docs/issues/v3.3-design-review.md`; retest rows in `docs/toreview.md`.

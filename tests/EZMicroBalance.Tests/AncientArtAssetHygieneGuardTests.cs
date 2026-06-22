@@ -258,7 +258,8 @@ public sealed partial class AncientArtAssetHygieneGuardTests
         Assert.Contains("Final browser GPTimage2 small art generated this pass", activeDocs, StringComparison.Ordinal);
         Assert.Contains("No `generic_temporary` or `final_required_before_release` art blockers remain", activeDocs, StringComparison.Ordinal);
         Assert.Contains("Event backgrounds are active middle-draft resources", activeDocs, StringComparison.Ordinal);
-        Assert.Contains("Live clicked-UI review remains unresolved", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("Beta.105 smoke-level clicked UI proof exists for forced Urda, Morvi, Lotha, and normal Vakuu", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("art readiness still requires live hover/readability review and gated Vakuu fight-option checks", activeDocs, StringComparison.Ordinal);
 
         foreach (var prohibited in new[]
         {
