@@ -1,5 +1,7 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using EZMicroBalance.EZMicroBalanceCode.Map;
 using EZMicroBalance.EZMicroBalanceCode.Preview;
 using STS2RitsuLib.Patching.Core;
 
@@ -15,6 +17,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterBatch4a(patcher);
         RegisterBatch4b(patcher);
         RegisterClickedUiPatches(patcher);
+        RegisterMapUiPatches(patcher);
         RegisterSereTalonUiPatches(patcher);
         RegisterPreviewUiPatches(patcher);
     }
@@ -45,6 +48,13 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<UrdaRootSightMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightMapClosePatch>();
+    }
+
+    private static void RegisterMapUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<SpirePlusMapPointHoverComposer>();
+        patcher.RegisterPatch<FiremarkedEliteMapIconPatch>();
+        patcher.RegisterPatch<BossMapPointHoverPatch>();
     }
 
     private static void RegisterSereTalonUiPatches(ModPatcher patcher)

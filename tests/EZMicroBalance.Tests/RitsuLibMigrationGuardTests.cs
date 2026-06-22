@@ -58,6 +58,9 @@ public sealed class RitsuLibMigrationGuardTests
         "urda-root-sight-map-point-click",
         "urda-root-sight-disabled-map-point-click",
         "urda-root-sight-map-close",
+        "spire-plus-map-point-hover-composer",
+        "ascension-map-marker-icon-refresh",
+        "ascension-boss-map-point-hover",
         "sere-talon-event-option-button-ready",
         "sere-talon-relic-node-reload",
         "crystal-sphere-peek-ready",
@@ -66,9 +69,9 @@ public sealed class RitsuLibMigrationGuardTests
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 11;
-    private const int ExpectedTotalMigratedCount = 36;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 135;
+    private const int ExpectedClickedUiCount = 14;
+    private const int ExpectedTotalMigratedCount = 39;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 132;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -120,8 +123,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 36:
-    /// 9 Batch 4a + 16 Batch 4b + 11 clicked UI patches.
+    /// The expected migrated patch count must be 39:
+    /// 9 Batch 4a + 16 Batch 4b + 14 clicked/UI patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
@@ -207,7 +210,7 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// The migrated patch registry call count must match
-    /// the expected total (25). This guards against source drift.
+    /// the expected total. This guards against source drift.
     /// </summary>
     [Fact]
     public void MigratedPatchRegistryCallCountMatchesSource()
@@ -247,6 +250,10 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightMapClosePatch>();",
+            "RegisterMapUiPatches(patcher);",
+            "RegisterPatch<SpirePlusMapPointHoverComposer>();",
+            "RegisterPatch<FiremarkedEliteMapIconPatch>();",
+            "RegisterPatch<BossMapPointHoverPatch>();",
             "RegisterSereTalonUiPatches(patcher);",
             "RegisterPatch<SereTalonAncientEventOptionButtonPatch>();",
             "RegisterPatch<SereTalonRelicNodeReloadPatch>();",
@@ -465,14 +472,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (36).
+    /// state the correct total migrated count (39).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 36", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 39", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -480,6 +487,9 @@ public sealed class RitsuLibMigrationGuardTests
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",
             "`UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |",
             "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |",
+            "`SpirePlusMapPointHoverComposer.cs` | 1 | `spire-plus-map-point-hover-composer` | clicked-ui |",
+            "`AscensionMapIconPatches.cs` | 1 | `ascension-map-marker-icon-refresh` | clicked-ui |",
+            "`AscensionMapBossSealHoverPatches.cs` | 1 | `ascension-boss-map-point-hover` | clicked-ui |",
             "`SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |",
             "`CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |");
     }

@@ -90,8 +90,9 @@ public sealed partial class AscensionV2MilestoneGuardTests
 
         AssertSourceContains(
             mapUiPatches,
-            "HarmonyPatch(typeof(NBossMapPoint), \"OnFocus\")",
             "BossMapPointHoverPatch",
+            "IPatchMethod.PatchId => \"ascension-boss-map-point-hover\"",
+            "new ModPatchTarget(typeof(NBossMapPoint), \"OnFocus\")",
             "BOSS_DEDICATED_ABILITY",
             "BOSS_BRANDED_FORM",
             "CreateHoverTip(metadata.BossSeal, metadata.IsBossBrand)",

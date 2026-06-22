@@ -1,11 +1,17 @@
 using Godot;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")]
-internal static class FiremarkedEliteMapIconPatch
+internal sealed class FiremarkedEliteMapIconPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-map-marker-icon-refresh";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Restore Ascension map marker icons after vanilla marker visibility refresh";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NNormalMapPoint), "RefreshMarkedIconVisibility")];
+
     private static readonly System.Reflection.FieldInfo QuestIconField =
         AccessTools.Field(typeof(NNormalMapPoint), "_questIcon");
 

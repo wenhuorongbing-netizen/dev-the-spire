@@ -5,12 +5,18 @@ using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Map;
 using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(NBossMapPoint), "OnFocus")]
-internal static class BossMapPointHoverPatch
+internal sealed class BossMapPointHoverPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-boss-map-point-hover";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Show Ascension boss seal hover text after boss map point focus";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NBossMapPoint), "OnFocus")];
+
     [HarmonyPostfix]
     private static void Postfix(NBossMapPoint __instance)
     {

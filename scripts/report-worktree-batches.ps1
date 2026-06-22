@@ -70,6 +70,7 @@ function Get-WorktreeBatch {
     }
 
     if ($p.StartsWith('EZMicroBalanceCode/Ancients/', [System.StringComparison]::OrdinalIgnoreCase) -or
+        $p.StartsWith('EZMicroBalanceCode/Map/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p.StartsWith('EZMicroBalanceCode/Sts1Events/', [System.StringComparison]::OrdinalIgnoreCase) -or
         $p -match '^EZMicroBalance/localization/[^/]+/(ancients|cards|card_keywords|powers|relics|static_hover_tips)\.json$' -or
         $p.StartsWith('docs/features/ancient-expansion-urda/', [System.StringComparison]::OrdinalIgnoreCase) -or

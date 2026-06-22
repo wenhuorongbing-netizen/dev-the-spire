@@ -480,8 +480,9 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         AssertSourceContains(
             urdaMapUiPatches,
             "UrdaRootSightMapHoverPatch",
-            "HarmonyPatch(typeof(NNormalMapPoint), \"OnFocus\")",
             "SpirePlusMapPointHoverComposer",
+            "IPatchMethod.PatchId => \"spire-plus-map-point-hover-composer\"",
+            "new ModPatchTarget(typeof(NNormalMapPoint), \"OnFocus\")",
             "UrdaBlessingService.TryGetRootSightHoverTip",
             "FiremarkedEliteMapHoverPatch.TryCreateHoverTip",
             "BannerRoomMapHoverPatch.TryCreateHoverTip",
@@ -520,7 +521,8 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             "RegisterPatch<UrdaRootSightMapQuestIconPatch>();",
             "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
-            "RegisterPatch<UrdaRootSightMapClosePatch>();");
+            "RegisterPatch<UrdaRootSightMapClosePatch>();",
+            "RegisterPatch<SpirePlusMapPointHoverComposer>();");
         var rootSightRoomPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightRoomPatches.cs");
         AssertSourceContains(
             rootSightRoomPatches,

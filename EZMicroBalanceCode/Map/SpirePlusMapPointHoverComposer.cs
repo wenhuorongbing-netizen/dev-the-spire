@@ -6,12 +6,18 @@ using MegaCrit.Sts2.Core.Nodes.HoverTips;
 using MegaCrit.Sts2.Core.Nodes.Screens.Map;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Map;
 
-[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]
-internal static class SpirePlusMapPointHoverComposer
+internal sealed class SpirePlusMapPointHoverComposer : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "spire-plus-map-point-hover-composer";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Merge Spire Plus map hover tips after normal map point focus";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NNormalMapPoint), "OnFocus")];
+
     [HarmonyPriority(Priority.Last)]
     [HarmonyPostfix]
     private static void Postfix(NNormalMapPoint __instance)
