@@ -219,6 +219,7 @@ public sealed partial class AncientUiReadinessGuardTests
             Environment.NewLine,
             ReadRepoText("PROJECT_STATE.md"),
             ReadRepoText("docs", "issues.md"),
+            ReadRepoText("docs", "review.md"),
             ReadRepoText("docs", "test-ready-development-goal.md"),
             ReadRepoText("docs", "private-beta-verification-handoff.md"),
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md"),
@@ -226,10 +227,12 @@ public sealed partial class AncientUiReadinessGuardTests
 
         Assert.Contains("smoke-level clicked Ancient UI migration proof", activeDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(".tools/runtime-evidence/monkey-stability-20260622-025733", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("Clicked UI is limited to beta.105 forced Ancient smoke", activeDocs, StringComparison.Ordinal);
         Assert.Contains("gated Vakuu fight-option", activeDocs, StringComparison.Ordinal);
         Assert.Contains("pending", activeDocs, StringComparison.OrdinalIgnoreCase);
         foreach (var prohibited in new[]
         {
+            string.Concat("No live save/load, death/failure, co-op, ", "clicked UI"),
             "clicked Ancient UI verified",
             "clicked UI verified",
             "Ancient UI verified",

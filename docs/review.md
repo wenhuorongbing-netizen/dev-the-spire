@@ -121,8 +121,8 @@ Detailed pre-current pass notes remain in the archive files listed above. This a
 - Vakuu's Sere Talon must offer 4 Curses, choose 1, then add the selected Curse, 2 Wish, and 1 Wish+; its event option, relic bar, inspect screen, hover text, and log routes must not appear as Tanx Claws.
 - Tanx Claws must stay on the Tanx route and transform selected cards into upgraded Maul+ / 撕咬+.
 - Previous beta.93 direct AdditiveBatch1 loader proof passes clean audit on `v0.107.1` with STS2-RitsuLib `0.4.31` / `lib/0.107.1`: it registered 10 event types through 14 calls and passed the retained enabled-mode verifier 31 / 0 plus packet verifier 61 / 0. Historical beta.19, beta.17, beta.85/beta.86/beta.87, beta.88 previous package, beta.90 RitsuLib-only, and older RitsuLib diagnostic loader rows are context only. Closing only the direct Golden Idol localization key remains a localization unblocker; it does not prove gameplay or replace verifier reports.
-- Save/load, death/failure, co-op, clicked UI, hover, map traversal, preview tools, and gameplay evidence remain manual rows under `docs/issues.md`, `docs/toreview.md`, and the generated handoff.
+- Save-load, death/failure, co-op, hover, map traversal, preview tools, gameplay, and gated Vakuu fight-option evidence remain manual rows under `docs/issues.md`, `docs/toreview.md`, and the generated handoff. Beta.105 forced Ancient clicked UI smoke is current, but it does not close those live rows.
 
 ## Still Not Claimed
 
-- No live save/load, death/failure, co-op, clicked UI, hover, map traversal, or gameplay proof was produced; current state remains a manual-test candidate, not release-ready.
+- No live save-load, death/failure, co-op, hover, map traversal, preview-tools, or gameplay proof was produced. Clicked UI is limited to beta.105 forced Ancient smoke; current state remains a manual-test candidate, not release-ready.
