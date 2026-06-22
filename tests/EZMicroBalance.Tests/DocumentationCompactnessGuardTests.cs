@@ -500,7 +500,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             entryDocs.Single(entry => entry.Path == "PROJECT_STATE.md").Text,
             "Current dependency configurations are aligned on STS2-RitsuLib `v0.4.33`",
             "2026-06-22 NuGet flat-container",
-            "2026-06-22 source-workspace recheck passed 57 checks / 0 mismatches");
+            "2026-06-22 source-workspace recheck now pass 58 checks / 0 mismatches",
+            "local `STS2-RitsuLib.xml` API marker coverage");
         AssertSourceContains(
             entryDocs.Single(entry => entry.Path == "docs/goals/migration.md").Text,
             "Spire Plus is a RitsuLib-only mod.",

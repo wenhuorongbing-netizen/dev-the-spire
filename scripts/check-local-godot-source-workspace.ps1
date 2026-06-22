@@ -203,6 +203,7 @@ $ritsuManifestPath = Join-Path $ritsuLibRootFull 'mod_manifest.json'
 $ritsuVariantsManifestPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.manifest'
 $ritsuVariantsJsonPath = Join-Path $ritsuLibRootFull 'ritsulib-variants.json'
 $ritsuDirectDllPath = Join-Path $ritsuLibRootFull 'STS2-RitsuLib.dll'
+$ritsuXmlPath = Join-Path $ritsuLibRootFull 'STS2-RitsuLib.xml'
 $ritsuVariantsPath = if (Test-Path -LiteralPath $ritsuVariantsManifestPath -PathType Leaf) {
     $ritsuVariantsManifestPath
 } elseif (Test-Path -LiteralPath $ritsuVariantsJsonPath -PathType Leaf) {
@@ -431,6 +432,29 @@ Add-Check -Name 'ritsulib_runtime_layout_exists' -Passed ($hasRitsuVariantsFile 
 Add-Check -Name 'ritsulib_variants_exists' -Passed ($hasRitsuVariantsFile -or $hasRitsuDirectDll) -Detail "expected RitsuLib variants or direct NuGet runtime DLL"
 Add-Check -Name 'ritsulib_viewer_exists' -Passed (Test-Path -LiteralPath $ritsuViewerPath -PathType Leaf) -Detail 'RitsuLib viewer exists; it is a log viewer, not an unpacker or monkey runner'
 
+$requiredRitsuXmlApiMarkers = @(
+    'RegisterModSettings',
+    'BeginModDataRegistration',
+    'ModDataStore.Register',
+    'CreateContentPack',
+    'CreatePatcher',
+    'SavedAttachedState'
+)
+$ritsuXmlSha256 = Get-HashOrNull -Path $ritsuXmlPath
+$ritsuXmlPresentApiMarkers = @()
+$ritsuXmlMissingApiMarkers = @($requiredRitsuXmlApiMarkers)
+if (Test-Path -LiteralPath $ritsuXmlPath -PathType Leaf) {
+    $ritsuXmlText = Get-Content -LiteralPath $ritsuXmlPath -Raw -Encoding UTF8
+    $ritsuXmlPresentApiMarkers = @($requiredRitsuXmlApiMarkers | Where-Object {
+        $ritsuXmlText.IndexOf($_, [System.StringComparison]::Ordinal) -ge 0
+    })
+    $ritsuXmlMissingApiMarkers = @($requiredRitsuXmlApiMarkers | Where-Object {
+        $ritsuXmlText.IndexOf($_, [System.StringComparison]::Ordinal) -lt 0
+    })
+}
+
+Add-Check -Name 'ritsulib_xml_api_docs_cover_spire_plus_surface' -Passed ($ritsuXmlMissingApiMarkers.Count -eq 0) -Detail "required local API docs at $ritsuXmlPath must contain: $($requiredRitsuXmlApiMarkers -join ', '); missing: $($ritsuXmlMissingApiMarkers -join ', ')"
+
 $ritsuManifest = $null
 $ritsuVariants = $null
 if (Test-Path -LiteralPath $ritsuManifestPath -PathType Leaf) {
@@ -528,6 +552,11 @@ $report = [pscustomobject]@{
         VariantsSha256 = $ritsuVariantsSha256
         DirectRuntimeDllPath = $ritsuDirectDllPath
         DirectRuntimeDllSha256 = $ritsuDirectDllSha256
+        XmlPath = $ritsuXmlPath
+        XmlSha256 = $ritsuXmlSha256
+        RequiredApiMarkers = $requiredRitsuXmlApiMarkers
+        PresentApiMarkers = $ritsuXmlPresentApiMarkers
+        MissingApiMarkers = $ritsuXmlMissingApiMarkers
         ViewerPath = $ritsuViewerPath
         VariantDirectory = $ritsuVariantDirectory
         VariantAssembly = $ritsuVariantAssembly
@@ -573,6 +602,7 @@ $report = [pscustomobject]@{
         SourceRootMustStayIgnored = $true
         OriginalGameSourceMustNotBeTracked = $true
         RitsuLibViewerIsLogViewerOnly = $true
+        RitsuLibXmlRequiredForApiClaims = $true
         RefreshSourceSnapshotBeforeCurrentApiClaims = $sourceSnapshotDisposition -ne 'current-source-match'
         RuntimeProofStillRequiresLaunchEvidence = $true
         GameNativeAutoSlayStillRequiresRuntimeLaunchEvidence = $true

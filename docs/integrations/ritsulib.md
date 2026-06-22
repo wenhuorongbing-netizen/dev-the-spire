@@ -15,7 +15,7 @@ Future migration work has two first checks: confirm the latest stable RitsuLib
 package line, then inspect the unpacked local game source under
 `source code/src/Core/` before changing game-facing behavior.
 
-The current `v0.107.1` game install uses the official RitsuLib `v0.4.33` direct NuGet runtime files. Installed beta.105 package parity is recorded on 2026-06-22. Current beta.105 evidence covers build, focused guards, publish, package parity, runtime preflight 28 / 0, source-workspace validation 57 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-20260622-025733/`: `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` each passed once with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
+The current `v0.107.1` game install uses the official RitsuLib `v0.4.33` direct NuGet runtime files. Installed beta.105 package parity is recorded on 2026-06-22. Current beta.105 evidence covers build, focused guards, publish, package parity, runtime preflight 28 / 0, source-workspace validation 58 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-20260622-025733/`: `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` each passed once with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
 
 Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.105 proof includes package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke under `.tools/runtime-evidence/monkey-stability-20260622-025733/`. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
 
@@ -65,6 +65,11 @@ References:
 - Local NuGet XML confirms `BeginModDataRegistration`, `ModDataStore.Register`,
   and scoped global initialization for persisted data slots. Spire Plus settings
   registration now uses that scope before registering the settings page.
+- The local source-workspace checker now fail-closes if installed
+  `STS2-RitsuLib.xml` is missing the RitsuLib API markers Spire Plus currently
+  depends on: `RegisterModSettings`, `BeginModDataRegistration`,
+  `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and
+  `SavedAttachedState`.
 - Do not use a dev build for a tester package unless the owner explicitly
   approves a dev-runtime validation lane.
 - GitHub releases: `https://github.com/BAKAOLC/STS2-RitsuLib/releases`.
