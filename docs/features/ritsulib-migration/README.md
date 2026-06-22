@@ -53,7 +53,8 @@ Do not start future implementation from historical plans, archived prompt dumps,
 - Register settings data before the settings page: `BeginModDataRegistration`
   / `ModDataStore.Register` first, then `RegisterModSettings`.
 - Keep settings entry ids stable; screenshots and future automation use them as
-  evidence anchors.
+  evidence anchors. The current ids live in
+  `SpirePlusModConfig.Constants.cs`.
 - Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
   flow through game saved properties; use `ModDataStore` for global mod
   settings.

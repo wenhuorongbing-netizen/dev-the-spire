@@ -178,6 +178,7 @@ public sealed class SourceApiDriftAuditGuardTests
     public void RitsuLibModConfigKeepsStoreAndSettingsPageSplit()
     {
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
+        var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
         var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
@@ -191,6 +192,18 @@ public sealed class SourceApiDriftAuditGuardTests
             "RegisterSettingsPage(modId);");
         Assert.DoesNotContain("RegisterModSettings", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("BeginModDataRegistration", entry, StringComparison.Ordinal);
+        Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", entry, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            constants,
+            "private const string SettingsKey = \"spire-plus-settings\"",
+            "private const string SettingsLocalizationPckRoot = \"res://EZMicroBalance/localization/settings_ui\"",
+            "private const string MigrationStatusSectionId = \"migration_status\"",
+            "private const string PreviewToolsSectionId = \"preview_tools\"",
+            "These RitsuLib setting-entry ids are persisted bindings and evidence anchors.",
+            "private const string EnableCrystalSpherePeekEntryId = \"enable_crystal_sphere_peek\"",
+            "private const string RequiredRuntimeDependency = \"STS2-RitsuLib >= 0.4.33\"",
+            "private const double CrystalSphereMaskAlphaStep = 0.05");
 
         AssertSourceContains(
             page,
