@@ -105,6 +105,37 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void EventGoalStaysCompactAndFullLedgerStaysArchived()
+    {
+        var eventGoal = ReadRepoText("docs", "goals", "event.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var docsReadme = ReadRepoText("docs", "README.md");
+        var lineCount = eventGoal.Split('\n').Length;
+
+        Assert.True(lineCount <= 70, $"docs/goals/event.md should stay a compact active boundary; current line count is {lineCount}.");
+        AssertRepoFileExists("docs", "archive", "feature-audits", "event-goal-full-20260622.md");
+        AssertSourceContains(
+            eventGoal,
+            "Status: compact active boundary for the StS1 event prototype.",
+            "Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.",
+            "Current package truth is beta.105 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.33`.",
+            "Future StS1 event work must start from RitsuLib docs/XML",
+            "This is Ancient clicked-UI smoke evidence only.",
+            "Current StS1 event work routes through `docs/features/sts1-events/v19-gate-evidence-map.md`",
+            "Capture current-package CanaryOnly and AdditiveBatch1 runtime proof");
+
+        Assert.DoesNotContain("Mandatory Overnight Run", eventGoal, StringComparison.Ordinal);
+        Assert.DoesNotContain("Latest pause-safe", eventGoal, StringComparison.Ordinal);
+        Assert.DoesNotContain("current-doc-claims:", eventGoal, StringComparison.Ordinal);
+        Assert.Contains("event-goal-full-20260622.md", archiveReadme, StringComparison.Ordinal);
+        Assert.Contains("event-goal-full-20260622.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("event-goal-full-20260622.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("Compact active StS1 event prototype boundary", docsReadme, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void Sts1V5MonthlySpecStaysCompactAndArchivedPromptDumpStaysOutOfActivePath()
     {
         const string archivedFileName = "sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md";

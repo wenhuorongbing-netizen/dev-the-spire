@@ -16,6 +16,7 @@ Archived documents are useful for context, but they are not current implementati
 | `feature-audits/review-pre-slim-20260518.md` | Full source-review history before the active review file was slimmed to current findings. |
 | `feature-audits/review-2026-05-26-beta54-pass-history.md` | Full 2026-05-26 beta.41-beta.54 source/package fixed-finding history moved out of the active review file. |
 | `feature-audits/current-validation-full-20260622.md` | Full historical validation ledger moved out of active `docs/reviews/current-validation.md`. |
+| `feature-audits/event-goal-full-20260622.md` | Full historical StS1 event-goal ledger moved out of active `docs/goals/event.md`. |
 | `feature-audits/overnight-run-20260529.md` | Historical StS1 overnight no-game/source-governance report; active `docs/reviews/` file is a compact guarded stub only. |
 | `feature-audits/refactor-qa-20260602.md` and `feature-audits/refactor-qa-20260602-round2.md` | Historical StS1 loader-gate QA reports; active `docs/reviews/` files are compact guarded stubs only. |
 | `feature-audits/red-team-goal-implementation-pass-1-20260520.md` | Full May 20 red-team goal-completion review; active `docs/reviews/` file is a compact boundary stub only. |
