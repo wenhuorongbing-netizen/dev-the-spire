@@ -15,6 +15,20 @@ public sealed partial class Sts1EventFeatureGuardTests
     }
 
     [Fact]
+    public void RegistryShapeScriptReadsSplitRuntimePartialFiles()
+    {
+        var script = ReadRepoText("scripts", "check-sts1-event-registry-shape.ps1");
+
+        AssertSourceContains(
+            script,
+            "Read-PartialTypeText",
+            "$TypeName*.cs",
+            "Sts1EventRegistrationService",
+            "Sts1EventFeatureGate",
+            "Sts1EventRegistry");
+    }
+
+    [Fact]
     public void CanaryEventIdsContainsExactlyFourEvents()
     {
         var source = ReadSts1RuntimeSources();

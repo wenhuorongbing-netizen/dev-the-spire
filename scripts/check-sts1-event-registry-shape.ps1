@@ -38,6 +38,38 @@ function Read-RepoText {
     return [System.IO.File]::ReadAllText($resolved)
 }
 
+function Read-PartialTypeText {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$TypeName
+    )
+
+    $resolved = Resolve-RepoPath $Path
+    if (-not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+        Write-Error "Partial type file not found: $resolved"
+        exit 1
+    }
+
+    if ([System.IO.Path]::GetFileNameWithoutExtension($resolved) -ne $TypeName) {
+        return [System.IO.File]::ReadAllText($resolved)
+    }
+
+    $directory = [System.IO.Path]::GetDirectoryName($resolved)
+    $files = @(Get-ChildItem -LiteralPath $directory -Filter "$TypeName*.cs" -File | Sort-Object FullName)
+    if ($files.Count -eq 0) {
+        Write-Error "No $TypeName partial files found under: $directory"
+        exit 1
+    }
+
+    return ($files | ForEach-Object { [System.IO.File]::ReadAllText($_.FullName) }) -join [System.Environment]::NewLine
+}
+
+function Read-RegistrationServiceText {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    return Read-PartialTypeText -Path $Path -TypeName 'Sts1EventRegistrationService'
+}
+
 function Get-MethodSlice {
     param(
         [Parameter(Mandatory = $true)][string]$Text,
@@ -164,9 +196,9 @@ function Add-SetCheck {
     Add-Metric -Name $Name -Actual $actualJoined -Expected $expectedJoined
 }
 
-$registrationService = Read-RepoText $RegistrationServicePath
-$featureGate = Read-RepoText $FeatureGatePath
-$registry = Read-RepoText $RegistryPath
+$registrationService = Read-RegistrationServiceText $RegistrationServicePath
+$featureGate = Read-PartialTypeText -Path $FeatureGatePath -TypeName 'Sts1EventFeatureGate'
+$registry = Read-PartialTypeText -Path $RegistryPath -TypeName 'Sts1EventRegistry'
 $project = Read-RepoText $ProjectPath
 $resolvedModelsRoot = Resolve-RepoPath $ModelsRoot
 $resolvedCanonicalMatrix = Resolve-RepoPath $CanonicalMatrixPath

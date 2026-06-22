@@ -44,6 +44,29 @@ function Read-RepoText {
     return [System.IO.File]::ReadAllText($resolved)
 }
 
+function Read-RegistrationServiceText {
+    param([Parameter(Mandatory = $true)][string]$Path)
+
+    $resolved = Resolve-RepoPath $Path
+    if (-not (Test-Path -LiteralPath $resolved -PathType Leaf)) {
+        Write-Error "Registration service file not found: $resolved"
+        exit 1
+    }
+
+    if ([System.IO.Path]::GetFileNameWithoutExtension($resolved) -ne 'Sts1EventRegistrationService') {
+        return [System.IO.File]::ReadAllText($resolved)
+    }
+
+    $directory = [System.IO.Path]::GetDirectoryName($resolved)
+    $files = @(Get-ChildItem -LiteralPath $directory -Filter 'Sts1EventRegistrationService*.cs' -File | Sort-Object FullName)
+    if ($files.Count -eq 0) {
+        Write-Error "No Sts1EventRegistrationService partial files found under: $directory"
+        exit 1
+    }
+
+    return ($files | ForEach-Object { [System.IO.File]::ReadAllText($_.FullName) }) -join [System.Environment]::NewLine
+}
+
 function Get-MethodSlice {
     param(
         [Parameter(Mandatory = $true)][string]$Text,
@@ -436,7 +459,7 @@ function Invoke-RecomputedAuditSummary {
     return ConvertTo-AuditSummary -Json $auditJson -Path '<recomputed>'
 }
 
-$registrationService = Read-RepoText $RegistrationServicePath
+$registrationService = Read-RegistrationServiceText $RegistrationServicePath
 $expected = Get-ExpectedModeShape -Text $registrationService -ModeName $Mode
 
 Write-Output "mode=$($expected.Mode)"

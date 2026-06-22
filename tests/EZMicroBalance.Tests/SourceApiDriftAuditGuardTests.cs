@@ -203,8 +203,14 @@ public sealed class SourceApiDriftAuditGuardTests
             entry,
             "internal static partial class SpirePlusModConfig",
             "settingsLocalization = CreateSettingsLocalization(modId)",
+            "RitsuLib settings entries bind to persisted values while the page is",
+            "the backing store must exist before page construction.",
             "RegisterSettingsStore(modId);",
             "RegisterSettingsPage(modId);");
+        Assert.True(
+            entry.IndexOf("RegisterSettingsStore(modId);", StringComparison.Ordinal) <
+            entry.IndexOf("RegisterSettingsPage(modId);", StringComparison.Ordinal),
+            "RitsuLib settings store registration must stay before page registration.");
         Assert.DoesNotContain("RitsuLibFramework", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("RegisterModSettings", entry, StringComparison.Ordinal);
         Assert.DoesNotContain("BeginModDataRegistration", entry, StringComparison.Ordinal);
@@ -394,6 +400,8 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             store,
+            "Keep the mutable payload as a class so RitsuLib store reads, writes,",
+            "and UI bindings all point at the same settings object shape.",
             "RitsuLibFramework.BeginModDataRegistration(modId)",
             "store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true)");
         Assert.DoesNotContain("RegisterModSettings", store, StringComparison.Ordinal);
@@ -434,6 +442,8 @@ public sealed class SourceApiDriftAuditGuardTests
 
         AssertSourceContains(
             state,
+            "This is the single global payload registered in RitsuLib ModDataStore.",
+            "Add settings here only when they should persist across all profiles.",
             "private sealed class SettingsState",
             "public bool EnableCrystalSpherePeek { get; set; } = true",
             "public double CrystalSphereMaskAlpha { get; set; } = DefaultCrystalSphereMaskAlpha",

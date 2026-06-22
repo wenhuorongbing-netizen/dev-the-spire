@@ -870,6 +870,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     public void Sts1EnabledModeLogVerifierComparesRegistrationTupleMultiplicity()
     {
         var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        AssertSourceContains(
+            File.ReadAllText(verifier),
+            "Read-RegistrationServiceText",
+            "Sts1EventRegistrationService*.cs");
+
         var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workdir);
 

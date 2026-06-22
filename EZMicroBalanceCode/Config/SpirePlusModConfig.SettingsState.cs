@@ -2,6 +2,8 @@ namespace EZMicroBalance.EZMicroBalanceCode.Config;
 
 internal static partial class SpirePlusModConfig
 {
+    // This is the single global payload registered in RitsuLib ModDataStore.
+    // Add settings here only when they should persist across all profiles.
     private sealed class SettingsState
     {
         public bool EnableCrystalSpherePeek { get; set; } = true;
