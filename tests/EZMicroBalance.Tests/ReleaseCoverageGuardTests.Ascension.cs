@@ -49,10 +49,14 @@ public sealed partial class ReleaseCoverageGuardTests
         var ascensionSource = ReadSourceTree("EZMicroBalanceCode", "Ascension");
         AssertSourceContains(
             selectorPatch,
-            "HarmonyPatch(typeof(StartRunLobby), \"SetSingleplayerAscensionAfterCharacterChanged\")",
-            "HarmonyPatch(typeof(StartRunLobby), \"BeginRunLocally\")",
-            "HarmonyPatch(typeof(StartRunLobby), \"UpdateMaxMultiplayerAscension\")",
-            "HarmonyPatch(typeof(StartRunLobby), \"UpdatePreferredAscension\")",
+            "StartRunLobbySetSingleplayerAscensionPatch : IPatchMethod",
+            "new ModPatchTarget(typeof(StartRunLobby), \"SetSingleplayerAscensionAfterCharacterChanged\", [typeof(ModelId)])",
+            "StartRunLobbyBeginRunLocallyPatch : IPatchMethod",
+            "new ModPatchTarget(typeof(StartRunLobby), \"BeginRunLocally\", [typeof(string), typeof(List<ModifierModel>)])",
+            "StartRunLobbyUpdateMaxMultiplayerAscensionPatch : IPatchMethod",
+            "new ModPatchTarget(typeof(StartRunLobby), \"UpdateMaxMultiplayerAscension\")",
+            "StartRunLobbyUpdatePreferredAscensionPatch : IPatchMethod",
+            "new ModPatchTarget(typeof(StartRunLobby), \"UpdatePreferredAscension\")",
             "AccessTools.Field(typeof(StartRunLobby), \"<MaxAscension>k__BackingField\")",
             "if (MaxAscensionBackingField == null)",
             "Ascension selector expansion skipped",

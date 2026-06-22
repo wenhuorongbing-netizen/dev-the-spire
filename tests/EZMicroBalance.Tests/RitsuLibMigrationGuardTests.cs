@@ -99,6 +99,12 @@ public sealed class RitsuLibMigrationGuardTests
         "meat-cleaver-cook-is-enabled",
         "meat-cleaver-cook-description",
         "meat-cleaver-cook-on-select",
+        "ascension-selection-singleplayer-character-change",
+        "ascension-selection-begin-run-locally",
+        "ascension-selection-update-max-multiplayer",
+        "ascension-selection-update-preferred",
+        "ascension-selection-sync-warning",
+        "ascension-selection-begin-run-for-all-warning",
         // Batch 4c localization fallback patches
         "ascension-localization-locstring-raw-text",
         "ascension-localization-get-table",
@@ -110,11 +116,11 @@ public sealed class RitsuLibMigrationGuardTests
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 34;
+    private const int ExpectedClickedUiCount = 40;
     private const int ExpectedVisualHoverUiCount = 13;
     private const int ExpectedBatch4cLocalizationCount = 6;
-    private const int ExpectedTotalMigratedCount = 78;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 91;
+    private const int ExpectedTotalMigratedCount = 84;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 85;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -154,8 +160,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 78:
-    /// 9 Batch 4a + 16 Batch 4b + 34 clicked/UI patches
+    /// The expected migrated patch count must be 84:
+    /// 9 Batch 4a + 16 Batch 4b + 40 clicked/UI patches
     /// + 13 visual/hover UI patches + 6 Batch 4c localization patches.
     /// </summary>
     [Fact]
@@ -339,6 +345,13 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<MeatCleaverCookIsEnabledPatch>();",
             "RegisterPatch<MeatCleaverCookDescriptionPatch>();",
             "RegisterPatch<MeatCleaverCookPatch>();",
+            "RegisterAscensionSelectionUiPatches(patcher);",
+            "RegisterPatch<StartRunLobbySetSingleplayerAscensionPatch>();",
+            "RegisterPatch<StartRunLobbyBeginRunLocallyPatch>();",
+            "RegisterPatch<StartRunLobbyUpdateMaxMultiplayerAscensionPatch>();",
+            "RegisterPatch<StartRunLobbyUpdatePreferredAscensionPatch>();",
+            "RegisterPatch<StartRunLobbySyncAscensionChangeA20WarningPatch>();",
+            "RegisterPatch<StartRunLobbyBeginRunForAllPlayersA20WarningPatch>();",
             "RegisterBatch4cLocalizationPatches(patcher);",
             "RegisterPatch<AscensionLocalizationLocStringRawTextPatch>();",
             "RegisterPatch<AscensionLocalizationGetTablePatch>();",
@@ -401,7 +414,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.114", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.115", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches and the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
@@ -489,7 +502,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.114 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("installed beta.115 package parity passed; previous beta.108 clicked Ancient UI smoke applied the then-current 64 migrated patch classes.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -559,14 +572,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (78).
+    /// state the correct total migrated count (84).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 78", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 84", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -593,6 +606,8 @@ public sealed class RitsuLibMigrationGuardTests
             "`ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |",
             "`CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |",
             "`MeatCleaverCookPatches.cs` | 3 | `meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select` | clicked-ui |",
+            "`AscensionSelectionPatches.cs` | 1 | `ascension-selection-singleplayer-character-change` | clicked-ui |",
+            "`AscensionSelectionRunStartPatches.cs` | 5 | `ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning` | clicked-ui |",
             "`AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |");
     }
 

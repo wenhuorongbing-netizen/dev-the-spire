@@ -9,6 +9,8 @@ Status: A11-A20 single-player selector expansion plus prototype slices added. Ho
 
 2026-06-20 dependency supersession: this research file keeps the May `v0.106.1` / previous package `v3.1.4` evidence as historical context. Current Spire Plus targets Slay the Spire 2 `v0.107.1` with `STS2.RitsuLib` `0.4.34` in direct NuGet runtime layout, and `EZMicroBalance.csproj` / `EZMicroBalance.json` no longer depend on previous package. Reinspect current local game source and RitsuLib before changing Ascension behavior.
 
+2026-06-22 selector/lobby ModPatcher migration evidence: rechecked the unpacked local `v0.107.1` source at `source code/src/Core/Multiplayer/Game/Lobby/StartRunLobby.cs` before moving the Ascension selector hooks. Current source still exposes `SetSingleplayerAscensionAfterCharacterChanged(ModelId)`, `BeginRunLocally(string, List<ModifierModel>)`, private `UpdateMaxMultiplayerAscension()`, private `UpdatePreferredAscension()`, `BeginRunForAllPlayers(string, List<ModifierModel>)`, and public `SyncAscensionChange(int)`. Installed `STS2-RitsuLib.xml` `0.4.34` confirms `IPatchMethod.GetTargets()` and `ModPatchTarget` support type/name/signature targets, including private methods. `AscensionSelectionPatches.cs` and `AscensionSelectionRunStartPatches.cs` now register those six selector/lobby patches through RitsuLib `IPatchMethod` / `ModPatcher`; the remaining multiplayer diagnostics patches stay on raw Harmony. This is source/registration migration only, not live A11-A20 selection, gameplay, save-load, or co-op proof.
+
 ## Research Boundaries
 
 - Inspected project files, current Spire Plus architecture, historical previous package signatures, current RitsuLib/template surfaces, and StS2 signatures.

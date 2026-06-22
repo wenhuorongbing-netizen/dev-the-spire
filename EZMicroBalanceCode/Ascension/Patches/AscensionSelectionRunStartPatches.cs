@@ -1,12 +1,20 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Saves;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(StartRunLobby), "BeginRunLocally")]
-internal static class StartRunLobbyBeginRunLocallyPatch
+internal sealed class StartRunLobbyBeginRunLocallyPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-selection-begin-run-locally";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Temporarily allow A11-A20 single-player run launch without saving vanilla progress";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "BeginRunLocally", [typeof(string), typeof(List<ModifierModel>)])];
+
+    [HarmonyPrefix]
     private static void Prefix(StartRunLobby __instance, ref ProgressMaxAscensionOverride? __state)
     {
         __state = null;
@@ -36,6 +44,7 @@ internal static class StartRunLobbyBeginRunLocallyPatch
             $"[Spire Plus] Temporarily raised local MaxAscension to {stats.MaxAscension} so A{__instance.Ascension} can start.");
     }
 
+    [HarmonyFinalizer]
     private static Exception? Finalizer(ProgressMaxAscensionOverride? __state, Exception? __exception)
     {
         RestoreProgressMaxAscension(__state);
@@ -60,9 +69,15 @@ internal static class StartRunLobbyBeginRunLocallyPatch
     }
 }
 
-[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")]
-internal static class StartRunLobbyUpdateMaxMultiplayerAscensionPatch
+internal sealed class StartRunLobbyUpdateMaxMultiplayerAscensionPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-selection-update-max-multiplayer";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Temporarily widen host multiplayer selector caps for deliberate A11-A20 debug runs";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")];
+
+    [HarmonyPrefix]
     private static void Prefix(
         StartRunLobby __instance,
         ref AscensionSelectionPatches.MultiplayerUnlockOverride? __state)
@@ -70,6 +85,7 @@ internal static class StartRunLobbyUpdateMaxMultiplayerAscensionPatch
         __state = AscensionSelectionPatches.TemporarilyExpandMultiplayerUnlocks(__instance);
     }
 
+    [HarmonyFinalizer]
     private static Exception? Finalizer(
         StartRunLobby __instance,
         AscensionSelectionPatches.MultiplayerUnlockOverride? __state,
@@ -81,9 +97,15 @@ internal static class StartRunLobbyUpdateMaxMultiplayerAscensionPatch
     }
 }
 
-[HarmonyPatch(typeof(StartRunLobby), "UpdatePreferredAscension")]
-internal static class StartRunLobbyUpdatePreferredAscensionPatch
+internal sealed class StartRunLobbyUpdatePreferredAscensionPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-selection-update-preferred";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Block A11-A20 test selections from being persisted as vanilla preferred Ascension";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "UpdatePreferredAscension")];
+
+    [HarmonyPrefix]
     private static bool Prefix(StartRunLobby __instance)
     {
         if (!AscensionSelectionPatches.ShouldSkipVanillaPreferredAscensionSave(__instance))
@@ -97,18 +119,30 @@ internal static class StartRunLobbyUpdatePreferredAscensionPatch
     }
 }
 
-[HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))]
-internal static class StartRunLobbySyncAscensionChangeA20WarningPatch
+internal sealed class StartRunLobbySyncAscensionChangeA20WarningPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-selection-sync-warning";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Warn when host multiplayer selects A20 while co-op gameplay proof remains pending";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange), [typeof(int)])];
+
+    [HarmonyPostfix]
     private static void Postfix(StartRunLobby __instance)
     {
         AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(__instance, "host multiplayer ascension selection");
     }
 }
 
-[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]
-internal static class StartRunLobbyBeginRunForAllPlayersA20WarningPatch
+internal sealed class StartRunLobbyBeginRunForAllPlayersA20WarningPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-selection-begin-run-for-all-warning";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Warn when host multiplayer starts at A20 while co-op gameplay proof remains pending";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "BeginRunForAllPlayers", [typeof(string), typeof(List<ModifierModel>)])];
+
+    [HarmonyPrefix]
     private static void Prefix(StartRunLobby __instance)
     {
         AscensionSelectionPatches.WarnIfA20MultiplayerDowngraded(__instance, "host multiplayer run start");

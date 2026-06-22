@@ -23,6 +23,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterPreviewUiPatches(patcher);
         RegisterRelicVisualHoverPatches(patcher);
         RegisterRemainingUiPatches(patcher);
+        RegisterAscensionSelectionUiPatches(patcher);
         RegisterBatch4cLocalizationPatches(patcher);
     }
 
@@ -112,6 +113,16 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<MeatCleaverCookIsEnabledPatch>();
         patcher.RegisterPatch<MeatCleaverCookDescriptionPatch>();
         patcher.RegisterPatch<MeatCleaverCookPatch>();
+    }
+
+    private static void RegisterAscensionSelectionUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<StartRunLobbySetSingleplayerAscensionPatch>();
+        patcher.RegisterPatch<StartRunLobbyBeginRunLocallyPatch>();
+        patcher.RegisterPatch<StartRunLobbyUpdateMaxMultiplayerAscensionPatch>();
+        patcher.RegisterPatch<StartRunLobbyUpdatePreferredAscensionPatch>();
+        patcher.RegisterPatch<StartRunLobbySyncAscensionChangeA20WarningPatch>();
+        patcher.RegisterPatch<StartRunLobbyBeginRunForAllPlayersA20WarningPatch>();
     }
 
     private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)

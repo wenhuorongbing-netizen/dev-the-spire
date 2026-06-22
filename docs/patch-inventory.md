@@ -15,11 +15,11 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 91 |
-| Migrated to RitsuLib ModPatcher | 78 |
-| Raw HarmonyPatch remaining | 91 |
+| Total raw HarmonyPatch declarations | 85 |
+| Migrated to RitsuLib ModPatcher | 84 |
+| Raw HarmonyPatch remaining | 85 |
 | Tracked patch units total | 169 |
-| High risk (raw Harmony) | 21 |
+| High risk (raw Harmony) | 15 |
 | Medium risk (raw Harmony) | 8 |
 | Low risk (raw Harmony) | 62 |
 | Unclassified owner | 0 |
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 78 patch classes implement `IPatchMethod` and are registered via
+These 84 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -69,6 +69,8 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |
 | `CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |
 | `MeatCleaverCookPatches.cs` | 3 | `meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select` | clicked-ui |
+| `AscensionSelectionPatches.cs` | 1 | `ascension-selection-singleplayer-character-change` | clicked-ui |
+| `AscensionSelectionRunStartPatches.cs` | 5 | `ascension-selection-begin-run-locally, ascension-selection-update-max-multiplayer, ascension-selection-update-preferred, ascension-selection-sync-warning, ascension-selection-begin-run-for-all-warning` | clicked-ui |
 | `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
@@ -76,7 +78,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 91 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 85 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -153,12 +155,6 @@ These 91 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AeonglassIntentPatches.cs` | 31 | `[HarmonyPatch(typeof(MultiAttackIntent), nameof(MultiAttackIntent.GetTotalDamage))]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |
 | Ascension patches | Medium | `EZMicroBalanceCode/Ascension/Patches/AscensionMapGenerationPatches.cs` | 8 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionPatches.cs` | 154 | `[HarmonyPatch(typeof(StartRunLobby), "SetSingleplayerAscensionAfterCharacterChanged")]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 7 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunLocally")]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 63 | `[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 84 | `[HarmonyPatch(typeof(StartRunLobby), "UpdatePreferredAscension")]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 100 | `[HarmonyPatch(typeof(StartRunLobby), nameof(StartRunLobby.SyncAscensionChange))]` |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionSelectionRunStartPatches.cs` | 109 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 21 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_WritheDamage")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 30 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_ConstrictDamage")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 39 | `[HarmonyPatch(typeof(DecimillipedeSegment), "get_BulkDamage")]` |

@@ -4,6 +4,7 @@ using MegaCrit.Sts2.Core.Models;
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
 using MegaCrit.Sts2.Core.Runs;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -151,9 +152,15 @@ internal static class AscensionSelectionPatches
     internal readonly record struct MultiplayerUnlockSnapshot(ulong PlayerId, int OriginalMaxAscension);
 }
 
-[HarmonyPatch(typeof(StartRunLobby), "SetSingleplayerAscensionAfterCharacterChanged")]
-internal static class StartRunLobbySetSingleplayerAscensionPatch
+internal sealed class StartRunLobbySetSingleplayerAscensionPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-selection-singleplayer-character-change";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Expand A11-A20 single-player selector state after the lobby character changes";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "SetSingleplayerAscensionAfterCharacterChanged", [typeof(ModelId)])];
+
+    [HarmonyPostfix]
     private static void Postfix(StartRunLobby __instance, ModelId characterId)
     {
         AscensionSelectionPatches.ExpandMaxAscension(__instance);
