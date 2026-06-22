@@ -161,12 +161,17 @@ Current manifest dependency:
   virtual tables replace the remaining native `LocString` caller.
 - Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
 - Batch 4b: 16 medium-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
-- Batch 4c: proposal-only candidate list lives in `docs/features/ritsulib-migration/batch-4c-candidates.md`; no migration is approved yet.
+- Clicked/UI migration: 21 UI/input patch classes now use `IPatchMethod` for Urda
+  option/map clicks and visuals, shared map hover, Ascension map/boss hover,
+  Sere Talon event/relic visuals, Crystal Sphere peek, transform preview,
+  Prismatic Gem reward-screen hint, A20 reward-screen wording, and Spire Plus
+  mod-info localization, plus combat hand stale-input safety.
+- Batch 4c: proposal-only candidate list lives in `docs/features/ritsulib-migration/batch-4c-candidates.md`; those six localization candidates remain proposal-only.
 - Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
-Current migrated total: 25 patch classes.
+Current migrated total: 46 patch classes.
 
-Current raw Harmony remaining: 146 declarations, tracked in `docs/patch-inventory.md`.
+Current raw Harmony remaining: 125 declarations, tracked in `docs/patch-inventory.md`.
 
 ## Current Evidence Pointers
 

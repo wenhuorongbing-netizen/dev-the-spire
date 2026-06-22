@@ -3,10 +3,10 @@
 Date: 2026-06-10
 Static review recaptured: 2026-06-18
 Dependency gate refreshed: 2026-06-21
-Status: remaining-candidate proposal. Two Sere Talon UI candidates and one
-Crystal Sphere UI candidate were migrated through RitsuLib on 2026-06-22 under
-the active owner goal to finish clicked UI migration. Do not migrate the
-remaining candidates without explicit owner approval.
+Status: remaining-candidate proposal. The UI/input subset was migrated through
+RitsuLib on 2026-06-22 under the active owner goal to finish clicked UI
+migration. Do not migrate the remaining localization candidates without
+explicit owner approval.
 
 ## Gate
 
@@ -19,19 +19,19 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - Previous beta.93 AdditiveBatch1 retained log and packet verifiers passed with 10 event types / 14 registration lines and exact tuple parity. This is loader/registration proof only and is not Batch 4c approval, gameplay proof, or handoff proof. Retained beta.85/beta.87 `v0.107.0` smokes remain previous-package/game-version context.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
-This remaining list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any remaining candidate for a `v0.107.1` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
+This list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any remaining candidate for a `v0.107.1` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
 
 ## Proposal Self-Check
 
 Checked: 2026-06-18.
 Dependency gate checked: 2026-06-21.
 
-- Candidate count is 7 after the Sere Talon UI and Crystal Sphere UI candidates were migrated through RitsuLib.
+- Candidate count is 6 after the UI/input subset was migrated through RitsuLib.
 - All candidates are currently classified as low risk in `docs/patch-inventory.md`.
 - No candidate touches run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss flow, or reward-state mutation.
-- Source inspection confirms the remaining candidates are scoped to localization fallback and stale-hand input crash suppression.
+- Source inspection confirms the remaining candidates are scoped to localization fallback.
 - The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.
-- Owner decision remains pending for the remaining seven candidates; this self-check is not approval to migrate them.
+- Owner decision remains pending for the remaining six localization candidates; this self-check is not approval to migrate them.
 
 ## Candidates
 
@@ -43,7 +43,6 @@ Dependency gate checked: 2026-06-21.
 | 4 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationLocStringPatch` | `LocTable.GetLocString` | Finalizer only returns a `LocString` for known ascension bridge keys. | Same localization guard; manual selector screenshot remains pending. | Move the class back to raw Harmony registration. |
 | 5 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationHasEntryPatch` | `LocTable.HasEntry` | Read-only table presence answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
 | 6 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationIsLocalKeyPatch` | `LocTable.IsLocalKey` | Read-only local-key answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
-| 7 | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | `CombatHandInputSafetyPatch` | `NPlayerHand._UnhandledInput` | Finalizer only suppresses the observed stale-hand `ArgumentOutOfRangeException`; other exceptions pass through. | `CombatHandInputIgnoresOnlyTheObservedStaleIndexCrash`; combat manual proof remains pending. | Move the class back to raw Harmony registration. |
 
 ## Per-Candidate Evidence
 
@@ -55,7 +54,6 @@ Dependency gate checked: 2026-06-21.
 | 4 | `LocTable.GetLocString` behavior is unchanged for successful calls and for non-bridge exceptions. | Finalizer only constructs `new LocString("ascension", key)` after a `LocException` and successful `TryGetText` bridge lookup. |
 | 5 | `LocTable.HasEntry` keeps existing `true` results and only upgrades missing known bridge keys to present. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing entries are untouched. |
 | 6 | `LocTable.IsLocalKey` keeps existing `true` results and only upgrades missing known bridge keys to local. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing local-key results are untouched. |
-| 7 | Combat input exceptions still propagate except for the observed stale hand index crash. | Finalizer returns `null` only for `ArgumentOutOfRangeException`; every other exception is returned unchanged. |
 
 ## Required Acceptance Before Migration
 

@@ -77,8 +77,12 @@ public sealed partial class AscensionV2MilestoneGuardTests
 
         AssertSourceContains(
             a20RewardScreenPatch,
-            "HarmonyPatch(typeof(NRewardsScreen), nameof(NRewardsScreen._Ready))",
-            "HarmonyPatch(typeof(NRewardsScreen), \"UpdateScreenState\")",
+            "internal sealed class AscensionA20RewardScreenReadyPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"ascension-a20-reward-screen-ready\"",
+            "new ModPatchTarget(typeof(NRewardsScreen), nameof(NRewardsScreen._Ready))",
+            "internal sealed class AscensionA20RewardScreenStatePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"ascension-a20-reward-screen-state\"",
+            "new ModPatchTarget(typeof(NRewardsScreen), \"UpdateScreenState\")",
             "IsA20BossOneIntermission",
             "A20_INTERMISSION_HEADER",
             "A20_INTERMISSION_PROCEED",

@@ -14,9 +14,11 @@ read only the support file that matches the task.
   normal Vakuu.
 - Current source migration: Urda option-relic, Root Sight map-click, Root Sight
   map-visual, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
-  event-option/relic-node, Crystal Sphere peek, and transform preview UI
-  patches are registered through RitsuLib `IPatchMethod` / `ModPatcher`, not
-  broad Harmony discovery.
+  event-option/relic-node, Crystal Sphere peek, transform preview,
+  Prismatic Gem reward-screen hint, A20 reward-screen wording, and Spire Plus
+  mod-info localization UI patches plus combat hand stale-input safety are
+  registered through RitsuLib
+  `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
 - Not proved: beta.105 enabled-mode registration, gameplay, save-load,

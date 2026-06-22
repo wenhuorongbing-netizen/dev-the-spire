@@ -1,6 +1,6 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal static partial class PrismaticGemRewardScreenHintPatch
+internal sealed partial class PrismaticGemRewardScreenHintPatch
 {
     private const string BannerNodePath = "UI/Banner";
 

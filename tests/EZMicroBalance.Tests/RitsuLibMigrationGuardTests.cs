@@ -66,14 +66,19 @@ public sealed class RitsuLibMigrationGuardTests
         "crystal-sphere-peek-ready",
         "crystal-sphere-peek-finished",
         "transform-preview-initialize",
-        "transform-preview-cycle-display"
+        "transform-preview-cycle-display",
+        "prismatic-gem-reward-screen-hint",
+        "ascension-a20-reward-screen-ready",
+        "ascension-a20-reward-screen-state",
+        "spire-plus-mod-info-localization",
+        "combat-hand-input-safety"
     ];
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 16;
-    private const int ExpectedTotalMigratedCount = 41;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 130;
+    private const int ExpectedClickedUiCount = 21;
+    private const int ExpectedTotalMigratedCount = 46;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 125;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -82,8 +87,7 @@ public sealed class RitsuLibMigrationGuardTests
         "AscensionLocalizationRawTextPatch",
         "AscensionLocalizationLocStringPatch",
         "AscensionLocalizationHasEntryPatch",
-        "AscensionLocalizationIsLocalKeyPatch",
-        "CombatHandInputSafetyPatch"
+        "AscensionLocalizationIsLocalKeyPatch"
     ];
 
     private static readonly string[] ExpectedBatch4cInventoryRows =
@@ -93,8 +97,7 @@ public sealed class RitsuLibMigrationGuardTests
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 38 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |",
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 59 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |",
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 80 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 92 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |",
-        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | 6 | `[HarmonyPatch(typeof(NPlayerHand), nameof(NPlayerHand._UnhandledInput))]` |"
+        "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 92 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |"
     ];
 
     private static readonly string[] ForbiddenBatch4cMigrationCategories =
@@ -125,8 +128,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 41:
-    /// 9 Batch 4a + 16 Batch 4b + 16 clicked/UI patches.
+    /// The expected migrated patch count must be 46:
+    /// 9 Batch 4a + 16 Batch 4b + 21 clicked/UI patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
@@ -263,7 +266,13 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<CrystalSpherePeekPatch>();",
             "RegisterPatch<CrystalSpherePeekFinishedPatch>();",
             "RegisterPatch<TransformPreviewInitializePatch>();",
-            "RegisterPatch<TransformPreviewCyclePatch>();");
+            "RegisterPatch<TransformPreviewCyclePatch>();",
+            "RegisterRemainingUiPatches(patcher);",
+            "RegisterPatch<PrismaticGemRewardScreenHintPatch>();",
+            "RegisterPatch<AscensionA20RewardScreenReadyPatch>();",
+            "RegisterPatch<AscensionA20RewardScreenStatePatch>();",
+            "RegisterPatch<ModInfoLocalizationPatches>();",
+            "RegisterPatch<CombatHandInputSafetyPatch>();");
     }
 
     [Fact]
@@ -351,7 +360,7 @@ public sealed class RitsuLibMigrationGuardTests
         var registrationSource = ReadRitsuLibIntegrationSource();
 
         Assert.Contains("Status: remaining-candidate proposal.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Candidate count is 7", proposal, StringComparison.Ordinal);
+        Assert.Contains("Candidate count is 6", proposal, StringComparison.Ordinal);
         Assert.Contains("Before any remaining Batch 4c source migration:", proposal, StringComparison.Ordinal);
         Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
         Assert.Contains("Previous `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
@@ -412,16 +421,16 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("use the documented split lanes instead of treating runner instability as a source failure", proposal, StringComparison.Ordinal);
 
         Assert.Contains(
-            "the 2026-06-18 static recapture confirmed 10 low-risk candidates; 2 Sere Talon UI candidates and 1 Crystal Sphere UI candidate were migrated through RitsuLib on 2026-06-22, leaving 7 proposal-only candidates and no forbidden high-risk categories.",
+            "the 2026-06-18 static recapture confirmed 10 low-risk candidates; the UI/input subset was migrated through RitsuLib on 2026-06-22, leaving 6 proposal-only localization candidates and no forbidden high-risk categories.",
             nextRun,
             StringComparison.Ordinal);
         Assert.Contains("The current static recapture is not that decision.", nextRun, StringComparison.Ordinal);
-        Assert.Contains("- [x] Batch 4c candidate list static review recaptured: 7 proposal-only candidates remain after the 2 Sere Talon UI candidates and 1 Crystal Sphere UI candidate were migrated through RitsuLib.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [x] Batch 4c candidate list static review recaptured: 6 proposal-only localization candidates remain after the UI/input subset was migrated through RitsuLib.", nextRun, StringComparison.Ordinal);
         Assert.Contains("- [ ] Remaining Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
 
         Assert.Contains(
-            "| Batch 4c migration | Partial targeted UI migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the 2 Sere Talon UI candidates and 1 Crystal Sphere UI candidate through RitsuLib; 7 candidates remain proposal-only with no forbidden high-risk categories. |",
+            "| Batch 4c migration | Partial targeted UI/input migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the UI/input subset through RitsuLib; 6 localization candidates remain proposal-only with no forbidden high-risk categories. |",
             goal,
             StringComparison.Ordinal);
         Assert.Contains(
@@ -476,14 +485,14 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (41).
+    /// state the correct total migrated count (46).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 41", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 46", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -496,7 +505,11 @@ public sealed class RitsuLibMigrationGuardTests
             "`AscensionMapBossSealHoverPatches.cs` | 1 | `ascension-boss-map-point-hover` | clicked-ui |",
             "`SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |",
             "`CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |",
-            "`TransformPreviewPatch.cs` | 2 | `transform-preview-initialize, transform-preview-cycle-display` | clicked-ui |");
+            "`TransformPreviewPatch.cs` | 2 | `transform-preview-initialize, transform-preview-cycle-display` | clicked-ui |",
+            "`PrismaticGemRewardScreenHintPatch.cs` | 1 | `prismatic-gem-reward-screen-hint` | clicked-ui |",
+            "`AscensionA20RewardScreenPatches.cs` | 2 | `ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state` | clicked-ui |",
+            "`ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |",
+            "`CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |");
     }
 
     [Fact]

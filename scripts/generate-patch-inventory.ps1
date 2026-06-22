@@ -128,7 +128,11 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'AscensionMapBossSealHoverPatches.cs'; Classes = 1; PatchIds = 'ascension-boss-map-point-hover'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'SereTalonVisualUiPatches.cs'; Classes = 2; PatchIds = 'sere-talon-event-option-button-ready, sere-talon-relic-node-reload'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'CrystalSpherePeekPatch.cs'; Classes = 2; PatchIds = 'crystal-sphere-peek-ready, crystal-sphere-peek-finished'; Batch = 'clicked-ui' },
-    [pscustomobject]@{ File = 'TransformPreviewPatch.cs'; Classes = 2; PatchIds = 'transform-preview-initialize, transform-preview-cycle-display'; Batch = 'clicked-ui' }
+    [pscustomobject]@{ File = 'TransformPreviewPatch.cs'; Classes = 2; PatchIds = 'transform-preview-initialize, transform-preview-cycle-display'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'PrismaticGemRewardScreenHintPatch.cs'; Classes = 1; PatchIds = 'prismatic-gem-reward-screen-hint'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'AscensionA20RewardScreenPatches.cs'; Classes = 2; PatchIds = 'ascension-a20-reward-screen-ready, ascension-a20-reward-screen-state'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'ModInfoLocalizationPatches.cs'; Classes = 1; PatchIds = 'spire-plus-mod-info-localization'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'CombatHandInputSafetyPatches.cs'; Classes = 1; PatchIds = 'combat-hand-input-safety'; Batch = 'clicked-ui' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

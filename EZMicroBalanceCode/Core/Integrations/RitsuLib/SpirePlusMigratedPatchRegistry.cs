@@ -2,6 +2,7 @@ using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Map;
+using EZMicroBalance.EZMicroBalanceCode.Modding;
 using EZMicroBalance.EZMicroBalanceCode.Preview;
 using STS2RitsuLib.Patching.Core;
 
@@ -20,6 +21,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterMapUiPatches(patcher);
         RegisterSereTalonUiPatches(patcher);
         RegisterPreviewUiPatches(patcher);
+        RegisterRemainingUiPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -69,6 +71,15 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<CrystalSpherePeekFinishedPatch>();
         patcher.RegisterPatch<TransformPreviewInitializePatch>();
         patcher.RegisterPatch<TransformPreviewCyclePatch>();
+    }
+
+    private static void RegisterRemainingUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<PrismaticGemRewardScreenHintPatch>();
+        patcher.RegisterPatch<AscensionA20RewardScreenReadyPatch>();
+        patcher.RegisterPatch<AscensionA20RewardScreenStatePatch>();
+        patcher.RegisterPatch<ModInfoLocalizationPatches>();
+        patcher.RegisterPatch<CombatHandInputSafetyPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

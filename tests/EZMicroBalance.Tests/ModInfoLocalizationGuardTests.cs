@@ -27,7 +27,9 @@ public sealed class ModInfoLocalizationGuardTests
 
         AssertSourceContains(
             patchSource,
-            "HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))",
+            "internal sealed class ModInfoLocalizationPatches : IPatchMethod",
+            "IPatchMethod.PatchId => \"spire-plus-mod-info-localization\"",
+            "new ModPatchTarget(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill), [typeof(Mod)])",
             "mod.manifest?.id, MainFile.ModId",
             "LocManager.Instance?.Language",
             "string.Equals(language, \"zhs\", StringComparison.Ordinal)",

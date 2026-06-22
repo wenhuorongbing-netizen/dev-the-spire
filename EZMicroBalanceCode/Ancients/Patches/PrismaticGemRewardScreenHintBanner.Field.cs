@@ -1,6 +1,6 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal static partial class PrismaticGemRewardScreenHintPatch
+internal sealed partial class PrismaticGemRewardScreenHintPatch
 {
     private static readonly System.Reflection.FieldInfo? BannerField =
         AccessTools.Field(typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), "_banner");

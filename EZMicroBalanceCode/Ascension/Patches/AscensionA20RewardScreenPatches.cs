@@ -1,5 +1,6 @@
 using MegaCrit.Sts2.addons.mega_text;
 using MegaCrit.Sts2.Core.Nodes.Screens;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -53,9 +54,14 @@ internal static class AscensionA20RewardScreenReflection
     }
 }
 
-[HarmonyPatch(typeof(NRewardsScreen), nameof(NRewardsScreen._Ready))]
-internal static class AscensionA20RewardScreenReadyPatch
+internal sealed class AscensionA20RewardScreenReadyPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-a20-reward-screen-ready";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Replace the A20 Boss 1 reward-screen header with the courtyard wording";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NRewardsScreen), nameof(NRewardsScreen._Ready))];
+
     [HarmonyPostfix]
     private static void Postfix(NRewardsScreen __instance)
     {
@@ -91,9 +97,14 @@ internal static class AscensionA20RewardScreenReadyPatch
     }
 }
 
-[HarmonyPatch(typeof(NRewardsScreen), "UpdateScreenState")]
-internal static class AscensionA20RewardScreenStatePatch
+internal sealed class AscensionA20RewardScreenStatePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-a20-reward-screen-state";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Keep the A20 Boss 1 terminal proceed button labeled for the courtyard transition";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NRewardsScreen), "UpdateScreenState")];
+
     [HarmonyPostfix]
     private static void Postfix(NRewardsScreen __instance)
     {

@@ -33,7 +33,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus remaining Batch 4c ow
 
 ## Batch 4c Owner Review
 
-- the 2026-06-18 static recapture confirmed 10 low-risk candidates; 2 Sere Talon UI candidates and 1 Crystal Sphere UI candidate were migrated through RitsuLib on 2026-06-22, leaving 7 proposal-only candidates and no forbidden high-risk categories.
+- the 2026-06-18 static recapture confirmed 10 low-risk candidates; the UI/input subset was migrated through RitsuLib on 2026-06-22, leaving 6 proposal-only localization candidates and no forbidden high-risk categories.
 - The current static recapture is not that decision.
 - Forbidden candidate surfaces remain: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, reward-state.
 - Do not migrate the remaining Batch 4c candidates without owner approval and fresh validation.
@@ -42,7 +42,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus remaining Batch 4c ow
 
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
-- [x] Batch 4c candidate list static review recaptured: 7 proposal-only candidates remain after the 2 Sere Talon UI candidates and 1 Crystal Sphere UI candidate were migrated through RitsuLib.
+- [x] Batch 4c candidate list static review recaptured: 6 proposal-only localization candidates remain after the UI/input subset was migrated through RitsuLib.
 - [x] Current beta.105 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`; previous beta.99 Off loader proof remains previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 - [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
 - [ ] Gameplay, clicked UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.

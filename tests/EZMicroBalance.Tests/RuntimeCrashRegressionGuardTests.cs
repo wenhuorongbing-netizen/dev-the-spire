@@ -97,7 +97,10 @@ public sealed class RuntimeCrashRegressionGuardTests
             "Patches",
             "CombatHandInputSafetyPatches.cs");
 
-        Assert.Contains("HarmonyPatch(typeof(NPlayerHand), nameof(NPlayerHand._UnhandledInput))", source, StringComparison.Ordinal);
+        Assert.Contains("internal sealed class CombatHandInputSafetyPatch : IPatchMethod", source, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"combat-hand-input-safety\"", source, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(NPlayerHand), nameof(NPlayerHand._UnhandledInput), [typeof(InputEvent)])", source, StringComparison.Ordinal);
+        Assert.Contains("[HarmonyFinalizer]", source, StringComparison.Ordinal);
         Assert.Contains("__exception is ArgumentOutOfRangeException", source, StringComparison.Ordinal);
         Assert.Contains("return null;", source, StringComparison.Ordinal);
         Assert.Contains("return __exception;", source, StringComparison.Ordinal);
