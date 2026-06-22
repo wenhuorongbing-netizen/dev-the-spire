@@ -106,6 +106,11 @@ public sealed partial class PreviewToolsGuardTests
             ReadRepoText("EZMicroBalanceCode", "Preview", "CrystalSpherePeekState.cs"));
 
         Assert.Contains("NCrystalSphereScreen", source, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod", source, StringComparison.Ordinal);
+        Assert.Contains("crystal-sphere-peek-ready", source, StringComparison.Ordinal);
+        Assert.Contains("crystal-sphere-peek-finished", source, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))", source, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(NCrystalSphereScreen), \"OnMinigameFinished\")", source, StringComparison.Ordinal);
         Assert.Contains("coop_local_ui_preview_enabled", source, StringComparison.Ordinal);
         Assert.Contains("Crystal Sphere peek only changes local ScryMask alpha", source, StringComparison.Ordinal);
         Assert.Contains("%ScryMask", source, StringComparison.Ordinal);
@@ -120,6 +125,9 @@ public sealed partial class PreviewToolsGuardTests
         Assert.Contains("ToggleOffSfx = \"event:/sfx/ui/clicks/ui_checkbox_off\"", source, StringComparison.Ordinal);
         Assert.Contains("SfxCmd.Play(pressed ? ToggleOnSfx : ToggleOffSfx, 0.85f)", source, StringComparison.Ordinal);
 
+        Assert.DoesNotContain("[HarmonyPatch", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("AccessTools.Method", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("TargetMethod", source, StringComparison.Ordinal);
         Assert.DoesNotContain("ClearCell", source, StringComparison.Ordinal);
         Assert.DoesNotContain("RevealItem", source, StringComparison.Ordinal);
         Assert.DoesNotContain("CellClicked", source, StringComparison.Ordinal);

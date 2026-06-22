@@ -8,7 +8,7 @@ using MegaCrit.Sts2.Core.Nodes.Events.Custom.CrystalSphere;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
-internal static partial class CrystalSpherePeekPatch
+internal sealed partial class CrystalSpherePeekPatch
 {
     private const string ToggleOnSfx = "event:/sfx/ui/clicks/ui_checkbox_on";
     private const string ToggleOffSfx = "event:/sfx/ui/clicks/ui_checkbox_off";

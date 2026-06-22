@@ -1,5 +1,6 @@
 using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
+using EZMicroBalance.EZMicroBalanceCode.Preview;
 using STS2RitsuLib.Patching.Core;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -15,6 +16,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterBatch4b(patcher);
         RegisterClickedUiPatches(patcher);
         RegisterSereTalonUiPatches(patcher);
+        RegisterPreviewUiPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -46,6 +48,12 @@ internal static class SpirePlusMigratedPatchRegistry
     {
         patcher.RegisterPatch<SereTalonAncientEventOptionButtonPatch>();
         patcher.RegisterPatch<SereTalonRelicNodeReloadPatch>();
+    }
+
+    private static void RegisterPreviewUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<CrystalSpherePeekPatch>();
+        patcher.RegisterPatch<CrystalSpherePeekFinishedPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

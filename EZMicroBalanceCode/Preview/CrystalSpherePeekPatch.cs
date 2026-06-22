@@ -1,18 +1,24 @@
-using System.Reflection;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using Godot;
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Nodes.Events.Custom.CrystalSphere;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Preview;
 
-[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]
-internal static partial class CrystalSpherePeekPatch
+internal sealed partial class CrystalSpherePeekPatch : IPatchMethod
 {
     internal const string ButtonName = "SpirePlusCrystalSpherePeekButton";
 
+    static string IPatchMethod.PatchId => "crystal-sphere-peek-ready";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add the local Crystal Sphere peek UI button after vanilla screen setup";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))];
+
+    [HarmonyPostfix]
     private static void Postfix(NCrystalSphereScreen __instance)
     {
         if (!SpirePlusModConfig.EnableCrystalSpherePeek)
@@ -95,14 +101,15 @@ internal static partial class CrystalSpherePeekPatch
     }
 }
 
-[HarmonyPatch]
-internal static class CrystalSpherePeekFinishedPatch
+internal sealed class CrystalSpherePeekFinishedPatch : IPatchMethod
 {
-    private static MethodBase TargetMethod()
-    {
-        return AccessTools.Method(typeof(NCrystalSphereScreen), "OnMinigameFinished")!;
-    }
+    static string IPatchMethod.PatchId => "crystal-sphere-peek-finished";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Hide and reset the local Crystal Sphere peek UI when the minigame finishes";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NCrystalSphereScreen), "OnMinigameFinished")];
 
+    [HarmonyPostfix]
     private static void Postfix(NCrystalSphereScreen __instance)
     {
         CrystalSpherePeekPatch.HideForFinishedScreen(__instance);

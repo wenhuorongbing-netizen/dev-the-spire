@@ -54,7 +54,7 @@ The migration is not release-ready. Smoke-level clicked Ancient UI is covered, b
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Batch 4c migration | Partial targeted UI migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the 2 Sere Talon UI candidates through RitsuLib; 8 non-Sere-Talon candidates remain proposal-only with no forbidden high-risk categories. |
+| Batch 4c migration | Partial targeted UI migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the 2 Sere Talon UI candidates and 1 Crystal Sphere UI candidate through RitsuLib; 7 candidates remain proposal-only with no forbidden high-risk categories. |
 
 Record a fresh owner decision before migrating any of the remaining Batch 4c candidates.
 

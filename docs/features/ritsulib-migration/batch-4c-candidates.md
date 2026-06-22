@@ -3,10 +3,10 @@
 Date: 2026-06-10
 Static review recaptured: 2026-06-18
 Dependency gate refreshed: 2026-06-21
-Status: remaining-candidate proposal. Two Sere Talon UI candidates were migrated
-through RitsuLib on 2026-06-22 under the active owner goal to finish clicked UI
-migration. Do not migrate the remaining candidates without explicit owner
-approval.
+Status: remaining-candidate proposal. Two Sere Talon UI candidates and one
+Crystal Sphere UI candidate were migrated through RitsuLib on 2026-06-22 under
+the active owner goal to finish clicked UI migration. Do not migrate the
+remaining candidates without explicit owner approval.
 
 ## Gate
 
@@ -26,12 +26,12 @@ This remaining list is not a migration approval. It excludes run lifecycle, save
 Checked: 2026-06-18.
 Dependency gate checked: 2026-06-21.
 
-- Candidate count is 8 after the Sere Talon UI candidates were migrated through RitsuLib.
+- Candidate count is 7 after the Sere Talon UI and Crystal Sphere UI candidates were migrated through RitsuLib.
 - All candidates are currently classified as low risk in `docs/patch-inventory.md`.
 - No candidate touches run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss flow, or reward-state mutation.
-- Source inspection confirms the remaining candidates are scoped to localization fallback, stale-hand input crash suppression, and Crystal Sphere local preview cleanup.
+- Source inspection confirms the remaining candidates are scoped to localization fallback and stale-hand input crash suppression.
 - The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.
-- Owner decision remains pending for the remaining eight candidates; this self-check is not approval to migrate them.
+- Owner decision remains pending for the remaining seven candidates; this self-check is not approval to migrate them.
 
 ## Candidates
 
@@ -44,7 +44,6 @@ Dependency gate checked: 2026-06-21.
 | 5 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationHasEntryPatch` | `LocTable.HasEntry` | Read-only table presence answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
 | 6 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationIsLocalKeyPatch` | `LocTable.IsLocalKey` | Read-only local-key answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
 | 7 | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | `CombatHandInputSafetyPatch` | `NPlayerHand._UnhandledInput` | Finalizer only suppresses the observed stale-hand `ArgumentOutOfRangeException`; other exceptions pass through. | `CombatHandInputIgnoresOnlyTheObservedStaleIndexCrash`; combat manual proof remains pending. | Move the class back to raw Harmony registration. |
-| 8 | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | `CrystalSpherePeekFinishedPatch` | `NCrystalSphereScreen.OnMinigameFinished` | UI cleanup for the local Crystal Sphere peek button only; no reveal, reward, or cell-resolution API. | `PreviewToolsGuardTests`; Crystal Sphere live proof remains pending. | Move the class back to raw Harmony registration. |
 
 ## Per-Candidate Evidence
 
@@ -57,7 +56,6 @@ Dependency gate checked: 2026-06-21.
 | 5 | `LocTable.HasEntry` keeps existing `true` results and only upgrades missing known bridge keys to present. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing entries are untouched. |
 | 6 | `LocTable.IsLocalKey` keeps existing `true` results and only upgrades missing known bridge keys to local. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing local-key results are untouched. |
 | 7 | Combat input exceptions still propagate except for the observed stale hand index crash. | Finalizer returns `null` only for `ArgumentOutOfRangeException`; every other exception is returned unchanged. |
-| 8 | Crystal Sphere finish behavior is unchanged except hiding/resetting the local peek UI state. | Postfix calls `CrystalSpherePeekPatch.HideForFinishedScreen`; the state helper hides the button and restores mask alpha without reveal, reward, or cell-resolution calls. |
 
 ## Required Acceptance Before Migration
 

@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 140 |
-| Migrated to RitsuLib ModPatcher | 31 |
-| Raw HarmonyPatch remaining | 140 |
+| Total raw HarmonyPatch declarations | 138 |
+| Migrated to RitsuLib ModPatcher | 33 |
+| Raw HarmonyPatch remaining | 138 |
 | Tracked patch units total | 171 |
 | High risk (raw Harmony) | 22 |
-| Medium risk (raw Harmony) | 32 |
-| Low risk (raw Harmony) | 86 |
+| Medium risk (raw Harmony) | 31 |
+| Low risk (raw Harmony) | 85 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 31 patch classes implement `IPatchMethod` and are registered via
+These 33 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -50,13 +50,14 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |
 | `UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |
 | `SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |
+| `CrystalSpherePeekPatch.cs` | 2 | `crystal-sphere-peek-ready, crystal-sphere-peek-finished` | clicked-ui |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 140 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 138 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -184,8 +185,6 @@ These 140 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationRegistry.cs` | 203 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
 | Map hover composition | Medium | `EZMicroBalanceCode/Map/SpirePlusMapPointHoverComposer.cs` | 12 | `[HarmonyPatch(typeof(NNormalMapPoint), "OnFocus")]` |
 | Mod info localization | Medium | `EZMicroBalanceCode/Modding/ModInfoLocalizationPatches.cs` | 12 | `[HarmonyPatch(typeof(NModInfoContainer), nameof(NModInfoContainer.Fill))]` |
-| Preview tools | Medium | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 11 | `[HarmonyPatch(typeof(NCrystalSphereScreen), nameof(NCrystalSphereScreen._Ready))]` |
-| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 98 | `[HarmonyPatch]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 6 | `[HarmonyPatch]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 9 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 14 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |
