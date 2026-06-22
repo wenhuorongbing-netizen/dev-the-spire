@@ -618,6 +618,33 @@ public sealed partial class DocumentationCompactnessGuardTests
     }
 
     [Fact]
+    public void HistoricalGoalRedTeamReviewStaysCompactAndArchivedOutOfActivePath()
+    {
+        var activeBoundary = ReadRepoText("docs", "reviews", "red-team-goal-implementation-pass-1.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
+        var projectMap = ReadRepoText("docs", "PROJECT_MAP.md");
+        var docInventory = ReadRepoText("docs", "doc-inventory.md");
+        var docsReadme = ReadRepoText("docs", "README.md");
+        var lineCount = activeBoundary.Split('\n').Length;
+
+        Assert.True(lineCount <= 12, $"red-team goal review stub should stay compact; current line count is {lineCount}.");
+        AssertRepoFileExists("docs", "archive", "feature-audits", "red-team-goal-implementation-pass-1-20260520.md");
+        AssertSourceContains(
+            activeBoundary,
+            "Status: historical boundary stub.",
+            "Full archived record:",
+            "Current manual-test status lives in `docs/review.md`, `docs/issues.md`, and `PROJECT_STATE.md`.",
+            "Do not use this file as current clicked UI or RitsuLib migration truth.",
+            "Beta.105 forced Ancient clicked UI smoke is current");
+        Assert.DoesNotContain("## Findings", activeBoundary, StringComparison.Ordinal);
+        Assert.DoesNotContain("## Guard Coverage Added", activeBoundary, StringComparison.Ordinal);
+        Assert.Contains("red-team-goal-implementation-pass-1-20260520.md", archiveReadme, StringComparison.Ordinal);
+        Assert.Contains("red-team-goal-implementation-pass-1-20260520.md", projectMap, StringComparison.Ordinal);
+        Assert.Contains("red-team-goal-implementation-pass-1-20260520.md", docInventory, StringComparison.Ordinal);
+        Assert.Contains("Compact historical boundary stub for the May 20 red-team review", docsReadme, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void M5RevisionNDocsStayCompactAndArchivedOutOfActivePath()
     {
         var archiveReadme = ReadRepoText("docs", "archive", "README.md");

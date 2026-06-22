@@ -81,6 +81,7 @@ Current support docs, not default reading path:
 - `docs/archive/feature-audits/overnight-run-20260529.md`
 - `docs/archive/feature-audits/refactor-qa-20260602.md`
 - `docs/archive/feature-audits/refactor-qa-20260602-round2.md`
+- `docs/archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md`
 - `docs/archive/feature-audits/architecture-clean-code-management-audit-2026-05-19.md`
 - `docs/archive/implementation-records/`
 - `docs/archive/project-state-history-20260516.md`
@@ -139,6 +140,7 @@ Current support docs, not default reading path:
 - Detailed 2026-05-26 source/package fixed-finding list from `docs/review.md` -> `docs/archive/feature-audits/review-2026-05-26-beta54-pass-history.md`; current review now keeps only the latest conclusions, rollups, and manual-proof focus.
 - Historical StS1 overnight no-game/source-governance report `docs/reviews/overnight-run-20260529.md` -> `docs/archive/feature-audits/overnight-run-20260529.md`; active review file is a compact guarded stub retaining no-overclaim boundaries.
 - Historical StS1 loader-gate QA reports `docs/reviews/refactor-qa-20260602.md` and `docs/reviews/refactor-qa-20260602-round2.md` -> `docs/archive/feature-audits/refactor-qa-20260602.md` and `docs/archive/feature-audits/refactor-qa-20260602-round2.md`; active review files are compact guarded stubs retaining no-overclaim boundaries.
+- Historical May 20 goal-completion red-team review `docs/reviews/red-team-goal-implementation-pass-1.md` -> `docs/archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md`; active review file is a compact boundary stub routing current status to `docs/review.md`, `docs/issues.md`, and `PROJECT_STATE.md`.
 - Root `BUGFIX_NOTES.md` and `BUGFIX_REPORT.md` -> `docs/archive/implementation-records/bugfix-notes-seedbed-draw-reentrancy-20260527.md` and `docs/archive/implementation-records/bugfix-report-seedbed-draw-reentrancy-20260527.md`; current package/runtime state now lives in `PROJECT_STATE.md` and current release docs.
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 - ignored local zip residue `docs/STS2-RitsuLib.0.3.3.variant-pack.zip` and `docs/codex-app-better-token-main.zip` deleted after confirming neither file was tracked nor referenced; use official RitsuLib release URLs instead of copied archives.
@@ -166,6 +168,7 @@ Current support docs, not default reading path:
 - `docs/archive/feature-audits/overnight-run-20260529.md`
 - `docs/archive/feature-audits/refactor-qa-20260602.md`
 - `docs/archive/feature-audits/refactor-qa-20260602-round2.md`
+- `docs/archive/feature-audits/red-team-goal-implementation-pass-1-20260520.md`
 - `docs/archive/feature-audits/toreview-pre-slim-20260518.md`
 - `docs/archive/implementation-records/2026-05-13-spire-plus-source-test-ready-pass.md`
 - `docs/archive/superseded/setup-spec-original-scaffold.md`
