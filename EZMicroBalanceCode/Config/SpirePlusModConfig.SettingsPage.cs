@@ -1,5 +1,4 @@
 using STS2RitsuLib;
-using STS2RitsuLib.Settings;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Config;
 
@@ -19,11 +18,4 @@ internal static partial class SpirePlusModConfig
             AddPreviewToolsSection(page, modId);
         });
     }
-
-    private static ModSettingsText Text(string key, string fallback) =>
-        settingsLocalization is { } i18n
-            ? ModSettingsText.I18N(i18n, key, fallback)
-            : LiteralText(fallback);
-
-    private static ModSettingsText LiteralText(string value) => ModSettingsText.Literal(value);
 }

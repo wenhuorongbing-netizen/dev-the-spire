@@ -33,7 +33,9 @@ registration, `SpirePlusModConfig.SettingsAccess.cs` owns fallback-aware store
 reads/writes, `SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings
 bindings and value normalization, `SpirePlusModConfig.SettingsState.cs` owns
 the persisted settings shape, `SpirePlusModConfig.SettingsPage.cs` owns page
-registration, `SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the
+registration, `SpirePlusModConfig.SettingsText.cs` owns RitsuLib settings text
+construction and localization fallbacks,
+`SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the
 read-only migration status section assembly,
 `SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the
 individual read-only RitsuLib paragraph/info-card entry builders,

@@ -181,6 +181,7 @@ public sealed class SourceApiDriftAuditGuardTests
         var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
         var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
         var page = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.cs");
+        var text = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsText.cs");
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
         var migrationStatusEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs");
         var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
@@ -229,11 +230,23 @@ public sealed class SourceApiDriftAuditGuardTests
             page,
             "RitsuLibFramework.RegisterModSettings",
             "AddMigrationStatusSection(page)",
-            "AddPreviewToolsSection(page, modId)",
-            "ModSettingsText.I18N(i18n, key, fallback)");
+            "AddPreviewToolsSection(page, modId)");
         Assert.DoesNotContain("BeginModDataRegistration", page, StringComparison.Ordinal);
         Assert.DoesNotContain("store.Register", page, StringComparison.Ordinal);
         Assert.DoesNotContain("page.AddSection(", page, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModSettingsText", page, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            text,
+            "RitsuLib renders these labels inside its settings page",
+            "private static ModSettingsText Text(string key, string fallback)",
+            "settingsLocalization is { } i18n",
+            "ModSettingsText.I18N(i18n, key, fallback)",
+            "private static ModSettingsText LiteralText(string value) => ModSettingsText.Literal(value)");
+        Assert.DoesNotContain("RegisterModSettings", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("BeginModDataRegistration", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddMigrationStatusSection", text, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewToolsSection", text, StringComparison.Ordinal);
 
         AssertSourceContains(
             migrationStatus,
