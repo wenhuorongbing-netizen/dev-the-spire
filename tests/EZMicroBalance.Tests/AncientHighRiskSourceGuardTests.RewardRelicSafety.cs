@@ -17,7 +17,8 @@ public sealed partial class AncientHighRiskSourceGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualNodeRoutes.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualTextures.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRouteLog.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualUiPatches.cs"));
         var tanxClawsTuningSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "TanxClawsMaulTuningPatches.cs");
         var sealSource = ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SealOfGoldPatches.cs");
         var relics = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");

@@ -3,7 +3,10 @@
 Date: 2026-06-10
 Static review recaptured: 2026-06-18
 Dependency gate refreshed: 2026-06-21
-Status: proposal only. Do not migrate these patches without explicit owner approval.
+Status: remaining-candidate proposal. Two Sere Talon UI candidates were migrated
+through RitsuLib on 2026-06-22 under the active owner goal to finish clicked UI
+migration. Do not migrate the remaining candidates without explicit owner
+approval.
 
 ## Gate
 
@@ -16,19 +19,19 @@ The historical `v0.106.1` RitsuLib loader gate is good enough to propose low-ris
 - Previous beta.93 AdditiveBatch1 retained log and packet verifiers passed with 10 event types / 14 registration lines and exact tuple parity. This is loader/registration proof only and is not Batch 4c approval, gameplay proof, or handoff proof. Retained beta.85/beta.87 `v0.107.0` smokes remain previous-package/game-version context.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
-This list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any candidate for a `v0.107.1` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
+This remaining list is not a migration approval. It excludes run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss-flow, and reward-state patches. If an owner later approves any remaining candidate for a `v0.107.1` tester package, the approval must be paired with the package-version, dependency-metadata, publish/package, artifact-test, and clean Off-smoke work documented in `docs/migration.md`.
 
 ## Proposal Self-Check
 
 Checked: 2026-06-18.
 Dependency gate checked: 2026-06-21.
 
-- Candidate count is 10, within the required 5-10 range.
+- Candidate count is 8 after the Sere Talon UI candidates were migrated through RitsuLib.
 - All candidates are currently classified as low risk in `docs/patch-inventory.md`.
 - No candidate touches run lifecycle, save/load, map generation, multiplayer/lobby, death handling, A20 boss flow, or reward-state mutation.
-- Source inspection confirms the candidates are scoped to localization fallback, Sere Talon UI icon refresh, stale-hand input crash suppression, and Crystal Sphere local preview cleanup.
-- This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.
-- Owner decision remains pending; this self-check is not approval to migrate.
+- Source inspection confirms the remaining candidates are scoped to localization fallback, stale-hand input crash suppression, and Crystal Sphere local preview cleanup.
+- The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.
+- Owner decision remains pending for the remaining eight candidates; this self-check is not approval to migrate them.
 
 ## Candidates
 
@@ -40,10 +43,8 @@ Dependency gate checked: 2026-06-21.
 | 4 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationLocStringPatch` | `LocTable.GetLocString` | Finalizer only returns a `LocString` for known ascension bridge keys. | Same localization guard; manual selector screenshot remains pending. | Move the class back to raw Harmony registration. |
 | 5 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationHasEntryPatch` | `LocTable.HasEntry` | Read-only table presence answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
 | 6 | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | `AscensionLocalizationIsLocalKeyPatch` | `LocTable.IsLocalKey` | Read-only local-key answer for known ascension bridge keys. | Same localization guard; build/test/fresh loader smoke. | Move the class back to raw Harmony registration. |
-| 7 | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | `SereTalonAncientEventOptionButtonPatch` | `NEventOptionButton._Ready` | UI icon reroute for Sere Talon option buttons only; no reward logic. | `VakuuSereTalonAndTanxClawsStayOnSeparateSourceRoutes`; Sere Talon option-button visual proof remains pending. | Move the class back to raw Harmony registration. |
-| 8 | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | `SereTalonRelicNodeReloadPatch` | `NRelic.Reload` | UI icon reroute for Sere Talon relic nodes only; guarded against Tanx Claws. | Sere Talon/Tanx Claws route guards; relic-bar manual screenshot remains pending. | Move the class back to raw Harmony registration. |
-| 9 | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | `CombatHandInputSafetyPatch` | `NPlayerHand._UnhandledInput` | Finalizer only suppresses the observed stale-hand `ArgumentOutOfRangeException`; other exceptions pass through. | `CombatHandInputIgnoresOnlyTheObservedStaleIndexCrash`; combat manual proof remains pending. | Move the class back to raw Harmony registration. |
-| 10 | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | `CrystalSpherePeekFinishedPatch` | `NCrystalSphereScreen.OnMinigameFinished` | UI cleanup for the local Crystal Sphere peek button only; no reveal, reward, or cell-resolution API. | `PreviewToolsGuardTests`; Crystal Sphere live proof remains pending. | Move the class back to raw Harmony registration. |
+| 7 | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | `CombatHandInputSafetyPatch` | `NPlayerHand._UnhandledInput` | Finalizer only suppresses the observed stale-hand `ArgumentOutOfRangeException`; other exceptions pass through. | `CombatHandInputIgnoresOnlyTheObservedStaleIndexCrash`; combat manual proof remains pending. | Move the class back to raw Harmony registration. |
+| 8 | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | `CrystalSpherePeekFinishedPatch` | `NCrystalSphereScreen.OnMinigameFinished` | UI cleanup for the local Crystal Sphere peek button only; no reveal, reward, or cell-resolution API. | `PreviewToolsGuardTests`; Crystal Sphere live proof remains pending. | Move the class back to raw Harmony registration. |
 
 ## Per-Candidate Evidence
 
@@ -55,14 +56,12 @@ Dependency gate checked: 2026-06-21.
 | 4 | `LocTable.GetLocString` behavior is unchanged for successful calls and for non-bridge exceptions. | Finalizer only constructs `new LocString("ascension", key)` after a `LocException` and successful `TryGetText` bridge lookup. |
 | 5 | `LocTable.HasEntry` keeps existing `true` results and only upgrades missing known bridge keys to present. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing entries are untouched. |
 | 6 | `LocTable.IsLocalKey` keeps existing `true` results and only upgrades missing known bridge keys to local. | Postfix checks `if (!__result && AscensionLocalizationBridge.TryGetText(...))`, so existing local-key results are untouched. |
-| 7 | Event option button behavior is unchanged unless the option relic is exactly `SereTalon`. | `SereTalonVisualNodeRoutes.TryApplyEventOptionButton` immediately returns when `button.Option?.Relic is not SereTalon`. |
-| 8 | Relic node reload behavior is unchanged unless the node model is exactly `SereTalon` and required icon nodes are present. | `TryApplyRelicNode` returns when the node is not ready, icon/outline nodes are missing, model lookup fails, or `model is not SereTalon`. |
-| 9 | Combat input exceptions still propagate except for the observed stale hand index crash. | Finalizer returns `null` only for `ArgumentOutOfRangeException`; every other exception is returned unchanged. |
-| 10 | Crystal Sphere finish behavior is unchanged except hiding/resetting the local peek UI state. | Postfix calls `CrystalSpherePeekPatch.HideForFinishedScreen`; the state helper hides the button and restores mask alpha without reveal, reward, or cell-resolution calls. |
+| 7 | Combat input exceptions still propagate except for the observed stale hand index crash. | Finalizer returns `null` only for `ArgumentOutOfRangeException`; every other exception is returned unchanged. |
+| 8 | Crystal Sphere finish behavior is unchanged except hiding/resetting the local peek UI state. | Postfix calls `CrystalSpherePeekPatch.HideForFinishedScreen`; the state helper hides the button and restores mask alpha without reveal, reward, or cell-resolution calls. |
 
 ## Required Acceptance Before Migration
 
-Before any Batch 4c source migration:
+Before any remaining Batch 4c source migration:
 
 1. Owner accepts this exact candidate list or a smaller subset.
 2. `dotnet build EZMicroBalance.sln` passes with 0 errors.

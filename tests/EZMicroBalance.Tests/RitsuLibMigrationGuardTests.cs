@@ -54,14 +54,16 @@ public sealed class RitsuLibMigrationGuardTests
         "urda-option-relic-click",
         "urda-root-sight-map-point-click",
         "urda-root-sight-disabled-map-point-click",
-        "urda-root-sight-map-close"
+        "urda-root-sight-map-close",
+        "sere-talon-event-option-button-ready",
+        "sere-talon-relic-node-reload"
     ];
 
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
-    private const int ExpectedClickedUiCount = 4;
-    private const int ExpectedTotalMigratedCount = 29;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 142;
+    private const int ExpectedClickedUiCount = 6;
+    private const int ExpectedTotalMigratedCount = 31;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 140;
 
     private static readonly string[] ExpectedBatch4cCandidateClasses =
     [
@@ -71,8 +73,6 @@ public sealed class RitsuLibMigrationGuardTests
         "AscensionLocalizationLocStringPatch",
         "AscensionLocalizationHasEntryPatch",
         "AscensionLocalizationIsLocalKeyPatch",
-        "SereTalonAncientEventOptionButtonPatch",
-        "SereTalonRelicNodeReloadPatch",
         "CombatHandInputSafetyPatch",
         "CrystalSpherePeekFinishedPatch"
     ];
@@ -85,8 +85,6 @@ public sealed class RitsuLibMigrationGuardTests
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 59 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |",
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 80 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |",
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/AscensionLocalizationTablePatches.cs` | 92 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |",
-        "| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 71 | `[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]` |",
-        "| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 83 | `[HarmonyPatch(typeof(NRelic), \"Reload\")]` |",
         "| Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/CombatHandInputSafetyPatches.cs` | 6 | `[HarmonyPatch(typeof(NPlayerHand), nameof(NPlayerHand._UnhandledInput))]` |",
         "| Preview tools | Low | `EZMicroBalanceCode/Preview/CrystalSpherePeekPatch.cs` | 98 | `[HarmonyPatch]` |"
     ];
@@ -119,8 +117,8 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 29:
-    /// 9 Batch 4a + 16 Batch 4b + 4 clicked UI patches.
+    /// The expected migrated patch count must be 31:
+    /// 9 Batch 4a + 16 Batch 4b + 6 clicked UI patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
@@ -242,7 +240,10 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<UrdaOptionRelicClickPatch>();",
             "RegisterPatch<UrdaRootSightMapPointClickPatch>();",
             "RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();",
-            "RegisterPatch<UrdaRootSightMapClosePatch>();");
+            "RegisterPatch<UrdaRootSightMapClosePatch>();",
+            "RegisterSereTalonUiPatches(patcher);",
+            "RegisterPatch<SereTalonAncientEventOptionButtonPatch>();",
+            "RegisterPatch<SereTalonRelicNodeReloadPatch>();");
     }
 
     [Fact]
@@ -299,7 +300,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.105", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Batch 4c and any higher-risk patch migration remain proposal-only", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("The remaining Batch 4c candidates and any higher-risk patch migration remain", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("## Migrated Patch Inventory", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("| File | Classes | PatchIds |", migrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("| `DebtAndCardPatches.cs` |", migrationDoc, StringComparison.Ordinal);
@@ -329,13 +330,13 @@ public sealed class RitsuLibMigrationGuardTests
         var inventory = ReadRepoText("docs", "patch-inventory.md");
         var registrationSource = ReadRitsuLibIntegrationSource();
 
-        Assert.Contains("Status: proposal only. Do not migrate these patches without explicit owner approval.", proposal, StringComparison.Ordinal);
-        Assert.Contains("Candidate count is 10", proposal, StringComparison.Ordinal);
-        Assert.Contains("Before any Batch 4c source migration:", proposal, StringComparison.Ordinal);
+        Assert.Contains("Status: remaining-candidate proposal.", proposal, StringComparison.Ordinal);
+        Assert.Contains("Candidate count is 8", proposal, StringComparison.Ordinal);
+        Assert.Contains("Before any remaining Batch 4c source migration:", proposal, StringComparison.Ordinal);
         Assert.Contains("Owner accepts this exact candidate list or a smaller subset.", proposal, StringComparison.Ordinal);
         Assert.Contains("Previous `v0.107.1` beta.93 AdditiveBatch1 loader/registration proof is clean, but this proposal is not a substitute", proposal, StringComparison.Ordinal);
         Assert.Contains("retained current AdditiveBatch1 10 event types / 14 registration-line smoke with retained verifier reports and add the missing gameplay evidence", proposal, StringComparison.Ordinal);
-        Assert.Contains("Do not migrate Batch 4c or high-risk run/map/reward/save/multiplayer patches", migrationReadme, StringComparison.Ordinal);
+        Assert.Contains("Do not migrate the remaining Batch 4c candidates or high-risk", migrationReadme, StringComparison.Ordinal);
 
         var candidateSectionStart = proposal.IndexOf("## Candidates", StringComparison.Ordinal);
         var candidateSectionEnd = proposal.IndexOf("## Per-Candidate Evidence", StringComparison.Ordinal);
@@ -381,7 +382,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("Checked: 2026-06-18.", proposal, StringComparison.Ordinal);
         Assert.Contains("Dependency gate checked: 2026-06-21.", proposal, StringComparison.Ordinal);
         Assert.Contains(
-            "This recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
+            "The 2026-06-18 recapture was static governance only: no source migration, package refresh, loader smoke, gameplay proof, or owner approval was performed.",
             proposal,
             StringComparison.Ordinal);
         Assert.Contains("installed beta.105 package parity and clicked Ancient UI smoke pass", proposal, StringComparison.Ordinal);
@@ -391,20 +392,20 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("use the documented split lanes instead of treating runner instability as a source failure", proposal, StringComparison.Ordinal);
 
         Assert.Contains(
-            "the 2026-06-18 static recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.",
+            "the 2026-06-18 static recapture confirmed 10 low-risk candidates; 2 Sere Talon UI candidates were migrated through RitsuLib on 2026-06-22, leaving 8 proposal-only candidates and no forbidden high-risk categories.",
             nextRun,
             StringComparison.Ordinal);
         Assert.Contains("The current static recapture is not that decision.", nextRun, StringComparison.Ordinal);
-        Assert.Contains("- [x] Batch 4c candidate list static review recaptured: 10 low-risk candidates, no forbidden high-risk categories, and no migration performed.", nextRun, StringComparison.Ordinal);
-        Assert.Contains("- [ ] Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [x] Batch 4c candidate list static review recaptured: 8 proposal-only candidates remain after the 2 Sere Talon UI candidates were migrated through RitsuLib.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [ ] Remaining Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
         Assert.DoesNotContain("- [x] Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
 
         Assert.Contains(
-            "| Batch 4c migration | Proposal only / static review recaptured | 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration work. |",
+            "| Batch 4c migration | Partial targeted UI migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the 2 Sere Talon UI candidates through RitsuLib; 8 non-Sere-Talon candidates remain proposal-only with no forbidden high-risk categories. |",
             goal,
             StringComparison.Ordinal);
         Assert.Contains(
-            "Record an owner decision for Batch 4c. The candidate list has static-review coverage; do not migrate unless the owner approves the scope.",
+            "Record a fresh owner decision before migrating any of the remaining Batch 4c candidates.",
             goal,
             StringComparison.Ordinal);
 
@@ -455,20 +456,21 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (29).
+    /// state the correct total migrated count (31).
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 29", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 31", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
             inventory,
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",
-            "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |");
+            "`UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |",
+            "`SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |");
     }
 
     [Fact]

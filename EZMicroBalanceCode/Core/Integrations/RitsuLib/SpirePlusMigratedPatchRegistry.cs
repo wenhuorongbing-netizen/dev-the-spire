@@ -14,6 +14,7 @@ internal static class SpirePlusMigratedPatchRegistry
         RegisterBatch4a(patcher);
         RegisterBatch4b(patcher);
         RegisterClickedUiPatches(patcher);
+        RegisterSereTalonUiPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -39,6 +40,12 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<UrdaRootSightMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightDisabledMapPointClickPatch>();
         patcher.RegisterPatch<UrdaRootSightMapClosePatch>();
+    }
+
+    private static void RegisterSereTalonUiPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<SereTalonAncientEventOptionButtonPatch>();
+        patcher.RegisterPatch<SereTalonRelicNodeReloadPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

@@ -50,6 +50,7 @@ public sealed partial class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Ancients/Patches/SereTalonVisualRelicModelRoutes.cs",
         "EZMicroBalanceCode/Ancients/Patches/SereTalonVisualRouteLog.cs",
         "EZMicroBalanceCode/Ancients/Patches/SereTalonVisualTextures.cs",
+        "EZMicroBalanceCode/Ancients/Patches/SereTalonVisualUiPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/TanxClawsMaulTuningPatches.cs",
         "EZMicroBalanceCode/Ancients/Patches/ToastyMittensPatches.cs",

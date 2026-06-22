@@ -1,7 +1,5 @@
 using Godot;
 using MegaCrit.Sts2.Core.Models.Relics;
-using MegaCrit.Sts2.Core.Nodes.Events;
-using MegaCrit.Sts2.Core.Nodes.Relics;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
@@ -65,29 +63,5 @@ internal static class SereTalonBigIconTexturePatch
     private static void Postfix(RelicModel __instance, ref Texture2D __result)
     {
         SereTalonVisualRelicModelRoutes.TryApplyTexture(__instance, SereTalonVisualAssetPaths.BigIcon, ref __result);
-    }
-}
-
-[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]
-internal static class SereTalonAncientEventOptionButtonPatch
-{
-    private static void Postfix(NEventOptionButton __instance)
-    {
-        // Ancient option buttons assign the relic icon directly during _Ready().
-        // Keep this surface explicit so a loader/UI drift report can name the
-        // exact surface instead of grouping it with normal RelicModel getters.
-        SereTalonVisualNodeRoutes.TryApplyEventOptionButton(__instance);
-    }
-}
-
-[HarmonyPatch(typeof(NRelic), "Reload")]
-internal static class SereTalonRelicNodeReloadPatch
-{
-    private static void Postfix(NRelic __instance)
-    {
-        // Relic-bar and inspect nodes can reload after the model texture getters
-        // have already run. Reapply only to SereTalon so Tanx Claws keeps the
-        // source Maul-transform visuals.
-        SereTalonVisualNodeRoutes.TryApplyRelicNode(__instance);
     }
 }

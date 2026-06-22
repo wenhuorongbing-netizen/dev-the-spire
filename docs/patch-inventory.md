@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 142 |
-| Migrated to RitsuLib ModPatcher | 29 |
-| Raw HarmonyPatch remaining | 142 |
+| Total raw HarmonyPatch declarations | 140 |
+| Migrated to RitsuLib ModPatcher | 31 |
+| Raw HarmonyPatch remaining | 140 |
 | Tracked patch units total | 171 |
 | High risk (raw Harmony) | 22 |
 | Medium risk (raw Harmony) | 32 |
-| Low risk (raw Harmony) | 88 |
+| Low risk (raw Harmony) | 86 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 29 patch classes implement `IPatchMethod` and are registered via
+These 31 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -49,13 +49,14 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
 | `UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |
 | `UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |
+| `SereTalonVisualUiPatches.cs` | 2 | `sere-talon-event-option-button-ready, sere-talon-relic-node-reload` | clicked-ui |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 142 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 140 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -105,15 +106,13 @@ These 142 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 14 | `[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardScreenHintPatch.cs` | 5 | `[HarmonyPatch( typeof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen), nameof(MegaCrit.Sts2.Core.Nodes.Screens.CardSelection.NCardRewardSelectionScreen.RefreshOptions))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 8 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 17 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 26 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 35 | `[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 44 | `[HarmonyPatch(typeof(RelicModel), "get_Icon")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 53 | `[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 62 | `[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 71 | `[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 83 | `[HarmonyPatch(typeof(NRelic), "Reload")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 6 | `[HarmonyPatch(typeof(RelicModel), "get_IconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 15 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 24 | `[HarmonyPatch(typeof(RelicModel), "get_PackedIconOutlinePath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 33 | `[HarmonyPatch(typeof(RelicModel), "get_BigIconPath")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 42 | `[HarmonyPatch(typeof(RelicModel), "get_Icon")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 51 | `[HarmonyPatch(typeof(RelicModel), "get_IconOutline")]` |
+| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SereTalonVisualPatches.cs` | 60 | `[HarmonyPatch(typeof(RelicModel), "get_BigIcon")]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 42 | `[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 75 | `[HarmonyPatch(typeof(SovereignBlade), "OnPlay")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 85 | `[HarmonyPatch(typeof(CardModel), "get_HoverTips")]` |

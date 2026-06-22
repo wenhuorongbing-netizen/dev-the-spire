@@ -13,8 +13,8 @@ read only the support file that matches the task.
   validation, and smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and
   normal Vakuu.
 - Current source migration: Urda option-relic and Root Sight map-click UI
-  patches are registered through RitsuLib `IPatchMethod` / `ModPatcher`, not
-  broad Harmony discovery.
+  patches plus Sere Talon event-option/relic-node UI patches are registered
+  through RitsuLib `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
 - Not proved: beta.105 enabled-mode registration, gameplay, save-load,
@@ -112,5 +112,5 @@ Do not start future implementation from historical plans, archived prompt dumps,
   approval and a same-pass package/docs/guard update.
 - Do not treat loader proof or settings screenshots as gameplay, save-load,
   multiplayer, QA, release, or handoff proof.
-- Do not migrate Batch 4c or high-risk run/map/reward/save/multiplayer patches
-  without explicit owner approval.
+- Do not migrate the remaining Batch 4c candidates or high-risk
+  run/map/reward/save/multiplayer patches without explicit owner approval.

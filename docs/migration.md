@@ -24,6 +24,7 @@ Ancient UI proof are current. Gameplay, gated Vakuu fight-option/victory
 return, save-load, replacement behavior, co-op/fail-closed proof, independent
 QA, release readiness, and tester handoff remain pending.
 
-Batch 4c and any higher-risk patch migration remain proposal-only until the
-owner approves the exact scope and the same pass records source evidence,
-focused tests, validation, and package-version decisions when artifacts change.
+The remaining Batch 4c candidates and any higher-risk patch migration remain
+proposal-only until the owner approves the exact scope and the same pass records
+source evidence, focused tests, validation, and package-version decisions when
+artifacts change.

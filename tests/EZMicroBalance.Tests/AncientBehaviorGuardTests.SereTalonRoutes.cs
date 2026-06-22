@@ -12,7 +12,8 @@ public sealed partial class AncientBehaviorGuardTests
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualNodeRoutes.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualTextures.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualRouteLog.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"));
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualPatches.cs"),
+            ReadRepoText("EZMicroBalanceCode", "Ancients", "Patches", "SereTalonVisualUiPatches.cs"));
 
     [Fact]
     public void VakuuSereTalonAndTanxClawsStayOnSeparateSourceRoutes()
@@ -54,12 +55,14 @@ public sealed partial class AncientBehaviorGuardTests
             "internal static class SereTalonVisualTextures",
             "internal static class SereTalonVisualRouteLog",
             "relic is not SereTalon",
-            "[HarmonyPatch(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))]",
+            "IPatchMethod.PatchId => \"sere-talon-event-option-button-ready\"",
+            "new ModPatchTarget(typeof(NEventOptionButton), nameof(NEventOptionButton._Ready))",
             "TryApplyEventOptionButton",
             "button.Option?.Relic is not SereTalon",
             "GetNodeOrNull<TextureRect>(\"%RelicIcon\")",
             "Ancient event option button",
-            "[HarmonyPatch(typeof(NRelic), \"Reload\")]",
+            "IPatchMethod.PatchId => \"sere-talon-relic-node-reload\"",
+            "new ModPatchTarget(typeof(NRelic), \"Reload\")",
             "TryApplyRelicNode",
             "IsNodeReady()",
             "InvalidOperationException",

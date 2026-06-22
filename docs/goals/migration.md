@@ -54,9 +54,9 @@ The migration is not release-ready. Smoke-level clicked Ancient UI is covered, b
 
 | Item | Status | Evidence |
 | --- | --- | --- |
-| Batch 4c migration | Proposal only / static review recaptured | 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration work. |
+| Batch 4c migration | Partial targeted UI migration / remaining candidates proposal-only | 2026-06-22 owner goal drove migration of the 2 Sere Talon UI candidates through RitsuLib; 8 non-Sere-Talon candidates remain proposal-only with no forbidden high-risk categories. |
 
-Record an owner decision for Batch 4c. The candidate list has static-review coverage; do not migrate unless the owner approves the scope.
+Record a fresh owner decision before migrating any of the remaining Batch 4c candidates.
 
 ## Validation Snapshot
 
@@ -89,5 +89,5 @@ scripts/check-sts1-runtime-preflight.ps1 -FailOnMismatch
 1. Capture current AdditiveBatch1 enabled-mode and gameplay proof; previous beta.93 evidence proves loader/registration only for the older package.
 2. Keep beta.105 clicked Ancient UI smoke scoped to forced UI visibility; it does not prove gameplay or release readiness.
 3. Capture save-load, image/render, replacement, and multiplayer fail-closed proof.
-4. Record an owner decision before any Batch 4c or higher-risk patch migration.
+4. Record an owner decision before any remaining Batch 4c or higher-risk patch migration.
 5. Recapture git status, pushed HEAD, and validation status before any later handoff.
