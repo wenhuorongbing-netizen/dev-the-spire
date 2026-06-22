@@ -180,6 +180,7 @@ public sealed class SourceApiDriftAuditGuardTests
         var entry = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.cs");
         var constants = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.Constants.cs");
         var previewDefaults = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewDefaults.cs");
+        var previewNormalization = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewNormalization.cs");
         var localization = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsLocalization.cs");
         var previewSettings = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.PreviewSettings.cs");
         var runtimeState = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsRuntimeState.cs");
@@ -268,6 +269,14 @@ public sealed class SourceApiDriftAuditGuardTests
             "private const double CrystalSphereMaskAlphaStep = 0.05");
         Assert.DoesNotContain("EnableCrystalSpherePeekEntryId", previewDefaults, StringComparison.Ordinal);
         Assert.DoesNotContain("SettingsKey", previewDefaults, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            previewNormalization,
+            "Preview values are normalized before persistence and before RitsuLib",
+            "private static double NormalizeCrystalSphereMaskAlpha(double value)",
+            "Math.Clamp(value, CrystalSphereMaskAlphaMin, CrystalSphereMaskAlphaMax)");
+        Assert.DoesNotContain("ModSettingsValueBinding", previewNormalization, StringComparison.Ordinal);
+        Assert.DoesNotContain("SaveScope.Global", previewNormalization, StringComparison.Ordinal);
 
         AssertSourceContains(
             previewSettings,
@@ -417,11 +426,11 @@ public sealed class SourceApiDriftAuditGuardTests
             binding,
             "private static IModSettingsValueBinding<TValue> Binding<TValue>",
             "ModSettingsValueBinding<SettingsState, TValue>",
-            "SaveScope.Global",
-            "private static double NormalizeCrystalSphereMaskAlpha(double value)",
-            "Math.Clamp(value, CrystalSphereMaskAlphaMin, CrystalSphereMaskAlphaMax)");
+            "SaveScope.Global");
         Assert.DoesNotContain("BeginModDataRegistration", binding, StringComparison.Ordinal);
         Assert.DoesNotContain("RegisterModSettings", binding, StringComparison.Ordinal);
+        Assert.DoesNotContain("NormalizeCrystalSphereMaskAlpha", binding, StringComparison.Ordinal);
+        Assert.DoesNotContain("Math.Clamp", binding, StringComparison.Ordinal);
 
         AssertSourceContains(
             state,

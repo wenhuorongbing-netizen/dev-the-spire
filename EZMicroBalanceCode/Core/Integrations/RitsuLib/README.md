@@ -29,14 +29,14 @@ keeps only registration order, `SpirePlusModConfig.Constants.cs` owns stable
 persisted keys, localization roots, and package-facing status values,
 `SpirePlusModConfig.SettingsPage.Ids.cs` owns stable page/entry ids,
 `SpirePlusModConfig.PreviewDefaults.cs` owns preview defaults and slider bounds,
+`SpirePlusModConfig.PreviewNormalization.cs` owns preview value normalization,
 `SpirePlusModConfig.SettingsLocalization.cs` owns RitsuLib I18N creation,
 `SpirePlusModConfig.PreviewSettings.cs` owns the public runtime accessors used
 by preview code, `SpirePlusModConfig.SettingsStore.cs` owns RitsuLib data-store
 registration, `SpirePlusModConfig.SettingsStoreResolution.cs` owns RitsuLib
 store activation/lookup,
 `SpirePlusModConfig.SettingsAccess.cs` owns fallback-aware store reads/writes,
-`SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings bindings and
-value normalization,
+`SpirePlusModConfig.SettingsBinding.cs` owns RitsuLib settings bindings,
 `SpirePlusModConfig.SettingsRuntimeState.cs` owns the RitsuLib bootstrap
 runtime cache and in-memory fallback, `SpirePlusModConfig.SettingsState.cs` owns
 the persisted settings shape, `SpirePlusModConfig.SettingsPage.cs` owns page

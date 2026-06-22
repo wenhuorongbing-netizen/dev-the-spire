@@ -10,7 +10,4 @@ internal static partial class SpirePlusModConfig
         Func<SettingsState, TValue> getter,
         Action<SettingsState, TValue> setter) =>
         new ModSettingsValueBinding<SettingsState, TValue>(modId, SettingsKey, SaveScope.Global, getter, setter);
-
-    private static double NormalizeCrystalSphereMaskAlpha(double value) =>
-        Math.Clamp(value, CrystalSphereMaskAlphaMin, CrystalSphereMaskAlphaMax);
 }

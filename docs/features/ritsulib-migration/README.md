@@ -56,8 +56,11 @@ Do not start future implementation from historical plans, archived prompt dumps,
   evidence anchors. The current ids live in
   `SpirePlusModConfig.SettingsPage.Ids.cs`.
 - Keep Crystal Sphere preview defaults and RitsuLib slider bounds in
-  `SpirePlusModConfig.PreviewDefaults.cs`; binding normalization and UI
+  `SpirePlusModConfig.PreviewDefaults.cs`; preview normalization and UI
   construction should share those constants instead of duplicating numbers.
+- Keep preview value normalization in
+  `SpirePlusModConfig.PreviewNormalization.cs`; RitsuLib binding construction
+  should stay focused on `ModSettingsValueBinding`.
 - Keep RitsuLib settings localization bootstrap in
   `SpirePlusModConfig.SettingsLocalization.cs`; registration and page/entry
   files should not call `CreateModLocalization` directly.
