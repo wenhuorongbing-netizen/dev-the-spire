@@ -193,6 +193,7 @@ public sealed class SourceApiDriftAuditGuardTests
         var previewToolDiagnosticEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.Diagnostics.cs");
         var previewToolTransformEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.Transform.cs");
         var store = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStore.cs");
+        var storeResolution = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStoreResolution.cs");
         var access = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsAccess.cs");
         var binding = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsBinding.cs");
         var state = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsState.cs");
@@ -391,14 +392,26 @@ public sealed class SourceApiDriftAuditGuardTests
         Assert.DoesNotContain("Store.Modify", store, StringComparison.Ordinal);
 
         AssertSourceContains(
+            storeResolution,
+            "Keep RitsuLib activation and store lookup behind one helper boundary",
+            "private static bool CanUseRitsuLibStore => registeredModId is not null && RitsuLibFramework.IsActive",
+            "private static ModDataStore Store => RitsuLibFramework.GetDataStore(registeredModId ?? MainFile.ModId)");
+        Assert.DoesNotContain("Store.Get<SettingsState>", storeResolution, StringComparison.Ordinal);
+        Assert.DoesNotContain("Store.Modify", storeResolution, StringComparison.Ordinal);
+        Assert.DoesNotContain("RegisterSettingsStore", storeResolution, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModSettingsValueBinding", storeResolution, StringComparison.Ordinal);
+
+        AssertSourceContains(
             access,
+            "All preview-facing reads funnel through this property.",
             "private static SettingsState State",
-            "RitsuLibFramework.IsActive",
+            "CanUseRitsuLibStore",
             "Store.Get<SettingsState>(SettingsKey)",
-            "private static ModDataStore Store",
             "Store.Modify(SettingsKey, update)");
         Assert.DoesNotContain("RegisterSettingsStore", access, StringComparison.Ordinal);
         Assert.DoesNotContain("ModSettingsValueBinding", access, StringComparison.Ordinal);
+        Assert.DoesNotContain("RitsuLibFramework", access, StringComparison.Ordinal);
+        Assert.DoesNotContain("GetDataStore", access, StringComparison.Ordinal);
 
         AssertSourceContains(
             binding,

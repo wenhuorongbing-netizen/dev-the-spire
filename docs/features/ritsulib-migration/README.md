@@ -65,8 +65,12 @@ Do not start future implementation from historical plans, archived prompt dumps,
   preview code should not call RitsuLib stores or settings-page builders
   directly.
 - Keep RitsuLib bootstrap runtime cache and fallback settings in
-  `SpirePlusModConfig.SettingsRuntimeState.cs`; registration, store access,
-  page assembly, and entry builders should stay in their own partial files.
+  `SpirePlusModConfig.SettingsRuntimeState.cs`; registration, store resolution,
+  fallback-aware access, page assembly, and entry builders should stay in their
+  own partial files.
+- Keep RitsuLib store availability and lookup in
+  `SpirePlusModConfig.SettingsStoreResolution.cs`; fallback-aware reads/writes
+  belong in `SpirePlusModConfig.SettingsAccess.cs`.
 - Keep settings persistence split by role: store registration, fallback-aware
   access, UI bindings, and persisted state shape each live in their matching
   `SpirePlusModConfig.Settings*.cs` partial.

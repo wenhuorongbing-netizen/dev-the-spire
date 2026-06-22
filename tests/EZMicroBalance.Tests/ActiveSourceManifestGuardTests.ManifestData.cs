@@ -467,6 +467,7 @@ public sealed partial class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Config/SpirePlusModConfig.SettingsRuntimeState.cs",
         "EZMicroBalanceCode/Config/SpirePlusModConfig.SettingsState.cs",
         "EZMicroBalanceCode/Config/SpirePlusModConfig.SettingsStore.cs",
+        "EZMicroBalanceCode/Config/SpirePlusModConfig.SettingsStoreResolution.cs",
         "EZMicroBalanceCode/Config/SpirePlusModConfig.SettingsText.cs",
         "EZMicroBalanceCode/Diagnostics/ReleaseEvidenceLog.cs",
         "EZMicroBalanceCode/Diagnostics/SpirePlusAncientLiveTestConsoleCmd.RunSetup.cs",
