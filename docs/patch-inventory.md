@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 105 |
-| Migrated to RitsuLib ModPatcher | 66 |
-| Raw HarmonyPatch remaining | 105 |
+| Total raw HarmonyPatch declarations | 102 |
+| Migrated to RitsuLib ModPatcher | 69 |
+| Raw HarmonyPatch remaining | 102 |
 | Tracked patch units total | 171 |
 | High risk (raw Harmony) | 21 |
 | Medium risk (raw Harmony) | 8 |
-| Low risk (raw Harmony) | 76 |
+| Low risk (raw Harmony) | 73 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 66 patch classes implement `IPatchMethod` and are registered via
+These 69 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -65,6 +65,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `AscensionA20Patches.cs` | 1 | `ascension-a20-courtyard-proceed` | clicked-ui |
 | `ModInfoLocalizationPatches.cs` | 1 | `spire-plus-mod-info-localization` | clicked-ui |
 | `CombatHandInputSafetyPatches.cs` | 1 | `combat-hand-input-safety` | clicked-ui |
+| `MeatCleaverCookPatches.cs` | 3 | `meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select` | clicked-ui |
 | `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
@@ -72,7 +73,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 105 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 102 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -98,9 +99,6 @@ These 105 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JeweledMaskPatches.cs` | 3 | `[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 5 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 39 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 3 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_IsEnabled")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 20 | `[HarmonyPatch(typeof(CookRestSiteOption), "get_Description")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/MeatCleaverCookPatches.cs` | 41 | `[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsHornPhase1Patch.cs` | 11 | `[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 3 | `[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterObtained))]` |
 | Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 13 | `[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))]` |

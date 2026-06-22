@@ -1,8 +1,15 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(CookRestSiteOption), "get_IsEnabled")]
-internal static class MeatCleaverCookIsEnabledPatch
+using STS2RitsuLib.Patching.Models;
+
+internal sealed class MeatCleaverCookIsEnabledPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "meat-cleaver-cook-is-enabled";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Disable the Meat Cleaver rest-site option when its removal and HP requirements are not met";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CookRestSiteOption), "IsEnabled", MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(CookRestSiteOption __instance, ref bool __result)
     {
@@ -17,9 +24,14 @@ internal static class MeatCleaverCookIsEnabledPatch
     }
 }
 
-[HarmonyPatch(typeof(CookRestSiteOption), "get_Description")]
-internal static class MeatCleaverCookDescriptionPatch
+internal sealed class MeatCleaverCookDescriptionPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "meat-cleaver-cook-description";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Replace Cook's rest-site description with Meat Cleaver's remove-cards-and-lose-HP text";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CookRestSiteOption), "Description", MethodType.Getter)];
+
     [HarmonyPrefix]
     private static bool Prefix(CookRestSiteOption __instance, ref LocString __result)
     {
@@ -38,9 +50,14 @@ internal static class MeatCleaverCookDescriptionPatch
     }
 }
 
-[HarmonyPatch(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))]
-internal static class MeatCleaverCookPatch
+internal sealed class MeatCleaverCookPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "meat-cleaver-cook-on-select";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Route Meat Cleaver's rest-site click into card removal plus HP loss instead of vanilla max HP gain";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))];
+
     public const int CardsToRemove = 2;
 
     public const int HpToLose = 5;
@@ -61,6 +78,9 @@ internal static class MeatCleaverCookPatch
         return false;
     }
 
+    // RestSiteOption.Owner is protected in the game source; this narrow getter
+    // keeps all three Cook option hooks on the same owner lookup without
+    // changing vanilla behavior for players that do not have Meat Cleaver.
     public static Player GetOwner(RestSiteOption option)
     {
         return (Player)OwnerGetter.Invoke(option, Array.Empty<object>())!;

@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.112 package truth is RitsuLib-only",
+            "Current beta.113 package truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -120,7 +120,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             eventGoal,
             "Status: compact active boundary for the StS1 event prototype.",
             "Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.",
-            "Current package truth is beta.112 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`.",
+            "Current package truth is beta.113 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`.",
             "Future StS1 event work must start from RitsuLib docs/XML",
             "This is Ancient clicked-UI smoke evidence only.",
             "Current StS1 event work routes through `docs/features/sts1-events/v19-gate-evidence-map.md`",
@@ -414,7 +414,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             restructure,
             "# Restructure Boundary",
-            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.112`",
+            "Current package/runtime target is Spire Plus `v0.1.0-private-beta.113`",
             "`STS2-RitsuLib` `0.4.34`",
             "direct NuGet runtime layout",
             "previous package is previous-package or other-mod local context only",
@@ -540,7 +540,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             docRestructureSpec,
             "# Documentation Restructure Boundary",
             "This is the current documentation cleanup rule set, not an old move plan.",
-            "The RitsuLib integration lane is current for beta.112",
+            "The RitsuLib integration lane is current for beta.113",
             "compile package",
             "manifest dependency",
             "package parity",
@@ -572,7 +572,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             migrationReadme,
             "# RitsuLib Migration",
             "This is the single entry point for RitsuLib migration work.",
-            "Spire Plus is RitsuLib-only for beta.112.",
+            "Spire Plus is RitsuLib-only for beta.113.",
             "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
             "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
             "The repository hygiene",
@@ -593,7 +593,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             coreIntegrationReadme,
             "Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`",
-            "`0.4.34`, and Spire Plus `v0.1.0-private-beta.112`.",
+            "`0.4.34`, and Spire Plus `v0.1.0-private-beta.113`.",
             "This directory owns the RitsuLib bootstrap, migrated patch registration,",
             "Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file",
             "keeps only registration order, `SpirePlusModConfig.Constants.cs` owns",
@@ -614,14 +614,14 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the",
             "`SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section",
             "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`",
-            "Packaged beta.112 evidence covers build, publish, package parity, runtime preflight",
+            "Packaged beta.113 evidence covers build, publish, package parity, runtime preflight",
             "proves forced clicked UI visibility only for that previous package",
             "Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93",
             "`docs/features/ritsulib-migration/README.md` as the migration entry point.");
         AssertSourceContains(
             archiveReadme,
-            "Current migration truth is beta.112 RitsuLib-only.",
-            "current beta.112 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`.");
+            "Current migration truth is beta.113 RitsuLib-only.",
+            "current beta.113 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`.");
         Assert.DoesNotContain("repo now compiles against `STS2.RitsuLib` 0.4.32", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("full staging record", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("current beta.91", archiveReadme, StringComparison.OrdinalIgnoreCase);
@@ -738,10 +738,10 @@ public sealed partial class DocumentationCompactnessGuardTests
             currentValidation,
             "Status: compact active validation summary.",
             "Full archived record: `docs/archive/feature-audits/current-validation-full-20260622.md`.",
-            "Current package target is Spire Plus `v0.1.0-private-beta.112`",
+            "Current package target is Spire Plus `v0.1.0-private-beta.113`",
             "`EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`",
             "The unpacked local game source under `source code/src/Core/` is the primary API authority",
-            "This is previous-package smoke-level clicked Ancient UI migration proof; recapture it for beta.112 before tester handoff or release claims.",
+            "This is previous-package smoke-level clicked Ancient UI migration proof; recapture it for beta.113 before tester handoff or release claims.",
             "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
         Assert.DoesNotContain("## June 18 Beta.87", currentValidation, StringComparison.Ordinal);
         Assert.DoesNotContain("## June 15 Pause-Safe Static Verification Addendum", currentValidation, StringComparison.Ordinal);
@@ -813,7 +813,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Accept as loader-smoke package, not gameplay/release proof",
             "May run only after process coordination",
             "do not start overlapping validation lanes",
-            "Current migration truth is beta.112 RitsuLib-only",
+            "Current migration truth is beta.113 RitsuLib-only",
             "Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.");
         Assert.DoesNotContain("## Replay Commands", boundary, StringComparison.Ordinal);
         Assert.DoesNotContain("## Commit Slice Sketch", boundary, StringComparison.Ordinal);

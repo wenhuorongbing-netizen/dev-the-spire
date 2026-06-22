@@ -138,6 +138,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'AscensionA20Patches.cs'; Classes = 1; PatchIds = 'ascension-a20-courtyard-proceed'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'ModInfoLocalizationPatches.cs'; Classes = 1; PatchIds = 'spire-plus-mod-info-localization'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'CombatHandInputSafetyPatches.cs'; Classes = 1; PatchIds = 'combat-hand-input-safety'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'MeatCleaverCookPatches.cs'; Classes = 3; PatchIds = 'meat-cleaver-cook-is-enabled, meat-cleaver-cook-description, meat-cleaver-cook-on-select'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum

@@ -21,4 +21,4 @@ proof. Settings, loader, and screenshot evidence remain scoped evidence only;
 gameplay, enabled-mode, save-load, replacement, co-op, QA, release readiness,
 and handoff require separate current proof. Batch 4c localization plus
 visual-hover UI migration is source-only until a fresh package/runtime pass
-proves all 66 migrated patch classes apply in the installed game.
+proves all 69 migrated patch classes apply in the installed game.

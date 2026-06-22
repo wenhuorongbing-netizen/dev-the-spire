@@ -39,6 +39,15 @@ public sealed partial class AncientBehaviorGuardTests
             source,
             "public const int CardsToRemove = 2",
             "public const int HpToLose = 5",
+            "class MeatCleaverCookIsEnabledPatch : IPatchMethod",
+            "class MeatCleaverCookDescriptionPatch : IPatchMethod",
+            "class MeatCleaverCookPatch : IPatchMethod",
+            "\"meat-cleaver-cook-is-enabled\"",
+            "\"meat-cleaver-cook-description\"",
+            "\"meat-cleaver-cook-on-select\"",
+            "new ModPatchTarget(typeof(CookRestSiteOption), \"IsEnabled\", MethodType.Getter)",
+            "new ModPatchTarget(typeof(CookRestSiteOption), \"Description\", MethodType.Getter)",
+            "new ModPatchTarget(typeof(CookRestSiteOption), nameof(CookRestSiteOption.OnSelect))",
             "owner.GetRelic<MeatCleaver>() != null && !MeatCleaverCookPatch.CanCook(owner)",
             "__result = false",
             "if (owner.GetRelic<MeatCleaver>() == null)",
@@ -51,6 +60,7 @@ public sealed partial class AncientBehaviorGuardTests
             "await CardPileCmd.RemoveFromDeck(card)",
             "await CreatureCmd.SetCurrentHp(owner.Creature, owner.Creature.CurrentHp - HpToLose)");
 
+        Assert.DoesNotContain("[HarmonyPatch", source, StringComparison.Ordinal);
         Assert.DoesNotContain("MaxHp", source, StringComparison.Ordinal);
         Assert.Contains("Verify option disabled when too few removable cards.", manualChecklist, StringComparison.Ordinal);
         Assert.Contains("Verify option disabled when HP is not greater than 5.", manualChecklist, StringComparison.Ordinal);

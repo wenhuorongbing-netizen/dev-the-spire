@@ -154,7 +154,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "active manifest is `v0.1.0-private-beta.112` after the Sovereign Blade hover ModPatcher migration and package refresh pass",
+            "active manifest is `v0.1.0-private-beta.113` after the Sovereign Blade hover ModPatcher migration and package refresh pass",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

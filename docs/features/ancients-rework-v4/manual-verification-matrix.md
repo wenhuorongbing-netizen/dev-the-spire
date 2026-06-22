@@ -3,7 +3,7 @@
 Prepared: 2026-05-07
 Updated: 2026-06-22
 
-Status: automated gates passed for the current RitsuLib-only beta.112 package shape.
+Status: automated gates passed for the current RitsuLib-only beta.113 package shape.
 Previous beta.108 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` with 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0.
 Beta.99 clicked settings UI and direct Off loader proof remain previous-package context only.
 Previous beta.96 Off proof is previous-package startup/loading evidence only.
@@ -23,7 +23,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.112.zip`, SHA256 `87BD9051C2D9981FE00EDD36839A3A2084BCA7A626F28CFF83F928D64733F151`; beta.108 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.113.zip`, SHA256 `375ECB63DAFF81FF8D82A640497DEC691A3FB683BF53B7A4D7283960E7B739EB`; beta.108 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/` |
 
 ## Runtime Load Checklist
 
@@ -31,7 +31,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | --- | --- | --- |
 | Confirm STS2-RitsuLib and `EZMicroBalance` are installed in the game `mods` folder | `STS2-RitsuLib\mod_manifest.json`, `STS2-RitsuLib\lib\0.107.1\STS2-RitsuLib.dll`, `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
 | Launch Slay the Spire 2 public/main branch | Game reaches main menu | Beta.108 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-beta108-20260622-172312/`; this is smoke-level UI evidence only |
-| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Captured for beta.99 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean same-session log audit; previous-package context after beta.112 |
+| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Captured for beta.99 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean same-session log audit; previous-package context after beta.113 |
 | Open Compendium -> Card Library | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
 | Start a run with Spire Plus enabled | No startup exception in `godot.log` for `EZMicroBalance`. Natural route-click first-node path remains pending. | Pending gameplay proof |
 | Disable Spire Plus and restart | Spire Plus patches do not apply while disabled or plugged off | Pending gameplay proof |

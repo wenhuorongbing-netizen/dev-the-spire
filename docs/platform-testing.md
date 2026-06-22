@@ -10,7 +10,7 @@ Use `docs/private-beta-verification-handoff.md` as the current hash source. It l
 - `EZMicroBalance.json`
 - `EZMicroBalance.pck`
 - `README_INSTALL.txt`
-- `publish/SpirePlus-v0.1.0-private-beta.112.zip`
+- `publish/SpirePlus-v0.1.0-private-beta.113.zip`
 
 The test package should contain only:
 
@@ -40,13 +40,13 @@ Verify the installed mod folder against the handoff hashes:
 Check a package hash directly:
 
 ```powershell
-Get-FileHash -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.112.zip -Algorithm SHA256
+Get-FileHash -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.113.zip -Algorithm SHA256
 ```
 
 Unpack a package for inspection:
 
 ```powershell
-Expand-Archive -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.112.zip -DestinationPath .\publish\inspect -Force
+Expand-Archive -LiteralPath .\publish\SpirePlus-v0.1.0-private-beta.113.zip -DestinationPath .\publish\inspect -Force
 ```
 
 Current Windows log path used by the project helpers:
@@ -81,13 +81,13 @@ scripts/check-installed-spire-plus-package.sh "$STS2_PATH/mods/EZMicroBalance"
 Check a package hash directly:
 
 ```sh
-shasum -a 256 publish/SpirePlus-v0.1.0-private-beta.112.zip
+shasum -a 256 publish/SpirePlus-v0.1.0-private-beta.113.zip
 ```
 
 Unpack a package for inspection:
 
 ```sh
-unzip -q publish/SpirePlus-v0.1.0-private-beta.112.zip -d publish/inspect
+unzip -q publish/SpirePlus-v0.1.0-private-beta.113.zip -d publish/inspect
 ```
 
 Expected macOS log path to check first:

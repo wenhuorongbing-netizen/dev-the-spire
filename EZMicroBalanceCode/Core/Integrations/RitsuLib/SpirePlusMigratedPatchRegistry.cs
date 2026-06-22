@@ -100,6 +100,9 @@ internal static class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<AscensionA20CourtyardProceedPatch>();
         patcher.RegisterPatch<ModInfoLocalizationPatches>();
         patcher.RegisterPatch<CombatHandInputSafetyPatch>();
+        patcher.RegisterPatch<MeatCleaverCookIsEnabledPatch>();
+        patcher.RegisterPatch<MeatCleaverCookDescriptionPatch>();
+        patcher.RegisterPatch<MeatCleaverCookPatch>();
     }
 
     private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)
