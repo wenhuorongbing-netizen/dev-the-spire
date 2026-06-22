@@ -184,6 +184,9 @@ public sealed class SourceApiDriftAuditGuardTests
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
         var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
         var store = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStore.cs");
+        var access = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsAccess.cs");
+        var binding = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsBinding.cs");
+        var state = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsState.cs");
 
         AssertSourceContains(
             entry,
@@ -255,10 +258,38 @@ public sealed class SourceApiDriftAuditGuardTests
         AssertSourceContains(
             store,
             "RitsuLibFramework.BeginModDataRegistration(modId)",
-            "store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true)",
-            "ModSettingsValueBinding<SettingsState, TValue>",
-            "public bool ShowPreviewDebugLogs { get; set; }");
+            "store.Register(SettingsKey, SettingsFileName, SaveScope.Global, () => new SettingsState(), true)");
         Assert.DoesNotContain("RegisterModSettings", store, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModSettingsValueBinding", store, StringComparison.Ordinal);
+        Assert.DoesNotContain("Store.Modify", store, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            access,
+            "private static SettingsState State",
+            "RitsuLibFramework.IsActive",
+            "Store.Get<SettingsState>(SettingsKey)",
+            "private static ModDataStore Store",
+            "Store.Modify(SettingsKey, update)");
+        Assert.DoesNotContain("RegisterSettingsStore", access, StringComparison.Ordinal);
+        Assert.DoesNotContain("ModSettingsValueBinding", access, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            binding,
+            "private static IModSettingsValueBinding<TValue> Binding<TValue>",
+            "ModSettingsValueBinding<SettingsState, TValue>",
+            "SaveScope.Global",
+            "private static double NormalizeCrystalSphereMaskAlpha(double value)",
+            "Math.Clamp(value, CrystalSphereMaskAlphaMin, CrystalSphereMaskAlphaMax)");
+        Assert.DoesNotContain("BeginModDataRegistration", binding, StringComparison.Ordinal);
+        Assert.DoesNotContain("RegisterModSettings", binding, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            state,
+            "private sealed class SettingsState",
+            "public bool EnableCrystalSpherePeek { get; set; } = true",
+            "public double CrystalSphereMaskAlpha { get; set; } = DefaultCrystalSphereMaskAlpha",
+            "public bool ShowPreviewDebugLogs { get; set; }");
+        Assert.DoesNotContain("RitsuLibFramework", state, StringComparison.Ordinal);
     }
 
 }

@@ -58,6 +58,9 @@ Do not start future implementation from historical plans, archived prompt dumps,
 - Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`;
   preview code should not call RitsuLib stores or settings-page builders
   directly.
+- Keep settings persistence split by role: store registration, fallback-aware
+  access, UI bindings, and persisted state shape each live in their matching
+  `SpirePlusModConfig.Settings*.cs` partial.
 - Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
   flow through game saved properties; use `ModDataStore` for global mod
   settings.
