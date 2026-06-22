@@ -189,7 +189,9 @@ public sealed class SourceApiDriftAuditGuardTests
         var migrationStatus = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatus.cs");
         var migrationStatusEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs");
         var previewTools = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewTools.cs");
-        var previewToolEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs");
+        var previewToolCrystalSphereEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.CrystalSphere.cs");
+        var previewToolDiagnosticEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.Diagnostics.cs");
+        var previewToolTransformEntries = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsPage.PreviewToolEntries.Transform.cs");
         var store = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsStore.cs");
         var access = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsAccess.cs");
         var binding = ReadRepoText("EZMicroBalanceCode", "Config", "SpirePlusModConfig.SettingsBinding.cs");
@@ -346,21 +348,39 @@ public sealed class SourceApiDriftAuditGuardTests
         Assert.DoesNotContain("AddMigrationStatusSection", previewTools, StringComparison.Ordinal);
 
         AssertSourceContains(
-            previewToolEntries,
+            previewToolCrystalSphereEntries,
+            "Crystal Sphere entries stay together because the toggle and opacity",
             "private static void AddCrystalSpherePeekToggle(ModSettingsSectionBuilder section, string modId)",
             "private static void AddCrystalSphereMaskAlphaSlider(ModSettingsSectionBuilder section, string modId)",
-            "private static void AddTransformPredictionToggle(ModSettingsSectionBuilder section, string modId)",
-            "private static void AddTransformPredictionAlwaysOnToggle(ModSettingsSectionBuilder section, string modId)",
-            "private static void AddPreviewDebugLogsToggle(ModSettingsSectionBuilder section, string modId)",
             "EnableCrystalSpherePeekEntryId",
             "CrystalSphereMaskAlphaEntryId",
-            "EnableTransformPredictionEntryId",
-            "TransformPredictionAlwaysOnEntryId",
-            "ShowPreviewDebugLogsEntryId",
             "CultureInfo.InvariantCulture",
             "NormalizeCrystalSphereMaskAlpha(value)");
-        Assert.DoesNotContain("page.AddSection", previewToolEntries, StringComparison.Ordinal);
-        Assert.DoesNotContain("AddMigrationStatusSection", previewToolEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddTransformPredictionToggle", previewToolCrystalSphereEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewDebugLogsToggle", previewToolCrystalSphereEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("page.AddSection", previewToolCrystalSphereEntries, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            previewToolTransformEntries,
+            "Transform entries only control prediction visibility.",
+            "private static void AddTransformPredictionToggle(ModSettingsSectionBuilder section, string modId)",
+            "private static void AddTransformPredictionAlwaysOnToggle(ModSettingsSectionBuilder section, string modId)",
+            "EnableTransformPredictionEntryId",
+            "TransformPredictionAlwaysOnEntryId",
+            "() => EnableTransformPrediction");
+        Assert.DoesNotContain("AddCrystalSpherePeekToggle", previewToolTransformEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddPreviewDebugLogsToggle", previewToolTransformEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("page.AddSection", previewToolTransformEntries, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            previewToolDiagnosticEntries,
+            "This is intentionally a narrow preview-tool diagnostic toggle",
+            "private static void AddPreviewDebugLogsToggle(ModSettingsSectionBuilder section, string modId)",
+            "ShowPreviewDebugLogsEntryId",
+            "state.ShowPreviewDebugLogs");
+        Assert.DoesNotContain("AddCrystalSpherePeekToggle", previewToolDiagnosticEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("AddTransformPredictionToggle", previewToolDiagnosticEntries, StringComparison.Ordinal);
+        Assert.DoesNotContain("page.AddSection", previewToolDiagnosticEntries, StringComparison.Ordinal);
 
         AssertSourceContains(
             store,

@@ -74,8 +74,9 @@ Do not start future implementation from historical plans, archived prompt dumps,
   page and entry files should call `Text(...)` / `LiteralText(...)` instead of
   constructing `ModSettingsText` directly.
 - Keep RitsuLib settings page assembly separate from individual entry builders:
-  the preview section orders entries, while `PreviewToolEntries` owns the
-  toggle/slider calls and their stable entry ids.
+  the preview section orders entries, while
+  `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs` files own
+  feature-specific toggle/slider calls and their stable entry ids.
 - Keep read-only migration status UI split the same way: the section file
   orders entries, while `MigrationStatusEntries` owns the paragraph/info-card
   calls and their stable entry ids.

@@ -582,6 +582,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`",
             "Keep RitsuLib bootstrap runtime cache and fallback settings in",
             "Keep RitsuLib settings text construction in `SpirePlusModConfig.SettingsText.cs`",
+            "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs` files own",
             "Keep read-only migration status UI split the same way",
             "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
         AssertSourceContains(
@@ -605,7 +606,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`SpirePlusModConfig.SettingsPage.MigrationStatus.cs` owns the",
             "`SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the",
             "`SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section",
-            "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs` owns the",
+            "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`",
             "Current beta.105 evidence covers package parity, runtime preflight,",
             "That proves forced clicked UI visibility only;",
             "Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93",

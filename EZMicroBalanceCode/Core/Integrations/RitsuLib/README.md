@@ -45,8 +45,9 @@ read-only migration status section assembly,
 `SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the
 individual read-only RitsuLib paragraph/info-card entry builders,
 `SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section
-assembly, and `SpirePlusModConfig.SettingsPage.PreviewToolEntries.cs` owns the
-individual RitsuLib toggle/slider entry builders.
+assembly, while the `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`
+partials own Crystal Sphere, transform, and preview-diagnostic RitsuLib entry
+builders separately.
 
 Current beta.105 evidence covers package parity, runtime preflight,
 source-workspace validation, and smoke-level clicked Ancient UI for Urda,
