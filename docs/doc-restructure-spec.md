@@ -45,8 +45,9 @@ beta.99, beta.96, and beta.93 loader or settings proof remain previous-package e
   update the guards in a separate validation pass.
 - Do not turn loader, settings, or screenshot evidence into gameplay,
   save-load, co-op, QA, release, or handoff claims.
-- Do not add another shared runtime framework dependency for Spire Plus without
-  owner approval and same-pass manifest, package, docs, and guard updates.
+- Do not add any runtime dependency besides STS2-RitsuLib for Spire Plus
+  without owner approval and same-pass manifest, package, docs, and guard
+  updates.
 
 ## Validation
 

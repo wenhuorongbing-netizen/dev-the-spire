@@ -2,14 +2,18 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the shared runtime framework dependency. Current beta.105 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.33` in direct NuGet runtime layout. Beta.105 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current beta.105 package parity exists on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.33` in direct NuGet runtime layout. Beta.105 clicked Ancient UI smoke proof is captured under `.tools/runtime-evidence/monkey-stability-20260622-025733/`. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
 
 - Compile package: `STS2.RitsuLib` `0.4.33` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.33`.
 - Installed runtime: official `STS2-RitsuLib` `v0.4.33` direct NuGet layout under the E-drive game root.
 - Historical validated game target: Slay the Spire 2 `v0.106.1`.
 - Current local installed game: Slay the Spire 2 `v0.107.1`.
-- Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.
+- Only current runtime dependency target: `STS2-RitsuLib` for Spire Plus.
+
+Future migration work has two first checks: confirm the latest stable RitsuLib
+package line, then inspect the unpacked local game source under
+`source code/src/Core/` before changing game-facing behavior.
 
 The current `v0.107.1` game install uses the official RitsuLib `v0.4.33` direct NuGet runtime files. Installed beta.105 package parity is recorded on 2026-06-22. Current beta.105 evidence covers build, focused guards, publish, package parity, runtime preflight 28 / 0, source-workspace validation 57 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-20260622-025733/`: `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` each passed once with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, and packet verification 1621 / 0. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
 

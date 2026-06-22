@@ -414,8 +414,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             skill,
             "Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before Harmony patches.",
-            "Do not add another shared runtime framework dependency for current Spire Plus work unless the owner explicitly approves a new dependency decision.",
-            "Inspect local RitsuLib/template APIs or package references when available",
+            "Do not add any runtime dependency besides STS2-RitsuLib for current Spire Plus work unless the owner explicitly approves a new dependency decision.",
+            "Inspect local RitsuLib XML/docs, template APIs, or package references when available",
             "Prefer command APIs and RitsuLib/template hooks over direct state mutation.");
 
         foreach (var staleInstruction in new[]
@@ -465,8 +465,9 @@ public sealed partial class DocumentationCompactnessGuardTests
             entryDocs.Single(entry => entry.Path == "docs/goals/migration.md").Text,
             "Spire Plus is a RitsuLib-only mod.",
             "installed `STS2-RitsuLib` package docs/XML and the public RitsuLib docs",
+            "unpacked local game source under `source code/src/Core/`",
             "Git-tracked text surfaces stay free of retired shared-runtime names",
-            "future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and local game source",
+            "future work starts from RitsuLib docs, installed RitsuLib XML/API evidence, and unpacked local game source",
             "2026-06-22: NuGet flat-container and `dotnet list package --outdated --include-transitive` show `STS2.RitsuLib` `0.4.33` as the latest package");
     }
 
@@ -508,7 +509,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Compile and manifest dependency are active.",
             "`EZMicroBalance.csproj` references `STS2.RitsuLib` only",
             "`EZMicroBalance.json` declares only `STS2-RitsuLib`",
-            "Current shared runtime framework target: `STS2-RitsuLib` only for Spire Plus.",
+            "Only current runtime dependency target: `STS2-RitsuLib` for Spire Plus.",
+            "Future migration work has two first checks: confirm the latest stable RitsuLib",
             "2026-06-22 recheck",
             "The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.33`",
             "GitHub releases can lag those package channels",

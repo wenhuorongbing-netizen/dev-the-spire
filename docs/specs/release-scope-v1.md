@@ -8,13 +8,13 @@ This file freezes the release-candidate decision boundary requested by `docs/goa
 
 | Surface | Release stance | Reason |
 | --- | --- | --- |
-| Spire Plus | Manual-test build now; release candidate only after live evidence | Automation passes, but loader, clicked UI, gameplay, save/load, failure/death, and co-op rows remain pending. |
+| Spire Plus | Manual-test build now; release candidate only after live evidence | Automation and beta.105 forced Ancient clicked UI smoke pass, but gameplay, save/load, failure/death, hover/readability follow-through, gated Vakuu fight-option, and co-op rows remain pending. |
 | `EZMicroBalance` manifest id | Keep unchanged | Saved fields, package folders, env vars, and compatibility depend on the stable id. |
 | Ascension 11-20 | Development-test surface, default-on for private beta testing | Source and guard coverage exist; live traversal and co-op proof remain pending. |
 | Ascension 21-30 | Out of scope | Explicit project rule. |
 | Custom character | Out of scope | Explicit project rule. |
 | Vakuu fight | Hidden by default | Source hardening exists, but victory/no-black-screen, failure/death, save/load, and co-op proof remain pending. |
-| Ancient Urda/Morvi/Lotha | Manual-test candidates | Source-backed and visible reward markers exist; live clicked UI, gameplay, save/load, and co-op proof remain pending. |
+| Ancient Urda/Morvi/Lotha | Manual-test candidates | Source-backed and visible reward markers exist; beta.105 forced clicked UI smoke exists, while gameplay, hover/readability follow-through, save/load, and co-op proof remain pending. |
 | Rootblight / Blight Sprout | Manual-test candidate | Source and art are packaged; combat-end behavior and visual proof remain pending. |
 | Preview tools | Part of Spire Plus | Crystal Sphere peek and transform preview are integrated under `EZMicroBalance`; live proof remains pending. |
 | Website | Public-info surface, not mod-release proof | Current source is tracked under `website/` with a Pages workflow. It may describe the manual-test package, but it must not turn pending live rows into release-ready claims. |

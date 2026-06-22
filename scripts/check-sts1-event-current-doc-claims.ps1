@@ -643,7 +643,7 @@ Add-Check -Name 'current_claim_scan_includes_sts1_goal' -Passed ($currentClaimFi
 Add-Check -Name 'current_claim_scan_includes_sts1_implementation_plan' -Passed ($currentClaimFiles -contains 'docs\features\sts1-events\implementation-plan.md') -Detail 'StS1 implementation plan must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_sts1_event_spec' -Passed ($currentClaimFiles -contains 'docs\features\sts1-events\event-specs\golden-idol.md') -Detail 'StS1 event specs must be in stale claim scan scope'
 
-Add-ContainsCheck -Name 'active_review_latest_addendum_beta93' -Text $activeReview -Needle 'Date: 2026-05-26; latest addendum: 2026-06-21'
+Add-ContainsCheck -Name 'active_review_latest_addendum_beta93' -Text $activeReview -Needle 'Date: 2026-05-26; latest addendum: 2026-06-22'
 Add-ContainsCheck -Name 'private_beta_handoff_current_beta96_date_boundary' -Text $privateBetaHandoff -Needle 'Date: 2026-06-22 beta.105 handoff summary; older May/June package notes below are retained only as historical context.'
 Add-ContainsCheck -Name 'agents_current_beta93_additive_path' -Text $agents -Needle 'Previous beta.99 RitsuLib Mod Settings clicked UI proof, previous beta.99 RitsuLib-only Off proof, and beta.93 RitsuLib-only AdditiveBatch1 direct proof remain previous-package loader/settings/registration evidence only.'
 Add-ContainsCheck -Name 'agents_current_dependency_ritsulib_only' -Text $agents -Needle 'Current runtime dependency setup has official `STS2-RitsuLib` `v0.4.33` installed'
@@ -698,7 +698,7 @@ Add-ContainsCheck -Name 'patch_boundaries_sts1_registration_canary_4_6' -Text $p
 Add-Check -Name 'patch_boundaries_no_canary_shared_event_claim' -Passed (-not $patchBoundaries.Contains('exactly 4 shared events registered')) -Detail 'patch boundaries must not describe current CanaryOnly proof as exactly 4 shared events'
 Add-ContainsCheck -Name 'beta_compat_revision_m_boundary' -Text $betaCompatibility -Needle '2026-06-22 Current Compatibility Boundary'
 Add-ContainsCheck -Name 'beta_compat_beta99_target' -Text $betaCompatibility -Needle 'Spire Plus `v0.1.0-private-beta.105`'
-Add-ContainsCheck -Name 'beta_compat_ritsulib_only_dependency' -Text $betaCompatibility -Needle 'only `STS2-RitsuLib >= 0.4.33` as the shared runtime dependency'
+Add-ContainsCheck -Name 'beta_compat_ritsulib_only_dependency' -Text $betaCompatibility -Needle 'only `STS2-RitsuLib >= 0.4.33` as the runtime dependency'
 Add-ContainsCheck -Name 'beta_compat_settings_ui_path' -Text $betaCompatibility -Needle '.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/'
 Add-ContainsCheck -Name 'beta_compat_loader_settings_nonclaim' -Text $betaCompatibility -Needle 'Treat loader, settings, and clicked-UI smoke evidence as scoped proof only:'
 Add-ContainsCheck -Name 'remote_setup_current_boundary' -Text $remoteDevelopmentSetup -Needle '2026-06-22 Current Boundary'

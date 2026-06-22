@@ -2,6 +2,11 @@
 
 Date: 2026-05-20
 
+Supersession note, 2026-06-22: beta.105 forced Ancient clicked UI smoke now
+covers Urda, Morvi, Lotha, and normal Vakuu. This historical review still
+applies only to live gameplay, gated Vakuu fight-option UI, save-load, co-op,
+and release-readiness boundaries.
+
 ## Verdict
 
 This pass is a partial implementation-hardening pass only. It cannot claim release-ready status.
@@ -10,7 +15,7 @@ This pass is a partial implementation-hardening pass only. It cannot claim relea
 
 - The previous `goal completed` style claim remains rejected. The current repository still has manual/live gates open, so docs-only or source-only work cannot close `docs/goal.md`.
 - Fresh current-package live gameplay parity remains unclosed. Previous beta.96 RitsuLib-only Off proof supersedes older beta.85 `v0.107.0` loader smoke for that package startup only; previous beta.93 AdditiveBatch1 proof remains previous-package registration context. Historical logs and loader smokes do not prove gameplay, save-load, UI, co-op, or release readiness.
-- Clicked Ancient UI proof is still pending for Urda, Morvi, Lotha, and gated Vakuu.
+- Beta.105 forced clicked UI smoke now covers Urda, Morvi, Lotha, and normal Vakuu; gated Vakuu fight-option UI, hover/readability follow-through, and live gameplay proof remain pending.
 - Live save-load proof is still pending for Root Eyes, Seed Bank, Morvi state, Lotha Death Reprieve, Vakuu child combat, and Rootblight.
 - Vakuu fight live proof is still pending for victory return, no-black-screen behavior, failure/death path, active/pre-finished save-load, and co-op behavior.
 - Co-op proof is still pending. StartRunLobby or source diagnostics are not two-client host/join proof and must not be advertised as full multiplayer support.
@@ -29,4 +34,4 @@ This pass is a partial implementation-hardening pass only. It cannot claim relea
 
 ## Release Decision
 
-No release-ready claim is made in this pass. Live loader, clicked UI, save-load, Vakuu, co-op, and preview live proof remain pending.
+No release-ready claim is made in this pass. Live gameplay, gated Vakuu fight-option UI, save-load, Vakuu victory/failure paths, co-op, and preview live proof remain pending.

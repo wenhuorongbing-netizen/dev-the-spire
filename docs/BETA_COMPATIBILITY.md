@@ -11,7 +11,7 @@ Current compatibility work targets:
 
 Spire Plus is RitsuLib-only for the current package line. The project
 references `STS2.RitsuLib` `0.4.33`, and `EZMicroBalance.json` declares
-only `STS2-RitsuLib >= 0.4.33` as the shared runtime dependency.
+only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
 
 Current evidence:
 
@@ -49,8 +49,8 @@ QA, package handoff, and release-ready compatibility proof remain pending.
   game source snapshot, installed STS2-RitsuLib runtime variant, build,
   publish, package parity, and at least one controlled loader/settings proof
   have been refreshed for that exact target.
-- Do not add another shared runtime framework dependency without explicit owner
-  approval and a new migration record.
+- Do not add any runtime dependency besides STS2-RitsuLib without explicit
+  owner approval and a new migration record.
 - Keep runtime STS2-RitsuLib, NuGet `STS2.RitsuLib`, manifest dependency
   minimum, package metadata, and tester instructions aligned.
 - Preserve `EZMicroBalance` only as the technical manifest id, install folder,

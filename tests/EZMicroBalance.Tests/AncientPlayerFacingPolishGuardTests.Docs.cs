@@ -147,9 +147,10 @@ public sealed partial class AncientPlayerFacingPolishGuardTests
             ReadRepoText("docs", "features", "ancient-expansion-urda", "work-log.md"),
             ReadRepoText("docs", "private-beta-release-completion-audit.md"));
 
-        Assert.Contains("ten source-backed blessings", currentDocs, StringComparison.Ordinal);
+        Assert.Contains("eleven source-backed blessings", currentDocs, StringComparison.Ordinal);
         Assert.Contains("Morvi is default-on", currentDocs, StringComparison.Ordinal);
         Assert.Contains("draw 1 with no Energy gain", currentDocs, StringComparison.Ordinal);
+        Assert.DoesNotContain("ten source-backed blessings", currentDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("four source-backed blessings", currentDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Urda default-on four-blessing slice", currentDocs, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("Morvi remains default-off", currentDocs, StringComparison.OrdinalIgnoreCase);

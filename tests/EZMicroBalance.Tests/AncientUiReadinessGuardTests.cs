@@ -222,8 +222,13 @@ public sealed partial class AncientUiReadinessGuardTests
             ReadRepoText("docs", "review.md"),
             ReadRepoText("docs", "test-ready-development-goal.md"),
             ReadRepoText("docs", "private-beta-verification-handoff.md"),
+            ReadRepoText("docs", "specs", "release-scope-v1.md"),
+            ReadRepoText("docs", "specs", "release-traceability-matrix.md"),
+            ReadRepoText("docs", "specs", "website-claim-audit.md"),
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md"),
-            ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md"));
+            ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md"),
+            ReadRepoText("docs", "features", "ancients-rework-v4", "work-log.md"),
+            ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md"));
 
         Assert.Contains("smoke-level clicked Ancient UI migration proof", activeDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(".tools/runtime-evidence/monkey-stability-20260622-025733", activeDocs, StringComparison.Ordinal);
@@ -233,6 +238,8 @@ public sealed partial class AncientUiReadinessGuardTests
         foreach (var prohibited in new[]
         {
             string.Concat("No live save/load, death/failure, co-op, ", "clicked UI"),
+            "Live gameplay, clicked UI, save/load",
+            "live clicked UI, gameplay",
             "clicked Ancient UI verified",
             "clicked UI verified",
             "Ancient UI verified",

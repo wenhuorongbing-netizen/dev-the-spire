@@ -131,7 +131,7 @@ Private beta target:
 
 ## RitsuLib Dependency Rule
 
-Document RitsuLib dependency status and expected on-disk location. The expected runtime location is `<GameRoot>\mods\STS2-RitsuLib`. Do not fabricate dependency files, and do not add any shared runtime framework dependency other than STS2-RitsuLib without explicit owner approval and new migration documentation.
+Document RitsuLib dependency status and expected on-disk location. The expected runtime location is `<GameRoot>\mods\STS2-RitsuLib`. Do not fabricate dependency files, and do not add any runtime dependency besides STS2-RitsuLib without explicit owner approval and new migration documentation.
 
 ## Early Access Warning
 

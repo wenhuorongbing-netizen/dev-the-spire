@@ -34,8 +34,8 @@ Do not start future implementation from historical plans, archived prompt dumps,
 
 ## RitsuLib-First Rules
 
-- Use local game source under `source code/src/Core/` as primary game API
-  evidence before changing gameplay, save/load, reward, map, combat, or UI
+- Use unpacked local game source under `source code/src/Core/` as primary game
+  API evidence before changing gameplay, save/load, reward, map, combat, or UI
   behavior.
 - Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs to confirm the
   RitsuLib API shape before adding wrappers.
@@ -65,8 +65,8 @@ Do not start future implementation from historical plans, archived prompt dumps,
 
 ## Stop Lines
 
-- Do not add another shared runtime framework dependency without owner approval
-  and a same-pass package/docs/guard update.
+- Do not add any runtime dependency besides STS2-RitsuLib without owner
+  approval and a same-pass package/docs/guard update.
 - Do not treat loader proof or settings screenshots as gameplay, save-load,
   multiplayer, QA, release, or handoff proof.
 - Do not migrate Batch 4c or high-risk run/map/reward/save/multiplayer patches
