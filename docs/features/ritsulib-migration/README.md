@@ -9,9 +9,9 @@ read only the support file that matches the task.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.33`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.33`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current proof: beta.105 package parity, runtime preflight, source-workspace
-  validation, and smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and
-  normal Vakuu.
+- Current packaged proof: beta.105 package parity, runtime preflight,
+  source-workspace validation, and smoke-level clicked Ancient UI for Urda,
+  Morvi, Lotha, and normal Vakuu.
 - Current source migration: Urda option-relic, Root Sight map-click, Root Sight
   map-visual, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
   event-option/relic-node, Crystal Sphere peek, transform preview,
@@ -19,6 +19,11 @@ read only the support file that matches the task.
   mod-info localization UI patches plus combat hand stale-input safety are
   registered through RitsuLib
   `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
+- Current inventory: 46 migrated patch classes and 125 raw Harmony declarations
+  remain in `docs/patch-inventory.md`.
+- Boundary: the beta.105 runtime proof predates the latest source-only
+  UI/input migration. Rebuild, publish/package, and rerun runtime smoke before
+  using current HEAD as tester-package evidence.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
 - Not proved: beta.105 enabled-mode registration, gameplay, save-load,

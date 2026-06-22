@@ -16,8 +16,10 @@ Clicked UI is limited to beta.105 forced Ancient smoke. Current smoke proof cove
 ## Current Migration Evidence
 
 - Spire Plus targets `STS2.RitsuLib` `0.4.33`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.33` as the runtime dependency.
-- `check-local-godot-source-workspace.ps1` verifies the unpacked local source snapshot, installed game identity, package parity, and installed `STS2-RitsuLib.xml` markers for the RitsuLib APIs Spire Plus uses. The current refreshed run passed 57 / 0 with the retained GDRE warnings only.
+- Current source has completed the clicked/input UI migration to RitsuLib `IPatchMethod` / `ModPatcher`: 46 migrated patch classes and 125 raw Harmony declarations remain in `docs/patch-inventory.md`.
+- `check-local-godot-source-workspace.ps1` verifies the unpacked local source snapshot, installed game identity, package parity, and installed `STS2-RitsuLib.xml` markers for the RitsuLib APIs Spire Plus uses. The current refreshed run passed 58 / 0 with the retained GDRE warnings only.
 - The repository entry docs are free of the retired framework name and route future implementation through RitsuLib docs/XML plus the unpacked local game source under `source code/src/Core/`.
+- The beta.105 runtime/package proof predates the latest source-only UI/input migration; recapture publish/package/runtime evidence before treating current HEAD as tester-package proof.
 - Previous enabled-mode packets remain historical or previous-package context and do not close current beta.105 enabled-mode gameplay proof.
 - AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.105 gameplay or handoff proof.
 
