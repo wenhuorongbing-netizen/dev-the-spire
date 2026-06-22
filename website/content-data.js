@@ -800,7 +800,7 @@ window.SPIRE_PLUS_DATA = {
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "STS2-RitsuLib v0.4.33"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.107.1"],
-      ["\u4f53\u79ef", "19,031,625 \u5b57\u8282"],
+      ["\u4f53\u79ef", "19,035,478 \u5b57\u8282"],
       ["\u54c8\u5e0c", "DE6CF70E008ECC336B6E8047A40B274176692CE57AFF7444BD2DD6B60BD4E094"]
     ]
   },
@@ -1360,7 +1360,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ["Display name", "Spire Plus"],
         ["Dependency", "STS2-RitsuLib v0.4.33"],
         ["Game version", "Slay the Spire 2 v0.107.1"],
-        ["Size", "19,031,625 bytes"],
+        ["Size", "19,035,478 bytes"],
         ["Hash", "DE6CF70E008ECC336B6E8047A40B274176692CE57AFF7444BD2DD6B60BD4E094"]
       ]
     },

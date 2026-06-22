@@ -179,10 +179,10 @@ These 125 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 57 | `[HarmonyPatch(typeof(TerrorEel), "get_ThrashDamage")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 66 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_BiteDamage")]` |
 | Ascension patches | Low | `EZMicroBalanceCode/Ascension/Patches/EnemyDamagePolishPatches.cs` | 75 | `[HarmonyPatch(typeof(PhantasmalGardener), "get_LashDamage")]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationRegistry.cs` | 148 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationRegistry.cs` | 169 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationRegistry.cs` | 191 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
-| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationRegistry.cs` | 203 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
+| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 9 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]` |
+| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 30 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]` |
+| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 52 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]` |
+| Core localization | Low | `EZMicroBalanceCode/Core/Localization/SpirePlusInlineLocalizationPatches.cs` | 64 | `[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 6 | `[HarmonyPatch]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 9 | `[HarmonyPatch(typeof(AromaOfChaos), "LetGo")]` |
 | Preview tools | Low | `EZMicroBalanceCode/Preview/TransformPredictionEventRngSourcePatches.cs` | 14 | `[HarmonyPatch(typeof(EndlessConveyor), "JellyLiver")]` |

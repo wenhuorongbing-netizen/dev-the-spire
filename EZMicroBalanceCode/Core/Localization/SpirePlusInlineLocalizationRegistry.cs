@@ -21,6 +21,9 @@ internal static class SpirePlusInlineLocalizationRegistry
 
     public static void RegisterKnownProviders()
     {
+        // RitsuLib can inject dynamic models after Spire Plus startup work, so this
+        // registry intentionally retries lookup from LocTable fallbacks instead of
+        // freezing a single startup-time snapshot.
         RegisterIfAvailable(ModelDb.Enchantment<JeweledMaskFreePower>);
         RegisterIfAvailable(ModelDb.Enchantment<UrdaTrialBranchEnchantment>);
         RegisterIfAvailable(ModelDb.Enchantment<FissionEnchantment>);
@@ -141,73 +144,6 @@ internal static class SpirePlusInlineLocalizationRegistry
             {
                 // The type list can lead the dynamic ModelDb injection by one startup phase.
             }
-        }
-    }
-}
-
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetRawText))]
-internal static class SpirePlusInlineLocalizationRawTextPatch
-{
-    private static Exception? Finalizer(LocTable __instance, string key, ref string __result, Exception? __exception)
-    {
-        if (__exception == null)
-        {
-            return null;
-        }
-
-        if (__exception is LocException &&
-            SpirePlusInlineLocalizationRegistry.TryGetText(__instance, key, out var text))
-        {
-            __result = text;
-            return null;
-        }
-
-        return __exception;
-    }
-}
-
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.GetLocString))]
-internal static class SpirePlusInlineLocalizationLocStringPatch
-{
-    private static Exception? Finalizer(LocTable __instance, string key, ref LocString? __result, Exception? __exception)
-    {
-        if (__exception == null)
-        {
-            return null;
-        }
-
-        if (__exception is LocException &&
-            SpirePlusInlineLocalizationRegistry.TryGetText(__instance, key, out _) &&
-            SpirePlusInlineLocalizationRegistry.TryGetTableName(__instance, out var tableName))
-        {
-            __result = new LocString(tableName, key);
-            return null;
-        }
-
-        return __exception;
-    }
-}
-
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.HasEntry))]
-internal static class SpirePlusInlineLocalizationHasEntryPatch
-{
-    private static void Postfix(LocTable __instance, string key, ref bool __result)
-    {
-        if (!__result && SpirePlusInlineLocalizationRegistry.TryGetText(__instance, key, out _))
-        {
-            __result = true;
-        }
-    }
-}
-
-[HarmonyPatch(typeof(LocTable), nameof(LocTable.IsLocalKey))]
-internal static class SpirePlusInlineLocalizationIsLocalKeyPatch
-{
-    private static void Postfix(LocTable __instance, string key, ref bool __result)
-    {
-        if (!__result && SpirePlusInlineLocalizationRegistry.TryGetText(__instance, key, out _))
-        {
-            __result = true;
         }
     }
 }
