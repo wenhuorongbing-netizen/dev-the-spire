@@ -447,7 +447,16 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before Harmony patches.",
             "Do not add any runtime dependency besides STS2-RitsuLib for current Spire Plus work unless the owner explicitly approves a new dependency decision.",
             "Inspect local RitsuLib XML/docs, template APIs, or package references when available",
-            "Prefer command APIs and RitsuLib/template hooks over direct state mutation.");
+            "Prefer command APIs and RitsuLib/template hooks over direct state mutation.",
+            "## RitsuLib API Lookup Workflow",
+            "<GameRoot>/mods/STS2-RitsuLib/STS2-RitsuLib.xml",
+            "RitsuLibFramework.CreateContentPack(...)",
+            "RitsuLibFramework.CreatePatcher(...)",
+            "RitsuLibFramework.SubscribeLifecycle(...)",
+            "RitsuLibFramework.BeginModDataRegistration(...)",
+            "RitsuLibFramework.RegisterModSettings(...)",
+            "SavedAttachedState<TKey, TValue>",
+            "Do not infer an API from an archived prompt, an old runtime report, or a different mod.");
 
         foreach (var staleInstruction in new[]
                  {
@@ -511,6 +520,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         var integration = ReadRepoText("docs", "integrations", "ritsulib.md");
         var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
         var coreIntegrationReadme = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "README.md");
+        var archiveReadme = ReadRepoText("docs", "archive", "README.md");
 
         AssertSourceContains(
             docsReadme,
@@ -576,8 +586,13 @@ public sealed partial class DocumentationCompactnessGuardTests
             "That proves forced clicked UI visibility only;",
             "Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93",
             "`docs/features/ritsulib-migration/README.md` as the migration entry point.");
+        AssertSourceContains(
+            archiveReadme,
+            "Current migration truth is beta.105 RitsuLib-only.",
+            "active stubs under `docs/goals/` point to current beta.105 RitsuLib-only migration truth.");
         Assert.DoesNotContain("repo now compiles against `STS2.RitsuLib` 0.4.32", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("full staging record", coreIntegrationReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("current beta.91", archiveReadme, StringComparison.OrdinalIgnoreCase);
 
         foreach (var staleInstruction in new[]
                  {

@@ -33,6 +33,28 @@ For map, UI, reward, combat, save/load, progress, lobby, or hook changes:
 
 Any canonical marker, hook, or model inheriting `AbstractModel` should be obtained from `ModelDb` where the game expects canonical models. Direct constructors are only acceptable for supported runtime/mutable instances such as created cards/relics when the game APIs prove that pattern.
 
+## RitsuLib API Lookup Workflow
+
+Use this order before adding wrappers, fallback helpers, or Harmony patches:
+
+1. Confirm the package target in `PROJECT_STATE.md` and `docs/integrations/ritsulib.md`.
+2. Check the installed XML docs at `<GameRoot>/mods/STS2-RitsuLib/STS2-RitsuLib.xml`.
+3. Check the public RitsuLib docs for the same topic.
+4. Inspect the local game source under `source code/src/Core/` for the game-facing type or command.
+5. Search existing Spire Plus source for the same RitsuLib entry point before adding a new pattern.
+6. Record any source/API evidence in the feature doc that owns the behavior.
+
+Current RitsuLib entry points already verified in the local `0.4.33` XML include:
+
+- `RitsuLibFramework.CreateContentPack(...)` for content-pack registration.
+- `RitsuLibFramework.CreatePatcher(...)` and `RegisterPatch(...)` for migrated patch classes.
+- `RitsuLibFramework.SubscribeLifecycle(...)` for lifecycle observers.
+- `RitsuLibFramework.BeginModDataRegistration(...)` and `ModDataStore.Register(...)` for settings/profile data registration.
+- `RitsuLibFramework.RegisterModSettings(...)` for the settings page.
+- `SavedAttachedState<TKey, TValue>` for save-bridged attached state.
+
+Do not infer an API from an archived prompt, an old runtime report, or a different mod. If the API is not in the installed XML or current public docs, treat it as unproven for this package line.
+
 ## Testing Rules
 
 - Source guards are not runtime verification.
