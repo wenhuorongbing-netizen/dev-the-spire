@@ -24,6 +24,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterBatch4b(patcher);
         RegisterAncientRewardPatches(patcher);
         RegisterLowRiskRewardHookPatches(patcher);
+        RegisterPrismaticGemRewardPatches(patcher);
         RegisterAncientEventUiPatches(patcher);
         RegisterClickedUiPatches(patcher);
         RegisterMapUiPatches(patcher);
@@ -101,6 +102,13 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<TanxClawsMaulTuningPatches>();
         patcher.RegisterPatch<ToastyMittensPatch>();
         patcher.RegisterPatch<WhisperingEarringPatch>();
+    }
+
+    private static void RegisterPrismaticGemRewardPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<PrismaticGemPoolPatch>();
+        patcher.RegisterPatch<PrismaticGemRewardScreenContextPatch>();
+        patcher.RegisterPatch<PrismaticGemRewardPatch>();
     }
 
     private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)

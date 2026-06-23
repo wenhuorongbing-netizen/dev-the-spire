@@ -1,6 +1,6 @@
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-internal static partial class PrismaticGemRewardPatch
+internal sealed partial class PrismaticGemRewardPatch
 {
     private sealed class RewardScreenState
     {

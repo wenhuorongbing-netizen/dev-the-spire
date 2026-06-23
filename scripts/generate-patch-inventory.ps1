@@ -133,6 +133,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'TanxClawsMaulTuningPatches.cs'; Classes = 1; PatchIds = 'tanx-claws-after-obtained'; Batch = 'ancient-reward-low-risk' },
     [pscustomobject]@{ File = 'ToastyMittensPatches.cs'; Classes = 1; PatchIds = 'toasty-mittens-before-hand-draw'; Batch = 'ancient-reward-low-risk' },
     [pscustomobject]@{ File = 'WhisperingEarringPatches.cs'; Classes = 1; PatchIds = 'whispering-earring-auto-pre-play'; Batch = 'ancient-reward-low-risk' },
+    [pscustomobject]@{ File = 'PrismaticGemPatches.cs'; Classes = 1; PatchIds = 'prismatic-gem-reward-options'; Batch = 'ancient-reward-medium-risk' },
+    [pscustomobject]@{ File = 'PrismaticGemRewardContextPatches.cs'; Classes = 2; PatchIds = 'prismatic-gem-pool-noop, prismatic-gem-reward-screen-context'; Batch = 'ancient-reward-medium-risk' },
     [pscustomobject]@{ File = 'NeowInitialOptionRerollPatch.cs'; Classes = 1; PatchIds = 'neow-initial-option-reroll'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaAct1AncientService.cs'; Classes = 2; PatchIds = 'urda-overgrowth-ancient-unlock, urda-underdocks-ancient-unlock'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaOptionRelicClickPatch.cs'; Classes = 1; PatchIds = 'urda-option-relic-click'; Batch = 'clicked-ui' },

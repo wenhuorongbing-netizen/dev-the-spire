@@ -180,7 +180,12 @@ public sealed partial class AncientHighRiskSourceGuardTests
 
         AssertSourceContains(
             source,
-            "[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]",
+            "class PrismaticGemRewardPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"prismatic-gem-reward-options\"",
+            "new ModPatchTarget(",
+            "typeof(MegaCrit.Sts2.Core.Hooks.Hook)",
+            "nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions)",
+            "typeof(List<AbstractModel>).MakeByRefType()",
             "HarmonyPrefix",
             "player.Relics.OfType<PrismaticGem>().FirstOrDefault(relic => !relic.IsMelted)",
             "foreach (var listener in runState.IterateHookListeners(null))",

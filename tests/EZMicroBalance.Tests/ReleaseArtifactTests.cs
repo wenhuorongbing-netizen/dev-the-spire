@@ -377,7 +377,8 @@ public sealed partial class ReleaseArtifactTests
         var apiDiscovery = ReadRepoText("docs", "features", "ancients-rework-v4", "api-discovery.md");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
-        Assert.Contains("HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))", source, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"prismatic-gem-reward-screen-context\"", source, StringComparison.Ordinal);
+        Assert.Contains("new ModPatchTarget(typeof(CardReward), nameof(CardReward.Populate))", source, StringComparison.Ordinal);
         Assert.Contains("ConditionalWeakTable<CardReward, RewardScreenState>", source, StringComparison.Ordinal);
         Assert.Contains("PrismaticGemNormalRewardCounter[prismaticGem] + 1", source, StringComparison.Ordinal);
         Assert.Contains("for (var slotIndex = 0; slotIndex < cardRewardOptions.Count; slotIndex++)", source, StringComparison.Ordinal);

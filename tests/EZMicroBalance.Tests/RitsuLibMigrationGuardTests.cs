@@ -87,6 +87,10 @@ public sealed class RitsuLibMigrationGuardTests
         "tanx-claws-after-obtained",
         "toasty-mittens-before-hand-draw",
         "whispering-earring-auto-pre-play",
+        // Medium-risk Prismatic Gem reward patches
+        "prismatic-gem-pool-noop",
+        "prismatic-gem-reward-screen-context",
+        "prismatic-gem-reward-options",
         // Clicked UI patches - owner-approved targeted migration
         "neow-initial-option-reroll",
         "urda-overgrowth-ancient-unlock",
@@ -191,6 +195,7 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedBatch4bCount = 16;
     private const int ExpectedAncientRewardCount = 18;
     private const int ExpectedLowRiskRewardHookCount = 17;
+    private const int ExpectedPrismaticGemRewardCount = 3;
     private const int ExpectedClickedUiCount = 50;
     private const int ExpectedVisualHoverUiCount = 13;
     private const int ExpectedEventVisualUiCount = 1;
@@ -200,8 +205,8 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedInlineLocalizationCount = 4;
     private const int ExpectedRitsuLibCompatibilityCount = 1;
     private const int ExpectedUrdaTransformSeedbedCount = 4;
-    private const int ExpectedTotalMigratedCount = 148;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 22;
+    private const int ExpectedTotalMigratedCount = 151;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 19;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -241,9 +246,9 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 144:
+    /// The expected migrated patch count must be 151:
     /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
-    /// + 17 low-risk reward hooks
+    /// + 17 low-risk reward hooks + 3 Prismatic Gem reward patches
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
     /// + 1 event visual UI patch + 2 intent UI patches
     /// + 7 enemy damage polish getter patches
@@ -255,7 +260,7 @@ public sealed class RitsuLibMigrationGuardTests
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -368,7 +373,7 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             currentValidation,
-            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.125 runtime patch registration.",
+            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.126 runtime patch registration.",
             "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
         AssertSourceContains(
             projectState,
@@ -473,6 +478,10 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<TanxClawsMaulTuningPatches>();",
             "RegisterPatch<ToastyMittensPatch>();",
             "RegisterPatch<WhisperingEarringPatch>();",
+            "RegisterPrismaticGemRewardPatches(patcher);",
+            "RegisterPatch<PrismaticGemPoolPatch>();",
+            "RegisterPatch<PrismaticGemRewardScreenContextPatch>();",
+            "RegisterPatch<PrismaticGemRewardPatch>();",
             "RegisterAncientEventUiPatches(patcher);",
             "RegisterPatch<NeowInitialOptionRerollPatch>();",
             "RegisterPatch<UrdaOvergrowthPatch>();",
@@ -629,7 +638,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Spire Plus is RitsuLib-only for beta.125", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus is RitsuLib-only for beta.126", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -719,7 +728,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.125 package parity, runtime preflight, and source-workspace validation passed for the packaged 148/22 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.126 package parity, runtime preflight, and source-workspace validation passed for the packaged 151/19 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -873,8 +882,8 @@ public sealed class RitsuLibMigrationGuardTests
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 148", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 22", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 151", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 19", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -892,6 +901,8 @@ public sealed class RitsuLibMigrationGuardTests
             "`TanxClawsMaulTuningPatches.cs` | 1 | `tanx-claws-after-obtained` | ancient-reward-low-risk |",
             "`ToastyMittensPatches.cs` | 1 | `toasty-mittens-before-hand-draw` | ancient-reward-low-risk |",
             "`WhisperingEarringPatches.cs` | 1 | `whispering-earring-auto-pre-play` | ancient-reward-low-risk |",
+            "`PrismaticGemPatches.cs` | 1 | `prismatic-gem-reward-options` | ancient-reward-medium-risk |",
+            "`PrismaticGemRewardContextPatches.cs` | 2 | `prismatic-gem-pool-noop, prismatic-gem-reward-screen-context` | ancient-reward-medium-risk |",
             "`NeowInitialOptionRerollPatch.cs` | 1 | `neow-initial-option-reroll` | clicked-ui |",
             "`UrdaAct1AncientService.cs` | 2 | `urda-overgrowth-ancient-unlock, urda-underdocks-ancient-unlock` | clicked-ui |",
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",

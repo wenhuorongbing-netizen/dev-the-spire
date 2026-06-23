@@ -1,8 +1,20 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]
-internal static class PrismaticGemPoolPatch
+internal sealed class PrismaticGemPoolPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "prismatic-gem-pool-noop";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Disable vanilla Prismatic Gem pool broadening so Spire Plus can replace screen rewards deterministically";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+    [
+        new ModPatchTarget(
+            typeof(PrismaticGem),
+            nameof(PrismaticGem.ModifyCardRewardCreationOptions),
+            [typeof(Player), typeof(CardCreationOptions)])
+    ];
+
     [HarmonyPrefix]
     private static bool Prefix(CardCreationOptions options, ref CardCreationOptions __result)
     {
@@ -11,9 +23,14 @@ internal static class PrismaticGemPoolPatch
     }
 }
 
-[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]
-internal static class PrismaticGemRewardScreenContextPatch
+internal sealed class PrismaticGemRewardScreenContextPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "prismatic-gem-reward-screen-context";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Track the active CardReward screen while Prismatic Gem reward options are being populated";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CardReward), nameof(CardReward.Populate))];
+
     [ThreadStatic]
     private static Stack<CardReward>? PopulateStack;
 

@@ -2,9 +2,25 @@ using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]
-internal static partial class PrismaticGemRewardPatch
+internal sealed partial class PrismaticGemRewardPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "prismatic-gem-reward-options";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Apply Prismatic Gem off-color replacement between Core's early and late reward modifiers";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+    [
+        new ModPatchTarget(
+            typeof(MegaCrit.Sts2.Core.Hooks.Hook),
+            nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions),
+            [
+                typeof(IRunState),
+                typeof(Player),
+                typeof(List<CardCreationResult>),
+                typeof(CardCreationOptions),
+                typeof(List<AbstractModel>).MakeByRefType()
+            ])
+    ];
+
     [HarmonyPrefix]
     private static bool Prefix(
         IRunState runState,
@@ -52,5 +68,4 @@ internal static partial class PrismaticGemRewardPatch
         return false;
     }
 }
-
 

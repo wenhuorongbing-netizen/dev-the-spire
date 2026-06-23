@@ -776,25 +776,25 @@ window.SPIRE_PLUS_DATA = {
     }
   ],
   package: {
-    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.125.zip",
+    localDownload: "../publish/SpirePlus-v0.1.0-private-beta.126.zip",
     releaseDownload:
-      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.125/SpirePlus-v0.1.0-private-beta.125.zip",
+      "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/download/v0.1.0-private-beta.126/SpirePlus-v0.1.0-private-beta.126.zip",
     latestReleaseApi: "https://api.github.com/repos/wenhuorongbing-netizen/dev-the-spire/releases/latest",
-    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.125",
+    releasesPage: "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.126",
     dependencyRelease: "https://github.com/BAKAOLC/STS2-RitsuLib/releases",
     repository: "https://github.com/wenhuorongbing-netizen/dev-the-spire",
     meta: [
-      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.125.zip"],
-      ["\u7248\u672c", "v0.1.0-private-beta.125"],
+      ["\u6587\u4ef6", "SpirePlus-v0.1.0-private-beta.126.zip"],
+      ["\u7248\u672c", "v0.1.0-private-beta.126"],
       ["\u663e\u793a\u540d", "Spire Plus"],
       ["\u4f9d\u8d56", "STS2-RitsuLib v0.4.34"],
       ["\u6e38\u620f\u7248\u672c", "Slay the Spire 2 v0.107.1"],
-      ["\u4f53\u79ef", "19,048,002 \u5b57\u8282"],
-      ["\u54c8\u5e0c", "F26783A66661F0BCA00C79822A16A3F3C4713FD08759FB9CA5545E3270E45492"]
+      ["\u4f53\u79ef", "19,048,448 \u5b57\u8282"],
+      ["\u54c8\u5e0c", "6B8D6600E4029865BA6B5F9BA8603D3358681089437779C4E938206E5AC4EDBE"]
     ]
   },
   installSteps: [
-    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.125.zip\u3002",
+    "\u4e0b\u8f7d SpirePlus-v0.1.0-private-beta.126.zip\u3002",
     "下载 STS2-RitsuLib v0.4.34 或更新版本，并解压到游戏的 mods\\STS2-RitsuLib 目录。",
     "Windows 常见路径：Steam\\steamapps\\common\\Slay the Spire 2。",
     "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -827,7 +827,7 @@ window.SPIRE_PLUS_DATA = {
     ],
     links: [
       ["GitHub 仓库", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.125"]
+      ["发布页", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.126"]
     ]
   },
   updateGroups: [
@@ -1003,7 +1003,7 @@ window.SPIRE_PLUS_DATA = {
   changeLog: [
     ["2026-05-23 · 玩法文本同步", "网站重新同步当前 mod localization，并更新苗床、雨息、终审封庭、瓦库试炼契约、A12 火印溢火与 A19/A20 首领专属能力展示。"],
     ["2026-05-22 \u00b7 \u7f51\u7ad9\u91cd\u6784", "\u7ad9\u70b9\u6539\u4e3a\u56db\u4e2a\u4e3b\u8981\u9875\u9762\uff1a\u66f4\u65b0\u5185\u5bb9\u3001\u4e0b\u8f7d\u4e0e\u5b89\u88c5\u3001\u8bba\u575b\u3001\u5df2\u77e5\u95ee\u9898\u4e0e\u66f4\u65b0\u8bb0\u5f55\u3002"],
-    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.125.zip；游戏内显示名为 Spire Plus。"],
+    ["\u5f53\u524d\u5305", "SpirePlus-v0.1.0-private-beta.126.zip；游戏内显示名为 Spire Plus。"],
     ["\u5148\u53e4\u5185\u5bb9", "\u4e4c\u5c14\u59b2\u3001\u83ab\u5c14\u7ef4\u3001\u6d1b\u838e\u5df2\u4f5c\u4e3a\u65b0\u5148\u53e4\u52a0\u5165\uff1b\u74e6\u5e93\u8bd5\u70bc\u4ecd\u4fdd\u6301\u9690\u85cf\u95e8\u63a7\u3002"],
     ["\u8fdb\u9636\u5185\u5bb9", "A11-A20 \u5df2\u52a0\u5165\u79c1\u6d4b\u5305\u3002\u5355\u4eba\u548c\u623f\u4e3b\u591a\u4eba\u53ef\u9009\uff0c\u5b8c\u6574\u8054\u673a\u73a9\u6cd5\u4ecd\u9700\u540e\u7eed\u9a8c\u8bc1\u3002"],
     ["\u9884\u89c8\u5de5\u5177", "\u6c34\u6676\u7403\u9884\u77e5\u548c\u53d8\u6362\u771f\u5b9e\u9884\u89c8\u5df2\u5408\u5e76\u8fdb Spire Plus\uff0c\u4e0d\u518d\u4f5c\u4e3a\u72ec\u7acb\u6a21\u7ec4\u53d1\u5e03\u3002"]
@@ -1226,7 +1226,7 @@ window.SPIRE_PLUS_DATA.i18n = {
       }
     ],
     installSteps: [
-      "下载 SpirePlus-v0.1.0-private-beta.125.zip。",
+      "下载 SpirePlus-v0.1.0-private-beta.126.zip。",
       "下载 STS2-RitsuLib v0.4.34 或更新版本，并解压到游戏的 mods\\STS2-RitsuLib 目录。",
       "常见 Windows 路径：Steam\\steamapps\\common\\Slay the Spire 2。",
       "将压缩包内的 Spire Plus 模组文件夹放入游戏的 mods 目录；不要手动改名。",
@@ -1344,17 +1344,17 @@ window.SPIRE_PLUS_DATA.i18n = {
     },
     package: {
       meta: [
-        ["File", "SpirePlus-v0.1.0-private-beta.125.zip"],
-        ["Version", "v0.1.0-private-beta.125"],
+        ["File", "SpirePlus-v0.1.0-private-beta.126.zip"],
+        ["Version", "v0.1.0-private-beta.126"],
         ["Display name", "Spire Plus"],
         ["Dependency", "STS2-RitsuLib v0.4.34"],
         ["Game version", "Slay the Spire 2 v0.107.1"],
-        ["Size", "19,048,002 bytes"],
-        ["Hash", "F26783A66661F0BCA00C79822A16A3F3C4713FD08759FB9CA5545E3270E45492"]
+        ["Size", "19,048,448 bytes"],
+        ["Hash", "6B8D6600E4029865BA6B5F9BA8603D3358681089437779C4E938206E5AC4EDBE"]
       ]
     },
     installSteps: [
-      "Download SpirePlus-v0.1.0-private-beta.125.zip.",
+      "Download SpirePlus-v0.1.0-private-beta.126.zip.",
       "Download STS2-RitsuLib v0.4.34 or newer and extract it to the game's mods\\STS2-RitsuLib folder.",
       "Common Windows path: Steam\\steamapps\\common\\Slay the Spire 2.",
       "Place the Spire Plus mod folder from the zip into the game's mods folder. Do not rename it manually.",
@@ -1386,7 +1386,7 @@ window.SPIRE_PLUS_DATA.i18n = {
         ],
         links: [
           ["GitHub Repository", "https://github.com/wenhuorongbing-netizen/dev-the-spire"],
-          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.125"]
+          ["Release Page", "https://github.com/wenhuorongbing-netizen/dev-the-spire/releases/tag/v0.1.0-private-beta.126"]
         ]
       },
     updateGroups: [
@@ -1748,7 +1748,7 @@ window.SPIRE_PLUS_DATA.i18n = {
     changeLog: [
       ["2026-05-23 · Gameplay text sync", "Resynced website localization and refreshed Seedbed, Rain Breath, Closed Court, Vakuu Trial contracts, A12 Firemark overflow, and A19/A20 Boss dedicated ability display text."],
       ["2026-05-22 · Website rebuild", "The site now has four main pages: updates, download and install, forum, and known issues with changelog."],
-      ["Current package", "SpirePlus-v0.1.0-private-beta.125.zip; the in-game display name is Spire Plus."],
+      ["Current package", "SpirePlus-v0.1.0-private-beta.126.zip; the in-game display name is Spire Plus."],
       ["Ancient content", "Urda, Morvi, and Lotha are included as new Ancients. The Vakuu trial remains hidden behind test gates."],
       ["Ascension content", "A11-A20 is included in the private test build. Single-player and host multiplayer selection are available; full co-op play still needs verification."],
       ["Preview tools", "Crystal Sphere peek and deterministic transform preview are merged into Spire Plus and are no longer shipped as a separate package."]

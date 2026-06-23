@@ -8,16 +8,16 @@ older loader evidence into gameplay or release claims.
 This checklist is for the active package line:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.125`
+- Spire Plus `v0.1.0-private-beta.126`
 - STS2-RitsuLib `v0.4.34`
 - RitsuLib direct NuGet runtime layout
 - Stable technical manifest id `EZMicroBalance`
 
 ## Current Status
 
-Current beta.125 package parity, runtime preflight, and source-workspace
+Current beta.126 package parity, runtime preflight, and source-workspace
 validation are recorded in `PROJECT_STATE.md` and
-`docs/reviews/current-validation.md`; beta.125 still needs game-launch/runtime
+`docs/reviews/current-validation.md`; beta.126 still needs game-launch/runtime
 patch-count proof. Latest clicked Ancient UI smoke remains beta.123
 previous-package evidence under
 `.tools/runtime-evidence/monkey-stability-20260622-235746/` with 4 / 4
@@ -59,9 +59,9 @@ source-only `-PrintExpected` output, or verification of already-captured logs.
    variant.
 2. STS2-RitsuLib `v0.4.34` or newer installed at
    `<GameRoot>\mods\STS2-RitsuLib`.
-3. Spire Plus `v0.1.0-private-beta.125` installed at
+3. Spire Plus `v0.1.0-private-beta.126` installed at
    `<GameRoot>\mods\EZMicroBalance` from
-   `publish/SpirePlus-v0.1.0-private-beta.125.zip`.
+   `publish/SpirePlus-v0.1.0-private-beta.126.zip`.
 4. Enabled mod set for this lane contains only `STS2-RitsuLib` and
    `EZMicroBalance`.
 5. If using `scripts\spire-plus-live-session.ps1`, prepare with explicit
@@ -98,7 +98,7 @@ Ensure `STS2-RitsuLib` is not moved out by any mod-isolation step.
 | 2 | Install Spire Plus beta.123 | Installed folder, manifest, DLL, PCK, and package hashes match beta.123 handoff docs | PASS: package parity is recorded in `PROJECT_STATE.md` |
 | 3 | Launch beta.123 with only the two allowed mods | Main menu loads without crash | PASS: `.tools/runtime-evidence/monkey-stability-20260622-235746/` |
 | 4 | Check `godot.log` for RitsuLib init | RitsuLib initializes and reports no dependency errors | PASS: beta.123 monkey packet verifier 1621 / 0 |
-| 5 | Check `godot.log` for Spire Plus init | Single Spire Plus initialization line, technical id `EZMicroBalance`, package `v0.1.0-private-beta.125` | PASS: beta.123 monkey packet verifier 1621 / 0 |
+| 5 | Check `godot.log` for Spire Plus init | Single Spire Plus initialization line, technical id `EZMicroBalance`, package `v0.1.0-private-beta.126` | PASS: beta.123 monkey packet verifier 1621 / 0 |
 | 6 | Check `godot.log` for ModPatcher count | 127 migrated patch classes register through RitsuLib and remaining raw Harmony patches load without dependency failures | PASS: beta.123 smoke applied all 127 migrated patch classes |
 | 7 | Check release-blocking signatures | 0 `MissingMethodException`, `TypeLoadException`, manifest dependency failure, or release-blocking audit hits | PASS: beta.123 clean log audit |
 | 8 | Check saved attached-state registration | RitsuLib saved attached-state registration succeeds | PASS: beta.123 clean log audit |
@@ -117,8 +117,8 @@ After any future enabled-mode smoke copies `godot.log` and writes
 `godot-log-audit.json`, verify the copied files without launching anything:
 
 ```powershell
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "<evidence>\godot.log.current-iteration" -AuditPath "<evidence>\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.125 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\enabled-mode-log-check.json" -FailOnMismatch
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "<evidence>\godot.log.current-iteration" -AuditPath "<evidence>\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.125 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "<evidence>\godot.log.current-iteration" -AuditPath "<evidence>\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.126 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "<evidence>\godot.log.current-iteration" -AuditPath "<evidence>\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.126 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\enabled-mode-log-check.json" -FailOnMismatch
 ```
 
 For helper-created evidence folders, prefer the packet verifier to verify the
@@ -132,8 +132,8 @@ when that retained slice is absent, it derives the slice only if
 against that current slice rather than the full copied log:
 
 ```powershell
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.125 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.125 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.126 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir "<evidence>" -ExpectedPackageVersion v0.1.0-private-beta.126 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "<evidence>\runtime-evidence-packet-check.json" -FailOnMismatch
 ```
 
 For enabled-mode copied logs, the log verifier requires explicit expected
@@ -219,8 +219,8 @@ checklist.
 - Multiplayer disposition confirmed fail-closed.
 - `godot.log` contains 0 release-blocking hits.
 
-Current exit status: beta.125 package parity, runtime preflight, and
-source-workspace validation pass. beta.125 game-launch/runtime patch-count proof
+Current exit status: beta.126 package parity, runtime preflight, and
+source-workspace validation pass. beta.126 game-launch/runtime patch-count proof
 and clicked Ancient UI smoke are pending. Current enabled-mode proof, gameplay,
 save-load, replacement behavior, multiplayer/co-op, independent QA, and tester
 handoff remain pending.

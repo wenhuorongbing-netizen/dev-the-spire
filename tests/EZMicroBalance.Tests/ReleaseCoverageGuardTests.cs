@@ -274,7 +274,7 @@ public sealed partial class ReleaseCoverageGuardTests
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/urda.md", issues, StringComparison.Ordinal);
         Assert.Contains("docs/issues/waiting-tests.md", issues, StringComparison.Ordinal);
-        Assert.Contains("Current package hashes, 2026-06-22 beta.123:", issues, StringComparison.Ordinal);
+        Assert.Contains("Current package hashes, 2026-06-23 beta.126:", issues, StringComparison.Ordinal);
         Assert.Contains("`URDA-PROTOTYPE` P0 open", issues, StringComparison.Ordinal);
         Assert.DoesNotContain("Status: resolved", issues, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\uFFFD", issues, StringComparison.Ordinal);
@@ -295,10 +295,10 @@ public sealed partial class ReleaseCoverageGuardTests
         var readme = ReadRepoText("docs", "README.md");
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package target is beta.123", projectState, StringComparison.Ordinal);
-        Assert.Contains("build, publish, package refresh, local RitsuLib runtime install, and forced clicked Ancient UI smoke are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.126", projectState, StringComparison.Ordinal);
+        Assert.Contains("build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, and local RitsuLib runtime install are current", projectState, StringComparison.Ordinal);
         Assert.Contains("Current beta.123 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
-        Assert.Contains("The beta.99 RitsuLib settings UI, beta.96 Off loader, and beta.93 AdditiveBatch1 rows remain previous-package context", projectState, StringComparison.Ordinal);
+        Assert.Contains("Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof are previous-package context", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("5be5c51", projectState, StringComparison.OrdinalIgnoreCase);
