@@ -136,7 +136,11 @@ Add-NotContainsCheck -Name 'feature_module_has_no_disable_env_override' -Text $f
 Add-ContainsCheck -Name 'feature_registry_registers_sts1_module' -Text $featureRegistry -Needle '.Register(new Sts1EventsFeatureModule())'
 
 Add-ContainsCheck -Name 'replacement_patch_source_compile_gated' -Text $replacementPrototype -Needle '#if REPLACEMENT_PROTOTYPE_ENABLED'
-Add-ContainsCheck -Name 'replacement_patch_harmony_patch_declared' -Text $replacementPrototype -Needle '[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]'
+Add-ContainsCheck -Name 'replacement_patch_uses_ritsulib_patch_method' -Text $replacementPrototype -Needle 'Sts1ReplacementPrototype : IPatchMethod'
+Add-ContainsCheck -Name 'replacement_patch_has_stable_patch_id' -Text $replacementPrototype -Needle 'IPatchMethod.PatchId => "sts1-replacement-prototype-generate-rooms"'
+Add-ContainsCheck -Name 'replacement_patch_targets_act_generate_rooms' -Text $replacementPrototype -Needle 'nameof(ActModel.GenerateRooms)'
+Add-ContainsCheck -Name 'replacement_patch_targets_current_signature' -Text $replacementPrototype -Needle '[typeof(Rng), typeof(UnlockState), typeof(bool)]'
+Add-NotContainsCheck -Name 'replacement_patch_has_no_class_level_harmony_patch' -Text $replacementPrototype -Needle '[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]'
 Add-ContainsCheck -Name 'replacement_patch_checks_mode_at_runtime' -Text $replacementPrototype -Needle 'Sts1EventFeatureGate.ResolveMode() == Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype'
 
 $report = [pscustomobject]@{

@@ -5,7 +5,7 @@ Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.
 
 ## Current Truth
 
-- Current package truth is beta.127 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`; package parity, runtime preflight, and source-workspace validation are current no-launch evidence.
+- Current package truth is beta.128 on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`; package parity, runtime preflight, and source-workspace validation are current no-launch evidence.
 - Spire Plus is RitsuLib-only. `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`, and `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 - Future StS1 event work must start from RitsuLib docs/XML, active StS1 feature docs, and the unpacked local game source under `source code/src/Core/`.
 - The StS1 event prototype remains default Off. Do not use StS1 event work to widen Ancient, Ascension, save/load, replacement, or multiplayer claims.
@@ -26,7 +26,7 @@ Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.
 
 ## Runtime Proof Rules
 
-- Game-native AutoSlay and runtime-monkey packets must use current package/game/Ritsu target switches, including Spire Plus `v0.1.0-private-beta.127`, Slay the Spire 2 `v0.107.1`, and STS2-RitsuLib `0.4.34`.
+- Game-native AutoSlay and runtime-monkey packets must use current package/game/Ritsu target switches, including Spire Plus `v0.1.0-private-beta.128`, Slay the Spire 2 `v0.107.1`, and STS2-RitsuLib `0.4.34`.
 - Proof-mode AutoSlay commands must include `-ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA`; retained `autoslay-plan.json`, retained `autoslay-summary.json`, and sidecar-plus-current-log event traversal must bind to the same Ancient id before future gameplay proof can count.
 - A clean static suite, current-doc scan, v19 ledger, v20 overlay, or subagent coverage run is no-launch governance evidence only. It is not gameplay, save-load, replacement, multiplayer, QA, release, or handoff proof.
 - Do not start overlapping validation lanes when a long `dotnet`, package, or game-runtime validation lane is already active.

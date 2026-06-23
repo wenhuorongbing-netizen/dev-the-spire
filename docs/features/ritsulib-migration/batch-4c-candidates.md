@@ -13,8 +13,8 @@ This migration is source/registration work only; it is not gameplay, save-load, 
 
 - STS2-RitsuLib `v0.4.34` is installed on the E-drive game root in direct NuGet runtime layout.
 - The latest dependency recheck still reports `STS2.RitsuLib` `0.4.34` as the stable NuGet target.
-- beta.127 package parity, runtime preflight, and source-workspace validation passed for the packaged 152/18 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.
-- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; later visual-hover UI, rest-site UI, Act Ancient unlock-list UI, Vakuu event-state UI, Ancient reward hook, low-risk reward hook, intent UI, Enemy Damage getter, RitsuLib compatibility, and Ascension map generation passes raised the current source count to 152 migrated patches with 18 raw Harmony declarations remaining. The beta.123 clicked UI smoke covers the packaged 127-patch state for forced Ancient UI only.
+- beta.128 package parity, runtime preflight, and source-workspace validation passed for the packaged 153/17 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.
+- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; later visual-hover UI, rest-site UI, Act Ancient unlock-list UI, Vakuu event-state UI, Ancient reward hook, low-risk reward hook, intent UI, Enemy Damage getter, RitsuLib compatibility, and Ascension map generation passes raised the current source count to 153 migrated patches with 17 raw Harmony declarations remaining. The beta.123 clicked UI smoke covers the packaged 127-patch state for forced Ancient UI only.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 ## Migration Self-Check
@@ -54,6 +54,6 @@ Dependency gate checked: 2026-06-22.
 ## Stop Lines
 
 - High-risk migration remains out of scope without a new owner decision: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, and reward-state patches stay on their current guarded path.
-- Before citing the current source migration as runtime coverage, capture a fresh beta.127 loader packet that proves the current 152 migrated Spire Plus patch classes apply in the installed game.
+- Before citing the current source migration as runtime coverage, capture a fresh beta.128 loader packet that proves the current 153 migrated Spire Plus patch classes apply in the installed game.
 - Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite current enabled-mode evidence with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
 - Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

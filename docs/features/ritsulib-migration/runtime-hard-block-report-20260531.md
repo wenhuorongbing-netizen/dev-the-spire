@@ -9,7 +9,7 @@ install. That specific blocker is no longer current.
 Current package line:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.127`
+- Spire Plus `v0.1.0-private-beta.128`
 - STS2-RitsuLib `v0.4.34`
 - RitsuLib runtime variant `lib\0.107.1`
 - Stable technical manifest id `EZMicroBalance`

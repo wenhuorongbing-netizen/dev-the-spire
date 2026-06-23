@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 18 |
-| Migrated to RitsuLib ModPatcher | 152 |
-| Raw HarmonyPatch remaining | 18 |
+| Total raw HarmonyPatch declarations | 17 |
+| Migrated to RitsuLib ModPatcher | 153 |
+| Raw HarmonyPatch remaining | 17 |
 | Tracked patch units total | 170 |
 | High risk (raw Harmony) | 15 |
 | Medium risk (raw Harmony) | 0 |
-| Low risk (raw Harmony) | 3 |
+| Low risk (raw Harmony) | 2 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 152 patch classes implement `IPatchMethod` and are registered via
+These 153 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -101,13 +101,14 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |
 | `UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |
 | `AscensionMapGenerationPatches.cs` | 1 | `ascension-act-model-create-map` | ascension-map-generation |
+| `Sts1ReplacementPrototype.cs` | 1 | `sts1-replacement-prototype-generate-rooms` | sts1-replacement-prototype |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 18 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 17 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -128,4 +129,3 @@ These 18 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 26 | `[HarmonyPatch(typeof(NGame), "ReturnToMainMenu")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 38 | `[HarmonyPatch(typeof(NGame), "Quit")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |
-| STS1 event replacements | Low | `EZMicroBalanceCode/Sts1Events/Runtime/Sts1ReplacementPrototype.cs` | 45 | `[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]` |

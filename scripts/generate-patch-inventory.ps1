@@ -173,7 +173,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'UrdaWitheredHuskTransformPatches.cs'; Classes = 2; PatchIds = 'urda-withered-husk-transformable, urda-withered-husk-transformation-options'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'UrdaSeedbedAfterCardDrawnPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-after-card-drawn'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'UrdaSeedbedCardPileDrawPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-card-pile-draw'; Batch = 'urda-transform-seedbed' },
-    [pscustomobject]@{ File = 'AscensionMapGenerationPatches.cs'; Classes = 1; PatchIds = 'ascension-act-model-create-map'; Batch = 'ascension-map-generation' }
+    [pscustomobject]@{ File = 'AscensionMapGenerationPatches.cs'; Classes = 1; PatchIds = 'ascension-act-model-create-map'; Batch = 'ascension-map-generation' },
+    [pscustomobject]@{ File = 'Sts1ReplacementPrototype.cs'; Classes = 1; PatchIds = 'sts1-replacement-prototype-generate-rooms'; Batch = 'sts1-replacement-prototype' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

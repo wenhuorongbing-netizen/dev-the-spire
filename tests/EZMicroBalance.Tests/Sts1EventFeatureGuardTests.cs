@@ -403,16 +403,20 @@ public sealed partial class Sts1EventFeatureGuardTests
     [Fact]
     public void ReplacementPrototypeSourceExistsWithCorrectStructure()
     {
-        // The ReplacementPrototype Harmony patch must exist and be gated behind #if REPLACEMENT_PROTOTYPE_ENABLED.
+        // The ReplacementPrototype RitsuLib patch must exist and be gated behind #if REPLACEMENT_PROTOTYPE_ENABLED.
         var filePath = Path.Combine(Root, "EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1ReplacementPrototype.cs");
         Assert.True(File.Exists(filePath), "Sts1ReplacementPrototype.cs not found in Runtime directory.");
 
         var source = File.ReadAllText(filePath);
         AssertSourceContains(source,
             "#if REPLACEMENT_PROTOTYPE_ENABLED",
-            "HarmonyPatch",
+            "Sts1ReplacementPrototype : IPatchMethod",
+            "IPatchMethod.PatchId => \"sts1-replacement-prototype-generate-rooms\"",
+            "nameof(ActModel.GenerateRooms)",
+            "[typeof(Rng), typeof(UnlockState), typeof(bool)]",
             "GenerateRooms",
             "Sts1EventRegistrationMode.ReplaceUnknownEventsPrototype",
             "#endif");
+        Assert.DoesNotContain("[HarmonyPatch(typeof(ActModel), nameof(ActModel.GenerateRooms))]", source, StringComparison.Ordinal);
     }
 }

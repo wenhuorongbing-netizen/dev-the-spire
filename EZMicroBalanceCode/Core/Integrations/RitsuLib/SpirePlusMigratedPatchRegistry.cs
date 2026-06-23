@@ -9,6 +9,7 @@ using EZMicroBalance.EZMicroBalanceCode.Core.Localization;
 using EZMicroBalance.EZMicroBalanceCode.Map;
 using EZMicroBalance.EZMicroBalanceCode.Modding;
 using EZMicroBalance.EZMicroBalanceCode.Preview;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 using STS2RitsuLib.Patching.Core;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -40,6 +41,9 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterRitsuLibCompatibilityPatches(patcher);
         RegisterUrdaTransformAndSeedbedPatches(patcher);
         RegisterAscensionMapGenerationPatches(patcher);
+#if REPLACEMENT_PROTOTYPE_ENABLED
+        RegisterSts1ReplacementPrototypePatches(patcher);
+#endif
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -147,6 +151,13 @@ internal static partial class SpirePlusMigratedPatchRegistry
     {
         patcher.RegisterPatch<AscensionActModelCreateMapPatch>();
     }
+
+#if REPLACEMENT_PROTOTYPE_ENABLED
+    private static void RegisterSts1ReplacementPrototypePatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<Sts1ReplacementPrototype>();
+    }
+#endif
 
     private static void RegisterFiddlePatches(ModPatcher patcher)
     {
