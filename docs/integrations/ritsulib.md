@@ -26,11 +26,14 @@ Bootstrap structure: `RitsuLibBootstrap` now applies migrated patches through
 `patcher.PatchAll()` directly. If a required migrated patch fails to resolve or
 apply, Spire Plus stops before saved-state, settings, content, or feature
 registration so the runtime cannot continue in a partially migrated state.
-`SpirePlusMigratedPatchRegistry.Ui.cs` owns the clicked, hover, settings, and
-selection UI registration groups as a separate partial class, while the main
-registry file keeps reward, localization, compatibility, and gameplay-hook
-registration groups. This keeps the completed clicked-UI migration auditable in
-code, not only in docs.
+`SpirePlusMigratedPatchRegistry.cs` now keeps only the ordered registration
+entry point. Its sibling partials own the feature domains:
+`SpirePlusMigratedPatchRegistry.Ui.cs` for clicked, hover, settings, and
+selection UI; `SpirePlusMigratedPatchRegistry.Rewards.cs` for card, relic, and
+reward hooks; `SpirePlusMigratedPatchRegistry.Localization.cs` for localization
+and RitsuLib compatibility hooks; and
+`SpirePlusMigratedPatchRegistry.Gameplay.cs` for gameplay and diagnostics. This
+keeps the completed clicked-UI migration auditable in code, not only in docs.
 
 ## What Is RitsuLib
 
