@@ -217,11 +217,19 @@ public sealed partial class EngineeringGovernanceGuardTests
             agentGuidance,
             "STS2-RitsuLib",
             "The active Spire Plus package must remain RitsuLib-only",
+            "Current beta.133 build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace validation are current for the packaged 165/4 source state.",
+            "Current beta.133 package refresh is recorded in `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, and `docs/private-beta-verification-handoff.md`.",
+            "The source inventory is 165 migrated RitsuLib patch classes and 4 raw Harmony declarations; the remaining raw declarations are high-risk lifecycle patches, not clicked UI.",
+            "This is previous-package smoke-level clicked UI proof only.",
             "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
             "inspect RitsuLib/template APIs",
             "Install STS2-RitsuLib `v0.4.34` under `<GameRoot>\\mods\\STS2-RitsuLib`",
             "Before release: verify STS2-RitsuLib and Spire Plus load in-game",
             "## RitsuLib Dependency Rule");
+
+        Assert.DoesNotContain("Installed beta.128 build/publish/package refresh", agentGuidance, StringComparison.Ordinal);
+        Assert.DoesNotContain("Current beta.128 package refresh", agentGuidance, StringComparison.Ordinal);
+        Assert.DoesNotContain("The source inventory remains 153 migrated patch classes", agentGuidance, StringComparison.Ordinal);
 
         foreach (var token in RetiredSharedRuntimeTokens())
         {
