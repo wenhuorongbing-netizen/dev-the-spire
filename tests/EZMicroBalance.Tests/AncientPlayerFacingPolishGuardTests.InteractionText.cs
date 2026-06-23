@@ -52,7 +52,9 @@ public sealed partial class AncientPlayerFacingPolishGuardTests
             "new ModPatchTarget(typeof(NClickableControl), nameof(NClickableControl._GuiInput), [typeof(InputEvent)])",
             "__instance is not NMapPoint mapPoint",
             "InputEventMouseButton { ButtonIndex: MouseButton.Left }",
-            "__instance.GetViewport()?.SetInputAsHandled()",
+            "TryConsumeRootSightMapPointRelease",
+            "setInputHandled: true",
+            "mapPoint.GetViewport()?.SetInputAsHandled()",
             "UrdaBlessingService.TryCommitRootSightSelection");
         AssertSourceContains(
             morvi,

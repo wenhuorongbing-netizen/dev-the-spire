@@ -16,13 +16,30 @@ internal sealed class UrdaRootSightMapPointClickPatch : IPatchMethod
     [HarmonyPrefix]
     private static bool Prefix(NMapPoint __instance)
     {
-        if (!UrdaBlessingService.IsRootSightSelectionActive)
+        if (!TryConsumeRootSightMapPointRelease(__instance, setInputHandled: false))
         {
             return true;
         }
 
-        _ = TaskHelper.RunSafely(UrdaBlessingService.TryCommitRootSightSelection(__instance.Point));
         return false;
+    }
+
+    internal static bool TryConsumeRootSightMapPointRelease(
+        NMapPoint mapPoint,
+        bool setInputHandled)
+    {
+        if (!UrdaBlessingService.IsRootSightSelectionActive)
+        {
+            return false;
+        }
+
+        _ = TaskHelper.RunSafely(UrdaBlessingService.TryCommitRootSightSelection(mapPoint.Point));
+        if (setInputHandled)
+        {
+            mapPoint.GetViewport()?.SetInputAsHandled();
+        }
+
+        return true;
     }
 }
 
@@ -38,15 +55,23 @@ internal sealed class UrdaRootSightDisabledMapPointClickPatch : IPatchMethod
     private static bool Prefix(NClickableControl __instance, InputEvent inputEvent)
     {
         if (__instance is not NMapPoint mapPoint ||
-            !UrdaBlessingService.IsRootSightSelectionActive ||
             inputEvent is not InputEventMouseButton { ButtonIndex: MouseButton.Left } mouseButton ||
             mouseButton.IsPressed())
         {
             return true;
         }
 
-        _ = TaskHelper.RunSafely(UrdaBlessingService.TryCommitRootSightSelection(mapPoint.Point));
-        __instance.GetViewport()?.SetInputAsHandled();
+        // NMapPoint disables untravelable future nodes, and NClickableControl
+        // normally drops disabled mouse releases. Root Sight is a deliberate
+        // map-inspection mode, so it consumes only the left-button release that
+        // would otherwise be lost and lets every other input continue normally.
+        if (!UrdaRootSightMapPointClickPatch.TryConsumeRootSightMapPointRelease(
+            mapPoint,
+            setInputHandled: true))
+        {
+            return true;
+        }
+
         return false;
     }
 }
