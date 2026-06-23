@@ -450,6 +450,7 @@ public sealed partial class ActiveSourceManifestGuardTests
         "EZMicroBalanceCode/Core/Integrations/RitsuLib/SpirePlusMigratedPatchRegistry.cs",
         "EZMicroBalanceCode/Core/Integrations/RitsuLib/SpirePlusMigratedPatchRegistry.Gameplay.cs",
         "EZMicroBalanceCode/Core/Integrations/RitsuLib/SpirePlusMigratedPatchRegistry.Localization.cs",
+        "EZMicroBalanceCode/Core/Integrations/RitsuLib/SpirePlusMigratedPatchRegistry.PreviewUi.cs",
         "EZMicroBalanceCode/Core/Integrations/RitsuLib/SpirePlusMigratedPatchRegistry.Rewards.cs",
         "EZMicroBalanceCode/Core/Integrations/RitsuLib/SpirePlusMigratedPatchRegistry.Ui.cs",
         "EZMicroBalanceCode/Core/Localization/ILocalizationProvider.cs",

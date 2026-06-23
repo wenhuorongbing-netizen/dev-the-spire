@@ -8,7 +8,6 @@ using EZMicroBalance.EZMicroBalanceCode.Ascension.Events;
 using EZMicroBalance.EZMicroBalanceCode.Core.Localization;
 using EZMicroBalance.EZMicroBalanceCode.Map;
 using EZMicroBalance.EZMicroBalanceCode.Modding;
-using EZMicroBalance.EZMicroBalanceCode.Preview;
 using STS2RitsuLib.Patching.Core;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
@@ -55,23 +54,6 @@ internal static partial class SpirePlusMigratedPatchRegistry
     {
         patcher.RegisterPatch<SereTalonAncientEventOptionButtonPatch>();
         patcher.RegisterPatch<SereTalonRelicNodeReloadPatch>();
-    }
-
-    private static void RegisterPreviewUiPatches(ModPatcher patcher)
-    {
-        patcher.RegisterPatch<CrystalSpherePeekPatch>();
-        patcher.RegisterPatch<CrystalSpherePeekFinishedPatch>();
-        patcher.RegisterPatch<TransformPreviewInitializePatch>();
-        patcher.RegisterPatch<TransformPreviewCyclePatch>();
-        patcher.RegisterPatch<TransformPredictionAromaOfChaosRngPatch>();
-        patcher.RegisterPatch<TransformPredictionEndlessConveyorRngPatch>();
-        patcher.RegisterPatch<TransformPredictionSymbioteRngPatch>();
-        patcher.RegisterPatch<TransformPredictionWhisperingHollowRngPatch>();
-        patcher.RegisterPatch<TransformPredictionMorphicGroveNicheRngPatch>();
-        patcher.RegisterPatch<TransformPredictionTrialNicheRngPatch>();
-        patcher.RegisterPatch<TransformPredictionNewLeafNicheRngPatch>();
-        patcher.RegisterPatch<TransformPredictionAstrolabeNicheRngPatch>();
-        patcher.RegisterPatch<TransformPredictionSelectionLifetimePatch>();
     }
 
     private static void RegisterRelicVisualHoverPatches(ModPatcher patcher)

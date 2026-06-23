@@ -589,6 +589,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Register settings data before the settings page: `BeginModDataRegistration`",
             "`SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.",
             "`SpirePlusMigratedPatchRegistry.Ui.cs` owns clicked, hover, settings, and",
+            "`SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns local-only preview-tool",
             "The current ids live in",
             "`SpirePlusModConfig.SettingsPage.Ids.cs`.",
             "Keep Crystal Sphere preview defaults and RitsuLib slider bounds in",

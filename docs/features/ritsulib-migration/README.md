@@ -70,6 +70,8 @@ Do not start future implementation from copied migration lists either.
 - `SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.
 - `SpirePlusMigratedPatchRegistry.Ui.cs` owns clicked, hover, settings, and
   selection UI registrations.
+- `SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns local-only preview-tool
+  UI registrations.
 - `SpirePlusMigratedPatchRegistry.Rewards.cs` owns card, relic, and reward-hook
   registrations.
 - `SpirePlusMigratedPatchRegistry.Localization.cs` owns localization fallback
