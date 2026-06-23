@@ -12,8 +12,8 @@ Use the current sources of truth instead:
   current next actions.
 - `docs/integrations/ritsulib.md` for dependency version, installed runtime,
   public RitsuLib references, and API evidence.
-- `docs/patch-inventory.md` for generated patch counts and remaining Harmony
-  declarations.
+- `docs/patch-inventory.md` for generated RitsuLib patch counts, class
+  ownership, and raw Harmony regression counts.
 - `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current proof
   boundaries.
 

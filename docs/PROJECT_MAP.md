@@ -55,7 +55,7 @@
 | `docs/archive/project-state-history-20260516.md` | Archive | Pre-cleanup `PROJECT_STATE.md` snapshot preserving superseded per-pass validation/package history. |
 | `docs/issues/` | Current support | Compact issue follow-up plus compact manual evidence queue retained for guard/reference support (`docs/issues/waiting-tests.md`). |
 | `docs/worktree-cleanup-audit.md` | Current support | Current cleanup/refactor inventory, archive decisions, owner-decision areas, and clean-state worktree checks. |
-| `docs/patch-inventory.md` | Current support | Generated Harmony patch owner/risk inventory. Regenerate with `scripts/generate-patch-inventory.ps1`. |
+| `docs/patch-inventory.md` | Current support | Generated RitsuLib ModPatcher inventory plus raw Harmony regression counts. Regenerate with `scripts/generate-patch-inventory.ps1`. |
 | `docs/release-evidence-status.md` | Current support | Compact current package and live/manual evidence dashboard. |
 | `docs/adr/` | Current support | Architecture decision records. Start with `docs/adr/0000-template.md`. |
 | `docs/specs/` | Current support | Release scope, website claim audit, and release traceability matrix. |

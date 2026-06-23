@@ -1077,8 +1077,10 @@ public sealed class RitsuLibMigrationGuardTests
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
+        Assert.Contains("# RitsuLib Patch Inventory", inventory, StringComparison.Ordinal);
         Assert.Contains("Migrated to RitsuLib ModPatcher | 169", inventory, StringComparison.Ordinal);
         Assert.Contains("Raw HarmonyPatch remaining | 0", inventory, StringComparison.Ordinal);
+        Assert.Contains("RitsuLibFramework.ApplyRequiredPatcher", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(

@@ -687,7 +687,7 @@ Add-Check -Name 'root_test_plan_no_previous_package_setup' -Passed (-not ($rootT
 Add-ContainsCheck -Name 'migration_doc_compatibility_stub' -Text $migrationDoc -Needle 'This file stays only as a compatibility link'
 Add-ContainsCheck -Name 'migration_doc_rejects_local_tables' -Text $migrationDoc -Needle 'Do not add migration tables,'
 Add-ContainsCheck -Name 'migration_doc_routes_to_canonical_entry' -Text $migrationDoc -Needle '`docs/features/ritsulib-migration/README.md` for the migration entry point,'
-Add-ContainsCheck -Name 'migration_doc_routes_patch_counts_to_inventory' -Text $migrationDoc -Needle '`docs/patch-inventory.md` for generated patch counts and remaining Harmony'
+Add-ContainsCheck -Name 'migration_doc_routes_patch_counts_to_inventory' -Text $migrationDoc -Needle '`docs/patch-inventory.md` for generated RitsuLib patch counts'
 Add-ContainsCheck -Name 'migration_doc_current_boundary_stub' -Text $migrationDoc -Needle 'Current boundary: Spire Plus is RitsuLib-only for beta.135'
 Add-Check -Name 'migration_doc_no_copied_patch_inventory_table' -Passed (-not ($migrationDoc -match '(?m)^## Migrated Patch Inventory$')) -Detail 'docs/migration.md must stay a stub and must not copy patch inventory tables'
 Add-ContainsCheck -Name 'goal_migration_current_github_scope' -Text $goalMigrationDoc -Needle 'GitHub `main`'

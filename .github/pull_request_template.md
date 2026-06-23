@@ -9,7 +9,7 @@
 - [ ] `EZMicroBalance` manifest id remains unchanged.
 - [ ] Active deliverable remains one `Spire Plus` mod under technical id `EZMicroBalance`; duplicate root mod surfaces are not restored.
 - [ ] No official Slay the Spire 2 assets or large decompiled code were copied.
-- [ ] New or moved Harmony patches are reflected in `docs/patch-inventory.md`.
+- [ ] New or moved RitsuLib patch registrations are reflected in `docs/patch-inventory.md`.
 - [ ] English and Simplified Chinese localization keys/placeholders stay aligned when text changed.
 - [ ] Save/load, co-op, and UI risks are recorded when touched.
 - [ ] Manual evidence rows stay open unless live proof exists.

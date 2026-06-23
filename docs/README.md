@@ -16,7 +16,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
 | Cleanup audit | `worktree-cleanup-audit.md` | Current cleanup/refactor scope, archive decisions, and owner-decision areas. |
 | Architecture boundaries | `architecture/bounded-contexts.md` | Bounded contexts, dependency direction, extension rules, and refactor priorities. |
-| Patch inventory | `patch-inventory.md` | Generated Harmony patch owner/risk inventory; refresh with `scripts/generate-patch-inventory.ps1`. |
+| Patch inventory | `patch-inventory.md` | Generated RitsuLib ModPatcher inventory plus raw Harmony regression counts; refresh with `scripts/generate-patch-inventory.ps1`. |
 | Release evidence dashboard | `release-evidence-status.md` | Compact live/manual evidence state for the current test package. |
 | Current source/API policy | `test-ready-development-goal.md` and `dev-environment.md` | Use current `source code/` plus source-workspace checks for new API claims; historical audits are support evidence only. |
 | Release scope | `specs/release-scope-v1.md` | Current release-candidate boundary and go/no-go rules from `goal.md`. |
@@ -99,7 +99,7 @@ These files are current support records but are not part of the default next-dev
 | `../EZMicroBalanceCode/README.md` | Active C# module map and extension rules. |
 | `../tests/EZMicroBalance.Tests/README.md` | Test suite group map and commands. |
 | `../scripts/README.md` | Repository helper script map. |
-| `patch-inventory.md` | Generated Harmony patch owner/risk map. |
+| `patch-inventory.md` | Generated RitsuLib patch registration map and raw Harmony regression count. |
 | `specs/release-scope-v1.md` | Current release boundary and product decisions. |
 | `specs/website-claim-audit.md` | Archived website/public-claim audit. |
 | `../website/content-data.js` | Current public website effect data and download metadata. |

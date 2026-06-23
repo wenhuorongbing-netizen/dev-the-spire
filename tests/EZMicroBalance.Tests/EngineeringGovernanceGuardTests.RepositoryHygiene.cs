@@ -183,7 +183,7 @@ public sealed partial class EngineeringGovernanceGuardTests
         AssertSourceContains(
             pullRequestTemplate,
             "`EZMicroBalance` manifest id remains unchanged",
-            "New or moved Harmony patches are reflected in `docs/patch-inventory.md`",
+            "New or moved RitsuLib patch registrations are reflected in `docs/patch-inventory.md`",
             "Manual evidence rows stay open unless live proof exists",
             "High-risk patch seams",
             "Source-only pass does not close live proof gates");

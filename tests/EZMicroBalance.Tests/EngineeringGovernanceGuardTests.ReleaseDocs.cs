@@ -71,7 +71,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             "`docs/month-plan/baseline-2026-05-20.md`",
             "`docs/month-plan/commit-boundaries.md`",
             "`docs/adr/`",
-            "Generated Harmony patch owner/risk inventory");
+            "Generated RitsuLib ModPatcher inventory plus raw Harmony regression counts");
 
         AssertSourceContains(
             docInventory,

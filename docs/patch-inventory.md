@@ -1,8 +1,8 @@
-# Harmony Patch Inventory
+# RitsuLib Patch Inventory
 
 Generated: 2026-06-23
 
-Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
+Purpose: keep every RitsuLib ModPatcher registration visible, owned, and batch-labeled while retaining raw HarmonyPatch counts as a regression signal. Regenerate after adding, moving, or deleting patch classes.
 
 Regenerate:
 
@@ -26,6 +26,7 @@ Regenerate:
 
 ## Risk Meaning
 
+Risk labels apply only to raw class-level `[HarmonyPatch]` declarations. Current migrated `IPatchMethod` classes are tracked by batch and explicit RitsuLib registry ownership below.
 - High: run, room, save, lobby, multiplayer, or game lifecycle surface.
 - Medium: UI, card, relic, reward, combat object, or model hook surface.
 - Low: narrow local hook with lower source-drift blast radius.
@@ -33,8 +34,8 @@ Regenerate:
 ## Migrated Patches (RitsuLib ModPatcher)
 
 These 169 patch classes implement `IPatchMethod` and are registered via
-`SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
-and are NOT picked up by raw `Harmony.PatchAll()`.
+`SpirePlusMigratedPatchRegistry.RegisterAll(...)`. `RitsuLibBootstrap` applies them through
+`RitsuLibFramework.ApplyRequiredPatcher(...)`; they are NOT picked up by raw `Harmony.PatchAll()`.
 
 | File | Classes | PatchIds | Batch |
 | --- | --- | --- | --- |
