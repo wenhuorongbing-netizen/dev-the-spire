@@ -451,20 +451,25 @@ public sealed class RitsuLibMigrationGuardTests
         var registry = ReadRitsuLibIntegrationSource();
 
         Assert.Contains("SpirePlusMigratedPatchRegistry.RegisterAll(patcher);", bootstrap, StringComparison.Ordinal);
+        Assert.Contains("public static void ApplyPatches(string modId)", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain(".RegisterPatch<", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
             bootstrap,
             "ApplyMigratedRitsuLibPatches();",
-            "CreateHarmonyOwnerWithoutPatchAll();",
+            "LogPatchAllDisabled();",
             "AuditRitsuLibRuntimeState();",
             "RitsuLibFramework.ApplyRequiredPatcher(",
             "Required RitsuLib ModPatcher apply failed; Spire Plus bootstrap stopped before feature initialization.",
             "RitsuLib ModPatcher owns every migrated patch class",
             "Harmony PatchAll fallback disabled",
+            "avoids creating a second ad hoc",
             "New patch",
             "work must enter through SpirePlusMigratedPatchRegistry",
             "fallback to another mod framework");
         Assert.DoesNotContain("patcher.PatchAll();", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("using HarmonyLib;", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("public static Harmony ApplyPatches", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("return new Harmony", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
             registry,
             "internal static partial class SpirePlusMigratedPatchRegistry",

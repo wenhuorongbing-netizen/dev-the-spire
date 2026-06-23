@@ -27,7 +27,9 @@ auditable in code instead of only in docs.
 `RitsuLibBootstrap` applies the migrated registry with
 `RitsuLibFramework.ApplyRequiredPatcher(...)`; if that required patcher fails,
 startup stops before saved-state, content, settings, or feature initialization
-can create a half-booted Spire Plus session.
+can create a half-booted Spire Plus session. It does not create a separate
+Harmony owner or call broad `PatchAll`; the RitsuLib patcher is the single
+patch-application path.
 `SpirePlusContentRegistrationService` creates and applies the RitsuLib content
 pack; its sibling partial files own the Ancient/encounter, card, relic, power,
 and enchantment registration lists so future content has a direct RitsuLib
