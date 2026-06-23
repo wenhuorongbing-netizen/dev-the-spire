@@ -1,12 +1,12 @@
-﻿# Current Validation
+# Current Validation
 
 Status: compact active validation summary.
 Full archived record: `docs/archive/feature-audits/current-validation-full-20260622.md`.
 
 ## Current Target
 
-- Date: 2026-06-22; latest addendum 2026-06-23: source now has 168 RitsuLib `IPatchMethod` classes and 1 raw Harmony declaration after the Batch 4c ascension-localization fallback, visual-hover UI, A20 reward proceed, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, A20 courtyard portrait, inline-localization fallback, Ancient reward getter/relic hook, low-risk reward hook, Aeonglass intent UI, Enemy Damage polish getter, RitsuLib settings-button compatibility, Urda Root Sight room-routing, Ascension map generation, multiplayer run-state/save-quit diagnostics, and debug-only StS1 replacement-prototype migrations. beta.134 packages this 168/1 source state. Previous beta.128 runtime proof registers 152 patches because the StS1 replacement prototype is compile-symbol gated behind `REPLACEMENT_PROTOTYPE_ENABLED`; recapture beta.134 runtime proof before claiming current in-game coverage.
-- Current package target is Spire Plus `v0.1.0-private-beta.134` on Slay the Spire 2 `v0.107.1`.
+- Date: 2026-06-22; latest addendum 2026-06-23: source now has 169 RitsuLib `IPatchMethod` classes and 0 raw Harmony declarations after the Batch 4c ascension-localization fallback, visual-hover UI, A20 reward proceed, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, A20 courtyard portrait, inline-localization fallback, Ancient reward getter/relic hook, low-risk reward hook, Aeonglass intent UI, Enemy Damage polish getter, RitsuLib settings-button compatibility, Urda Root Sight room-routing, Ascension map generation, multiplayer run-state/save-quit diagnostics, and debug-only StS1 replacement-prototype migrations. beta.135 packages this 169/0 source state. Previous beta.128 runtime proof registers 152 patches because the StS1 replacement prototype is compile-symbol gated behind `REPLACEMENT_PROTOTYPE_ENABLED`; recapture beta.135 runtime proof before claiming current in-game coverage.
+- Current package target is Spire Plus `v0.1.0-private-beta.135` on Slay the Spire 2 `v0.107.1`.
 - `EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`; `EZMicroBalance.json` declares only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 - The unpacked local game source under `source code/src/Core/` is the primary API authority for game behavior. RitsuLib docs/XML are the modding API authority.
 
@@ -19,21 +19,21 @@ Full archived record: `docs/archive/feature-audits/current-validation-full-20260
 
 ## Current Evidence
 
-- beta.134 package refresh passed `dotnet build` with 0 warnings / 0 errors, `dotnet publish` with only the known Godot ignored `source code` project warning, and `scripts/package-spire-plus.ps1`.
-- Installed-package parity passed for `publish/SpirePlus-v0.1.0-private-beta.134.zip`, the game-root zip, installed DLL, manifest, PCK, README, and Sere Talon/Tanx Claws package content. beta.134 artifact hashes are recorded in `docs/private-beta-verification-handoff.md`.
-- 2026-06-23 beta.134 migration validation passed `dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false` with 0 warnings / 0 errors.
-- Focused RitsuLib migration, documentation, release, Ancient behavior, website, and Urda release guards passed 121 / 0 / 7 / 128. Governance/source-drift guards passed 48 / 0 / 1 / 49, Ancient/Urda/Vakuu guards passed 110 / 0 / 7 / 117, and Ascension/co-op/save-state guards passed 39 / 0 / 5 / 44.
+- beta.135 package refresh passed `dotnet build` with 0 warnings / 0 errors, `dotnet publish` with only the known Godot ignored `source code` project warning, and `scripts/package-spire-plus.ps1`.
+- Installed-package parity passed for `publish/SpirePlus-v0.1.0-private-beta.135.zip`, the game-root zip, installed DLL, manifest, PCK, README, and Sere Talon/Tanx Claws package content. beta.135 artifact hashes are recorded in `docs/private-beta-verification-handoff.md`.
+- 2026-06-23 beta.135 migration validation passed `dotnet build EZMicroBalance.sln -m:1 --no-incremental -p:UseSharedCompilation=false` with 0 warnings / 0 errors.
+- Focused RitsuLib migration, documentation, release, website, Urda release, and governance/source-drift guards passed 132 / 0 / 2 / 134. Release artifact opt-in tests passed 13 / 0 / 0 / 13 after the beta.135 zip and installed folder refresh. Ascension/co-op/save-state/Vakuu-save-risk guards passed 35 / 0 / 6 / 41, Ancient behavior/high-risk/UI/release guards passed 52 / 0 / 3 / 55, and StS1/source-api/test-infrastructure guards passed 54 / 0 / 1 / 55.
 - The broad `FullyQualifiedName!~ReleaseEvidenceGateTests` no-build lane timed out twice and left a testhost process that was cleaned up; do not count that runner-hang attempt as a pass. Keep using the smaller split lanes until the runner contamination is fixed.
-- Current-doc claims passed 1327 / 0. Repository hygiene, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, full tracked-text retired-dependency scan, active old-GitHub-lag wording scan, and `git diff --check` passed. `git diff --check` reported only CRLF normalization warnings.
-- Runtime preflight passed 28 checks / 0 mismatches for beta.134. RitsuLib latest-package guard passed 9 checks / 0 mismatches, keeping `STS2.RitsuLib` at `0.4.34`.
-- Source-workspace validation passed 57 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.134`, and STS2-RitsuLib `0.4.34`, with two retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
-- Repository hygiene, active retired-dependency/old-package/count/hash residue scans, and raw Harmony source counting passed. The active tracked-text scan found no retired framework/API names outside ignored/local output, and `EZMicroBalanceCode` contains 15 remaining raw `[HarmonyPatch]` declarations.
+- Current-doc claims passed 1330 / 0. Repository hygiene, `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore`, full tracked-text retired-dependency scan, active old-package/count/hash residue scan, and `git diff --check` passed. `git diff --check` reported only CRLF normalization warnings.
+- Runtime preflight passed 28 checks / 0 mismatches for beta.135. RitsuLib latest-package guard passed 9 checks / 0 mismatches, keeping `STS2.RitsuLib` at `0.4.34`.
+- Source-workspace validation passed 57 checks / 0 mismatches against installed `v0.107.1`, package `v0.1.0-private-beta.135`, and STS2-RitsuLib `0.4.34`, with two retained GDRE warnings only. The checker also verifies local `STS2-RitsuLib.xml` API-doc markers for `RegisterModSettings`, `BeginModDataRegistration`, `ModDataStore.Register`, `CreateContentPack`, `CreatePatcher`, and `SavedAttachedState`.
+- Repository hygiene, active retired-dependency/old-package/count/hash residue scans, and raw Harmony source counting passed. The active tracked-text scan found no retired framework/API names outside ignored/local output, and `EZMicroBalanceCode` contains 0 remaining raw `[HarmonyPatch]` declarations.
 - Previous beta.128 clicked Ancient UI smoke proof passed at `.tools/runtime-evidence/monkey-stability-20260623-062913/`: 4 / 4 `AncientUiSmoke` iterations for `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU`, each with command ACK, screenshot, clean log audit, StS1 Off verifier pass, exact game/Ritsu/package markers, 152/152 default runtime Spire Plus ModPatcher patches applied, and packet verification 1621 / 0.
 
 ## Evidence Boundary
 
-- beta.134 is validated through build, publish, package creation, installed-package parity, runtime preflight, and source-workspace checks.
-- The previous beta.128 clicked Ancient UI proof covers forced Urda, Morvi, Lotha, and normal Vakuu UI only for that package; it does not prove beta.134 gameplay, save-load, gated Vakuu fight-option/victory return, co-op, or release readiness.
+- beta.135 is validated through build, publish, package creation, installed-package parity, runtime preflight, and source-workspace checks.
+- The previous beta.128 clicked Ancient UI proof covers forced Urda, Morvi, Lotha, and normal Vakuu UI only for that package; it does not prove beta.135 gameplay, save-load, gated Vakuu fight-option/victory return, co-op, or release readiness.
 - It does not prove event encounter gameplay, gated Vakuu fight-option/victory return, live gameplay, save-load, image rendering, replacement functional behavior, multiplayer fail-closed behavior, independent QA, release handoff, live-ready, or private-beta release readiness.
 - Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
 

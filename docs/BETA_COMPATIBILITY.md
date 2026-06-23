@@ -1,11 +1,11 @@
-﻿# Beta Compatibility
+# Beta Compatibility
 
 ## 2026-06-23 Current Compatibility Boundary
 
 Current compatibility work targets:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.134`
+- Spire Plus `v0.1.0-private-beta.135`
 - STS2-RitsuLib `v0.4.34` in direct NuGet runtime layout
 - Stable technical manifest id `EZMicroBalance`
 
@@ -15,10 +15,10 @@ only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 
 Current evidence:
 
-- beta.134 build, publish, package refresh, installed package parity, runtime
+- beta.135 build, publish, package refresh, installed package parity, runtime
   preflight, and source-workspace validation are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
-- beta.134 runtime preflight passed 28 / 0 and source-workspace validation passed
+- beta.135 runtime preflight passed 28 / 0 and source-workspace validation passed
   57 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
   coverage.
 - Latest clicked Ancient UI smoke remains previous beta.128 package evidence at
@@ -39,7 +39,7 @@ Current evidence:
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 loader packets are retained only as older
-  package loader/registration context. They do not prove beta.134 enabled-mode
+  package loader/registration context. They do not prove beta.135 enabled-mode
   gameplay or tester readiness.
 
 Treat loader, settings, and clicked-UI smoke evidence as scoped proof only:

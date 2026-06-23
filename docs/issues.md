@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-23 beta.134:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-23 beta.135:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `ACE8FDD7ED1D7A70BBF1B1767B81632790D4568279321F3907318455FD120201` |
-| DLL | `AF3EC06BBC6E708C8AC13DB4AC2C39C166929A1EB57CFADFA15B4EB103809288` |
-| PCK | `4353CDC0AE2E0531C0E7A3956646895FC7234E748F7FDF3DF2CF07EAC9971A85` |
-| Manifest | `EEC56722EE87F579A4A63D9A980AD2EA62A6596BE1D1E950F64DBA9A4A1F8B83` |
-| README_INSTALL | `F6B0DFE657E2C7B9BE3A246FCFC1FC9CDAB7F02AC8D62F38FD92B1197BD9143C` |
+| ZIP | `91D67F837BE34DDEDBECC636D8CF5182FDF201F7490DC05229B1F914A51721CC` |
+| DLL | `10649A95C03F762B73CA15D13024308CB53E8412B89BC53236B37425535437E2` |
+| PCK | `9EF01340EE2118A2ECA1E721A9B131C4D104D35EB1665A698372CF26B89A9F7C` |
+| Manifest | `D1C63A62C6FD30E4713059C22E296413B42620753AC6FB13A4F0615888CF0716` |
+| README_INSTALL | `9115BA2D49F9D840F0C06FF01EF898B14C4DE432B844EE2ABCF01240BD353CF2` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -34,7 +34,7 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.134 package parity, runtime preflight 28 / 0, and source-workspace validation 57 / 0 are current for the packaged 168/1 source state.
+- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.135 package parity, runtime preflight 28 / 0, and source-workspace validation 57 / 0 are current for the packaged 169/0 source state.
   Previous beta.128 forced clicked Ancient UI smoke remains previous-package evidence; its default runtime patch-count is 152 because the StS1 replacement prototype is compile-symbol gated.
   Latest clicked smoke is `.tools/runtime-evidence/monkey-stability-20260623-062913/` packet 1621 / 0 for Urda, Morvi, Lotha, and normal Vakuu.
   beta.123/beta.99/beta.96/beta.93 and earlier smokes are previous-package context; enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.

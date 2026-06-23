@@ -86,13 +86,17 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
 
         AssertSourceContains(
             string.Join(Environment.NewLine, patch, entry, parentRestore, noReward),
-            "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]",
-            "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]",
+            "VakuuFightPreFinishedSavePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-prefinished-save-parent\"",
+            "new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))",
+            "VakuuFightNoRewardRestorePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-no-reward-victory-restore\"",
+            "new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))",
             "EventNodeBackingField",
             "ClearEventNode(vakuu)",
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
             "ShouldResumeParentEventAfterCombat = true",
-            "PreserveVakuuParentForPreFinishedSave",
+            "PreserveParentEventForPreFinishedSave",
             "ArmPrefinishedParentRestoreHealSkip",
             "VakuuFightPreFinishedParentRestoreHealPatch : IPatchMethod",
             "IPatchMethod.PatchId => \"vakuu-fight-prefinished-parent-heal-skip\"",
@@ -222,8 +226,9 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
         Assert.DoesNotContain(".ThatWillKillPlayerIf(_ => true)", vakuuSource, StringComparison.Ordinal);
         AssertSourceContains(
             string.Join(Environment.NewLine, patch, noReward),
-            "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]",
-            "SkipVakuuLoadedTerminalRewards",
+            "VakuuFightNoRewardRestorePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-no-reward-victory-restore\"",
+            "new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))",
             "__instance.Encounter is not EzmbVakuuTrialEncounter",
             "__result = VakuuFightService.ProceedFromNoRewardVictory(__instance)",
             "combatRoom.CombatState.RunState.CurrentRoomCount > 1",

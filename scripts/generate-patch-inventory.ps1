@@ -175,6 +175,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'UrdaWitheredHuskTransformPatches.cs'; Classes = 2; PatchIds = 'urda-withered-husk-transformable, urda-withered-husk-transformation-options'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'UrdaSeedbedAfterCardDrawnPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-after-card-drawn'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'UrdaSeedbedCardPileDrawPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-card-pile-draw'; Batch = 'urda-transform-seedbed' },
+    [pscustomobject]@{ File = 'AscensionA20Patches.cs'; Classes = 1; PatchIds = 'ascension-a20-generate-rooms-second-boss'; Batch = 'ascension-boss-flow' },
     [pscustomobject]@{ File = 'AscensionMapGenerationPatches.cs'; Classes = 1; PatchIds = 'ascension-act-model-create-map'; Batch = 'ascension-map-generation' },
     [pscustomobject]@{ File = 'MultiplayerDiagnostics.JoinFlow.cs'; Classes = 1; PatchIds = 'multiplayer-diagnostics-join-initial-game-info'; Batch = 'ascension-diagnostics' },
     [pscustomobject]@{ File = 'MultiplayerDiagnostics.Lobby.cs'; Classes = 3; PatchIds = 'multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension'; Batch = 'ascension-diagnostics' },

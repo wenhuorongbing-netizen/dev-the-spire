@@ -1,4 +1,4 @@
-﻿# Refactor Goal
+# Refactor Goal
 
 ## Current Target
 
@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.134`
+Current package target: Spire Plus `v0.1.0-private-beta.135`
 
 Runtime dependency target: STS2-RitsuLib `v0.4.34` direct NuGet runtime layout, Slay the Spire 2 `v0.107.1`. previous package is not a current Spire Plus dependency.
 

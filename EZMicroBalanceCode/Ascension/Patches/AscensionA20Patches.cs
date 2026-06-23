@@ -7,9 +7,15 @@ using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
-[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]
-internal static class AscensionA20GenerateRoomsPatch
+internal sealed class AscensionA20GenerateRoomsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ascension-a20-generate-rooms-second-boss";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Set the A20 second boss after vanilla run room generation";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RunManager), nameof(RunManager.GenerateRooms))];
+
+    [HarmonyPostfix]
     private static void Postfix(RunManager __instance)
     {
         var runState = __instance.DebugOnlyGetState();

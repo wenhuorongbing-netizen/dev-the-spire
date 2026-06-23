@@ -1,4 +1,4 @@
-﻿# RitsuLib Migration Status Stub
+# RitsuLib Migration Status Stub
 
 This file stays only as a compatibility link for older docs, scripts, and
 guards that still open `docs/migration.md`. Do not add migration tables,
@@ -17,7 +17,7 @@ Use the current sources of truth instead:
 - `PROJECT_STATE.md` and `docs/reviews/current-validation.md` for current proof
   boundaries.
 
-Current boundary: Spire Plus is RitsuLib-only for beta.134 on Slay the Spire 2
+Current boundary: Spire Plus is RitsuLib-only for beta.135 on Slay the Spire 2
 `v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. beta.128 package
 parity, runtime preflight, source-workspace validation, and forced clicked
 Ancient UI smoke are current evidence. Latest clicked Ancient UI smoke is

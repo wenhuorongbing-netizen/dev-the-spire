@@ -6,9 +6,8 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 
 /// <summary>
 /// RitsuLib bootstrap: logging, diagnostics, and lifecycle hooks.
-/// Migrated patches use ModPatcher (IPatchMethod); remaining legacy Harmony
-/// patches stay behind Harmony.PatchAll() until each batch has owner approval,
-/// source evidence, and focused runtime validation.
+/// All current patches are registered through RitsuLib ModPatcher (IPatchMethod);
+/// the returned Harmony instance is only the shared patch owner id for compatibility.
 /// </summary>
 internal static class RitsuLibBootstrap
 {
@@ -20,7 +19,7 @@ internal static class RitsuLibBootstrap
         SpirePlusDebug.Log("RitsuLib", $"Bootstrap starting. RitsuLib {GetRitsuLibVersion()}.");
 
         ApplyMigratedRitsuLibPatches();
-        var harmony = ApplyLegacyHarmonyFallbackPatches();
+        var harmony = CreateHarmonyOwnerWithoutPatchAll();
         AuditRitsuLibRuntimeState();
 
         return harmony;
@@ -55,19 +54,14 @@ internal static class RitsuLibBootstrap
             SpirePlusDebug.Log("RitsuLib", $"ModPatcher applied {patcher.AppliedPatchCount} patches.");
         }
 
-        Harmony ApplyLegacyHarmonyFallbackPatches()
+        Harmony CreateHarmonyOwnerWithoutPatchAll()
         {
-            // Legacy Harmony discovery is still needed for patch surfaces that
-            // have not been proven through RitsuLib IPatchMethod yet. Treat this
-            // as a migration backlog boundary: do not register new dependencies
-            // or new current RitsuLib-compatible patches here.
-            var fallbackHarmony = new Harmony(modId);
-            fallbackHarmony.PatchAll();
-
-            logger.Info($"Harmony patches applied via {modId}.");
-            SpirePlusDebug.Log("RitsuLib", "Harmony patches applied.");
-
-            return fallbackHarmony;
+            // Keep a Harmony owner object for API compatibility with older
+            // call sites, but never run broad PatchAll discovery. New patch
+            // work must enter through SpirePlusMigratedPatchRegistry.
+            logger.Info($"Harmony PatchAll fallback disabled; RitsuLib ModPatcher owns Spire Plus patches for {modId}.");
+            SpirePlusDebug.Log("RitsuLib", "Harmony PatchAll fallback disabled; ModPatcher owns patch registration.");
+            return new Harmony(modId);
         }
 
         void AuditRitsuLibRuntimeState()

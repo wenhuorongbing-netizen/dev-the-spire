@@ -41,6 +41,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterRitsuLibCompatibilityPatches(patcher);
         RegisterUrdaBehaviorPatches(patcher);
         RegisterVakuuLifecyclePatches(patcher);
+        RegisterAscensionBossFlowPatches(patcher);
         RegisterAscensionMapGenerationPatches(patcher);
         RegisterAscensionDiagnosticPatches(patcher);
 #if REPLACEMENT_PROTOTYPE_ENABLED
@@ -156,6 +157,11 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<VakuuFightPreFinishedSavePatch>();
         patcher.RegisterPatch<VakuuFightPreFinishedParentRestorePatch>();
         patcher.RegisterPatch<VakuuFightNoRewardRestorePatch>();
+    }
+
+    private static void RegisterAscensionBossFlowPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<AscensionA20GenerateRoomsPatch>();
     }
 
     private static void RegisterAscensionMapGenerationPatches(ModPatcher patcher)

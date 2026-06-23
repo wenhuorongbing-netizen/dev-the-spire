@@ -1,4 +1,4 @@
-﻿# Historical Revision Boundaries
+# Historical Revision Boundaries
 
 Status: compact active boundary index replacing the former per-file M5 Revision L/M/N stubs. Full records live under `docs/archive/legacy-planning/`; current work starts from `PROJECT_STATE.md`, `docs/goals/migration.md`, `docs/goals/event.md`, and `docs/test-ready-development-goal.md`.
 
@@ -38,4 +38,4 @@ Archived records:
 - `docs/archive/legacy-planning/m5-revision-n-validation-replay-20260619.md`
 - `docs/archive/legacy-planning/m5-revision-n-runtime-evidence-plan-20260619.md`
 
-Boundary: Revision N is beta.88 previous-package context. Current migration truth is beta.134 RitsuLib-only. The current beta.134 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`. Official `STS2-RitsuLib` remains `0.4.34`. Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.
+Boundary: Revision N is beta.88 previous-package context. Current migration truth is beta.135 RitsuLib-only. The current beta.135 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`. Official `STS2-RitsuLib` remains `0.4.34`. Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.

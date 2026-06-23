@@ -149,10 +149,11 @@ public sealed partial class AscensionFeatureGuardTests
     [Fact]
     public void MultiplayerVersionMismatchDiagnosticsExposeModelHashHandshakeWithoutBypass()
     {
+        var joinFlowDiagnostics = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.JoinFlow.cs");
         var diagnostics = string.Join(
             Environment.NewLine,
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.cs"),
-            ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.JoinFlow.cs"),
+            joinFlowDiagnostics,
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.Lobby.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.RunState.cs"),
             ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.SaveQuit.cs"));
@@ -161,7 +162,9 @@ public sealed partial class AscensionFeatureGuardTests
 
         AssertSourceContains(
             diagnostics,
-            "HarmonyPatch(typeof(JoinFlow), \"HandleInitialGameInfoMessage\")",
+            "JoinFlowHandleInitialGameInfoMessageDiagPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"multiplayer-diagnostics-join-initial-game-info\"",
+            "new ModPatchTarget(typeof(JoinFlow), \"HandleInitialGameInfoMessage\", [typeof(InitialGameInfoMessage), typeof(ulong)])",
             "InitialGameInfoMessage message",
             "ReleaseInfoManager.Instance.ReleaseInfo?.Version ?? GitHelper.ShortCommitId ?? \"UNKNOWN\"",
             "ModelIdSerializationCache.Hash",
@@ -181,7 +184,7 @@ public sealed partial class AscensionFeatureGuardTests
         Assert.DoesNotContain("ConnectionFailureReason.VersionMismatch = null", diagnostics, StringComparison.Ordinal);
         Assert.DoesNotContain("message.idDatabaseHash = ModelIdSerializationCache.Hash", diagnostics, StringComparison.Ordinal);
         Assert.DoesNotContain("message.mods", diagnostics, StringComparison.Ordinal);
-        Assert.DoesNotContain("return false", diagnostics, StringComparison.Ordinal);
+        Assert.DoesNotContain("return false", joinFlowDiagnostics, StringComparison.Ordinal);
     }
 
     [Fact]

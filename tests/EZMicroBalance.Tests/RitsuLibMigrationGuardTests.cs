@@ -195,6 +195,8 @@ public sealed class RitsuLibMigrationGuardTests
         "urda-withered-husk-transformation-options",
         "urda-seedbed-after-card-drawn",
         "urda-seedbed-card-pile-draw",
+        // Ascension boss-flow patch
+        "ascension-a20-generate-rooms-second-boss",
         // Ascension map generation boundary
         "ascension-act-model-create-map",
         // Ascension diagnostics
@@ -228,11 +230,12 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedUrdaTransformSeedbedCount = 4;
     private const int ExpectedUrdaRootSightRoutingCount = 2;
     private const int ExpectedVakuuLifecycleCount = 3;
+    private const int ExpectedAscensionBossFlowCount = 1;
     private const int ExpectedAscensionMapGenerationCount = 1;
     private const int ExpectedAscensionDiagnosticCount = 10;
     private const int ExpectedSts1ReplacementPrototypeCount = 1;
-    private const int ExpectedTotalMigratedCount = 168;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 1;
+    private const int ExpectedTotalMigratedCount = 169;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 0;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -272,7 +275,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 168:
+    /// The expected migrated patch count must be 169:
     /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
     /// + 17 low-risk reward hooks + 3 Prismatic Gem reward patches
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
@@ -282,6 +285,7 @@ public sealed class RitsuLibMigrationGuardTests
     /// + 1 RitsuLib compatibility patch + 4 Urda transform/Seedbed patches
     /// + 2 Urda Root Sight room-routing patches
     /// + 3 Vakuu fight lifecycle/save-load patches
+    /// + 1 Ascension A20 boss-flow patch
     /// + 10 Ascension diagnostic patches
     /// + 1 Ascension map generation patch + 1 debug-only StS1 replacement prototype patch.
     /// </summary>
@@ -290,7 +294,7 @@ public sealed class RitsuLibMigrationGuardTests
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount + ExpectedUrdaRootSightRoutingCount + ExpectedVakuuLifecycleCount + ExpectedAscensionMapGenerationCount + ExpectedAscensionDiagnosticCount + ExpectedSts1ReplacementPrototypeCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount + ExpectedUrdaRootSightRoutingCount + ExpectedVakuuLifecycleCount + ExpectedAscensionBossFlowCount + ExpectedAscensionMapGenerationCount + ExpectedAscensionDiagnosticCount + ExpectedSts1ReplacementPrototypeCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -458,11 +462,14 @@ public sealed class RitsuLibMigrationGuardTests
         AssertSourceContains(
             bootstrap,
             "ApplyMigratedRitsuLibPatches();",
-            "ApplyLegacyHarmonyFallbackPatches();",
+            "CreateHarmonyOwnerWithoutPatchAll();",
             "AuditRitsuLibRuntimeState();",
             "RitsuLibFramework.ApplyRequiredPatcher(",
             "Required RitsuLib ModPatcher apply failed; Spire Plus bootstrap stopped before feature initialization.",
             "RitsuLib ModPatcher owns every migrated patch class",
+            "Harmony PatchAll fallback disabled",
+            "New patch",
+            "work must enter through SpirePlusMigratedPatchRegistry",
             "fallback to another mod framework");
         Assert.DoesNotContain("patcher.PatchAll();", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
@@ -674,7 +681,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Spire Plus is RitsuLib-only for beta.134", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus is RitsuLib-only for beta.135", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -875,7 +882,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.134 package parity, runtime preflight, and source-workspace validation passed for the packaged 168/1 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.135 package parity, runtime preflight, and source-workspace validation passed for the packaged 169/0 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -953,25 +960,25 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             integrationDoc,
-            "Current migrated total: 168 patch classes.",
-            "Current raw Harmony remaining: 1 declaration, tracked in `docs/patch-inventory.md`.");
+            "Current migrated total: 169 patch classes.",
+            "Current raw Harmony remaining: 0 declarations, tracked in `docs/patch-inventory.md`.");
         Assert.DoesNotContain("Current migrated total: 151 patch classes.", integrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("Current raw Harmony remaining: 19 declarations", integrationDoc, StringComparison.Ordinal);
 
         AssertSourceContains(
             docsReadme,
-            "Current beta.134 RitsuLib-only package state",
+            "Current beta.135 RitsuLib-only package state",
             "source-workspace proof, package parity",
             "forced clicked UI smoke boundary");
         Assert.DoesNotContain("Current beta.123 RitsuLib-only package state", docsReadme, StringComparison.Ordinal);
 
         AssertSourceContains(
             coreReadme,
-            "Packaged beta.134 evidence covers build, publish, package parity, runtime",
-            "preflight, and source-workspace validation for the packaged 168/1 source state.",
+            "Packaged beta.135 evidence covers build, publish, package parity, runtime",
+            "preflight, and source-workspace validation for the packaged 169/0 source state.",
             "Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,",
             "Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch registration",
-            "Recapture beta.134 runtime",
+            "Recapture beta.135 runtime",
             "This proves forced clicked UI visibility only;",
             "gameplay, save-load, gated Vakuu fight-option and victory return");
         Assert.DoesNotContain("Packaged beta.123 evidence covers build, publish, package parity", coreReadme, StringComparison.Ordinal);
@@ -1063,8 +1070,8 @@ public sealed class RitsuLibMigrationGuardTests
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 168", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 1", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 169", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 0", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -1123,6 +1130,7 @@ public sealed class RitsuLibMigrationGuardTests
             "`UrdaWitheredHuskTransformPatches.cs` | 2 | `urda-withered-husk-transformable, urda-withered-husk-transformation-options` | urda-transform-seedbed |",
             "`UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |",
             "`UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |",
+            "`AscensionA20Patches.cs` | 1 | `ascension-a20-generate-rooms-second-boss` | ascension-boss-flow |",
             "`AscensionMapGenerationPatches.cs` | 1 | `ascension-act-model-create-map` | ascension-map-generation |",
             "`MultiplayerDiagnostics.JoinFlow.cs` | 1 | `multiplayer-diagnostics-join-initial-game-info` | ascension-diagnostics |",
             "`MultiplayerDiagnostics.Lobby.cs` | 3 | `multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension` | ascension-diagnostics |",

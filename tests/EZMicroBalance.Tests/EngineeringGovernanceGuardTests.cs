@@ -226,10 +226,10 @@ public sealed partial class EngineeringGovernanceGuardTests
         Assert.DoesNotContain("@{File=", inventory, StringComparison.Ordinal);
         AssertSourceContains(
             inventory,
-            "| Owner | Risk | File | Line | Patch |",
             "Vakuu",
             "ascension-diagnostics",
-            "Ascension patches",
+            "ascension-boss-flow",
+            "`AscensionA20Patches.cs` | 1 | `ascension-a20-generate-rooms-second-boss`",
             "CrystalSpherePeekPatch.cs",
             "TransformPreviewPatch.cs",
             "High: run, room, save, lobby, multiplayer, or game lifecycle surface.");

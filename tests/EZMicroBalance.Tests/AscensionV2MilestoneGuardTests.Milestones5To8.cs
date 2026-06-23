@@ -50,7 +50,9 @@ public sealed partial class AscensionV2MilestoneGuardTests
 
         AssertSourceContains(
             a20Patch,
-            "HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))",
+            "AscensionA20GenerateRoomsPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"ascension-a20-generate-rooms-second-boss\"",
+            "new ModPatchTarget(typeof(RunManager), nameof(RunManager.GenerateRooms))",
             "AscensionFeatureGate.IsBrandedFormSinglePlayerEnabled(runState)",
             "finalAct.HasSecondBoss",
             "finalAct.SetSecondBossEncounter(secondBoss)",

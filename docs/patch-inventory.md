@@ -15,11 +15,11 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 1 |
-| Migrated to RitsuLib ModPatcher | 168 |
-| Raw HarmonyPatch remaining | 1 |
+| Total raw HarmonyPatch declarations | 0 |
+| Migrated to RitsuLib ModPatcher | 169 |
+| Raw HarmonyPatch remaining | 0 |
 | Tracked patch units total | 169 |
-| High risk (raw Harmony) | 1 |
+| High risk (raw Harmony) | 0 |
 | Medium risk (raw Harmony) | 0 |
 | Low risk (raw Harmony) | 0 |
 | Unclassified owner | 0 |
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 168 patch classes implement `IPatchMethod` and are registered via
+These 169 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -102,6 +102,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `UrdaWitheredHuskTransformPatches.cs` | 2 | `urda-withered-husk-transformable, urda-withered-husk-transformation-options` | urda-transform-seedbed |
 | `UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |
 | `UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |
+| `AscensionA20Patches.cs` | 1 | `ascension-a20-generate-rooms-second-boss` | ascension-boss-flow |
 | `AscensionMapGenerationPatches.cs` | 1 | `ascension-act-model-create-map` | ascension-map-generation |
 | `MultiplayerDiagnostics.JoinFlow.cs` | 1 | `multiplayer-diagnostics-join-initial-game-info` | ascension-diagnostics |
 | `MultiplayerDiagnostics.Lobby.cs` | 3 | `multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension` | ascension-diagnostics |
@@ -114,8 +115,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 1 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 0 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
-| Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |

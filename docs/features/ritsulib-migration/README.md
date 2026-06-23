@@ -1,22 +1,22 @@
-﻿# RitsuLib Migration
+# RitsuLib Migration
 
 This is the single entry point for RitsuLib migration work. Start here, then
 read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.134.
-- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.134`.
+- Spire Plus is RitsuLib-only for beta.135.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.135`.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.134 build, publish, package parity, runtime
-  preflight, and source-workspace validation for the 168/1 source state.
+- Current packaged proof: beta.135 build, publish, package parity, runtime
+  preflight, and source-workspace validation for the 169/0 source state.
 - Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
   Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch
   registration from that older package.
-- The source inventory has 168 migrated classes and 1 raw Harmony declaration
-  remaining; recapture beta.134 runtime smoke before claiming current
+- The source inventory has 169 migrated classes and 0 raw Harmony declarations
+  remaining; recapture beta.135 runtime smoke before claiming current
   in-game patch coverage.
 - Current source migration: Neow reroll option, Urda option-relic, Root Sight map-click,
   Root Sight map-visual, Vakuu fight option, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
@@ -49,9 +49,9 @@ read only the support file that matches the task.
   `IPatchMethod` / `ModPatcher`.
 - Multiplayer Ancient event startup diagnostics now also use RitsuLib
   `IPatchMethod` / `ModPatcher`.
-- Current inventory: 168 migrated source patch classes and 1 raw Harmony
+- Current inventory: 169 migrated source patch classes and 0 raw Harmony
   declarations remain in `docs/patch-inventory.md`.
-- Boundary: beta.134 was rebuilt, published, packaged, package-checked, runtime
+- Boundary: beta.135 was rebuilt, published, packaged, package-checked, runtime
   preflighted, and source-workspace checked after the RitsuLib `0.4.34`
   dependency refresh, Urda Root Sight room-routing migration, and multiplayer
   Ancient event diagnostic migration. The latest

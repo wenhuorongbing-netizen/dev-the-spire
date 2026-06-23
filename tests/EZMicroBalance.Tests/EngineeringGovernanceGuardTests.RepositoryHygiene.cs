@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using Xunit;
 
@@ -217,9 +217,9 @@ public sealed partial class EngineeringGovernanceGuardTests
             agentGuidance,
             "STS2-RitsuLib",
             "The active Spire Plus package must remain RitsuLib-only",
-            "Current beta.134 build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace validation are current for the packaged 168/1 source state.",
-            "Current beta.134 package refresh is recorded in `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, and `docs/private-beta-verification-handoff.md`.",
-            "The source inventory is 168 migrated RitsuLib patch classes and 1 raw Harmony declaration; the remaining raw declarations are high-risk lifecycle patches, not clicked UI.",
+            "Current beta.135 build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace validation are current for the packaged 169/0 source state.",
+            "Current beta.135 package refresh is recorded in `PROJECT_STATE.md`, `docs/reviews/current-validation.md`, and `docs/private-beta-verification-handoff.md`.",
+            "The source inventory is 169 migrated RitsuLib patch classes and 0 raw Harmony declarations; new or changed patches must be explicit RitsuLib `IPatchMethod` / `ModPatcher` registrations.",
             "This is previous-package smoke-level clicked UI proof only.",
             "Prefer RitsuLib, local game command APIs, and template-supported APIs.",
             "inspect RitsuLib/template APIs",
