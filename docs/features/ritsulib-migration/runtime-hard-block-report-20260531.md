@@ -9,7 +9,7 @@ install. That specific blocker is no longer current.
 Current package line:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.131`
+- Spire Plus `v0.1.0-private-beta.132`
 - STS2-RitsuLib `v0.4.34`
 - RitsuLib runtime variant `lib\0.107.1`
 - Stable technical manifest id `EZMicroBalance`
@@ -21,7 +21,7 @@ RitsuLib APIs.
 
 ## Evidence
 
-- Current beta.131 package parity, runtime preflight, and source-workspace
+- Current beta.132 package parity, runtime preflight, and source-workspace
   validation are summarized in `PROJECT_STATE.md` and
   `docs/reviews/current-validation.md`.
 - Previous beta.128 clicked Ancient UI smoke is captured at
@@ -37,20 +37,20 @@ RitsuLib APIs.
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 packets are retained only as older package
-  loader/registration context. They do not prove beta.131 enabled-mode gameplay
+  loader/registration context. They do not prove beta.132 enabled-mode gameplay
   or tester readiness.
 
 ## Still Blocked
 
 The migration is not release-ready. Current hard blocks are gameplay, save-load,
-replacement behavior, current beta.131 enabled-mode
+replacement behavior, current beta.132 enabled-mode
 registration/gameplay proof, multiplayer/co-op, independent QA, and versioned
 tester-package handoff.
 
-Current source has 158 migrated patch classes and 12 raw Harmony declarations,
-with beta.131 package/source validation. Previous beta.128 clicked UI smoke
+Current source has 162 migrated patch classes and 8 raw Harmony declarations,
+with beta.132 package/source validation. Previous beta.128 clicked UI smoke
 applied 152/152 registered patches from that older package because the StS1
-replacement prototype is compile-symbol gated. It still does not prove beta.131
+replacement prototype is compile-symbol gated. It still does not prove beta.132
 runtime smoke, enabled-mode gameplay, save-load, replacement, co-op, QA, or
 release readiness.
 Any high-risk patch migration remains proposal-only until those runtime/manual

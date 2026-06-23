@@ -194,6 +194,10 @@ public sealed class RitsuLibMigrationGuardTests
         // Ascension map generation boundary
         "ascension-act-model-create-map",
         // Ascension diagnostics
+        "multiplayer-diagnostics-join-initial-game-info",
+        "multiplayer-diagnostics-lobby-begin-run-for-all",
+        "multiplayer-diagnostics-lobby-begin-run-locally",
+        "multiplayer-diagnostics-lobby-update-max-ascension",
         "multiplayer-diagnostics-start-new-run",
         "multiplayer-diagnostics-enter-act",
         "multiplayer-diagnostics-ancient-event-start",
@@ -217,10 +221,10 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedUrdaTransformSeedbedCount = 4;
     private const int ExpectedUrdaRootSightRoutingCount = 2;
     private const int ExpectedAscensionMapGenerationCount = 1;
-    private const int ExpectedAscensionDiagnosticCount = 3;
+    private const int ExpectedAscensionDiagnosticCount = 7;
     private const int ExpectedSts1ReplacementPrototypeCount = 1;
-    private const int ExpectedTotalMigratedCount = 158;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 12;
+    private const int ExpectedTotalMigratedCount = 162;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 8;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -260,7 +264,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 158:
+    /// The expected migrated patch count must be 162:
     /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
     /// + 17 low-risk reward hooks + 3 Prismatic Gem reward patches
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
@@ -269,7 +273,7 @@ public sealed class RitsuLibMigrationGuardTests
     /// + 6 Batch 4c localization patches + 4 inline localization patches
     /// + 1 RitsuLib compatibility patch + 4 Urda transform/Seedbed patches
     /// + 2 Urda Root Sight room-routing patches
-    /// + 3 Ascension diagnostic patches
+    /// + 7 Ascension diagnostic patches
     /// + 1 Ascension map generation patch + 1 debug-only StS1 replacement prototype patch.
     /// </summary>
     [Fact]
@@ -661,7 +665,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Spire Plus is RitsuLib-only for beta.131", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus is RitsuLib-only for beta.132", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -710,13 +714,41 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     [Fact]
-    public void MultiplayerRunStateDiagnosticsUseRitsuLibPatchMethods()
+    public void MultiplayerDiagnosticsUseRitsuLibPatchMethods()
     {
-        var source = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.RunState.cs");
+        var joinFlowSource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.JoinFlow.cs");
+        var lobbySource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.Lobby.cs");
+        var runStateSource = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.RunState.cs");
         var registry = ReadRitsuLibIntegrationSource();
 
         AssertSourceContains(
-            source,
+            joinFlowSource,
+            "JoinFlowHandleInitialGameInfoMessageDiagPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"multiplayer-diagnostics-join-initial-game-info\"",
+            "new ModPatchTarget(typeof(JoinFlow), \"HandleInitialGameInfoMessage\", [typeof(InitialGameInfoMessage), typeof(ulong)])",
+            "[HarmonyPrefix]");
+        Assert.DoesNotContain("[HarmonyPatch(typeof(JoinFlow), \"HandleInitialGameInfoMessage\")]", joinFlowSource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            lobbySource,
+            "StartRunLobbyBeginRunForAllPlayersDiagPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"multiplayer-diagnostics-lobby-begin-run-for-all\"",
+            "new ModPatchTarget(typeof(StartRunLobby), \"BeginRunForAllPlayers\", [typeof(string), typeof(List<ModifierModel>)])",
+            "StartRunLobbyBeginRunLocallyDiagPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"multiplayer-diagnostics-lobby-begin-run-locally\"",
+            "new ModPatchTarget(typeof(StartRunLobby), \"BeginRunLocally\", [typeof(string), typeof(List<ModifierModel>)])",
+            "StartRunLobbyUpdateMaxMultiplayerAscensionDiagPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"multiplayer-diagnostics-lobby-update-max-ascension\"",
+            "new ModPatchTarget(typeof(StartRunLobby), \"UpdateMaxMultiplayerAscension\")",
+            "[HarmonyPrefix]",
+            "[HarmonyPostfix]",
+            "[HarmonyFinalizer]");
+        Assert.DoesNotContain("[HarmonyPatch(typeof(StartRunLobby), \"BeginRunForAllPlayers\")]", lobbySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(StartRunLobby), \"BeginRunLocally\")]", lobbySource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(StartRunLobby), \"UpdateMaxMultiplayerAscension\")]", lobbySource, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            runStateSource,
             "NGameStartNewMultiplayerRunDiagPatch : IPatchMethod",
             "IPatchMethod.PatchId => \"multiplayer-diagnostics-start-new-run\"",
             "new ModPatchTarget(",
@@ -733,12 +765,16 @@ public sealed class RitsuLibMigrationGuardTests
             "new ModPatchTarget(typeof(AncientEventModel), \"BeforeEventStarted\")",
             "[HarmonyPrefix]",
             "[HarmonyPostfix]");
-        Assert.DoesNotContain("[HarmonyPatch(typeof(NGame), \"StartNewMultiplayerRun\")]", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("[HarmonyPatch(typeof(RunManager), \"EnterAct\")]", source, StringComparison.Ordinal);
-        Assert.DoesNotContain("[HarmonyPatch(typeof(AncientEventModel), \"BeforeEventStarted\")]", source, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(NGame), \"StartNewMultiplayerRun\")]", runStateSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(RunManager), \"EnterAct\")]", runStateSource, StringComparison.Ordinal);
+        Assert.DoesNotContain("[HarmonyPatch(typeof(AncientEventModel), \"BeforeEventStarted\")]", runStateSource, StringComparison.Ordinal);
         AssertSourceContains(
             registry,
             "RegisterAscensionDiagnosticPatches(patcher);",
+            "RegisterPatch<JoinFlowHandleInitialGameInfoMessageDiagPatch>();",
+            "RegisterPatch<StartRunLobbyBeginRunForAllPlayersDiagPatch>();",
+            "RegisterPatch<StartRunLobbyBeginRunLocallyDiagPatch>();",
+            "RegisterPatch<StartRunLobbyUpdateMaxMultiplayerAscensionDiagPatch>();",
             "RegisterPatch<NGameStartNewMultiplayerRunDiagPatch>();",
             "RegisterPatch<RunManagerEnterActDiagPatch>();",
             "RegisterPatch<AncientEventModelBeforeEventStartedDiagPatch>();");
@@ -808,7 +844,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.131 package parity, runtime preflight, and source-workspace validation passed for the packaged 158/12 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.132 package parity, runtime preflight, and source-workspace validation passed for the packaged 162/8 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -886,25 +922,25 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             integrationDoc,
-            "Current migrated total: 158 patch classes.",
-            "Current raw Harmony remaining: 12 declarations, tracked in `docs/patch-inventory.md`.");
+            "Current migrated total: 162 patch classes.",
+            "Current raw Harmony remaining: 8 declarations, tracked in `docs/patch-inventory.md`.");
         Assert.DoesNotContain("Current migrated total: 151 patch classes.", integrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("Current raw Harmony remaining: 19 declarations", integrationDoc, StringComparison.Ordinal);
 
         AssertSourceContains(
             docsReadme,
-            "Current beta.131 RitsuLib-only package state",
+            "Current beta.132 RitsuLib-only package state",
             "source-workspace proof, package parity",
             "forced clicked UI smoke boundary");
         Assert.DoesNotContain("Current beta.123 RitsuLib-only package state", docsReadme, StringComparison.Ordinal);
 
         AssertSourceContains(
             coreReadme,
-            "Packaged beta.131 evidence covers build, publish, package parity, runtime",
-            "preflight, and source-workspace validation for the packaged 158/12 source state.",
+            "Packaged beta.132 evidence covers build, publish, package parity, runtime",
+            "preflight, and source-workspace validation for the packaged 162/8 source state.",
             "Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,",
             "Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch registration",
-            "Recapture beta.131 runtime",
+            "Recapture beta.132 runtime",
             "This proves forced clicked UI visibility only;",
             "gameplay, save-load, gated Vakuu fight-option and victory return");
         Assert.DoesNotContain("Packaged beta.123 evidence covers build, publish, package parity", coreReadme, StringComparison.Ordinal);
@@ -996,8 +1032,8 @@ public sealed class RitsuLibMigrationGuardTests
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 158", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 12", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 162", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 8", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -1056,6 +1092,8 @@ public sealed class RitsuLibMigrationGuardTests
             "`UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |",
             "`UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |",
             "`AscensionMapGenerationPatches.cs` | 1 | `ascension-act-model-create-map` | ascension-map-generation |",
+            "`MultiplayerDiagnostics.JoinFlow.cs` | 1 | `multiplayer-diagnostics-join-initial-game-info` | ascension-diagnostics |",
+            "`MultiplayerDiagnostics.Lobby.cs` | 3 | `multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension` | ascension-diagnostics |",
             "`MultiplayerDiagnostics.RunState.cs` | 3 | `multiplayer-diagnostics-start-new-run, multiplayer-diagnostics-enter-act, multiplayer-diagnostics-ancient-event-start` | ascension-diagnostics |",
             "`Sts1ReplacementPrototype.cs` | 1 | `sts1-replacement-prototype-generate-rooms` | sts1-replacement-prototype |");
     }

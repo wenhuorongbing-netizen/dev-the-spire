@@ -1,5 +1,7 @@
 using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
+using MegaCrit.Sts2.Core.Models;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -7,9 +9,15 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 /// Patches StartRunLobby.BeginRunForAllPlayers to log lobby state before run starts.
 /// Also logs preferred-ascension-save skip behavior if our patch fires.
 /// </summary>
-[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]
-internal static class StartRunLobbyBeginRunForAllPlayersDiagPatch
+internal sealed class StartRunLobbyBeginRunForAllPlayersDiagPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-lobby-begin-run-for-all";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log host lobby state around StartRunLobby.BeginRunForAllPlayers";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "BeginRunForAllPlayers", [typeof(string), typeof(List<ModifierModel>)])];
+
+    [HarmonyPrefix]
     private static void Prefix(StartRunLobby __instance)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
@@ -19,6 +27,7 @@ internal static class StartRunLobbyBeginRunForAllPlayersDiagPatch
             $"[Spire Plus][MPDiag] BeginRunForAllPlayers: preferred save skip={AscensionSelectionPatches.ShouldSkipVanillaPreferredAscensionSave(__instance)}");
     }
 
+    [HarmonyFinalizer]
     private static void Finalizer(StartRunLobby __instance, Exception? __exception)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
@@ -37,9 +46,15 @@ internal static class StartRunLobbyBeginRunForAllPlayersDiagPatch
 /// Patches StartRunLobby.BeginRunLocally to log ascension/player HP state before
 /// the local run starts. This is the point where RunState is about to be created.
 /// </summary>
-[HarmonyPatch(typeof(StartRunLobby), "BeginRunLocally")]
-internal static class StartRunLobbyBeginRunLocallyDiagPatch
+internal sealed class StartRunLobbyBeginRunLocallyDiagPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-lobby-begin-run-locally";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log local lobby state before StartRunLobby.BeginRunLocally creates the run";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "BeginRunLocally", [typeof(string), typeof(List<ModifierModel>)])];
+
+    [HarmonyPrefix]
     private static void Prefix(StartRunLobby __instance)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
@@ -55,9 +70,15 @@ internal static class StartRunLobbyBeginRunLocallyDiagPatch
 /// Patches StartRunLobby.UpdateMaxMultiplayerAscension to log the multiplayer
 /// ascension cap computation.
 /// </summary>
-[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")]
-internal static class StartRunLobbyUpdateMaxMultiplayerAscensionDiagPatch
+internal sealed class StartRunLobbyUpdateMaxMultiplayerAscensionDiagPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-lobby-update-max-ascension";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log lobby state after StartRunLobby.UpdateMaxMultiplayerAscension";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")];
+
+    [HarmonyPostfix]
     private static void Postfix(StartRunLobby __instance)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;

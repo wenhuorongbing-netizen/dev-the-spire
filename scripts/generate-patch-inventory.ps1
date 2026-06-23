@@ -175,6 +175,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'UrdaSeedbedAfterCardDrawnPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-after-card-drawn'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'UrdaSeedbedCardPileDrawPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-card-pile-draw'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'AscensionMapGenerationPatches.cs'; Classes = 1; PatchIds = 'ascension-act-model-create-map'; Batch = 'ascension-map-generation' },
+    [pscustomobject]@{ File = 'MultiplayerDiagnostics.JoinFlow.cs'; Classes = 1; PatchIds = 'multiplayer-diagnostics-join-initial-game-info'; Batch = 'ascension-diagnostics' },
+    [pscustomobject]@{ File = 'MultiplayerDiagnostics.Lobby.cs'; Classes = 3; PatchIds = 'multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension'; Batch = 'ascension-diagnostics' },
     [pscustomobject]@{ File = 'MultiplayerDiagnostics.RunState.cs'; Classes = 3; PatchIds = 'multiplayer-diagnostics-start-new-run, multiplayer-diagnostics-enter-act, multiplayer-diagnostics-ancient-event-start'; Batch = 'ascension-diagnostics' },
     [pscustomobject]@{ File = 'Sts1ReplacementPrototype.cs'; Classes = 1; PatchIds = 'sts1-replacement-prototype-generate-rooms'; Batch = 'sts1-replacement-prototype' }
 )

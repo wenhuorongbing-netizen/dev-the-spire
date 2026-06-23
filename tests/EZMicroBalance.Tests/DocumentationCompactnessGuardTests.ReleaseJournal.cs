@@ -154,7 +154,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             releaseChecklist,
             "Current package hashes:",
             "Detailed pass history lives in `docs/review.md` and `docs/archive/**`.",
-            "active manifest is `v0.1.0-private-beta.131` after the RitsuLib compatibility and package refresh pass",
+            "active manifest is `v0.1.0-private-beta.132` after the RitsuLib compatibility and package refresh pass",
             "Manual feature results are pending");
         AssertSourceContains(
             testPlan,

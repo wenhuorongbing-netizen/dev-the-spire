@@ -157,6 +157,10 @@ internal static partial class SpirePlusMigratedPatchRegistry
 
     private static void RegisterAscensionDiagnosticPatches(ModPatcher patcher)
     {
+        patcher.RegisterPatch<JoinFlowHandleInitialGameInfoMessageDiagPatch>();
+        patcher.RegisterPatch<StartRunLobbyBeginRunForAllPlayersDiagPatch>();
+        patcher.RegisterPatch<StartRunLobbyBeginRunLocallyDiagPatch>();
+        patcher.RegisterPatch<StartRunLobbyUpdateMaxMultiplayerAscensionDiagPatch>();
         patcher.RegisterPatch<NGameStartNewMultiplayerRunDiagPatch>();
         patcher.RegisterPatch<RunManagerEnterActDiagPatch>();
         patcher.RegisterPatch<AncientEventModelBeforeEventStartedDiagPatch>();

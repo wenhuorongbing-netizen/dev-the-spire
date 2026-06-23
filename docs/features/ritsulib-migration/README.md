@@ -5,18 +5,18 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.131.
-- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.131`.
+- Spire Plus is RitsuLib-only for beta.132.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.132`.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.131 build, publish, package parity, runtime
-  preflight, and source-workspace validation for the 158/12 source state.
+- Current packaged proof: beta.132 build, publish, package parity, runtime
+  preflight, and source-workspace validation for the 162/8 source state.
 - Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
   Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch
   registration from that older package.
-- The source inventory has 158 migrated classes and 12 raw Harmony declarations
-  remaining; recapture beta.131 runtime smoke before claiming current
+- The source inventory has 162 migrated classes and 8 raw Harmony declarations
+  remaining; recapture beta.132 runtime smoke before claiming current
   in-game patch coverage.
 - Current source migration: Neow reroll option, Urda option-relic, Root Sight map-click,
   Root Sight map-visual, Vakuu fight option, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
@@ -49,9 +49,9 @@ read only the support file that matches the task.
   `IPatchMethod` / `ModPatcher`.
 - Multiplayer Ancient event startup diagnostics now also use RitsuLib
   `IPatchMethod` / `ModPatcher`.
-- Current inventory: 158 migrated source patch classes and 12 raw Harmony
+- Current inventory: 162 migrated source patch classes and 8 raw Harmony
   declarations remain in `docs/patch-inventory.md`.
-- Boundary: beta.131 was rebuilt, published, packaged, package-checked, runtime
+- Boundary: beta.132 was rebuilt, published, packaged, package-checked, runtime
   preflighted, and source-workspace checked after the RitsuLib `0.4.34`
   dependency refresh, Urda Root Sight room-routing migration, and multiplayer
   Ancient event diagnostic migration. The latest

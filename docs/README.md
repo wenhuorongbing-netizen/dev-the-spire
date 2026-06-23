@@ -10,7 +10,7 @@ This folder is project memory for `Spire Plus` (`EZMicroBalance` manifest id). K
 | Human overview | `../README.md` | Short project overview, build commands, and release policy. |
 | Agent rules | `../AGENTS.md` | Hard rules for manifest ids, source evidence, release claims, and validation. |
 | Current development goal | `test-ready-development-goal.md` | Single active long-scope directive for the next implementation pass. |
-| Current migration/review state | `../PROJECT_STATE.md`, `features/ritsulib-migration/README.md`, `integrations/ritsulib.md`, and `reviews/current-validation.md` | Current beta.131 RitsuLib-only package state, source-workspace proof, package parity, and forced clicked UI smoke boundary; full validation history is archived. |
+| Current migration/review state | `../PROJECT_STATE.md`, `features/ritsulib-migration/README.md`, `integrations/ritsulib.md`, and `reviews/current-validation.md` | Current beta.132 RitsuLib-only package state, source-workspace proof, package parity, and forced clicked UI smoke boundary; full validation history is archived. |
 | Open issues and TODO | `issues.md` | Compact active blocker and next-development issue index. |
 | Ancient expansion v2.2 | `features/ancient-expansion-v2.2/README.md` | Current feature status and focused doc map. |
 | Project map | `PROJECT_MAP.md` | Active, support, archive, and local-only path map. |
