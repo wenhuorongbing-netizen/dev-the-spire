@@ -41,6 +41,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterRitsuLibCompatibilityPatches(patcher);
         RegisterUrdaBehaviorPatches(patcher);
         RegisterAscensionMapGenerationPatches(patcher);
+        RegisterAscensionDiagnosticPatches(patcher);
 #if REPLACEMENT_PROTOTYPE_ENABLED
         RegisterSts1ReplacementPrototypePatches(patcher);
 #endif
@@ -152,6 +153,11 @@ internal static partial class SpirePlusMigratedPatchRegistry
     private static void RegisterAscensionMapGenerationPatches(ModPatcher patcher)
     {
         patcher.RegisterPatch<AscensionActModelCreateMapPatch>();
+    }
+
+    private static void RegisterAscensionDiagnosticPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<AncientEventModelBeforeEventStartedDiagPatch>();
     }
 
 #if REPLACEMENT_PROTOTYPE_ENABLED

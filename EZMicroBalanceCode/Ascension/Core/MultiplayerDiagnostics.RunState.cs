@@ -1,4 +1,5 @@
 using MegaCrit.Sts2.Core.Nodes;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
@@ -56,12 +57,17 @@ internal static class RunManagerEnterActDiagPatch
 }
 
 /// <summary>
-/// Patches the Neow BeforeEventStarted to log player HP right before and after healing.
-/// We patch AncientEventModel.BeforeEventStarted since Neow inherits it.
+/// Logs Neow HP before and after event startup through the AncientEventModel boundary.
 /// </summary>
-[HarmonyPatch(typeof(AncientEventModel), "BeforeEventStarted")]
-internal static class AncientEventModelBeforeEventStartedDiagPatch
+internal sealed class AncientEventModelBeforeEventStartedDiagPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-ancient-event-start";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log Ancient event owner HP around BeforeEventStarted when multiplayer diagnostics are enabled";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(AncientEventModel), "BeforeEventStarted")];
+
+    [HarmonyPrefix]
     private static void Prefix(AncientEventModel __instance, bool isPreFinished)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
@@ -75,6 +81,7 @@ internal static class AncientEventModelBeforeEventStartedDiagPatch
             $"playerNetId={player.NetId}; currentHp={player.Creature.CurrentHp}; maxHp={player.Creature.MaxHp}");
     }
 
+    [HarmonyPostfix]
     private static void Postfix(AncientEventModel __instance, bool isPreFinished)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;

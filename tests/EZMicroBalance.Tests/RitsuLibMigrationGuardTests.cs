@@ -193,6 +193,8 @@ public sealed class RitsuLibMigrationGuardTests
         "urda-seedbed-card-pile-draw",
         // Ascension map generation boundary
         "ascension-act-model-create-map",
+        // Ascension diagnostics
+        "multiplayer-diagnostics-ancient-event-start",
         // Debug-only StS1 replacement prototype
         "sts1-replacement-prototype-generate-rooms"
     ];
@@ -213,9 +215,10 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedUrdaTransformSeedbedCount = 4;
     private const int ExpectedUrdaRootSightRoutingCount = 2;
     private const int ExpectedAscensionMapGenerationCount = 1;
+    private const int ExpectedAscensionDiagnosticCount = 1;
     private const int ExpectedSts1ReplacementPrototypeCount = 1;
-    private const int ExpectedTotalMigratedCount = 155;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 15;
+    private const int ExpectedTotalMigratedCount = 156;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 14;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -255,7 +258,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 155:
+    /// The expected migrated patch count must be 156:
     /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
     /// + 17 low-risk reward hooks + 3 Prismatic Gem reward patches
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
@@ -264,6 +267,7 @@ public sealed class RitsuLibMigrationGuardTests
     /// + 6 Batch 4c localization patches + 4 inline localization patches
     /// + 1 RitsuLib compatibility patch + 4 Urda transform/Seedbed patches
     /// + 2 Urda Root Sight room-routing patches
+    /// + 1 Ascension diagnostic patch
     /// + 1 Ascension map generation patch + 1 debug-only StS1 replacement prototype patch.
     /// </summary>
     [Fact]
@@ -271,7 +275,7 @@ public sealed class RitsuLibMigrationGuardTests
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount + ExpectedUrdaRootSightRoutingCount + ExpectedAscensionMapGenerationCount + ExpectedSts1ReplacementPrototypeCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount + ExpectedUrdaRootSightRoutingCount + ExpectedAscensionMapGenerationCount + ExpectedAscensionDiagnosticCount + ExpectedSts1ReplacementPrototypeCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -655,7 +659,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Spire Plus is RitsuLib-only for beta.129", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus is RitsuLib-only for beta.130", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -701,6 +705,26 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterUrdaBehaviorPatches(patcher);",
             "RegisterPatch<UrdaRootSightRollRoomTypePatch>();",
             "RegisterPatch<UrdaRootSightCreateRoomPatch>();");
+    }
+
+    [Fact]
+    public void MultiplayerAncientEventStartDiagnosticUsesRitsuLibPatchMethod()
+    {
+        var source = ReadRepoText("EZMicroBalanceCode", "Ascension", "Core", "MultiplayerDiagnostics.RunState.cs");
+        var registry = ReadRitsuLibIntegrationSource();
+
+        AssertSourceContains(
+            source,
+            "AncientEventModelBeforeEventStartedDiagPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"multiplayer-diagnostics-ancient-event-start\"",
+            "new ModPatchTarget(typeof(AncientEventModel), \"BeforeEventStarted\")",
+            "[HarmonyPrefix]",
+            "[HarmonyPostfix]");
+        Assert.DoesNotContain("[HarmonyPatch(typeof(AncientEventModel), \"BeforeEventStarted\")]", source, StringComparison.Ordinal);
+        AssertSourceContains(
+            registry,
+            "RegisterAscensionDiagnosticPatches(patcher);",
+            "RegisterPatch<AncientEventModelBeforeEventStartedDiagPatch>();");
     }
 
     [Fact]
@@ -767,7 +791,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.129 package parity, runtime preflight, and source-workspace validation passed for the packaged 155/15 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.130 package parity, runtime preflight, and source-workspace validation passed for the packaged 156/14 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -845,25 +869,25 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             integrationDoc,
-            "Current migrated total: 155 patch classes.",
-            "Current raw Harmony remaining: 15 declarations, tracked in `docs/patch-inventory.md`.");
+            "Current migrated total: 156 patch classes.",
+            "Current raw Harmony remaining: 14 declarations, tracked in `docs/patch-inventory.md`.");
         Assert.DoesNotContain("Current migrated total: 151 patch classes.", integrationDoc, StringComparison.Ordinal);
         Assert.DoesNotContain("Current raw Harmony remaining: 19 declarations", integrationDoc, StringComparison.Ordinal);
 
         AssertSourceContains(
             docsReadme,
-            "Current beta.129 RitsuLib-only package state",
+            "Current beta.130 RitsuLib-only package state",
             "source-workspace proof, package parity",
             "forced clicked UI smoke boundary");
         Assert.DoesNotContain("Current beta.123 RitsuLib-only package state", docsReadme, StringComparison.Ordinal);
 
         AssertSourceContains(
             coreReadme,
-            "Packaged beta.129 evidence covers build, publish, package parity, runtime",
-            "preflight, and source-workspace validation for the packaged 155/15 source state.",
+            "Packaged beta.130 evidence covers build, publish, package parity, runtime",
+            "preflight, and source-workspace validation for the packaged 156/14 source state.",
             "Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,",
             "Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch registration",
-            "Recapture beta.129 runtime",
+            "Recapture beta.130 runtime",
             "This proves forced clicked UI visibility only;",
             "gameplay, save-load, gated Vakuu fight-option and victory return");
         Assert.DoesNotContain("Packaged beta.123 evidence covers build, publish, package parity", coreReadme, StringComparison.Ordinal);
@@ -955,8 +979,8 @@ public sealed class RitsuLibMigrationGuardTests
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 155", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 15", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 156", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 14", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -1015,6 +1039,7 @@ public sealed class RitsuLibMigrationGuardTests
             "`UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |",
             "`UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |",
             "`AscensionMapGenerationPatches.cs` | 1 | `ascension-act-model-create-map` | ascension-map-generation |",
+            "`MultiplayerDiagnostics.RunState.cs` | 1 | `multiplayer-diagnostics-ancient-event-start` | ascension-diagnostics |",
             "`Sts1ReplacementPrototype.cs` | 1 | `sts1-replacement-prototype-generate-rooms` | sts1-replacement-prototype |");
     }
 

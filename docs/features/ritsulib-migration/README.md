@@ -5,18 +5,18 @@ read only the support file that matches the task.
 
 ## Current Boundary
 
-- Spire Plus is RitsuLib-only for beta.129.
-- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.129`.
+- Spire Plus is RitsuLib-only for beta.130.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.130`.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.129 build, publish, package parity, runtime
-  preflight, and source-workspace validation for the 155/15 source state.
+- Current packaged proof: beta.130 build, publish, package parity, runtime
+  preflight, and source-workspace validation for the 156/14 source state.
 - Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
   Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch
   registration from that older package.
-- The source inventory has 155 migrated classes and 15 raw Harmony declarations
-  remaining; recapture beta.129 runtime smoke before claiming current
+- The source inventory has 156 migrated classes and 14 raw Harmony declarations
+  remaining; recapture beta.130 runtime smoke before claiming current
   in-game patch coverage.
 - Current source migration: Neow reroll option, Urda option-relic, Root Sight map-click,
   Root Sight map-visual, Vakuu fight option, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
@@ -47,11 +47,14 @@ read only the support file that matches the task.
   Phantasmal Gardener now also use RitsuLib `IPatchMethod` / `ModPatcher`.
 - Urda Root Sight `RunManager` room type/model routing now also uses RitsuLib
   `IPatchMethod` / `ModPatcher`.
-- Current inventory: 155 migrated source patch classes and 15 raw Harmony
+- Multiplayer Ancient event startup diagnostics now also use RitsuLib
+  `IPatchMethod` / `ModPatcher`.
+- Current inventory: 156 migrated source patch classes and 14 raw Harmony
   declarations remain in `docs/patch-inventory.md`.
-- Boundary: beta.129 was rebuilt, published, packaged, package-checked, runtime
+- Boundary: beta.130 was rebuilt, published, packaged, package-checked, runtime
   preflighted, and source-workspace checked after the RitsuLib `0.4.34`
-  dependency refresh and Urda Root Sight room-routing migration. The latest
+  dependency refresh, Urda Root Sight room-routing migration, and multiplayer
+  Ancient event diagnostic migration. The latest
   clicked UI smoke remains previous beta.128 package proof and applied all 152
   default runtime Spire Plus ModPatcher patches in that package.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
