@@ -64,11 +64,11 @@ public sealed partial class DocumentationCompactnessGuardTests
             .SelectMany(file => new[]
                 {
                     "EZMB-only",
-                    "ExternalMod+EZMB",
-                    "non-ExternalMod/EZMB",
-                    "ExternalMod/EZMB",
+                    "previous package+EZMB",
+                    "non-previous package/EZMB",
+                    "previous package/EZMB",
                     "no-op EZMB config",
-                    "ExternalMod + EZMicroBalance",
+                    "previous package + EZMicroBalance",
                     "Spire Plus / `EZMicroBalance`",
                     "Spire Plus / EZMicroBalance"
                 }

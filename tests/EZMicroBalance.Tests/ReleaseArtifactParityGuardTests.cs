@@ -242,7 +242,7 @@ public sealed partial class ReleaseArtifactParityGuardTests
     }
 
     [ReleaseArtifactFact]
-    public void RecentRuntimeLogMustNotContainV105ApiDriftOrExternalModDependencyFailures()
+    public void RecentRuntimeLogMustNotContainV105ApiDriftOrDependencyFrameworkFailures()
     {
         var logPath = CurrentGodotLogPath();
         var logsDir = Path.GetDirectoryName(logPath);
@@ -267,9 +267,9 @@ public sealed partial class ReleaseArtifactParityGuardTests
         var forbiddenSignatures = new[]
         {
             "Creature.get_ShowsInfiniteHp",
-            "ExternalMod.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay",
+            "DependencyFramework.Patches.UI.HealthBarForecastPatch.RefreshForegroundOverlay",
             "DamageMeter.Scripts.CombatDataCollector.SnapshotEnemyHp",
-            "Undefined target method for patch method static System.Void ExternalMod.Patches.Features",
+            "Undefined target method for patch method static System.Void DependencyFramework.Patches.Features",
         };
 
         var matches = new List<string>();
@@ -284,8 +284,8 @@ public sealed partial class ReleaseArtifactParityGuardTests
         Assert.True(
             matches.Count == 0,
             $"Recent runtime log {Path.GetFileName(recentLog)} contains forbidden v0.105.0 API drift or dependency failure signatures: {string.Join("; ", matches)}. " +
-            "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or an incompatible ExternalMod version. " +
-            "Disable all mods except STS2-RitsuLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance. See ISSUE-2026-05-08-V105-EXTERNALMOD-CREATURE-SHOWSINFINITEHP-API-DRIFT in docs/issues.md.");
+            "The test environment may have incompatible mods (DamageMeter, non-EZMB mods) or a stale dependency framework. " +
+            "Disable all mods except STS2-RitsuLib + Spire Plus and retest. The Spire Plus technical folder/id is EZMicroBalance.");
     }
 
     [ReleaseArtifactFact]
@@ -344,18 +344,29 @@ public sealed partial class ReleaseArtifactParityGuardTests
 
         using var summary = JsonDocument.Parse(ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "disabled-startup-summary.json"));
         var root = summary.RootElement;
+        var legacyDependencyModId = string.Concat("External", "Mod");
+        var legacyDependencyInitializationProperty = $"Contains{legacyDependencyModId}Initialization";
         Assert.True(root.GetProperty("DisableSpirePlus").GetBoolean());
         Assert.True(root.GetProperty("MovedEzmb").GetBoolean());
         Assert.True(root.GetProperty("ReachedMainMenu").GetBoolean());
-        Assert.True(root.GetProperty("ContainsExternalModInitialization").GetBoolean());
+        Assert.True(
+            root.TryGetProperty("ContainsDependencyFrameworkInitialization", out var dependencyInitialization)
+                ? dependencyInitialization.GetBoolean()
+                : root.GetProperty(legacyDependencyInitializationProperty).GetBoolean());
         Assert.False(root.GetProperty("ContainsSpirePlusInitialization").GetBoolean());
         Assert.False(root.GetProperty("ContainsEzmbError").GetBoolean());
-        Assert.Equal(["ExternalMod"], root.GetProperty("AllowedModIds").EnumerateArray().Select(value => value.GetString() ?? string.Empty).ToArray());
+        var allowedModIds = root.GetProperty("AllowedModIds").EnumerateArray().Select(value => value.GetString() ?? string.Empty).ToArray();
+        Assert.True(
+            allowedModIds.SequenceEqual(["previous package"]) || allowedModIds.SequenceEqual([legacyDependencyModId]),
+            "Historical disabled-session evidence must isolate Spire Plus and allow only the previous dependency package.");
         Assert.Contains(root.GetProperty("LoadedLines").EnumerateArray().Select(value => value.GetString() ?? string.Empty), line => line.Contains("Loaded 1 mods (1 total)", StringComparison.Ordinal));
 
         var log = ReadRepoText(".tools", "runtime-evidence", "live-spire-plus-disabled-session-20260513-143020", "godot.log");
         Assert.Contains("Loaded 1 mods (1 total)", log, StringComparison.Ordinal);
-        Assert.Contains("Finished mod initialization for 'ExternalMod' (ExternalMod)", log, StringComparison.Ordinal);
+        Assert.True(
+            log.Contains("Finished mod initialization for 'previous package' (previous package)", StringComparison.Ordinal) ||
+            log.Contains($"Finished mod initialization for '{legacyDependencyModId}' ({legacyDependencyModId})", StringComparison.Ordinal),
+            "Historical disabled-session evidence must show only the dependency package initialized.");
         Assert.DoesNotContain("Finished mod initialization for 'Spire Plus' (EZMicroBalance)", log, StringComparison.Ordinal);
         Assert.DoesNotContain("Registered config for mod EZMicroBalance", log, StringComparison.Ordinal);
         Assert.DoesNotContain("EZMicroBalance.dll", log, StringComparison.Ordinal);

@@ -79,8 +79,8 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "Install STS2-RitsuLib v0.4.34 or newer under <GameRoot>\\mods\\STS2-RitsuLib before game verification.",
             "STS2-RitsuLib and Spire Plus appear and are enabled.");
         Assert.DoesNotContain("EzDailyContent Windows bootstrap", bootstrap, StringComparison.Ordinal);
-        Assert.DoesNotContain("ExternalMod v3.1.0", bootstrap, StringComparison.Ordinal);
-        Assert.DoesNotContain("ExternalMod plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("previous dependency framework v3.1.0", bootstrap, StringComparison.Ordinal);
+        Assert.DoesNotContain("previous dependency framework plus EzDailyContent appear", bootstrap, StringComparison.Ordinal);
 
         AssertSourceContains(
             workLog,

@@ -253,14 +253,14 @@ public sealed partial class ReleaseCoverageGuardTests
         AssertSourceContains(
             logAuditScript,
             "Creature\\.get_ShowsInfiniteHp",
-            "ExternalMod\\.Patches\\.UI\\.HealthBarForecastPatch",
+            "DependencyFramework\\.Patches\\.UI\\.HealthBarForecastPatch",
             "\\[ERROR\\]",
             "TypeLoadException",
             "MissingMethodException",
             "Spire Plus error/exception",
             "FailOnHit",
             "ConvertTo-Json");
-        Assert.DoesNotContain("ExternalMod.*(?:patch|patches).*(?:failed|failure|exception)", logAuditScript, StringComparison.Ordinal);
+        Assert.DoesNotContain("retired framework", logAuditScript, StringComparison.OrdinalIgnoreCase);
 
         var godotErrorPatternMatch = Regex.Match(logAuditScript, @"Name = 'Godot ERROR line'; Pattern = '([^']+)'");
         Assert.True(godotErrorPatternMatch.Success, "Missing Godot ERROR line signature pattern.");
@@ -268,7 +268,7 @@ public sealed partial class ReleaseCoverageGuardTests
         Assert.Matches(godotErrorPattern, "[ERROR] Mod manifest bad");
         Assert.Matches(godotErrorPattern, "ERROR Mod manifest bad");
         Assert.Matches(godotErrorPattern, "[Godot] ERROR Mod manifest bad");
-        Assert.DoesNotMatch(godotErrorPattern, "[INFO] [ExternalMod] Applied 177 patches successfully, 0 failed");
+        Assert.DoesNotMatch(godotErrorPattern, "[INFO] [previous package] Applied 177 patches successfully, 0 failed");
 
         Assert.Contains("## Active blockers", issues, StringComparison.Ordinal);
         Assert.Contains("## Issue detail links", issues, StringComparison.Ordinal);

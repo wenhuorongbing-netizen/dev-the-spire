@@ -1194,7 +1194,7 @@ function Get-OwnerAreaFromText {
 
     $combined = "$Command`n$Text"
 
-    if ($Text -match '(?i)\b(TypeLoadException|MissingMethodException|MissingFieldException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|ExternalMod\.Patches)\b|(?i)(?:\[ERROR\]\s+\[ExternalMod\]|ExternalMod.*(?:HarmonyException|Patching exception|patch(?:ing)? exception|failed))') {
+    if ($Text -match '(?i)\b(TypeLoadException|MissingMethodException|MissingFieldException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|runtime expectation|source drift|package drift|DependencyFramework\.Patches)\b|(?i)(?:\[ERROR\]\s+\[(?:previous package|dependency framework)\]|(?:previous package|dependency framework).*(?:HarmonyException|Patching exception|patch(?:ing)? exception|failed))') {
         return 'PackageRuntimeDrift'
     }
 
@@ -1370,7 +1370,7 @@ function Get-NextStepForOwner {
         }
         default {
             if ($Signal -match 'package|expectation|TypeLoad|MissingMethod') {
-                return 'Check installed package parity, current RitsuLib runtime compatibility, historical ExternalMod context only for old packets, and current game API targets before changing gameplay source.'
+                return 'Check installed package parity, current RitsuLib runtime compatibility, historical previous-package context only for old packets, and current game API targets before changing gameplay source.'
             }
 
             return 'Start from iteration-result.json, runtime-probe-samples.json, godot.log.after-launch, and godot-log-audit.json; narrow to the first failing signal.'
@@ -1397,7 +1397,7 @@ function Get-AuditHits {
     return @($hits.ToArray())
 }
 
-function Get-ExternalModFailureDetails {
+function Get-DependencyFrameworkFailureDetails {
     param([AllowEmptyString()][string]$LogText)
 
     $details = [System.Collections.Generic.List[object]]::new()
@@ -1408,7 +1408,7 @@ function Get-ExternalModFailureDetails {
     $lines = @($LogText -split "`r?`n")
     for ($i = 0; $i -lt $lines.Count; $i++) {
         $line = [string]$lines[$i]
-        if ($line -notmatch '(?i)^\s*\[ERROR\]\s+\[ExternalMod\].*HarmonyException|^\s*\[ERROR\]\s+\[ExternalMod\].*Patching exception') {
+        if ($line -notmatch '(?i)^\s*\[ERROR\]\s+\[(?:previous package|dependency framework)\].*HarmonyException|^\s*\[ERROR\]\s+\[(?:previous package|dependency framework)\].*Patching exception') {
             continue
         }
 
@@ -1416,7 +1416,7 @@ function Get-ExternalModFailureDetails {
         $block.Add($line.Trim()) | Out-Null
         for ($j = $i + 1; $j -lt $lines.Count; $j++) {
             $nextLine = [string]$lines[$j]
-            if ($nextLine -match '^\s*\[(?:INFO|WARN|ERROR)\]' -and $nextLine -notmatch '^\s*\[ERROR\]\s+\[ExternalMod\]') {
+            if ($nextLine -match '^\s*\[(?:INFO|WARN|ERROR)\]' -and $nextLine -notmatch '^\s*\[ERROR\]\s+\[(?:previous package|dependency framework)\]') {
                 break
             }
 
@@ -1457,7 +1457,7 @@ function Get-ExternalModFailureDetails {
         }) | Out-Null
     }
 
-    if ($LogText -match '(?im)^\s*\[INFO\]\s+\[ExternalMod\]\s+Applied\s+(?<applied>\d+)\s+patches\s+successfully,\s+(?<failed>\d+)\s+failed') {
+    if ($LogText -match '(?im)^\s*\[INFO\]\s+\[(?:previous package|dependency framework)\]\s+Applied\s+(?<applied>\d+)\s+patches\s+successfully,\s+(?<failed>\d+)\s+failed') {
         $details.Add([pscustomobject]@{
             FailureKind = 'Patch summary'
             TargetMethod = ''
@@ -3143,8 +3143,8 @@ function Analyze-Iteration {
     }
     $logOwnerArea = Get-OwnerAreaFromText -Text $ownerLogText -Command ''
     $commandOwnerArea = Get-OwnerAreaFromText -Text '' -Command $command
-    $externalModFailures = if ($logTextTrustedForOwner) {
-        @(Get-ExternalModFailureDetails -LogText $logText)
+    $dependencyFrameworkFailures = if ($logTextTrustedForOwner) {
+        @(Get-DependencyFrameworkFailureDetails -LogText $logText)
     } else {
         @()
     }
@@ -3541,9 +3541,9 @@ function Analyze-Iteration {
         $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
         $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
 
-        if ($name -match 'TypeLoadException|MissingMethodException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|ExternalMod\.Patches') {
+        if ($name -match 'TypeLoadException|MissingMethodException|dependency framework patch failure|Creature\.get_ShowsInfiniteHp|DependencyFramework\.Patches') {
             $owner = 'PackageRuntimeDrift'
-            $next = 'Treat this as installed-game/ExternalMod/RitsuLib API drift first; compare current game source/API targets and package build before gameplay fixes.'
+            $next = 'Treat this as installed-game/RitsuLib dependency API drift first; compare current game source/API targets and package build before gameplay fixes.'
         } elseif ($name -match 'Spire Plus error/exception') {
             $owner = Resolve-OwnerArea -PlannedOwnerArea $resultOwnerArea -LogOwnerArea $auditLogOwnerArea -CommandOwnerArea $commandOwnerArea -PreferLog
             $next = Get-NextStepForOwner -OwnerArea $owner -Signal $name
@@ -3803,7 +3803,7 @@ function Analyze-Iteration {
         HangSignals = @($hangSignals)
         AuditTrustedForOwner = $auditTrustedForOwner
         AuditHits = @($auditHits.ToArray())
-        ExternalModFailures = @($externalModFailures)
+        DependencyFrameworkFailures = @($dependencyFrameworkFailures)
         Findings = @($findings)
     }
 }

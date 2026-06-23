@@ -43,7 +43,7 @@ public sealed partial class ReleasePackageArtifactGuardTests
             .ToArray();
 
         Assert.Equal(PackagedFiles.Select(file => $"EZMicroBalance/{file}").OrderBy(file => file, StringComparer.Ordinal), zipEntries);
-        Assert.DoesNotContain("EZMicroBalance/ExternalMod.dll", zipEntries);
+        Assert.DoesNotContain($"EZMicroBalance/{string.Concat("External", "Mod")}.dll", zipEntries);
         Assert.DoesNotContain("EZMicroBalance/0Harmony.dll", zipEntries);
         Assert.DoesNotContain("EZMicroBalance/sts2.dll", zipEntries);
 

@@ -737,6 +737,82 @@ public sealed class RitsuLibMigrationGuardTests
             "RitsuLib variant check before claiming compatibility");
     }
 
+    [Fact]
+    public void ActiveSourcesAndDocsDoNotExposeRetiredFrameworkNames()
+    {
+        var scannedRoots = new[]
+        {
+            RepoPath("AGENTS.md"),
+            RepoPath("PROJECT_STATE.md"),
+            RepoPath("README.md"),
+            RepoPath("EZMicroBalance.csproj"),
+            RepoPath("EZMicroBalance.json"),
+            RepoPath("EZMicroBalanceCode"),
+            RepoPath("scripts"),
+            RepoPath("tests", "EZMicroBalance.Tests"),
+            RepoPath("docs")
+        };
+        var excludedPathFragments = new[]
+        {
+            $"{Path.DirectorySeparatorChar}bin{Path.DirectorySeparatorChar}",
+            $"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}",
+            $"{Path.DirectorySeparatorChar}docs{Path.DirectorySeparatorChar}archive{Path.DirectorySeparatorChar}"
+        };
+        var allowedExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".cs",
+            ".csproj",
+            ".json",
+            ".md",
+            ".props",
+            ".ps1",
+            ".tsv",
+            ".csv"
+        };
+        var forbiddenFragments = new[]
+        {
+            string.Concat("Base", "Lib"),
+            string.Concat("base", "lib"),
+            string.Concat("Base", "Lnb"),
+            string.Concat("External", "Mod"),
+            string.Concat("Saved", "Spnre", "Fneld"),
+            string.Concat("Ancnent", " Expansnon"),
+            string.Concat("Rnsk", " Regnster")
+        };
+        var offenders = new List<string>();
+
+        foreach (var root in scannedRoots)
+        {
+            IEnumerable<string> files = File.Exists(root)
+                ? new[] { root }
+                : Directory.GetFiles(root, "*", SearchOption.AllDirectories)
+                    .Where(path => allowedExtensions.Contains(Path.GetExtension(path)));
+
+            foreach (var file in files)
+            {
+                if (excludedPathFragments.Any(fragment => file.Contains(fragment, StringComparison.OrdinalIgnoreCase)))
+                {
+                    continue;
+                }
+
+                var text = File.ReadAllText(file);
+                foreach (var forbidden in forbiddenFragments)
+                {
+                    if (text.Contains(forbidden, StringComparison.Ordinal))
+                    {
+                        offenders.Add($"{ToRepoRelativePath(file)}: {forbidden}");
+                    }
+                }
+            }
+        }
+
+        Assert.True(
+            offenders.Count == 0,
+            "Active sources/docs must route future work through RitsuLib and must not expose retired framework names or known mojibake variants:" +
+            Environment.NewLine +
+            string.Join(Environment.NewLine, offenders));
+    }
+
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
     /// state the correct total migrated count (127).
