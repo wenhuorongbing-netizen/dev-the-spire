@@ -56,23 +56,6 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<SereTalonRelicNodeReloadPatch>();
     }
 
-    private static void RegisterRelicVisualHoverPatches(ModPatcher patcher)
-    {
-        patcher.RegisterPatch<SereTalonIconPathPatch>();
-        patcher.RegisterPatch<SereTalonPackedIconPathPatch>();
-        patcher.RegisterPatch<SereTalonPackedIconOutlinePathPatch>();
-        patcher.RegisterPatch<SereTalonBigIconPathPatch>();
-        patcher.RegisterPatch<SereTalonIconTexturePatch>();
-        patcher.RegisterPatch<SereTalonIconOutlineTexturePatch>();
-        patcher.RegisterPatch<SereTalonBigIconTexturePatch>();
-        patcher.RegisterPatch<PrismaticGemHoverTipsPatch>();
-        patcher.RegisterPatch<PrismaticGemHoverTipsExcludingRelicPatch>();
-        patcher.RegisterPatch<JewelryBoxExtraHoverTipsPatch>();
-        patcher.RegisterPatch<JewelryBoxHoverTipsPatch>();
-        patcher.RegisterPatch<JewelryBoxHoverTipsExcludingRelicPatch>();
-        patcher.RegisterPatch<SovereignBladeJadeBoonsHoverTipsPatch>();
-    }
-
     private static void RegisterRemainingUiPatches(ModPatcher patcher)
     {
         patcher.RegisterPatch<PrismaticGemRewardScreenHintPatch>();
@@ -95,22 +78,5 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<StartRunLobbyUpdatePreferredAscensionPatch>();
         patcher.RegisterPatch<StartRunLobbySyncAscensionChangeA20WarningPatch>();
         patcher.RegisterPatch<StartRunLobbyBeginRunForAllPlayersA20WarningPatch>();
-    }
-
-    private static void RegisterAscensionIntentUiPatches(ModPatcher patcher)
-    {
-        patcher.RegisterPatch<AeonglassLaserEchoIntentLabelPatch>();
-        patcher.RegisterPatch<AeonglassLaserEchoIntentDamagePatch>();
-    }
-
-    private static void RegisterEnemyDamagePolishPatches(ModPatcher patcher)
-    {
-        patcher.RegisterPatch<DecimillipedeWritheDamagePolishPatch>();
-        patcher.RegisterPatch<DecimillipedeConstrictDamagePolishPatch>();
-        patcher.RegisterPatch<DecimillipedeBulkDamagePolishPatch>();
-        patcher.RegisterPatch<TerrorEelCrashDamagePolishPatch>();
-        patcher.RegisterPatch<TerrorEelThrashDamagePolishPatch>();
-        patcher.RegisterPatch<PhantasmalGardenerBiteDamagePolishPatch>();
-        patcher.RegisterPatch<PhantasmalGardenerLashDamagePolishPatch>();
     }
 }

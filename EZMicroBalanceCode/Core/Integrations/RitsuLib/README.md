@@ -11,9 +11,11 @@ content-pack registration, and SavedAttachedState field registration helper.
 `RitsuLibBootstrap` can stay focused on startup order and fail-closed patcher
 application. The registry partials keep ownership visible in source:
 `SpirePlusMigratedPatchRegistry.cs` is only the ordered entry point,
-`SpirePlusMigratedPatchRegistry.Ui.cs` owns click, hover, settings, and other
-UI-facing registrations, `SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns
-local-only preview-tool UI registrations, `SpirePlusMigratedPatchRegistry.Rewards.cs`
+`SpirePlusMigratedPatchRegistry.Ui.cs` owns event, clicked, map, settings, and
+selection UI registrations, `SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns
+local-only preview-tool UI registrations,
+`SpirePlusMigratedPatchRegistry.DisplayUi.cs` owns display-only icon, hover,
+intent, and damage-number registrations, `SpirePlusMigratedPatchRegistry.Rewards.cs`
 owns card/relic/reward hooks, `SpirePlusMigratedPatchRegistry.Localization.cs` owns
 localization and RitsuLib compatibility hooks, and
 `SpirePlusMigratedPatchRegistry.Gameplay.cs` owns gameplay and diagnostic hooks
