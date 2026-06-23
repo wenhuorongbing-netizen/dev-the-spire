@@ -228,7 +228,7 @@ public sealed partial class EngineeringGovernanceGuardTests
             inventory,
             "| Owner | Risk | File | Line | Patch |",
             "Vakuu",
-            "Ascension core",
+            "ascension-diagnostics",
             "Ascension patches",
             "CrystalSpherePeekPatch.cs",
             "TransformPreviewPatch.cs",

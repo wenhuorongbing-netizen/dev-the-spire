@@ -163,6 +163,9 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<StartRunLobbyUpdateMaxMultiplayerAscensionDiagPatch>();
         patcher.RegisterPatch<NGameStartNewMultiplayerRunDiagPatch>();
         patcher.RegisterPatch<RunManagerEnterActDiagPatch>();
+        patcher.RegisterPatch<SaveQuitSaveRunDiagPatch>();
+        patcher.RegisterPatch<SaveQuitReturnToMainMenuDiagPatch>();
+        patcher.RegisterPatch<SaveQuitNGameQuitDiagPatch>();
         patcher.RegisterPatch<AncientEventModelBeforeEventStartedDiagPatch>();
     }
 

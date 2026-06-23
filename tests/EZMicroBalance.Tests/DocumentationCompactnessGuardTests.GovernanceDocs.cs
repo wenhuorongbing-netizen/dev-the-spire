@@ -20,7 +20,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.Contains("docs/archive/project-state-history-20260516.md", projectState, StringComparison.Ordinal);
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
-        Assert.Contains("Latest package target is beta.132", projectState, StringComparison.Ordinal);
+        Assert.Contains("Latest package target is beta.133", projectState, StringComparison.Ordinal);
         Assert.Contains("build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, and local RitsuLib runtime install are current", projectState, StringComparison.Ordinal);
         Assert.Contains("Forced clicked Ancient UI smoke remains previous beta.128 package evidence", projectState, StringComparison.Ordinal);
         Assert.Contains("Previous beta.128 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
@@ -94,7 +94,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             issues,
             "Current target: test-ready manual build, not release-ready.",
-            "Current package hashes, 2026-06-23 beta.132:",
+            "Current package hashes, 2026-06-23 beta.133:",
             "| ZIP |",
             "| DLL |",
             "## Active blockers",
@@ -131,7 +131,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             docsByPath["PROJECT_STATE.md"],
             "Active M5 Revision S truth",
-            "Latest package target is beta.132",
+            "Latest package target is beta.133",
             "build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, and local RitsuLib runtime install are current",
             "Forced clicked Ancient UI smoke remains previous beta.128 package evidence",
             "Previous beta.128 clicked Ancient UI smoke proof is",

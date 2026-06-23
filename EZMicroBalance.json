@@ -3,7 +3,7 @@
   "name": "Spire Plus",
   "author": "wenhuorongbing-netizen",
   "description": "Spire Plus is a single Slay the Spire 2 gameplay expansion for private testing. Enable this one mod to test Ancient relic rewards, selected relic revisions, A11-A20 test rules, Firemarked Elites, Banner Rooms, Boss dedicated abilities, Branded Form, and integrated preview tools: Crystal Sphere peek and transform preview. The design goal is readable risk: every reward should tell you what you gain now, what cost you accept, and what remains after combat. Seedbed is the clearest example: it gives 8/12 Block, sets up 2/3 spaces, plants 1/2 eligible draw or discard cards immediately, then catches later pollution before it enters hand. Planting removes the card from this combat before it reaches hand and gives Withered Husk. Planting is not play, discard, or Exhaust, and it triggers none of those payoffs. Planted Temporary Status/Curses disappear after combat; permanent Curses are not permanently deleted. Blight Sprouts are handled for this combat and add no Rootblight I. Rootblight freezes only this combat's end check: no cleanse, downgrade, worsen, or split; same stage after combat. Seedbed is valuable because it combines immediate Block, cleaner draws, and later 3 Block from each Husk. The Mod Settings panel localizes this description by client language. Requires STS2-RitsuLib.",
-  "version": "v0.1.0-private-beta.132",
+  "version": "v0.1.0-private-beta.133",
   "has_pck": true,
   "has_dll": true,
   "dependencies": [

@@ -1,4 +1,4 @@
-# Private Beta Release Checklist
+﻿# Private Beta Release Checklist
 
 Target mod: `Spire Plus`
 Target manifest id: `EZMicroBalance`
@@ -13,7 +13,7 @@ Target manifest id: `EZMicroBalance`
 
 ## Build And Publish
 
-Current status note (2026-06-23): the active manifest is `v0.1.0-private-beta.132` after the RitsuLib compatibility and package refresh pass.
+Current status note (2026-06-23): the active manifest is `v0.1.0-private-beta.133` after the RitsuLib compatibility and package refresh pass.
 The beta.88 package/hash rows and direct `v0.107.1` AdditiveBatch1 smoke are previous-package context context only. The beta.90 rows are previous RitsuLib-only package context.
 The beta.128 package/hash rows, runtime preflight, source-workspace validation,
 and forced clicked Ancient UI smoke are current package evidence. The latest
@@ -50,14 +50,14 @@ Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evide
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.132.zip` is rebuilt from the beta.128 RitsuLib compatibility and package refresh pass and copied to the local game root for manual testing.
-- Current package hashes: DLL `0FF77E73F7EA8E31FAC781E0E7E564D9F05C5F2CE0E9F279F2A250D18ADD4034`; manifest `F25626632F55F13303D47ED0766AAC42981E6CF08DC887CC9900BEEFCAF21E11`; PCK `2DE983645B35ADFB0A32663795ED33FA8A8A3A21C3ED01EFB0EFA484B779771E`; ZIP-entry `README_INSTALL.txt` `BD953A9308A70DC61BF492797E6D6B22EA28B4ABBD5D9C87C99EF1DA5AC47857`; zip `19E910A0060A1E843D24F77E962A3F45B33F738B3B312EF4608D92E59BB49FD9`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.133.zip` is rebuilt from the beta.128 RitsuLib compatibility and package refresh pass and copied to the local game root for manual testing.
+- Current package hashes: DLL `6F257CCF31280FA002AF75C3507307FA288867BDFF13825CC9289BBB9825F53B`; manifest `2FA3920BC1EC84485A7FBA43E5446F09E8E5AB6A575BBD2FB4C114DA9E34879C`; PCK `2472578F14D4572A2888F41F10D449F0331CB057A112939C7EC43196F501F87B`; ZIP-entry `README_INSTALL.txt` `7607A59DBA274931641B041028B5A06E96EE4DBF9E12EE4D21215B16CDEEAABB`; zip `658AAB5F5FE0793253513F472B2BD5DC6C93BA2FF9EA6911E3130DFC6719115E`.
   - This hash refresh records automated source/package validation plus smoke-level clicked Ancient UI proof. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, gated Vakuu fight-option UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 
 ## Runtime
 
-- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.132 and should be recaptured if the settings row becomes release-blocking.
+- [x] STS2-RitsuLib appears in Mod Settings for the beta.99 RitsuLib-only package; this is previous-package context after beta.133 and should be recaptured if the settings row becomes release-blocking.
 - [x] STS2-RitsuLib loads when enabled in a controlled Off smoke profile for the beta.128 RitsuLib-only package.
 - [x] Spire Plus appears in the current normal Steam-client manifest list and registers its config page under the refreshed display-name package.
 - [x] Historical refreshed Mod Settings UI list screenshot shows `Spire Plus` after the display-name refresh package is installed.
@@ -79,7 +79,7 @@ Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evide
 - [x] Latest retained clicked Ancient UI smoke is previous beta.128 smoke-level UI proof on Slay the Spire 2 `v0.107.1`; retained beta.87/beta.88/beta.90/beta.96/beta.99 loader evidence is historical or previous-package context only.
 - [x] Historical normal Steam helper startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260515-211414` reached main menu with only previous package and Spire Plus, reported `Found 22 previous saved-state registrations`, restored settings, 24 moved mod entries, and 2 current-run files, left 0 `SlayTheSpire2` processes, and audited clean. This is historical context; previous beta.128 clicked UI smoke supersedes it for previous-package startup/default-Off smoke shape.
 - [x] Historical repeat helper-driven normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-session-20260513-125206` reached main menu with only previous package and Spire Plus, reported `Found 16 previous saved-state registrations`, restored settings plus 24 moved mod entries, and audited clean. This is previous-package context only.
-- [x] Historical previous package-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized previous package only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean. Previous startup shape is covered by beta.128 clicked UI smoke; beta.132 runtime smoke and actual disable-mod gameplay remain pending.
+- [x] Historical previous package-only plug-off normal Steam startup/log verification under `.tools\runtime-evidence\live-spire-plus-disabled-session-20260513-143020` reached main menu with the Spire Plus technical folder temporarily isolated out of the mods folder, loaded `1 mods (1 total)`, initialized previous package only, did not initialize Spire Plus, restored settings plus 25 moved entries and the current-run save, and audited clean. Previous startup shape is covered by beta.128 clicked UI smoke; beta.133 runtime smoke and actual disable-mod gameplay remain pending.
 - [x] `godot.log` reviewed for controlled smoke-test initializer errors.
 - [x] `godot.log` reviewed after fresh beta.99 RitsuLib-only Off isolated startup/log verification.
 - [x] `godot.log` reviewed after previous beta.96 RitsuLib-only Off isolated startup/log verification and previous beta.93 AdditiveBatch1 registration verification.
@@ -148,7 +148,7 @@ Deferred rows fail unless rerun with `-AllowDeferred` after an explicit owner-ap
   - This is loader/registration evidence, not gameplay proof.
   - The beta.88 row is previous-package context loader/startup evidence, and beta.90 is previous RitsuLib-only package context; neither is beta.93 gameplay proof.
   - The 2026-05-13 helper startup/log pass is historical 16-field evidence. The old previous package-only plug-off evidence is previous package loader-isolation context; beta.96 startup/log shape is previous-package context after beta.99. The earlier settings-only disabled attempt is invalid because Spire Plus still initialized.
-  - Previous beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`. It opened Settings -> `Mod Settings (RitsuLib)` in a normal Steam-client session with only `STS2-RitsuLib` and `EZMicroBalance` enabled, showed only `RitsuLib` and `Spire Plus` in the RitsuLib Mods tree, rendered the Spire Plus Migration Status, `STS2-RitsuLib >= 0.4.34` runtime dependency, evidence-boundary, technical-id, and Preview Tools controls, retained same-session `godot.log`, audited clean, and passed StS1 Off runtime shape verification 21 / 0. Treat it as previous-package settings-page context after beta.132; the older `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` screenshot is historical list context only.
+  - Previous beta.99 RitsuLib Mod Settings UI proof is captured under `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`. It opened Settings -> `Mod Settings (RitsuLib)` in a normal Steam-client session with only `STS2-RitsuLib` and `EZMicroBalance` enabled, showed only `RitsuLib` and `Spire Plus` in the RitsuLib Mods tree, rendered the Spire Plus Migration Status, `STS2-RitsuLib >= 0.4.34` runtime dependency, evidence-boundary, technical-id, and Preview Tools controls, retained same-session `godot.log`, audited clean, and passed StS1 Off runtime shape verification 21 / 0. Treat it as previous-package settings-page context after beta.133; the older `.tools\runtime-evidence\current-spire-plus-modsettings-20260513-111342\02-mod-config-list.png` screenshot is historical list context only.
 - Manual feature results are pending; `docs/features/ancients-rework-v4/manual-verification-matrix.md`, `docs/features/ancient-expansion-urda/manual-test-checklist.md`, and `docs/features/ascension-11-20/manual-test-checklist.md` remain the current manual surfaces.
 - A11 source now inserts a reachable optional route node in the new column and adds Act 1/2/3 route rows, while ordinary A11 route nodes no longer receive a dedicated marker or hover tooltip. The existing A11 live save has a saved-map graph proof from the post-load first-node coord to the boss; natural click-by-click traversal remains pending.
 - Host multiplayer A20 development selection logs an explicit downgrade warning. This is not live co-op support for Branded Form; A20 co-op boss-path behavior remains pending manual verification.

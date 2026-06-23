@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 8 |
-| Migrated to RitsuLib ModPatcher | 162 |
-| Raw HarmonyPatch remaining | 8 |
-| Tracked patch units total | 170 |
-| High risk (raw Harmony) | 7 |
+| Total raw HarmonyPatch declarations | 4 |
+| Migrated to RitsuLib ModPatcher | 165 |
+| Raw HarmonyPatch remaining | 4 |
+| Tracked patch units total | 169 |
+| High risk (raw Harmony) | 4 |
 | Medium risk (raw Harmony) | 0 |
-| Low risk (raw Harmony) | 1 |
+| Low risk (raw Harmony) | 0 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 162 patch classes implement `IPatchMethod` and are registered via
+These 165 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -105,6 +105,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `MultiplayerDiagnostics.JoinFlow.cs` | 1 | `multiplayer-diagnostics-join-initial-game-info` | ascension-diagnostics |
 | `MultiplayerDiagnostics.Lobby.cs` | 3 | `multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension` | ascension-diagnostics |
 | `MultiplayerDiagnostics.RunState.cs` | 3 | `multiplayer-diagnostics-start-new-run, multiplayer-diagnostics-enter-act, multiplayer-diagnostics-ancient-event-start` | ascension-diagnostics |
+| `MultiplayerDiagnostics.SaveQuit.cs` | 3 | `multiplayer-diagnostics-save-run, multiplayer-diagnostics-return-to-main-menu, multiplayer-diagnostics-ngame-quit` | ascension-diagnostics |
 | `Sts1ReplacementPrototype.cs` | 1 | `sts1-replacement-prototype-generate-rooms` | sts1-replacement-prototype |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
@@ -112,15 +113,11 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 8 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 4 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 119 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 129 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 167 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
-| Ascension core | Low | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 8 | `[HarmonyPatch]` |
-| Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 11 | `[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.SaveRun), typeof(AbstractRoom), typeof(bool))]` |
-| Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 26 | `[HarmonyPatch(typeof(NGame), "ReturnToMainMenu")]` |
-| Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 38 | `[HarmonyPatch(typeof(NGame), "Quit")]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |

@@ -1,49 +1,97 @@
+using MegaCrit.Sts2.Core.Multiplayer.Game;
 using MegaCrit.Sts2.Core.Nodes;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 
 /// <summary>
-/// Patches save/quit paths to log when save, quit, or disconnect is invoked.
+/// Logs when save, quit, or main-menu return paths run during focused multiplayer diagnostics.
 /// </summary>
-[HarmonyPatch]
-internal static class SaveQuitDiagPatches
+internal sealed class SaveQuitSaveRunDiagPatch : IPatchMethod
 {
-    [HarmonyPatch(typeof(SaveManager), nameof(SaveManager.SaveRun), typeof(AbstractRoom), typeof(bool))]
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-save-run";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log SaveManager.SaveRun calls while multiplayer diagnostics are enabled";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(SaveManager), nameof(SaveManager.SaveRun), [typeof(AbstractRoom), typeof(bool)])];
+
     [HarmonyPrefix]
-    private static void SaveRunPrefix(AbstractRoom? preFinishedRoom, bool saveProgress)
+    private static void Prefix(AbstractRoom? preFinishedRoom, bool saveProgress)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
 
-        var netService = RunManager.Instance.NetService;
-        var isHost = netService?.Type == MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Host;
-        var netId = netService?.NetId ?? 0;
         MultiplayerDiagnostics.LogSaveQuit(
             $"SaveRun prefix; room={preFinishedRoom?.RoomType.ToString() ?? "<none>"}; saveProgress={saveProgress}",
-            isHost,
-            netId);
+            NetServiceSnapshot.IsHost,
+            NetServiceSnapshot.NetId);
     }
+}
 
-    [HarmonyPatch(typeof(NGame), "ReturnToMainMenu")]
+internal sealed class SaveQuitReturnToMainMenuDiagPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-return-to-main-menu";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log NGame.ReturnToMainMenu calls while multiplayer diagnostics are enabled";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NGame), nameof(NGame.ReturnToMainMenu))];
+
     [HarmonyPrefix]
-    private static void ReturnToMainMenuPrefix()
+    private static void Prefix()
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
 
-        var netService = RunManager.Instance.NetService;
-        var isHost = netService?.Type == MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Host;
-        var netId = netService?.NetId ?? 0;
-        MultiplayerDiagnostics.LogSaveQuit("ReturnToMainMenu prefix", isHost, netId);
+        MultiplayerDiagnostics.LogSaveQuit(
+            "ReturnToMainMenu prefix",
+            NetServiceSnapshot.IsHost,
+            NetServiceSnapshot.NetId);
     }
+}
 
-    [HarmonyPatch(typeof(NGame), "Quit")]
+internal sealed class SaveQuitNGameQuitDiagPatch : IPatchMethod
+{
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-ngame-quit";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log NGame.Quit calls while multiplayer diagnostics are enabled";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(NGame), nameof(NGame.Quit))];
+
     [HarmonyPrefix]
-    private static void NGameQuitPrefix()
+    private static void Prefix()
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
 
-        var netService = RunManager.Instance.NetService;
-        var isHost = netService?.Type == MegaCrit.Sts2.Core.Multiplayer.Game.NetGameType.Host;
-        var netId = netService?.NetId ?? 0;
-        MultiplayerDiagnostics.LogSaveQuit("NGame.Quit prefix", isHost, netId);
+        MultiplayerDiagnostics.LogSaveQuit(
+            "NGame.Quit prefix",
+            NetServiceSnapshot.IsHost,
+            NetServiceSnapshot.NetId);
+    }
+}
+
+internal static class NetServiceSnapshot
+{
+    public static bool IsHost
+    {
+        get
+        {
+            if (!MultiplayerDiagnostics.IsEnabled)
+            {
+                return false;
+            }
+
+            return RunManager.Instance.NetService?.Type == NetGameType.Host;
+        }
+    }
+
+    public static ulong NetId
+    {
+        get
+        {
+            if (!MultiplayerDiagnostics.IsEnabled)
+            {
+                return 0;
+            }
+
+            return RunManager.Instance.NetService?.NetId ?? 0;
+        }
     }
 }

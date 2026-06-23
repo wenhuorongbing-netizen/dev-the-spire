@@ -178,6 +178,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'MultiplayerDiagnostics.JoinFlow.cs'; Classes = 1; PatchIds = 'multiplayer-diagnostics-join-initial-game-info'; Batch = 'ascension-diagnostics' },
     [pscustomobject]@{ File = 'MultiplayerDiagnostics.Lobby.cs'; Classes = 3; PatchIds = 'multiplayer-diagnostics-lobby-begin-run-for-all, multiplayer-diagnostics-lobby-begin-run-locally, multiplayer-diagnostics-lobby-update-max-ascension'; Batch = 'ascension-diagnostics' },
     [pscustomobject]@{ File = 'MultiplayerDiagnostics.RunState.cs'; Classes = 3; PatchIds = 'multiplayer-diagnostics-start-new-run, multiplayer-diagnostics-enter-act, multiplayer-diagnostics-ancient-event-start'; Batch = 'ascension-diagnostics' },
+    [pscustomobject]@{ File = 'MultiplayerDiagnostics.SaveQuit.cs'; Classes = 3; PatchIds = 'multiplayer-diagnostics-save-run, multiplayer-diagnostics-return-to-main-menu, multiplayer-diagnostics-ngame-quit'; Batch = 'ascension-diagnostics' },
     [pscustomobject]@{ File = 'Sts1ReplacementPrototype.cs'; Classes = 1; PatchIds = 'sts1-replacement-prototype-generate-rooms'; Batch = 'sts1-replacement-prototype' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
