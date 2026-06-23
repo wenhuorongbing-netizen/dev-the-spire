@@ -62,6 +62,7 @@ These paths are active private-beta source, resource, test, script, or documenta
 | Root test-plan dependency cleanup | Current `docs/test-plan.md` | The active artifact and manual-load checks now require the RitsuLib-only lane and no longer instruct testers to enable or expect the old dependency package. `check-sts1-event-current-doc-claims.ps1` guards against that wording returning. |
 | Runtime smoke checklist compression | Current `docs/features/ritsulib-migration/runtime-smoke-checklist.md` | The active smoke checklist now starts from beta.135/RitsuLib-only prerequisites, previous beta.128 clicked UI smoke evidence, verifier commands, and pending runtime gates instead of a long historical smoke table. The claim guard rejects old dependency-package wording in this checklist. |
 | Migration status stub compression | Current `docs/migration.md` | The active migration file is now only a compatibility stub with the beta.135 RitsuLib-only boundary and routing links. Detailed goal/evidence records live in `docs/goals/migration.md` and `docs/integrations/ritsulib.md`; generated patch counts stay in `docs/patch-inventory.md`. |
+| RitsuLib migration entry compression | Current `docs/features/ritsulib-migration/README.md` | The active migration entry now carries only the current boundary, read order, and RitsuLib-first ownership rules. Detailed dependency/API evidence lives in `docs/integrations/ritsulib.md`, and generated migrated/raw patch counts live in `docs/patch-inventory.md`, so future updates have one factual owner. |
 
 ## Refactor Cleanup Completed
 

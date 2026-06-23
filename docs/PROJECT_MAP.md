@@ -182,7 +182,7 @@ Start at `docs/README.md`.
 | Runtime monkey / AutoSlay stability methodology | `docs/testing/runtime-monkey-stability.md` |
 | Ancient reward rebalance | `docs/features/ancients-rework-v4/README.md` |
 | Ancient expansion v2.2 | `docs/features/ancient-expansion-v2.2/README.md` |
-| RitsuLib migration | `docs/features/ritsulib-migration/README.md` |
+| RitsuLib migration | `docs/features/ritsulib-migration/README.md` for the compact development entry; use `docs/integrations/ritsulib.md` for dependency/API detail and `docs/patch-inventory.md` for generated patch counts |
 | RitsuLib migration runtime smoke | `docs/features/ritsulib-migration/runtime-smoke-checklist.md` |
 | RitsuLib migration archive | `docs/archive/feature-audits/ritsulib-migration/README.md` |
 | Debug governance | `docs/goals/debug.md` |

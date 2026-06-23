@@ -531,7 +531,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             docsReadme,
             "`features/ritsulib-migration/README.md`",
             "`integrations/ritsulib.md`",
-            "Current RitsuLib integration record: compile package, manifest dependency, installed runtime variant, loader evidence, and remaining proof gates.");
+            "the migration README is the compact entry point, while dependency/API detail lives in the integration record.",
+            "Current RitsuLib integration record: compile package, manifest dependency, installed runtime variant, public-doc/API evidence, loader evidence, and remaining proof gates.");
         AssertSourceContains(
             projectMap,
             "`docs/features/ritsulib-migration/README.md`",
@@ -576,13 +577,18 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             migrationReadme,
             "# RitsuLib Migration",
-            "This is the single entry point for RitsuLib migration and future RitsuLib-first",
+            "This is the compact entry point for RitsuLib migration and future",
+            "It intentionally does not repeat the full patch",
             "Spire Plus is RitsuLib-only for beta.135.",
-            "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
+            "`docs/integrations/ritsulib.md` for dependency/version/API evidence and the",
+            "`docs/patch-inventory.md` for generated patch counts and class ownership.",
             "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
+            "Run or review `scripts/check-ritsulib-latest-package.ps1` before claiming a",
             "The repository hygiene",
             "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
+            "`SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.",
+            "`SpirePlusMigratedPatchRegistry.Ui.cs` owns clicked, hover, settings, and",
             "The current ids live in",
             "`SpirePlusModConfig.SettingsPage.Ids.cs`.",
             "Keep Crystal Sphere preview defaults and RitsuLib slider bounds in",
@@ -591,10 +597,15 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Keep preview-tool runtime reads behind `SpirePlusModConfig.PreviewSettings.cs`",
             "Keep RitsuLib bootstrap runtime cache and fallback settings in",
             "Keep RitsuLib store availability and lookup in",
-            "Keep RitsuLib settings text construction in `SpirePlusModConfig.SettingsText.cs`",
+            "Keep RitsuLib settings text construction in",
+            "`SpirePlusModConfig.SettingsText.cs`; page and entry files should call",
             "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs` files own",
             "Keep read-only migration status UI split the same way",
-            "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.");
+            "Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.",
+            "Do not start future implementation from copied migration lists either.");
+        Assert.DoesNotContain("Current source migration:", migrationReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Low-risk Ancient reward hooks for", migrationReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("Ancient reward getter/relic hook patches for", migrationReadme, StringComparison.Ordinal);
         AssertSourceContains(
             coreIntegrationReadme,
             "Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`",

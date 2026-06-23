@@ -1,66 +1,27 @@
 # RitsuLib Migration
 
+This is the compact entry point for RitsuLib migration and future
+RitsuLib-first development. It intentionally does not repeat the full patch
+inventory or dependency ledger; those details have one owner each.
 This is the single entry point for RitsuLib migration and future RitsuLib-first
-development. The source migration is complete; start new work from the current
-rules here, then use the runtime checklist only when capturing game evidence.
+development.
 
 ## Current Boundary
 
 - Spire Plus is RitsuLib-only for beta.135.
-- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib` `0.4.34`, and Spire Plus `v0.1.0-private-beta.135`.
+- Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
+  `0.4.34`, and Spire Plus `v0.1.0-private-beta.135`.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
-- Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.135 build, publish, package parity, runtime
+- Current package proof: beta.135 build, publish, package parity, runtime
   preflight, and source-workspace validation for the 169/0 source state.
+- Current source inventory: 169 migrated `IPatchMethod` / `ModPatcher` patch
+  classes and 0 raw Harmony declarations in `docs/patch-inventory.md`.
 - Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
   Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch
-  registration from that older package.
-- The source inventory has 169 migrated classes and 0 raw Harmony declarations
-  remaining; recapture beta.135 runtime smoke before claiming current
-  in-game patch coverage.
-- Current source migration: Neow reroll option, Urda option-relic, Root Sight map-click,
-  Root Sight map-visual, Vakuu fight option, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
-  event-option/relic-node, Crystal Sphere peek, transform preview,
-  Prismatic Gem reward-screen hint, A20 reward-screen wording, and Spire Plus
-  mod-info localization UI patches, combat hand stale-input safety, and the
-  Meat Cleaver rest-site Cook option UI/click hooks are registered through RitsuLib
-  `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
-- The A11-A20 ascension localization fallback patches also use RitsuLib
-  `IPatchMethod` / `ModPatcher`. Their detailed candidate table is archived
-  because it is completed migration history, not a current development entry
-  point.
-- Sere Talon relic icon/texture getter patches, Prismatic Gem hover patches,
-  Jewelry Box hover patches, and the A20 courtyard portrait now also use
-  RitsuLib `IPatchMethod` / `ModPatcher` as visual/event UI patches.
-- Core inline-localization fallback patches now also use RitsuLib
-  `IPatchMethod` / `ModPatcher` for local provider strings.
-- Ancient reward getter/relic hook patches for Iron Club, Brilliant Scarf,
-  Beautiful Bracelet, Music Box, and Velvet Choker now also use RitsuLib
-  `IPatchMethod` / `ModPatcher`.
-- Low-risk Ancient reward hooks for Jeweled Mask, Jewelry Box, Pael's Horn,
-  Pael's Tooth, Preserved Fog, pickup reward gates, Sere Talon, Sovereign
-  Blade, Tanx Claws, Toasty Mittens, and Whispering Earring now also use
-  RitsuLib `IPatchMethod` / `ModPatcher`.
-- Aeonglass Laser Echo intent label and total-damage UI patches now also use
-  RitsuLib `IPatchMethod` / `ModPatcher`.
-- Enemy Damage polish getter patches for Decimillipede, Terror Eel, and
-  Phantasmal Gardener now also use RitsuLib `IPatchMethod` / `ModPatcher`.
-- Urda Root Sight `RunManager` room type/model routing now also uses RitsuLib
-  `IPatchMethod` / `ModPatcher`.
-- Multiplayer Ancient event startup diagnostics now also use RitsuLib
-  `IPatchMethod` / `ModPatcher`.
-- Current inventory: 169 migrated source patch classes and 0 raw Harmony
-  declarations remain in `docs/patch-inventory.md`.
-- Boundary: beta.135 was rebuilt, published, packaged, package-checked, runtime
-  preflighted, and source-workspace checked after the RitsuLib `0.4.34`
-  dependency refresh, Urda Root Sight room-routing migration, and multiplayer
-  Ancient event diagnostic migration. The latest
-  clicked UI smoke remains previous beta.128 package proof and applied all 152
-  default runtime Spire Plus ModPatcher patches in that package.
-- Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
-  loader startup/default-Off evidence.
-- Not proved: enabled-mode registration, gameplay, save-load,
+  registration from that older package. Recapture beta.135 runtime smoke before
+  claiming current in-game patch coverage.
+- Not proved: beta.135 enabled-mode registration, gameplay, save-load,
   replacement behavior, co-op, independent QA, release readiness, or tester
   handoff.
 
@@ -69,33 +30,62 @@ rules here, then use the runtime checklist only when capturing game evidence.
 1. `PROJECT_STATE.md` for the current status and blockers.
 2. `docs/goals/migration.md` for migration success criteria and validation
    commands.
-3. `docs/integrations/ritsulib.md` for dependency/version/API evidence.
-4. `docs/reviews/current-validation.md` for the latest validation record.
-5. `runtime-smoke-checklist.md` only when preparing or reviewing runtime
+3. `docs/integrations/ritsulib.md` for dependency/version/API evidence and the
+   current RitsuLib API ownership plan.
+4. `docs/patch-inventory.md` for generated patch counts and class ownership.
+5. `docs/reviews/current-validation.md` for the latest validation record.
+6. `runtime-smoke-checklist.md` only when preparing or reviewing runtime
    evidence.
 
 Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.
+Do not start future implementation from copied migration lists either.
 
 ## RitsuLib-First Rules
 
 - Use unpacked local game source under `source code/src/Core/` as primary game
-  API evidence before changing gameplay, save/load, reward, map, combat, or UI
+  API evidence before changing gameplay, save-load, reward, map, combat, or UI
   behavior.
 - Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs to confirm the
   RitsuLib API shape before adding wrappers.
+- Run or review `scripts/check-ritsulib-latest-package.ps1` before claiming a
+  RitsuLib package line is current. Do not infer package freshness from memory
+  or an old validation note.
 - Keep future developer guidance on the RitsuLib lane. The repository hygiene
   guard scans Git-tracked text files and rejects retired shared-runtime wording.
 - Register mod content through `RitsuLibFramework.CreateContentPack(...)` and
   `SpirePlusContentRegistrationService`.
-- Keep StS1 event registration mode-specific: the dispatcher belongs in
+- Register settings data before the settings page: `BeginModDataRegistration`
+  / `ModDataStore.Register` first, then `RegisterModSettings`.
+- Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
+  flow through game saved properties; use `ModDataStore` for global mod
+  settings.
+- Migrate or add patches through explicit RitsuLib `IPatchMethod` classes and
+  `ModPatcher` registration. Do not add broad discovery or raw Harmony
+  attributes to the active source tree.
+
+## Source Ownership Rules
+
+- Patch bootstrap and ordered registration live in
+  `EZMicroBalanceCode/Core/Integrations/RitsuLib`.
+- `SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.
+- `SpirePlusMigratedPatchRegistry.Ui.cs` owns clicked, hover, settings, and
+  selection UI registrations.
+- `SpirePlusMigratedPatchRegistry.Rewards.cs` owns card, relic, and reward-hook
+  registrations.
+- `SpirePlusMigratedPatchRegistry.Localization.cs` owns localization fallback
+  and RitsuLib compatibility registrations.
+- `SpirePlusMigratedPatchRegistry.Gameplay.cs` owns gameplay and diagnostic
+  registrations whose runtime behavior still needs live proof.
+- StS1 event registration stays mode-specific: the dispatcher belongs in
   `Sts1EventRegistrationService.cs`, and each mode's RitsuLib content-pack
   calls belong in its matching partial file under
   `EZMicroBalanceCode/Sts1Events/Runtime`.
-- Treat StS1 event id lists as reporting and validation metadata only; they do
-  not register content unless the matching RitsuLib registration partial also
+- StS1 event id lists are reporting and validation metadata only; they do not
+  register content unless the matching RitsuLib registration partial also
   contains the explicit content-pack calls.
-- Register settings data before the settings page: `BeginModDataRegistration`
-  / `ModDataStore.Register` first, then `RegisterModSettings`.
+
+## Settings Ownership Rules
+
 - Keep settings entry ids stable; screenshots and future automation use them as
   evidence anchors. The current ids live in
   `SpirePlusModConfig.SettingsPage.Ids.cs`.
@@ -103,8 +93,7 @@ Do not start future implementation from historical plans, archived prompt dumps,
   `SpirePlusModConfig.PreviewDefaults.cs`; preview normalization and UI
   construction should share those constants instead of duplicating numbers.
 - Keep preview value normalization in
-  `SpirePlusModConfig.PreviewNormalization.cs`; RitsuLib binding construction
-  should stay focused on `ModSettingsValueBinding`.
+  `SpirePlusModConfig.PreviewNormalization.cs`.
 - Keep RitsuLib settings localization bootstrap in
   `SpirePlusModConfig.SettingsLocalization.cs`; registration and page/entry
   files should not call `CreateModLocalization` directly.
@@ -112,18 +101,14 @@ Do not start future implementation from historical plans, archived prompt dumps,
   preview code should not call RitsuLib stores or settings-page builders
   directly.
 - Keep RitsuLib bootstrap runtime cache and fallback settings in
-  `SpirePlusModConfig.SettingsRuntimeState.cs`; registration, store resolution,
-  fallback-aware access, page assembly, and entry builders should stay in their
-  own partial files.
+  `SpirePlusModConfig.SettingsRuntimeState.cs`.
 - Keep RitsuLib store availability and lookup in
   `SpirePlusModConfig.SettingsStoreResolution.cs`; fallback-aware reads/writes
   belong in `SpirePlusModConfig.SettingsAccess.cs`.
-- Keep settings persistence split by role: store registration, fallback-aware
-  access, UI bindings, and persisted state shape each live in their matching
-  `SpirePlusModConfig.Settings*.cs` partial.
-- Keep RitsuLib settings text construction in `SpirePlusModConfig.SettingsText.cs`;
-  page and entry files should call `Text(...)` / `LiteralText(...)` instead of
-  constructing `ModSettingsText` directly.
+- Keep RitsuLib settings text construction in
+  `SpirePlusModConfig.SettingsText.cs`; page and entry files should call
+  `Text(...)` / `LiteralText(...)` instead of constructing `ModSettingsText`
+  directly.
 - Keep RitsuLib settings page assembly separate from individual entry builders:
   the preview section orders entries, while
   `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs` files own
@@ -131,16 +116,13 @@ Do not start future implementation from historical plans, archived prompt dumps,
 - Keep read-only migration status UI split the same way: the section file
   orders entries, while `MigrationStatusEntries` owns the paragraph/info-card
   calls and their stable entry ids.
-- Use `SavedAttachedState<TKey, TValue>` for attached state that is known to
-  flow through game saved properties; use `ModDataStore` for global mod
-  settings.
-- Migrate Harmony patches to RitsuLib `IPatchMethod` only with owner-approved
-  scope, source evidence, tests, and fresh validation.
 
 ## Support Files
 
 | File | Role |
 | --- | --- |
+| `docs/integrations/ritsulib.md` | Dependency version, installed runtime, public-doc/API evidence, and detailed RitsuLib ownership plan. |
+| `docs/patch-inventory.md` | Generated migrated/raw patch counts and patch class ownership. |
 | `runtime-smoke-checklist.md` | Runtime evidence checklist and verifier command source. |
 
 Historical migration-process files were moved out of the active feature folder:
@@ -158,4 +140,5 @@ Historical migration-process files were moved out of the active feature folder:
   approval and a same-pass package/docs/guard update.
 - Do not treat loader proof or settings screenshots as gameplay, save-load,
   multiplayer, QA, release, or handoff proof.
-- Do not migrate high-risk run/map/reward/save/multiplayer patches without explicit owner approval.
+- Do not migrate high-risk run/map/reward/save/multiplayer patches without
+  explicit owner approval.

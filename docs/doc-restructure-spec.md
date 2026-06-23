@@ -17,6 +17,9 @@ Start every development pass from:
 For migration work, use `docs/features/ritsulib-migration/README.md` as the
 entry point, then read `docs/goals/migration.md`,
 `docs/integrations/ritsulib.md`, and `docs/reviews/current-validation.md`.
+Keep detailed RitsuLib dependency/API evidence in `docs/integrations/ritsulib.md`
+and generated migrated/raw patch counts in `docs/patch-inventory.md`; do not
+duplicate those ledgers in the migration entry point.
 The RitsuLib integration lane is current for beta.135: compile package,
 manifest dependency, package parity, runtime preflight, and source-workspace validation
 are RitsuLib-only for the 169/0 source state. Previous beta.128

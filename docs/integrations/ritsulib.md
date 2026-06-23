@@ -26,6 +26,9 @@ Bootstrap structure: `RitsuLibBootstrap` now applies migrated patches through
 `patcher.PatchAll()` directly. If a required migrated patch fails to resolve or
 apply, Spire Plus stops before saved-state, settings, content, or feature
 registration so the runtime cannot continue in a partially migrated state.
+This file owns the dependency/API ledger and detailed RitsuLib ownership plan;
+`docs/features/ritsulib-migration/README.md` is kept as the compact entry point,
+and `docs/patch-inventory.md` owns generated patch counts.
 `SpirePlusMigratedPatchRegistry.cs` now keeps only the ordered registration
 entry point. Its sibling partials own the feature domains:
 `SpirePlusMigratedPatchRegistry.Ui.cs` for clicked, hover, settings, and

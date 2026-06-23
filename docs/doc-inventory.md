@@ -19,7 +19,7 @@
 - `docs/month-plan/commit-boundaries.md`
 - `docs/test-ready-development-goal.md`
 - `docs/features/ancient-expansion-v2.2/README.md`
-- `docs/features/ritsulib-migration/README.md` (single active RitsuLib migration entry point; historical process files are archived)
+- `docs/features/ritsulib-migration/README.md` (compact active RitsuLib migration entry point; full dependency/API detail lives in `docs/integrations/ritsulib.md`, generated patch counts live in `docs/patch-inventory.md`, and historical process files are archived)
 - `website/README.md`
 
 Current support docs, not default reading path:
@@ -48,7 +48,7 @@ Current support docs, not default reading path:
 - `docs/features/ancient-expansion-v2.2/` (current roadmap/prototype docs; Urda, Morvi, Lotha, and the single-player Vakuu fight are source-active/live-pending)
 - `docs/features/ancients-rework-v4/reference-inputs/` (traceability input only; do not implement from it without checking current issues/goal/source-design)
 - `docs/features/preview-tools/` (Crystal Sphere peek and transform preview integrated into Spire Plus)
-- `docs/features/ritsulib-migration/` (RitsuLib-only migration entry and runtime smoke checklist; completed migration-process records live under `docs/archive/feature-audits/ritsulib-migration/`)
+- `docs/features/ritsulib-migration/` (RitsuLib-only migration entry and runtime smoke checklist; the entry file stays compact and does not duplicate the integration ledger or generated patch inventory)
 
 ## C. Style / agent docs
 
