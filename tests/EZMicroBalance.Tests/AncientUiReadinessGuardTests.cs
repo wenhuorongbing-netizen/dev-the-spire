@@ -234,9 +234,9 @@ public sealed partial class AncientUiReadinessGuardTests
             ReadRepoText("docs", "features", "ancients-rework-v4", "work-log.md"),
             ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md"));
 
-        Assert.Contains("previous-package smoke-level clicked Ancient UI proof", activeDocs, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains(".tools/runtime-evidence/monkey-stability-20260622-235746", activeDocs, StringComparison.Ordinal);
-        Assert.Contains("Clicked UI is limited to beta.123 forced Ancient smoke", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("smoke-level clicked UI proof", activeDocs, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains(".tools/runtime-evidence/monkey-stability-20260623-062913", activeDocs, StringComparison.Ordinal);
+        Assert.Contains("Clicked UI is limited to beta.128 forced Ancient smoke", activeDocs, StringComparison.Ordinal);
         Assert.Contains("gated Vakuu fight-option", activeDocs, StringComparison.Ordinal);
         Assert.Contains("pending", activeDocs, StringComparison.OrdinalIgnoreCase);
         foreach (var prohibited in new[]

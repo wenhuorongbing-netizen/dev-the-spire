@@ -75,7 +75,7 @@
 | `docs/reviews/overnight-run-20260529.md` | Current boundary stub | Compact guarded pointer preserving historical overnight no-game/source-governance no-overclaim boundaries while the full record lives in `docs/archive/feature-audits/`. |
 | `docs/reviews/refactor-qa-20260602*.md` | Current boundary stubs | Compact guarded pointers preserving historical StS1 QA no-overclaim boundaries while full records live in `docs/archive/feature-audits/`. |
 | `docs/reviews/red-team-goal-implementation-pass-1.md` | Current boundary stub | Compact pointer preserving the May 20 source-only completion rejection while current status routes through `docs/review.md`, `docs/issues.md`, and `PROJECT_STATE.md`. |
-| `docs/reviews/current-validation.md` | Current validation summary | Compact active validation entry for beta.123 RitsuLib-only proof boundaries; full historical validation ledger lives in `docs/archive/feature-audits/`. |
+| `docs/reviews/current-validation.md` | Current validation summary | Compact active validation entry for beta.128 RitsuLib-only proof boundaries; full historical validation ledger lives in `docs/archive/feature-audits/`. |
 | `EZMicroBalanceCode/Sts1Events/` | Current implementation | StS1 event code: Runtime registry, Shared/Act1/Act2/Act3 event models. |
 | `manifests/` | Current support | StS1 event manifest CSV/JSON and asset manifest for extraction scripts. |
 

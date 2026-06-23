@@ -12,7 +12,7 @@ Full archived record: `docs/archive/feature-audits/event-goal-full-20260622.md`.
 
 ## Current Evidence Boundary
 
-- Latest clicked Ancient UI smoke remains beta.123 previous-package evidence retained at `.tools/runtime-evidence/monkey-stability-20260622-235746/`: 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 migrated Spire Plus patches from that package applied, and packet verification 1621 / 0.
+- Latest clicked Ancient UI smoke is current beta.128 evidence at `.tools/runtime-evidence/monkey-stability-20260623-062913/`: 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, 152/152 default runtime Spire Plus patches from that package applied, and packet verification 1621 / 0.
 - This is Ancient clicked-UI smoke evidence only. It does not close StS1 event gameplay, game-native AutoSlay batch proof, save-load, EN/ZHS runtime render, image/license/render, replacement functional behavior, multiplayer/fail-closed behavior, independent QA, release, or tester handoff gates.
 - Previous beta.99 settings/Off proof, beta.96 Off proof, beta.93 AdditiveBatch1 proof, beta.88 smoke-level UI proof, and beta.85-beta.90 rows are retained previous-package or previous-game-version context only.
 - Retained beta.85 CanaryOnly loader proof remains previous-package/game-version context and used 4 event types / 6 registration calls. Recapture current CanaryOnly before broader current-runtime claims.

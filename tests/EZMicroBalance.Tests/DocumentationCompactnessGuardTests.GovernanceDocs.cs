@@ -21,8 +21,8 @@ public sealed partial class DocumentationCompactnessGuardTests
         Assert.Contains("Archive note: this is the pre-cleanup `PROJECT_STATE.md` snapshot", archive, StringComparison.Ordinal);
         Assert.Contains("Active M5 Revision S truth", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest package target is beta.128", projectState, StringComparison.Ordinal);
-        Assert.Contains("build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, and local RitsuLib runtime install are current", projectState, StringComparison.Ordinal);
-        Assert.Contains("Current beta.123 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
+        Assert.Contains("build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, local RitsuLib runtime install, and forced clicked Ancient UI smoke are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current beta.128 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
         Assert.Contains("Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof are previous-package context", projectState, StringComparison.Ordinal);
         Assert.Contains("2026-05-24 after the Sere Talon `NRelic` fallback package refresh", projectState, StringComparison.Ordinal);
         Assert.Contains("focused Sere Talon/release-evidence/documentation/website guards", projectState, StringComparison.Ordinal);
@@ -131,8 +131,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             docsByPath["PROJECT_STATE.md"],
             "Active M5 Revision S truth",
             "Latest package target is beta.128",
-            "build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, and local RitsuLib runtime install are current",
-            "Current beta.123 clicked Ancient UI smoke proof is",
+            "build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, local RitsuLib runtime install, and forced clicked Ancient UI smoke are current",
+            "Current beta.128 clicked Ancient UI smoke proof is",
             "tester-package handoff decisions remain pending");
         AssertSourceContains(
             docsByPath["docs/worktree-cleanup-audit.md"],

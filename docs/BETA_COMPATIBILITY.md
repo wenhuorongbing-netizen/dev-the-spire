@@ -20,11 +20,11 @@ Current evidence:
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
 - beta.128 runtime preflight passed 28 / 0 and source-workspace validation passed
   58 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
-  coverage. beta.128 still needs game-launch/runtime patch-count proof.
-- Latest clicked Ancient UI smoke remains beta.123 previous-package evidence at
-  `.tools/runtime-evidence/monkey-stability-20260622-235746/`.
+  coverage.
+- Latest clicked Ancient UI smoke is beta.128 current-package evidence at
+  `.tools/runtime-evidence/monkey-stability-20260623-062913/`.
   The smoke covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations,
-  all 127 migrated Spire Plus patches applied, and packet verification 1621 / 0.
+  152/152 default runtime Spire Plus patches applied, and packet verification 1621 / 0.
 - beta.99 clicked settings UI proof is previous-package context retained at
   `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/`.
   It shows Settings -> `Mod Settings (RitsuLib)`, the RitsuLib Mods tree with
@@ -39,7 +39,7 @@ Current evidence:
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 loader packets are retained only as older
-  package loader/registration context. They do not prove beta.123 enabled-mode
+  package loader/registration context. They do not prove beta.128 enabled-mode
   gameplay or tester readiness.
 
 Treat loader, settings, and clicked-UI smoke evidence as scoped proof only:

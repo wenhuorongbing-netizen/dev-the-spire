@@ -13,8 +13,8 @@ This migration is source/registration work only; it is not gameplay, save-load, 
 
 - STS2-RitsuLib `v0.4.34` is installed on the E-drive game root in direct NuGet runtime layout.
 - The latest dependency recheck still reports `STS2.RitsuLib` `0.4.34` as the stable NuGet target.
-- beta.128 package parity, runtime preflight, and source-workspace validation passed for the packaged 153/17 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.
-- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; later visual-hover UI, rest-site UI, Act Ancient unlock-list UI, Vakuu event-state UI, Ancient reward hook, low-risk reward hook, intent UI, Enemy Damage getter, RitsuLib compatibility, and Ascension map generation passes raised the current source count to 153 migrated patches with 17 raw Harmony declarations remaining. The beta.123 clicked UI smoke covers the packaged 127-patch state for forced Ancient UI only.
+- beta.128 package parity, runtime preflight, source-workspace validation, and forced clicked Ancient UI smoke passed for the packaged 153/17 source state; latest beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.
+- This source pass moved the six localization fallback patches to RitsuLib `IPatchMethod` / `ModPatcher`; later visual-hover UI, rest-site UI, Act Ancient unlock-list UI, Vakuu event-state UI, Ancient reward hook, low-risk reward hook, intent UI, Enemy Damage getter, RitsuLib compatibility, and Ascension map generation passes raised the current source count to 153 migrated patches with 17 raw Harmony declarations remaining. The beta.128 clicked UI smoke covers the packaged default-runtime state for forced Ancient UI only.
 - Gameplay, event screenshots, save-load, replacement functional proof, co-op proof, independent QA, and versioned tester-package handoff remain pending.
 
 ## Migration Self-Check

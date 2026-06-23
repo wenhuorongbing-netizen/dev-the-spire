@@ -10,12 +10,13 @@ read only the support file that matches the task.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Installed game target: Slay the Spire 2 `v0.107.1`.
-- Current packaged proof: beta.128 package parity, runtime preflight, and
-  source-workspace validation. The latest clicked Ancient UI smoke remains
-  beta.123 previous-package evidence for Urda, Morvi, Lotha, and normal Vakuu.
-- Packaged beta.128 evidence covers build, publish, package parity, runtime preflight, and source-workspace validation.
-- Current beta.128 still needs game-launch, runtime patch-count, and clicked UI
-  proof for the packaged 153/17 state.
+- Current packaged proof: beta.128 package parity, runtime preflight,
+  source-workspace validation, and forced clicked Ancient UI smoke for Urda,
+  Morvi, Lotha, and normal Vakuu.
+- Packaged beta.128 evidence covers build, publish, package parity, runtime preflight, source-workspace validation, 152/152 default runtime patch registration, and clicked UI smoke.
+- The source inventory has 153 migrated classes; the default runtime registers
+  152 because the StS1 replacement prototype is compile-symbol gated behind
+  `REPLACEMENT_PROTOTYPE_ENABLED`.
 - Current source migration: Neow reroll option, Urda option-relic, Root Sight map-click,
   Root Sight map-visual, Vakuu fight option, shared map-hover, Ascension map-icon/boss-hover, Sere Talon
   event-option/relic-node, Crystal Sphere peek, transform preview,
@@ -43,13 +44,13 @@ read only the support file that matches the task.
   RitsuLib `IPatchMethod` / `ModPatcher`.
 - Enemy Damage polish getter patches for Decimillipede, Terror Eel, and
   Phantasmal Gardener now also use RitsuLib `IPatchMethod` / `ModPatcher`.
-- Current inventory: 153 migrated patch classes and 17 raw Harmony declarations
-  remain in `docs/patch-inventory.md`.
+- Current inventory: 153 migrated source patch classes and 17 raw Harmony
+  declarations remain in `docs/patch-inventory.md`.
 - Boundary: beta.128 was rebuilt, published, packaged, package-checked, runtime
-  preflighted, and source-workspace checked after the RitsuLib `0.4.34`
-  dependency refresh. The latest beta.123 clicked UI smoke applied all 127
-  migrated Spire Plus ModPatcher patches in the installed game before the later
-  153/17 source state was packaged.
+  preflighted, source-workspace checked, and clicked-UI smoked after the
+  RitsuLib `0.4.34` dependency refresh. The latest beta.128 clicked UI smoke
+  applied all 152 default runtime Spire Plus ModPatcher patches in the
+  installed game.
 - Previous-package proof: beta.99 RitsuLib settings UI visibility and direct Off
   loader startup/default-Off evidence.
 - Not proved: enabled-mode registration, gameplay, save-load,

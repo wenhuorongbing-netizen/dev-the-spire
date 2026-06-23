@@ -296,8 +296,8 @@ public sealed partial class ReleaseCoverageGuardTests
 
         Assert.Contains("Current reviewed state", projectState, StringComparison.Ordinal);
         Assert.Contains("Latest package target is beta.128", projectState, StringComparison.Ordinal);
-        Assert.Contains("build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, and local RitsuLib runtime install are current", projectState, StringComparison.Ordinal);
-        Assert.Contains("Current beta.123 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
+        Assert.Contains("build, publish, package refresh, installed-package parity, runtime preflight, source-workspace validation, local RitsuLib runtime install, and forced clicked Ancient UI smoke are current", projectState, StringComparison.Ordinal);
+        Assert.Contains("Current beta.128 clicked Ancient UI smoke proof is", projectState, StringComparison.Ordinal);
         Assert.Contains("Previous beta.99 settings/off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 proof are previous-package context", projectState, StringComparison.Ordinal);
         Assert.Contains("git log -1 --oneline --decorate", projectState, StringComparison.Ordinal);
         Assert.Contains("a2183ee", projectState, StringComparison.OrdinalIgnoreCase);

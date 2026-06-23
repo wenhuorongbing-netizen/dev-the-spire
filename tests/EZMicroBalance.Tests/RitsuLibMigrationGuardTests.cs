@@ -373,14 +373,14 @@ public sealed class RitsuLibMigrationGuardTests
         AssertSourceContains(
             nextRun,
             "Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.",
-            "- [x] Current beta.123 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260622-235746/`",
+            "- [x] Current beta.128 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/`",
             "- [ ] Gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.");
         Assert.DoesNotContain("Capture gameplay, clicked UI, save-load", nextRun, StringComparison.Ordinal);
         Assert.DoesNotContain("Gameplay, clicked UI, save-load", nextRun, StringComparison.Ordinal);
 
         AssertSourceContains(
             currentValidation,
-            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.128 runtime patch registration.",
+            "The beta.128 clicked Ancient UI proof covers forced Urda, Morvi, Lotha, and normal Vakuu UI only;",
             "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
         AssertSourceContains(
             projectState,
@@ -739,7 +739,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.128 package parity, runtime preflight, and source-workspace validation passed for the packaged 153/17 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.128 package parity, runtime preflight, source-workspace validation, and forced clicked Ancient UI smoke passed for the packaged 153/17 source state; latest beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -806,6 +806,38 @@ public sealed class RitsuLibMigrationGuardTests
             "Workshop and RNG-system changes are dependency-sensitive",
             "rerun the source-workspace checker",
             "RitsuLib variant check before claiming compatibility");
+    }
+
+    [Fact]
+    public void ActiveMigrationDocsKeepCurrentPatchCountsAndEvidenceBoundary()
+    {
+        var integrationDoc = ReadRepoText("docs", "integrations", "ritsulib.md");
+        var docsReadme = ReadRepoText("docs", "README.md");
+        var coreReadme = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "README.md");
+
+        AssertSourceContains(
+            integrationDoc,
+            "Current migrated total: 153 patch classes.",
+            "Current raw Harmony remaining: 17 declarations, tracked in `docs/patch-inventory.md`.");
+        Assert.DoesNotContain("Current migrated total: 151 patch classes.", integrationDoc, StringComparison.Ordinal);
+        Assert.DoesNotContain("Current raw Harmony remaining: 19 declarations", integrationDoc, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            docsReadme,
+            "Current beta.128 RitsuLib-only package state",
+            "source-workspace proof, package parity",
+            "forced clicked UI smoke boundary");
+        Assert.DoesNotContain("Current beta.123 RitsuLib-only package state", docsReadme, StringComparison.Ordinal);
+
+        AssertSourceContains(
+            coreReadme,
+            "Packaged beta.128 evidence covers build, publish, package parity, runtime",
+            "preflight, source-workspace validation for the current 153/17 source state, and",
+            "forced clicked Ancient UI smoke for Urda, Morvi, Lotha, and normal Vakuu.",
+            "default runtime registers 152 patches because the migrated StS1 replacement",
+            "UI visibility only; gameplay, save-load, gated Vakuu fight-option and victory");
+        Assert.DoesNotContain("Packaged beta.123 evidence covers build, publish, package parity", coreReadme, StringComparison.Ordinal);
+        Assert.DoesNotContain("only for the current package", coreReadme, StringComparison.Ordinal);
     }
 
     [Fact]

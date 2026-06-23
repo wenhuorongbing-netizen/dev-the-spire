@@ -22,7 +22,7 @@ public sealed partial class ReleaseSafetyExpandedGuardTests
             "runtime preflight 27 / 0",
             "current-doc claims 1314 / 0",
             "static suite 15 / 0",
-            "beta.123 RitsuLib-only source/build/publish/package refresh",
+            "beta.128 RitsuLib-only source/build/publish/package refresh",
             "runtime preflight, source-workspace validation, and smoke-level clicked Ancient UI proof.",
             "Beta.99 settings UI proof, beta.99 direct Off loader proof, previous beta.96 Off loader proof, previous beta.93 AdditiveBatch1 loader/registration proof",
             "current-package-smoke-20260514-015901",

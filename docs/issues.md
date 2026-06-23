@@ -34,11 +34,10 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 no-launch current / runtime-smoke pending.
-  beta.128 package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 are current for the packaged 153/17 state; beta.128 still needs game-launch/runtime patch-count proof.
-  Latest clicked UI evidence remains beta.123 `.tools/runtime-evidence/monkey-stability-20260622-235746/` packet 1621 / 0 for the earlier 127-patch package; beta.99/beta.96/beta.93 and earlier smokes are previous-package context.
-  Enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.
-## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: beta.123 Ancient smoke covers Urda/Morvi/Lotha/normal Vakuu; gated Vakuu fight, hover/readability, A11-A20, save-load, co-op, gameplay proof remain pending; use scripts/collect-ancient-ui-evidence.ps1.
+- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.128 package parity, runtime preflight 28 / 0, source-workspace validation 58 / 0, and forced clicked Ancient UI smoke are current for the packaged 153/17 source state.
+  Default runtime patch-count is 152 because the StS1 replacement prototype is compile-symbol gated; latest smoke is `.tools/runtime-evidence/monkey-stability-20260623-062913/` packet 1621 / 0 for Urda, Morvi, Lotha, and normal Vakuu.
+  beta.123/beta.99/beta.96/beta.93 and earlier smokes are previous-package context; enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.
+## Manual Proof Gates: `ANCIENT-CLICKED-UI/LIVE-GAMEPLAY`: beta.128 Ancient smoke covers Urda/Morvi/Lotha/normal Vakuu; gated Vakuu fight, hover/readability, A11-A20, save-load, co-op, gameplay proof remain pending; use scripts/collect-ancient-ui-evidence.ps1.
 - `A19-A20-DEDICATED-BOSS-ABILITIES`: fill the per-Boss checklist, logs, and notes; source guards alone cannot close it.
 - `SAVE-LOAD/VAKUU-FIGHT-LIVE` / `CO-OP`: prove save/load, Vakuu victory/death/no-black-screen, multiplayer Ancient/Ascension behavior, Root Eyes, Rootblight, reconnect, and preview tools.
 ## Issue detail links: `docs/issues/ancient-expansion-v2.2.md`, `docs/issues/urda.md`, `docs/issues/waiting-tests.md`, `docs/issues/v3.3-design-review.md`; retest rows in `docs/toreview.md`.

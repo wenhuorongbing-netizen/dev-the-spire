@@ -38,4 +38,4 @@ Archived records:
 - `docs/archive/legacy-planning/m5-revision-n-validation-replay-20260619.md`
 - `docs/archive/legacy-planning/m5-revision-n-runtime-evidence-plan-20260619.md`
 
-Boundary: Revision N is beta.88 previous-package context. Current migration truth is beta.123 RitsuLib-only. The current beta.123 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`. Official `STS2-RitsuLib` remains `0.4.34`. Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.
+Boundary: Revision N is beta.88 previous-package context. Current migration truth is beta.128 RitsuLib-only. The current beta.128 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`. Official `STS2-RitsuLib` remains `0.4.34`. Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.

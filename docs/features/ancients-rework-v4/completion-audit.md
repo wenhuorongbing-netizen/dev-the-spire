@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-23
 
-Latest update: the beta.128 RitsuLib compatibility and package refresh rebuilt `SpirePlus-v0.1.0-private-beta.128.zip` from installed artifacts after automated source validation and kept the runtime target on STS2-RitsuLib `0.4.34` in direct NuGet runtime layout. Latest beta.123 clicked Ancient UI smoke is retained at `.tools/runtime-evidence/monkey-stability-20260622-235746/` as previous-package UI evidence; beta.128 clicked UI/game-launch proof is pending. Earlier green runtime evidence remains useful history and is not beta.128 enabled-mode or live gameplay proof. Beta.38 loader startup and gameplay/manual rows pending remains true as historical release-governance context.
+Latest update: the beta.128 RitsuLib compatibility and package refresh rebuilt `SpirePlus-v0.1.0-private-beta.128.zip` from installed artifacts after automated source validation and kept the runtime target on STS2-RitsuLib `0.4.34` in direct NuGet runtime layout. Latest beta.128 clicked Ancient UI smoke is current at `.tools/runtime-evidence/monkey-stability-20260623-062913/`: 4 / 4 forced UI iterations for Urda, Morvi, Lotha, and normal Vakuu, clean audits, 152/152 default runtime Spire Plus patches, and packet verification 1621 / 0. This is clicked UI smoke only; enabled-mode, live gameplay, save-load, co-op, release, and handoff proof remain pending. Beta.38 loader startup and gameplay/manual rows pending remains true as historical release-governance context.
 
 ## Objective
 

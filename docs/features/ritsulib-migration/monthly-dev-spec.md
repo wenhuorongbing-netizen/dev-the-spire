@@ -19,6 +19,6 @@ Current boundary: beta.123 is RitsuLib-only and has package parity, runtime
 preflight, source-workspace validation, and smoke-level clicked Ancient UI
 proof. Settings, loader, and screenshot evidence remain scoped evidence only;
 gameplay, enabled-mode, save-load, replacement, co-op, QA, release readiness,
-and handoff require separate current proof. Current beta.123 clicked UI smoke
-proves all 127 migrated patch classes apply in the installed game for forced
+and handoff require separate current proof. Current beta.128 clicked UI smoke
+proves all 152 default runtime patch classes apply in the installed game for forced
 Ancient UI only.

@@ -9,9 +9,9 @@ Full historical review details are archived at `docs/archive/feature-audits/revi
 
 No current static P0/P1 source blocker is known from the latest no-game review passes. This does not prove release readiness.
 
-beta.128 RitsuLib-only package parity, runtime preflight, and source-workspace validation are current for the packaged 153/17 state. The latest beta.123 smoke passed 4 / 4 forced iterations for Urda, Morvi, Lotha, and normal Vakuu under `.tools/runtime-evidence/monkey-stability-20260622-235746/` with packet verification 1621 / 0 and all 127 migrated Spire Plus patches from that package applied. This retains previous-package smoke-level clicked Ancient UI proof only; beta.128 game launch/runtime patch-count proof, gameplay, gated Vakuu fight-option/victory return, save-load, current enabled-mode proof, replacement, multiplayer, QA, and handoff proof remain pending.
+beta.128 RitsuLib-only package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are current for the packaged 153/17 source state. The latest beta.128 smoke passed 4 / 4 forced iterations for Urda, Morvi, Lotha, and normal Vakuu under `.tools/runtime-evidence/monkey-stability-20260623-062913/` with packet verification 1621 / 0 and 152/152 default runtime Spire Plus patches from that package applied. This is current-package smoke-level clicked Ancient UI proof only; gameplay, gated Vakuu fight-option/victory return, save-load, current enabled-mode proof, replacement, multiplayer, QA, and handoff proof remain pending.
 
-Clicked UI is limited to beta.123 forced Ancient smoke. Current smoke proof covers forced Urda, Morvi, Lotha, and normal Vakuu only; gated Vakuu fight-option UI, relic hover/readability, and gameplay follow-through remain pending.
+Clicked UI is limited to beta.128 forced Ancient smoke. Current smoke proof covers forced Urda, Morvi, Lotha, and normal Vakuu only; gated Vakuu fight-option UI, relic hover/readability, and gameplay follow-through remain pending.
 
 ## Current Migration Evidence
 
@@ -20,9 +20,9 @@ Clicked UI is limited to beta.123 forced Ancient smoke. Current smoke proof cove
 - RitsuLib migrated patch bootstrap now uses `ApplyRequiredPatcher(...)` and fails closed before feature initialization if required migrated patches cannot apply. UI-facing migrated registrations live in `SpirePlusMigratedPatchRegistry.Ui.cs`, keeping clicked/hover/settings/selection patch ownership separate from reward and localization migration groups.
 - `check-local-godot-source-workspace.ps1` verifies the unpacked local source snapshot, installed game identity, package parity, and installed `STS2-RitsuLib.xml` markers for the RitsuLib APIs Spire Plus uses. The current refreshed run passed 58 / 0 with the retained GDRE warnings only.
 - The repository entry docs are free of the retired framework name and route future implementation through RitsuLib docs/XML plus the unpacked local game source under `source code/src/Core/`.
-- The beta.128 package proof covers the refreshed package with the low-risk reward hook migration included. Latest beta.123 clicked UI smoke applied all 127 migrated Spire Plus ModPatcher patches in that earlier package; beta.128 runtime launch, gameplay, and handoff remain separate pending gates.
+- The beta.128 package proof covers the refreshed package with the low-risk reward hook migration included. Latest beta.128 clicked UI smoke applied all 152 default runtime Spire Plus ModPatcher patches in the current package; gameplay and handoff remain separate pending gates.
 - Previous enabled-mode packets remain historical or previous-package context and do not close current beta.128 enabled-mode gameplay proof.
-- AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.123 gameplay or handoff proof.
+- AutoSlay and runtime-monkey verifier hardening is methodology evidence only. Proof-mode packets still require `-ExpectedAncientIds` to match retained plan/summary/traversal state, and those verifier rules do not close current beta.128 gameplay or handoff proof.
 
 ## Current Manual-Proof Focus
 

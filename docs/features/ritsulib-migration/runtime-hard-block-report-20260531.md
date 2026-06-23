@@ -21,10 +21,10 @@ RitsuLib APIs.
 
 ## Evidence
 
-- Current beta.123 package parity and clicked Ancient UI smoke are summarized in
+- Current beta.128 package parity and clicked Ancient UI smoke are summarized in
   `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
-- Current beta.123 clicked Ancient UI smoke is retained at
-  `.tools/runtime-evidence/monkey-stability-20260622-235746/`. It proves
+- Current beta.128 clicked Ancient UI smoke is captured at
+  `.tools/runtime-evidence/monkey-stability-20260623-062913/`. It proves
   smoke-level Ancient UI navigation for Urda, Morvi, Lotha, and normal Vakuu
   only.
 - Previous beta.99 clicked settings proof is retained at
@@ -42,13 +42,15 @@ RitsuLib APIs.
 ## Still Blocked
 
 The migration is not release-ready. Current hard blocks are gameplay, save-load,
-replacement behavior, current beta.123 enabled-mode
+replacement behavior, current beta.128 enabled-mode
 registration/gameplay proof, multiplayer/co-op, independent QA, and versioned
 tester-package handoff.
 
-Batch 4c localization plus visual-hover UI migration now has current beta.123
-package/source validation and clicked UI smoke for all 127 migrated patch
-classes. It still does not prove
+Batch 4c localization plus visual-hover UI migration now has current beta.128
+package/source validation and clicked UI smoke. The source inventory has 153
+migrated patch classes, while the default runtime applies 152/152 registered
+patches because the StS1 replacement prototype is compile-symbol gated. It still
+does not prove
 enabled-mode gameplay, save-load, replacement, co-op, QA, or release readiness.
 Any high-risk patch migration remains proposal-only until those runtime/manual
 gates have current evidence and owner approval.
@@ -58,7 +60,7 @@ gates have current evidence and owner approval.
 1. Keep the official STS2-RitsuLib install under
    `<GameRoot>\mods\STS2-RitsuLib`.
 2. Enable only STS2-RitsuLib and Spire Plus for controlled RitsuLib-only proof.
-3. Treat beta.123 clicked UI smoke and beta.99 previous-package direct Off
+3. Treat beta.128 clicked UI smoke and beta.99 previous-package direct Off
    loader proof as scoped startup/UI/default-Off evidence only.
 4. Treat settings screenshots as UI visibility proof only.
 5. Withhold live-ready and release-ready claims until enabled-mode, gameplay, save-load,

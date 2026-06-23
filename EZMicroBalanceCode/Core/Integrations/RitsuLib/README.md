@@ -58,11 +58,13 @@ assembly, while the `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`
 partials own Crystal Sphere, transform, and preview-diagnostic RitsuLib entry
 builders separately.
 
-Packaged beta.123 evidence covers build, publish, package parity, runtime
-preflight, source-workspace validation, and forced clicked Ancient UI smoke for
-Urda, Morvi, Lotha, and normal Vakuu. That proves forced clicked UI visibility only for the current package;
-gameplay, save-load, gated Vakuu fight-option and victory return, co-op, release,
-and handoff proof remain separate gates.
+Packaged beta.128 evidence covers build, publish, package parity, runtime
+preflight, source-workspace validation for the current 153/17 source state, and
+forced clicked Ancient UI smoke for Urda, Morvi, Lotha, and normal Vakuu. The
+default runtime registers 152 patches because the migrated StS1 replacement
+prototype is behind `REPLACEMENT_PROTOTYPE_ENABLED`. This proves forced clicked
+UI visibility only; gameplay, save-load, gated Vakuu fight-option and victory
+return, co-op, release, and handoff proof remain separate gates.
 
 Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93
 AdditiveBatch1 proof are retained only as previous-package context. Use

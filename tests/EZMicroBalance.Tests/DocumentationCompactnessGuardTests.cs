@@ -76,7 +76,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             debug,
             "# Debug Governance",
-            "Current beta.123 package truth is RitsuLib-only",
+            "Current beta.128 package truth is RitsuLib-only",
             "Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context",
             "Debug scaffold status: accept scaffold, do not expand.",
             "Keep StS1Events staging-only");
@@ -616,14 +616,16 @@ public sealed partial class DocumentationCompactnessGuardTests
             "`SpirePlusModConfig.SettingsPage.MigrationStatusEntries.cs` owns the",
             "`SpirePlusModConfig.SettingsPage.PreviewTools.cs` owns preview-tool section",
             "`SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`",
-            "Packaged beta.123 evidence covers build, publish, package parity, runtime",
-            "proves forced clicked UI visibility only for the current package",
+            "Packaged beta.128 evidence covers build, publish, package parity, runtime",
+            "forced clicked Ancient UI smoke for Urda, Morvi, Lotha, and normal Vakuu.",
+            "default runtime registers 152 patches because the migrated StS1 replacement",
             "Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93",
             "`docs/features/ritsulib-migration/README.md` as the migration entry point.");
+        var historicalRevisionBoundary = ReadRepoText("docs", "goals", "historical-revision-boundaries.md");
         AssertSourceContains(
-            archiveReadme,
-            "Current migration truth is beta.123 RitsuLib-only.",
-            "current beta.123 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`.");
+            historicalRevisionBoundary,
+            "Current migration truth is beta.128 RitsuLib-only.",
+            "current beta.128 RitsuLib-only routing is consolidated in `docs/goals/historical-revision-boundaries.md`.");
         Assert.DoesNotContain("repo now compiles against `STS2.RitsuLib` 0.4.32", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("full staging record", coreIntegrationReadme, StringComparison.Ordinal);
         Assert.DoesNotContain("current beta.91", archiveReadme, StringComparison.OrdinalIgnoreCase);
@@ -743,7 +745,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Current package target is Spire Plus `v0.1.0-private-beta.128`",
             "`EZMicroBalance.csproj` references `STS2.RitsuLib` `0.4.34`",
             "The unpacked local game source under `source code/src/Core/` is the primary API authority",
-            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.128 runtime patch registration.",
+            "The beta.128 clicked Ancient UI proof covers forced Urda, Morvi, Lotha, and normal Vakuu UI only;",
             "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
         Assert.DoesNotContain("## June 18 Beta.87", currentValidation, StringComparison.Ordinal);
         Assert.DoesNotContain("## June 15 Pause-Safe Static Verification Addendum", currentValidation, StringComparison.Ordinal);
@@ -815,7 +817,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "Accept as loader-smoke package, not gameplay/release proof",
             "May run only after process coordination",
             "do not start overlapping validation lanes",
-            "Current migration truth is beta.123 RitsuLib-only",
+            "Current migration truth is beta.128 RitsuLib-only",
             "Do not use Revision N as gameplay, release, commit, push, tester-handoff, or current package proof.");
         Assert.DoesNotContain("## Replay Commands", boundary, StringComparison.Ordinal);
         Assert.DoesNotContain("## Commit Slice Sketch", boundary, StringComparison.Ordinal);

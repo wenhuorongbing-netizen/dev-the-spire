@@ -4,7 +4,7 @@ This matrix maps player-visible promises to source, guard, and evidence state. I
 
 | Area | Player promise | Source evidence | Guard evidence | Manual/live state | Release stance |
 | --- | --- | --- | --- | --- | --- |
-| Package | Installable `Spire Plus` zip contains `EZMicroBalance` manifest, DLL, PCK, and install notes. | `EZMicroBalance.json`, `publish/package-staging/EZMicroBalance/` | Release artifact tests, hash docs | Package parity and beta.123 clicked UI smoke exist; gameplay proof pending | Manual-test package only |
+| Package | Installable `Spire Plus` zip contains `EZMicroBalance` manifest, DLL, PCK, and install notes. | `EZMicroBalance.json`, `publish/package-staging/EZMicroBalance/` | Release artifact tests, hash docs | Package parity and beta.128 clicked UI smoke exist; gameplay proof pending | Manual-test package only |
 | Ancient reward rebalance | Core Ancient rewards have revised tradeoffs and visible text. | `EZMicroBalanceCode/Ancients/Patches/` | `AncientBehaviorGuardTests`, release coverage guards | Reward gameplay pending | Manual-test candidate |
 | Urda | Eleven blessings, marker relics, Root Eyes, Seed Bank, Trial Branch, Rooted Route, Seedbed. | `EZMicroBalanceCode/Ancients/Expansion/Urda/` | Urda and Ancient expansion guards | Beta.123 forced clicked UI smoke exists; Root Eyes, Seed Bank, hover/readability, save/load, co-op pending | Manual-test candidate |
 | Morvi | Eight blessings with debt, misprint, Red Ink, Open Book, Blueprint Proof, Overdue Library. | `EZMicroBalanceCode/Ancients/Expansion/Morvi/` | Morvi v2.2 guards | Live gameplay, freeze reports, save/load, co-op pending | Manual-test candidate |
