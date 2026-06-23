@@ -10,7 +10,7 @@ Status: compact execution boundary. This replaces the long historical overnight 
 
 ## Objective
 
-Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime recapture. This is not approval to migrate high-risk patches and not a release-ready claim.
+Manual QA after clean RitsuLib-only Off loader proof, plus post-localization-migration runtime recapture. This is not approval to migrate high-risk patches and not a release-ready claim.
 
 ## Start State
 
@@ -36,7 +36,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 4. Capture current StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
 5. Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 
-## Batch 4c Runtime Boundary
+## Localization Migration Runtime Boundary
 
 - the 2026-06-22 continuation migrated the remaining 6 low-risk localization fallback candidates through RitsuLib after owner approval.
 - This is not current enabled-mode, gameplay, save-load, replacement, co-op, QA, release, or handoff proof.
@@ -47,7 +47,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 
 - [x] Retained `v0.107.0` beta.85 CanaryOnly smoke proves 4 event types / 6 registration calls with retained verifier reports.
 - [x] Retained `v0.107.0` beta.87 AdditiveBatch1 smoke proves 10 event types / 14 registration calls with retained verifier reports; beta.85 13/14 attempt remains root-cause history only.
-- [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.
+- [x] Localization fallback owner decision recorded and implemented for the six fallback localization patches.
 - [x] Previous beta.128 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/`; previous beta.99 Off loader proof remains previous-package context under `.tools/runtime-evidence/v01071-beta99-ritsulib0432-off-direct-20260621-234221/`.
 - [ ] Current CanaryOnly/AdditiveBatch1 enabled-mode proof captured if StS1 gameplay claims are needed.
 - [ ] Gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.

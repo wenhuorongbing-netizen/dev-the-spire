@@ -2,7 +2,7 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 169 migrated RitsuLib `IPatchMethod` patch classes and 0 raw Harmony declarations remaining after the Batch 4c localization, visual-hover UI, A20 reward proceed/portrait and boss-flow, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, Act Ancient unlock-list UI, Vakuu event-state UI, core inline-localization fallback, Ancient reward getter/relic hook, low-risk reward hook, Aeonglass intent UI, Enemy Damage polish getter, RitsuLib compatibility, Urda transform/Seedbed hook, Urda Root Sight room-routing, Ascension map generation, multiplayer join/lobby/run-state/save-quit diagnostics, and debug-only StS1 replacement-prototype migrations. Current beta.135 package parity, runtime preflight, and source-workspace validation exist on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. Previous beta.128 runtime proof applies 152/152 registered Spire Plus RitsuLib patches from that older packaged source state; recapture beta.135 runtime proof before claiming current in-game coverage. Older beta.123/beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 169 migrated RitsuLib `IPatchMethod` patch classes and 0 raw Harmony declarations remaining after the ascension localization fallback, visual-hover UI, A20 reward proceed/portrait and boss-flow, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, Act Ancient unlock-list UI, Vakuu event-state UI, core inline-localization fallback, Ancient reward getter/relic hook, low-risk reward hook, Aeonglass intent UI, Enemy Damage polish getter, RitsuLib compatibility, Urda transform/Seedbed hook, Urda Root Sight room-routing, Ascension map generation, multiplayer join/lobby/run-state/save-quit diagnostics, and debug-only StS1 replacement-prototype migrations. Current beta.135 package parity, runtime preflight, and source-workspace validation exist on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. Previous beta.128 runtime proof applies 152/152 registered Spire Plus RitsuLib patches from that older packaged source state; recapture beta.135 runtime proof before claiming current in-game coverage. Older beta.123/beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
 
 - Compile package: `STS2.RitsuLib` `0.4.34` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.34`.
@@ -175,8 +175,10 @@ Current manifest dependency:
   `EZMicroBalance/localization/settings_ui/{eng,zhs}.json` for
   `ModSettingsText.I18N(...)`. Keep them identical until RitsuLib-backed
   virtual tables replace the remaining native `LocString` caller.
-- Batch 4a: 9 low-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
-- Batch 4b: 16 medium-risk patch classes migrated to `IPatchMethod` and historical `v0.106.1` loader-gate validated.
+- Card/relic behavior patches: Fiddle, Choices Paradox, Distinguished Cape,
+  Black Star, Crossbow, Brightest Flame, Debt, CardModel, Seal of Gold, and
+  initial Ancient pickup balancing now use explicit RitsuLib `IPatchMethod`
+  registration.
 - Clicked/UI migration: 50 UI/input and selection/lobby patch classes now use `IPatchMethod` for Neow reroll,
   Act Ancient unlock-list UI, Urda option/map clicks and visuals, Vakuu fight-option/event-state injection,
   shared map hover, Ascension map/boss hover,
@@ -185,8 +187,8 @@ Current manifest dependency:
   hint, A20 reward-screen wording, Spire Plus mod-info localization, combat
   hand stale-input safety, Meat Cleaver rest-site Cook option UI/click
   replacement, and Ascension selection/lobby A11-A20 selector paths.
-- Batch 4c: six ascension localization fallback patch classes now use
-  `IPatchMethod` for `LocString`, `LocManager`, and `LocTable` fallback paths.
+- Ascension localization fallback: six patch classes now use `IPatchMethod`
+  for `LocString`, `LocManager`, and `LocTable` fallback paths.
 - Visual-hover UI: Sere Talon relic icon/texture getters, Prismatic Gem hover
   tips, Jewelry Box hover tips, and the A20 courtyard portrait now use
   `IPatchMethod` targets. Getter targets use `MethodType.Getter` instead of
@@ -225,6 +227,6 @@ Current raw Harmony remaining: 0 declarations, tracked in `docs/patch-inventory.
 
 - Loader proof and command status, including current `v0.107.1` runtime dependency status: `docs/reviews/current-validation.md`.
 - Runtime smoke checklist: `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
-- Archived Batch 4c localization migration record:
+- Archived localization fallback migration record:
   `docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md`.
 - Patch inventory: `docs/patch-inventory.md`.

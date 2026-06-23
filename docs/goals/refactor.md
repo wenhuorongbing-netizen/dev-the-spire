@@ -45,7 +45,7 @@ release readiness, and tester-package handoff remain pending.
 | CanaryOnly proof | Historical loader pass | CanaryOnly beta.85 / v0.107.0 smoke remains previous-package loader proof only: 4 event types / 6 registration calls. |
 | AdditiveBatch1 proof | Previous-package loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Current beta.135 enabled-mode proof still needs recapture before gameplay claims. |
 | AutoSlay/runtime evidence governance | Current no-game hardening | Packet/analyzer guards reject malformed, escaped, noncanonical, missing, or blank retained artifact paths before owner routing; this protects future runtime packets from stale or shadow evidence. |
-| Batch 4c | Proposal only / static review recaptured | The 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration. |
+| Completed migration records | Archived / not an active refactor entry | The completed localization fallback migration record now lives under `docs/archive/feature-audits/ritsulib-migration/`; current refactor work starts from RitsuLib domain registries and runtime proof gaps, not historical batch names. |
 | Documentation compactness | In progress | Player-facing naming guard coverage may be split into source-preserving partial files when the assertions remain unchanged and focused tests pass. |
 | Manual proof | Pending | Mod Settings screenshots, gameplay, save-load, image/render, replacement behavior, co-op/fail-closed behavior, independent QA, and handoff recapture are not complete. |
 
@@ -54,12 +54,12 @@ release readiness, and tester-package handoff remain pending.
 - Source-preserving partial-file splits for oversized test/governance classes.
 - Small helper extraction in scripts/tests when it makes invalid evidence fail cleanly instead of crashing.
 - Documentation compaction that points active readers to current files and archives old prompt-heavy notes.
-- Batch 4c candidate review and owner-decision recording only.
+- Documentation compaction that keeps completed migration records in the archive and active work on current RitsuLib/source proof.
 - Current enabled-mode proof collection only when the coordination boundary allows runtime work; current enabled-mode proof is still loader/registration scoped until gameplay evidence exists.
 
 ## Blocked Scope
 
-- Do not perform Batch 4c migration without explicit owner approval.
+- Do not revive archived migration batches as active implementation plans without explicit owner approval.
 - Do not migrate high-risk run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, or reward-state patches.
 - Package version bumps must be paired with build, publish, package refresh, package docs, and validation status.
 - Do not use AllDraft or Replacement as tester/release paths without fresh targeted validation.
@@ -72,7 +72,7 @@ release readiness, and tester-package handoff remain pending.
 2. Refresh Mod Settings UI proof only if the package, RitsuLib version, game version, or settings UI changes.
 3. Capture current CanaryOnly loader/gameplay proof for Big Fish, Golden Idol, The Lab, and Divine Fountain.
 4. Capture current AdditiveBatch1 loader/gameplay, save-load, image/render, replacement, and co-op/fail-closed proof only after loader/registration evidence remains clean.
-5. Record an owner decision for Batch 4c before any source migration.
+5. Keep completed migration records archived; use feature-domain names for any new source-preserving registry refactor.
 6. Recapture pushed HEAD, git status, validation status, and package state before any tester handoff.
 
 ## Validation

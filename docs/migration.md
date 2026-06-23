@@ -18,16 +18,16 @@ Use the current sources of truth instead:
   boundaries.
 
 Current boundary: Spire Plus is RitsuLib-only for beta.135 on Slay the Spire 2
-`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. beta.128 package
-parity, runtime preflight, source-workspace validation, and forced clicked
-Ancient UI smoke are current evidence. Latest clicked Ancient UI smoke is
+`v0.107.1` with `STS2.RitsuLib` / `STS2-RitsuLib` `0.4.34`. beta.135 package
+parity, runtime preflight, and source-workspace validation are current
+no-launch evidence. Latest clicked Ancient UI smoke is previous beta.128 proof at
 `.tools/runtime-evidence/monkey-stability-20260623-062913/`: 4 / 4 iterations,
 152/152 default runtime Spire Plus patches, and packet verification 1621 / 0.
 Gameplay, gated Vakuu fight-option/victory return, save-load, replacement
 behavior, co-op/fail-closed proof, independent QA, release readiness, and tester
 handoff remain pending.
 
-Batch 4c localization fallback patches, the visual-hover UI getter batch,
+Ascension localization fallback patches, visual-hover UI getter patches,
 Ancient reward getter/relic hook patches, Aeonglass intent UI patches, and
 Enemy Damage polish getter patches have
 moved to RitsuLib `IPatchMethod` / `ModPatcher` in source.

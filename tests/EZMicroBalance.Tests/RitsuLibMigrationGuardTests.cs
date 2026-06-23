@@ -16,27 +16,22 @@ public sealed class RitsuLibMigrationGuardTests
     // Keep this list synchronized with the source.
     private static readonly string[] ExpectedMigratedPatchIds =
     [
-        // FiddlePatches (4) - Batch 4a
+        // Card/relic behavior patches
         "fiddle-vars",
         "fiddle-hand-draw",
         "fiddle-should-draw",
         "fiddle-draw-cap",
-        // ChoicesParadoxPatches (1) - Batch 4a
         "choices-paradox-turn-start",
-        // DistinguishedCapePatches (3) - Batch 4a
         "distinguished-cape-vars",
         "distinguished-cape-event-option",
         "distinguished-cape-pickup",
-        // BlackStarCompensationPatches (1) - Batch 4a
         "black-star-obtain",
-        // CrossbowPatches (2) - Batch 4b
+        // Card text, keyword, and pickup behavior patches
         "crossbow-offer",
         "crossbow-vanilla-after-turn",
-        // BrightestFlameExhaustDrawPatch (3) - Batch 4b
         "brightest-flame-keywords",
         "brightest-flame-vars",
         "brightest-flame-exhaust-backstop",
-        // DebtAndCardPatches (8) - Batch 4b
         "debt-after-created",
         "debt-from-save",
         "debt-keywords",
@@ -45,10 +40,8 @@ public sealed class RitsuLibMigrationGuardTests
         "debt-turn-end-in-hand",
         "card-model-on-play",
         "debt-exhaust",
-        // SealOfGoldPatches (2) - Batch 4b
         "seal-of-gold-max-energy",
         "seal-of-gold-turn",
-        // PickupRewardPatches (1) - Batch 4b
         "ancient-pickup-balance",
         // Ancient reward patches - RitsuLib discovery migration
         "iron-club-vars",
@@ -176,7 +169,7 @@ public sealed class RitsuLibMigrationGuardTests
         "terror-eel-thrash-damage-polish",
         "phantasmal-gardener-bite-damage-polish",
         "phantasmal-gardener-lash-damage-polish",
-        // Batch 4c localization fallback patches
+        // Ascension localization fallback patches
         "ascension-localization-locstring-raw-text",
         "ascension-localization-get-table",
         "ascension-localization-raw-text",
@@ -214,8 +207,8 @@ public sealed class RitsuLibMigrationGuardTests
         "sts1-replacement-prototype-generate-rooms"
     ];
 
-    private const int ExpectedBatch4aCount = 9;
-    private const int ExpectedBatch4bCount = 16;
+    private const int ExpectedCardRelicBehaviorCount = 9;
+    private const int ExpectedCardTextAndPickupCount = 16;
     private const int ExpectedAncientRewardCount = 18;
     private const int ExpectedLowRiskRewardHookCount = 17;
     private const int ExpectedPrismaticGemRewardCount = 3;
@@ -224,7 +217,7 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedEventVisualUiCount = 1;
     private const int ExpectedIntentUiCount = 2;
     private const int ExpectedEnemyDamagePolishCount = 7;
-    private const int ExpectedBatch4cLocalizationCount = 6;
+    private const int ExpectedAscensionLocalizationFallbackCount = 6;
     private const int ExpectedInlineLocalizationCount = 4;
     private const int ExpectedRitsuLibCompatibilityCount = 1;
     private const int ExpectedUrdaTransformSeedbedCount = 4;
@@ -237,7 +230,7 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedTotalMigratedCount = 169;
     private const int ExpectedRawHarmonyPatchDeclarationCount = 0;
 
-    private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
+    private static readonly string[] ExpectedAscensionLocalizationFallbackPatchClasses =
     [
         "AscensionLocalizationLocStringRawTextPatch",
         "AscensionLocalizationGetTablePatch",
@@ -247,7 +240,7 @@ public sealed class RitsuLibMigrationGuardTests
         "AscensionLocalizationIsLocalKeyPatch"
     ];
 
-    private static readonly string[] ForbiddenBatch4cMigrationCategories =
+    private static readonly string[] ForbiddenLocalizationMigrationCategories =
     [
         "run lifecycle",
         "save/load",
@@ -276,12 +269,12 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// The expected migrated patch count must be 169:
-    /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
+    /// 9 card/relic behavior patches + 16 card text/pickup patches + 18 Ancient reward patches
     /// + 17 low-risk reward hooks + 3 Prismatic Gem reward patches
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
     /// + 1 event visual UI patch + 2 intent UI patches
     /// + 7 enemy damage polish getter patches
-    /// + 6 Batch 4c localization patches + 4 inline localization patches
+    /// + 6 Ascension localization fallback patches + 4 inline localization patches
     /// + 1 RitsuLib compatibility patch + 4 Urda transform/Seedbed patches
     /// + 2 Urda Root Sight room-routing patches
     /// + 3 Vakuu fight lifecycle/save-load patches
@@ -294,7 +287,7 @@ public sealed class RitsuLibMigrationGuardTests
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount + ExpectedUrdaRootSightRoutingCount + ExpectedVakuuLifecycleCount + ExpectedAscensionBossFlowCount + ExpectedAscensionMapGenerationCount + ExpectedAscensionDiagnosticCount + ExpectedSts1ReplacementPrototypeCount,
+            ExpectedCardRelicBehaviorCount + ExpectedCardTextAndPickupCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedPrismaticGemRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedAscensionLocalizationFallbackCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount + ExpectedUrdaRootSightRoutingCount + ExpectedVakuuLifecycleCount + ExpectedAscensionBossFlowCount + ExpectedAscensionMapGenerationCount + ExpectedAscensionDiagnosticCount + ExpectedSts1ReplacementPrototypeCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -476,8 +469,8 @@ public sealed class RitsuLibMigrationGuardTests
             registry,
             "internal static partial class SpirePlusMigratedPatchRegistry",
             "public static void RegisterAll(ModPatcher patcher)",
-            "RegisterBatch4a(patcher);",
-            "RegisterBatch4b(patcher);",
+            "RegisterCardRelicBehaviorPatches(patcher);",
+            "RegisterCardTextAndPickupPatches(patcher);",
             "RegisterAncientRewardPatches(patcher);",
             "RegisterPatch<IronClubVarsPatch>();",
             "RegisterPatch<BrilliantScarfVarsPatch>();",
@@ -601,7 +594,7 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<TerrorEelThrashDamagePolishPatch>();",
             "RegisterPatch<PhantasmalGardenerBiteDamagePolishPatch>();",
             "RegisterPatch<PhantasmalGardenerLashDamagePolishPatch>();",
-            "RegisterBatch4cLocalizationPatches(patcher);",
+            "RegisterAscensionLocalizationFallbackPatches(patcher);",
             "RegisterPatch<AscensionLocalizationLocStringRawTextPatch>();",
             "RegisterPatch<AscensionLocalizationGetTablePatch>();",
             "RegisterPatch<AscensionLocalizationRawTextPatch>();",
@@ -682,7 +675,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Spire Plus is RitsuLib-only for beta.135", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Ascension localization fallback patches, visual-hover UI getter patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Any higher-risk patch migration remains", migrationDoc, StringComparison.Ordinal);
@@ -819,7 +812,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     [Fact]
-    public void Batch4cLocalizationPatchesAreMigratedAndDocumented()
+    public void AscensionLocalizationFallbackPatchesAreMigratedAndDocumented()
     {
         var record = ReadRepoText("docs", "archive", "feature-audits", "ritsulib-migration", "batch-4c-candidates-20260623.md");
         var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
@@ -838,7 +831,7 @@ public sealed class RitsuLibMigrationGuardTests
         var candidateSectionEnd = record.IndexOf("## Per-Candidate Evidence", StringComparison.Ordinal);
         var candidateSection = record[candidateSectionStart..candidateSectionEnd];
         var candidateRows = Regex.Matches(candidateSection, @"^\| \d+ \|", RegexOptions.Multiline);
-        Assert.Equal(ExpectedBatch4cLocalizationPatchClasses.Length, candidateRows.Count);
+        Assert.Equal(ExpectedAscensionLocalizationFallbackPatchClasses.Length, candidateRows.Count);
 
         var sourceFiles = Directory.GetFiles(
             RepoPath("EZMicroBalanceCode"), "*.cs", SearchOption.AllDirectories);
@@ -846,7 +839,7 @@ public sealed class RitsuLibMigrationGuardTests
             Environment.NewLine,
             sourceFiles.Select(path => File.ReadAllText(path)));
 
-        foreach (var patchClass in ExpectedBatch4cLocalizationPatchClasses)
+        foreach (var patchClass in ExpectedAscensionLocalizationFallbackPatchClasses)
         {
             Assert.Contains(patchClass, record, StringComparison.Ordinal);
             Assert.Contains($"RegisterPatch<{patchClass}>", registrationSource, StringComparison.Ordinal);
@@ -858,7 +851,7 @@ public sealed class RitsuLibMigrationGuardTests
                 @"\b");
             Assert.False(
                 classPattern.IsMatch(allSource),
-                $"Batch 4c migrated patch '{patchClass}' must not keep a class-level [HarmonyPatch] attribute.");
+                $"Ascension localization fallback patch '{patchClass}' must not keep a class-level [HarmonyPatch] attribute.");
         }
 
         Assert.Contains(
@@ -869,7 +862,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     [Fact]
-    public void Batch4cStaticReviewRecordsOwnerDecisionAndKeepsHighRiskClosed()
+    public void ArchivedLocalizationFallbackReviewRecordsOwnerDecisionAndKeepsHighRiskClosed()
     {
         var record = ReadRepoText("docs", "archive", "feature-audits", "ritsulib-migration", "batch-4c-candidates-20260623.md");
         var nextRun = ReadRepoText("docs", "archive", "feature-audits", "ritsulib-migration", "next-runtime-qa-run-20260623.md");
@@ -899,19 +892,19 @@ public sealed class RitsuLibMigrationGuardTests
             migrationReadme,
             StringComparison.Ordinal);
         Assert.Contains("This is not current enabled-mode, gameplay, save-load, replacement, co-op, QA, release, or handoff proof.", nextRun, StringComparison.Ordinal);
-        Assert.Contains("- [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.", nextRun, StringComparison.Ordinal);
-        Assert.DoesNotContain("- [ ] Remaining Batch 4c owner decision recorded.", nextRun, StringComparison.Ordinal);
+        Assert.Contains("- [x] Localization fallback owner decision recorded and implemented for the six fallback localization patches.", nextRun, StringComparison.Ordinal);
+        Assert.DoesNotContain("- [ ] Remaining localization fallback owner decision recorded.", nextRun, StringComparison.Ordinal);
 
         Assert.Contains(
-            "| Batch 4c migration | Completed for the six localization fallback candidates | 2026-06-22 continuation goal approved the exact low-risk localization list; source now registers those six classes through RitsuLib `IPatchMethod` / `ModPatcher`. |",
+            "| Localization fallback migration | Completed for the six localization fallback candidates | 2026-06-22 continuation goal approved the exact low-risk localization list; source now registers those six classes through RitsuLib `IPatchMethod` / `ModPatcher`. |",
             goal,
             StringComparison.Ordinal);
         Assert.Contains(
-            "Do not treat Batch 4c source migration as gameplay, save-load, co-op, QA, release, or handoff proof.",
+            "Do not treat the localization fallback source migration as gameplay, save-load, co-op, QA, release, or handoff proof.",
             goal,
             StringComparison.Ordinal);
 
-        foreach (var forbiddenCategory in ForbiddenBatch4cMigrationCategories)
+        foreach (var forbiddenCategory in ForbiddenLocalizationMigrationCategories)
         {
             Assert.Contains(forbiddenCategory, record, StringComparison.Ordinal);
             Assert.Contains(forbiddenCategory, nextRun, StringComparison.Ordinal);

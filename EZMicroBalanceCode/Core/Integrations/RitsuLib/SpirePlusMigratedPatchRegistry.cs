@@ -21,8 +21,8 @@ internal static partial class SpirePlusMigratedPatchRegistry
 {
     public static void RegisterAll(ModPatcher patcher)
     {
-        RegisterBatch4a(patcher);
-        RegisterBatch4b(patcher);
+        RegisterCardRelicBehaviorPatches(patcher);
+        RegisterCardTextAndPickupPatches(patcher);
         RegisterAncientRewardPatches(patcher);
         RegisterLowRiskRewardHookPatches(patcher);
         RegisterPrismaticGemRewardPatches(patcher);
@@ -36,7 +36,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterAscensionSelectionUiPatches(patcher);
         RegisterAscensionIntentUiPatches(patcher);
         RegisterEnemyDamagePolishPatches(patcher);
-        RegisterBatch4cLocalizationPatches(patcher);
+        RegisterAscensionLocalizationFallbackPatches(patcher);
         RegisterInlineLocalizationPatches(patcher);
         RegisterRitsuLibCompatibilityPatches(patcher);
         RegisterUrdaBehaviorPatches(patcher);
@@ -49,7 +49,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
 #endif
     }
 
-    private static void RegisterBatch4a(ModPatcher patcher)
+    private static void RegisterCardRelicBehaviorPatches(ModPatcher patcher)
     {
         RegisterFiddlePatches(patcher);
         patcher.RegisterPatch<ChoicesParadoxPatch>();
@@ -57,7 +57,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<BlackStarObtainPatch>();
     }
 
-    private static void RegisterBatch4b(ModPatcher patcher)
+    private static void RegisterCardTextAndPickupPatches(ModPatcher patcher)
     {
         RegisterCrossbowPatches(patcher);
         RegisterBrightestFlamePatches(patcher);
@@ -119,7 +119,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<PrismaticGemRewardPatch>();
     }
 
-    private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)
+    private static void RegisterAscensionLocalizationFallbackPatches(ModPatcher patcher)
     {
         patcher.RegisterPatch<AscensionLocalizationLocStringRawTextPatch>();
         patcher.RegisterPatch<AscensionLocalizationGetTablePatch>();

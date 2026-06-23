@@ -1,4 +1,4 @@
-# Batch 4c Low-Risk Localization Migration
+# Archived Low-Risk Localization Migration
 
 Archived 2026-06-23 after the full source migration reached 169 migrated patch
 classes and 0 raw Harmony declarations. This is traceability history only; use
@@ -60,5 +60,5 @@ Dependency gate checked: 2026-06-22.
 
 - High-risk migration remains out of scope without a new owner decision: run lifecycle, save/load, map generation, multiplayer/lobby, death, A20 boss-flow, and reward-state patches stay on their current guarded path.
 - Before citing the current source migration as runtime coverage, capture a fresh package/runtime packet that proves the current 169 migrated Spire Plus patch classes apply in the installed game.
-- Before any Batch 4c follow-up is cited as StS1 event runtime readiness, cite current enabled-mode evidence with retained verifier reports and add the missing gameplay evidence, or state that the Batch 4c claim is unrelated to StS1Events enabled modes.
+- Before any localization-migration follow-up is cited as StS1 event runtime readiness, cite current enabled-mode evidence with retained verifier reports and add the missing gameplay evidence, or state that the localization fallback claim is unrelated to StS1Events enabled modes.
 - Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.

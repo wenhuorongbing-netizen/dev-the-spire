@@ -237,7 +237,7 @@ handoff remain pending.
 - If any beta.135 loader smoke item fails, do not proceed to gameplay items;
   diagnose first.
 - beta.128 event-option, event-visual, inline-localization, Ascension
-  selection/lobby, Batch 4c localization, and visual-hover UI migrations are
+  selection/lobby, ascension localization fallback, and visual-hover UI migrations are
   source/package validated with smoke proof that all 152 default runtime patch classes
   apply in the installed game. High-risk patch migration still requires a new
   owner decision and fresh validation.

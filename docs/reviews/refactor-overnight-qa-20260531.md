@@ -8,7 +8,7 @@ FAIL / HARD BLOCKED. Green Stop is not allowed.
 
 - Runtime proof is absent. The original QA saw `STS2-RitsuLib` missing at the checked D-drive and E-drive game-root mod paths; the dependency is now installed on E-drive, and v15 captured a loader log, but the audit is not clean.
 - Active `godot.log` evidence now exists for RitsuLib bootstrap and StS1Events default-Off bootstrap state, but it has 11 `Godot ERROR` hits and does not close Off=0, CanaryOnly=4, gameplay, save-load, replacement, or multiplayer proof.
-- Batch 4c, high-risk migration, new gameplay expansion, runtime-safe, live-ready, and release-ready claims remain blocked.
+- Archived localization fallback records, high-risk migration, new gameplay expansion, runtime-safe, live-ready, and release-ready claims remain blocked unless current evidence explicitly closes them.
 - Warning debt is tracked as 89 Sts1Events nullable warnings with code-level counts and per-file triage.
 - Sts1Events source-level governance is mostly guarded, but the audit found `SPIREPLUS_STS1_EVENT_MODE` was incorrectly wired as a generic feature disable override before this pass.
 
