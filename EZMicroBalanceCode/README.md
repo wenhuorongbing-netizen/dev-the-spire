@@ -7,7 +7,7 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 
 | Area | Responsibility |
 | --- | --- |
-| `MainFile.cs` | Mod entry point for Harmony patching, config registration, and feature-registry bootstrap. |
+| `MainFile.cs` | Mod entry point for RitsuLib patch bootstrap, config registration, and feature-registry bootstrap. |
 | `Config/` | Mod configuration (SpirePlusModConfig). |
 | `Core/Features/` | Small module registry that keeps startup order and feature ownership out of `MainFile.cs`. |
 | `Core/Integrations/RitsuLib/` | Active RitsuLib bootstrap, patcher, content registration, and migration notes. |
@@ -17,7 +17,7 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 | `Ancients/` | Ancient reward rebalance implementation. |
 | `Ancients/Common/` | Shared saved fields, card helpers, selection relic service, feature-gate helpers, and small model/enchantment helpers. |
 | `Ancients/Rebalance/` | Reserved for shared Ancient rebalance helpers. |
-| `Ancients/Patches/` | Harmony patches grouped by reward surface or relic family. |
+| `Ancients/Patches/` | RitsuLib `IPatchMethod` classes grouped by reward surface or relic family. |
 | `Ancients/Expansion/Urda/` | Urda Ancient expansion prototype, blessing ids, and activation gate. |
 | `Ancients/Expansion/Morvi/` | Morvi Ancient expansion implementation, cards, powers, blessing ids, and activation gate. |
 | `Ancients/Expansion/Lotha/` | Lotha Ancient expansion implementation, powers, blessing ids, and activation gate. |
@@ -28,7 +28,7 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 | `Ascension/Combat/` | Combat trackers, combat modifiers, and combat hooks. |
 | `Ascension/Rewards/` | Reward mutation helpers, Forge Token service, Root deck service, and boss dedicated ability definitions. |
 | `Ascension/Enchantments/` | Ascension-specific card enchantments. |
-| `Ascension/Patches/` | Harmony patches for lobby, map UI, run hooks, and A20 flow. |
+| `Ascension/Patches/` | RitsuLib `IPatchMethod` classes for lobby, map UI, run hooks, and A20 flow. |
 | `Ascension/Cards/` | Rootblight, boss dedicated ability, and related card models. |
 | `Ascension/Powers/` | Firemark, Banner, and boss dedicated ability powers. |
 | `Ascension/Relics/` | Ascension-specific relic models. |
@@ -47,8 +47,8 @@ This is the active C# code for the single `Spire Plus` mod. The folder name rema
 
 - Add behavior beside the feature it belongs to; avoid cross-feature utility files unless there is real shared logic.
 - Put saved run fields in the feature's `*SavedStateFields.cs` file and update source guards.
-- Prefer RitsuLib/template-supported APIs before adding Harmony patches.
-- When Harmony is needed, keep patch targets narrow and source-guarded by tests.
+- Prefer RitsuLib/template-supported APIs before adding game-method patch classes.
+- New patch classes should use RitsuLib `IPatchMethod` / `ModPatcher` registration; do not add class-level `[HarmonyPatch]` declarations unless the owner approves a documented exception.
 - For canonical `AbstractModel` markers/hooks/models, use `ModelDb`; do not construct canonical model instances directly.
 - Keep Early Access API references conservative. Avoid hard references to optional boss/power types when a stable `ModelId` check is enough.
 - Update localization in `EZMicroBalance/localization/eng/` and `EZMicroBalance/localization/zhs/` with matching keys/placeholders.

@@ -47,7 +47,7 @@ Manifest:
 - retained only as an inert scaffold, or
 - still built for compatibility checks.
 
-It must not carry a second copy of the Ancient rebalance in a production release path, because enabling both `EzDailyContent` and `EZMicroBalance` would duplicate Harmony patches.
+It must not carry a second copy of the Ancient rebalance in a production release path, because enabling both `EzDailyContent` and `EZMicroBalance` would duplicate RitsuLib patch registrations and saved-state behavior.
 
 Current implementation decision:
 

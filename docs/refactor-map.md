@@ -22,7 +22,7 @@ EZMicroBalanceCode/
   Modding/                     (ModInfoLocalizationPatches)
   Ancients/
     Common/                    (shared Ancient state, card helpers, reward service)
-    Patches/                   (Ancient Harmony patches)
+    Patches/                   (Ancient RitsuLib patch classes)
     Expansion/
       Urda/                    (Urda Ancient feature + UrdaFeatureModule)
       Morvi/                   (Morvi Ancient feature + MorviFeatureModule)
@@ -38,7 +38,7 @@ EZMicroBalanceCode/
     Relics/                    (Ascension relics: forge token)
     Events/                    (Ascension events: A20 courtyard)
     Enchantments/              (Ascension enchantments: fission, royal decree)
-    Patches/                   (Ascension Harmony patches)
+    Patches/                   (Ascension RitsuLib patch classes)
   Preview/                     (Crystal Sphere peek, transform preview)
 ```
 

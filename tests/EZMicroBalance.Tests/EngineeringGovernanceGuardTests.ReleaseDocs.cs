@@ -166,7 +166,9 @@ public sealed partial class EngineeringGovernanceGuardTests
 
         AssertSourceContains(
             patchBoundaries,
-            "141 total, 22 high-risk",
+            "# RitsuLib Patch Boundaries",
+            "current migrated RitsuLib registrations plus the raw Harmony regression count",
+            "New patch surfaces must use RitsuLib `IPatchMethod` / `ModPatcher` registration",
             "A20 dual boss",
             "RewardsSetSynchronizer",
             "StartRunLobby.SyncAscensionChange",

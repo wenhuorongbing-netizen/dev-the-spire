@@ -308,10 +308,13 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             devEnvironment,
             "Last attempted default publish: `dotnet publish EZMicroBalance.sln -m:1` on 2026-06-18 after the beta.86 package/source alignment pass. Result: succeeded against the real installed mods root.",
-            "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.",
+            "Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\\publish-game-root\\mods\\` on 2026-05-27 after the beta.84 Urda Seedbed pre-migration patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.",
             "is not the current package-parity source",
+            "Retired raw `PatchAll` audit",
+            "Current patch ownership is RitsuLib-only",
             "`E:\\Steam\\steamapps\\common\\Slay the Spire 2\\mods\\EZMicroBalance`",
             "staging, versioned, installed, game-root zip, and zip-entry artifacts match");
+        Assert.DoesNotContain("Last Harmony patch audit", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("failed 5 installed-folder parity tests", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("Sovereign Blade jade boon refresh", devEnvironment, StringComparison.Ordinal);
         Assert.DoesNotContain("current `.2` manual-test package", devEnvironment, StringComparison.Ordinal);
@@ -444,7 +447,7 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         AssertSourceContains(
             skill,
-            "Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before Harmony patches.",
+            "Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before adding game-method patch classes.",
             "Do not add any runtime dependency besides STS2-RitsuLib for current Spire Plus work unless the owner explicitly approves a new dependency decision.",
             "Inspect local RitsuLib XML/docs, template APIs, or package references when available",
             "Prefer command APIs and RitsuLib/template hooks over direct state mutation.",
@@ -458,6 +461,7 @@ public sealed partial class DocumentationCompactnessGuardTests
             "RitsuLibFramework.SubscribeLifecycle(...)",
             "RitsuLibFramework.BeginModDataRegistration(...)",
             "RitsuLibFramework.RegisterModSettings(...)",
+            "register them through RitsuLib `IPatchMethod` / `ModPatcher`",
             "SavedAttachedState<TKey, TValue>",
             "Do not infer an API from an archived prompt, an old runtime report, or a different mod.");
 

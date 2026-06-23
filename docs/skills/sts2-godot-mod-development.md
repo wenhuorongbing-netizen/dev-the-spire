@@ -6,7 +6,7 @@ Use this repository-local skill/reference guide when working on Spire Plus (`EZM
 
 - Read `AGENTS.md` first and follow its scope, manifest, artifact, and validation rules.
 - Treat `source code/src/Core/` as the primary implementation authority when it is present locally.
-- Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before Harmony patches. Do not add any runtime dependency besides STS2-RitsuLib for current Spire Plus work unless the owner explicitly approves a new dependency decision.
+- Prefer local game command APIs, RitsuLib APIs, template APIs, and package references before adding game-method patch classes. Do not add any runtime dependency besides STS2-RitsuLib for current Spire Plus work unless the owner explicitly approves a new dependency decision.
 - Use the tutorial index only as secondary orientation: `https://glitchedreme.github.io/SlayTheSpire2ModdingTutorials/index.html`.
 - Do not copy official game assets into this repository.
 - Do not copy large decompiled game code bodies; record only signatures, class names, field names, call paths, and conclusions.
@@ -26,7 +26,7 @@ For map, UI, reward, combat, save/load, progress, lobby, or hook changes:
 2. Inspect local RitsuLib XML/docs, template APIs, or package references when available; do not use another runtime framework unless a new owner-approved dependency decision exists.
 3. Record evidence and risk in `docs/features/ascension-11-20/api-research.md` or `docs/features/ascension-11-20/work-log.md`.
 4. Prefer command APIs and RitsuLib/template hooks over direct state mutation.
-5. Use Harmony only after documenting why safer APIs are insufficient.
+5. Use game-method patches only after documenting why safer APIs are insufficient, and register them through RitsuLib `IPatchMethod` / `ModPatcher`.
 6. Add source guard tests for fragile patch points or invariants.
 7. Add manual checklist rows for runtime behavior.
 8. Do not claim live readiness without runtime proof.
@@ -35,7 +35,7 @@ Any canonical marker, hook, or model inheriting `AbstractModel` should be obtain
 
 ## RitsuLib API Lookup Workflow
 
-Use this order before adding wrappers, fallback helpers, or Harmony patches:
+Use this order before adding wrappers, fallback helpers, or game-method patch classes:
 
 1. Confirm the package target in `PROJECT_STATE.md` and `docs/integrations/ritsulib.md`.
 2. Run or review `scripts/check-ritsulib-latest-package.ps1` before claiming the RitsuLib package line is current; do not assume current package status from memory or stale validation notes.

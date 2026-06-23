@@ -107,7 +107,7 @@ These files are current support records but are not part of the default next-dev
 | `source-research/run-room-event-reward.md` | Run, room, event, and reward source evidence. |
 | `source-research/multiplayer-save-rng.md` | Multiplayer, save, and RNG source evidence. |
 | `architecture/bounded-contexts.md` | Feature/context ownership map. |
-| `architecture/patch-boundaries.md` | Harmony patch boundary rules. |
+| `architecture/patch-boundaries.md` | RitsuLib patch boundary rules. |
 | `architecture/save-state-contracts.md` | Stateful feature save/load contract map. |
 | `audits/v0.106-source-api-drift.md` | Historical source/API drift audit for the refreshed `v0.106.1` Core snapshot; not current API parity. |
 | `../scripts/ci-full-validation.ps1` | Full no-game validation entry point for self-hosted CI or a local release machine. |

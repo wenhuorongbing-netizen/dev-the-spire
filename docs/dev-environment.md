@@ -106,7 +106,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Last formatting check: `dotnet format EZMicroBalance.sln --verify-no-changes --no-restore` on 2026-06-21 during the RitsuLib integration-doc cleanup pass. Result: exit code 0.
 - Last required diff check: `git diff --check` on 2026-06-20 during the RitsuLib/source-snapshot documentation alignment pass. Result: exit code 0 with no whitespace errors; Git reported the existing CRLF normalization warning for `scripts/check-sts1-event-current-doc-claims.ps1`.
 - Last attempted default publish: `dotnet publish EZMicroBalance.sln -m:1` on 2026-06-18 after the beta.86 package/source alignment pass. Result: succeeded against the real installed mods root. The attempted `dotnet publish EZMicroBalance.sln -m:1 --no-incremental` command failed because solution-level publish does not accept `--no-incremental`; the successful rerun omitted that switch.
-- Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
+- Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.84 Urda Seedbed pre-migration patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
 - Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.135.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.135.zip` were refreshed and hash-checked on 2026-06-23 for local manual testing.
   The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`.
   Current loader context:
@@ -123,7 +123,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Last PCK hash check: the 2026-06-23 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `9EF01340EE2118A2ECA1E721A9B131C4D104D35EB1665A698372CF26B89A9F7C`.
 - Last staging/versioned DLL hash check: SHA256 `10649A95C03F762B73CA15D13024308CB53E8412B89BC53236B37425535437E2`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
-- Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
+- Retired raw `PatchAll` audit: a historical standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`. Current patch ownership is RitsuLib-only: `docs/patch-inventory.md` records 169 migrated `IPatchMethod` classes and 0 class-level `[HarmonyPatch]` declarations.
 - Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.135.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-06-23. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
   - Zip SHA256: `91D67F837BE34DDEDBECC636D8CF5182FDF201F7490DC05229B1F914A51721CC`

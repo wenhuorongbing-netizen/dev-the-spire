@@ -25,7 +25,7 @@ This is the release-candidate boundary map for the single `Spire Plus` mod.
 ## Extension Rules
 
 - Add new behavior inside the owning context first. Promote shared code to `Ancients/Common`, `Ascension/Core`, or a local helper only after two active contexts need the same rule.
-- Keep Harmony patches as adapters: locate source objects, validate the gate, call a feature service, and exit. Put policy, RNG choices, save-field formatting, and player-visible text outside the patch when practical.
+- Keep RitsuLib patch classes as adapters: locate source objects, validate the gate, call a feature service, and exit. Put policy, RNG choices, save-field formatting, and player-visible text outside the patch when practical.
 - Use comments to explain why a feature touches a risky source seam, such as map entry, reward generation, save/load, combat-room transitions, or multiplayer state. Avoid comments that restate the statement below them.
 - Preserve save-field formats unless a bug requires migration. If a format changes, document the migration in the feature README and add a source guard.
 - For multiplayer-sensitive code, state whether it is single-player-only, host-authoritative, or read-only preview behavior. Do not silently mutate shared run state from a client path.
