@@ -432,9 +432,9 @@ $toReview = Read-RepoText 'docs\toreview.md'
 $legacyV5MonthlySpec = Read-RepoText 'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md'
 $ritsuIntegrationDoc = Read-RepoText 'docs\integrations\ritsulib.md'
 $ritsuMigrationReadme = Read-RepoText 'docs\features\ritsulib-migration\README.md'
-$ritsuMonthlyDevSpec = Read-RepoText 'docs\features\ritsulib-migration\monthly-dev-spec.md'
-$ritsuBatch4cCandidates = Read-RepoText 'docs\features\ritsulib-migration\batch-4c-candidates.md'
-$ritsuRuntimeHardBlock = Read-RepoText 'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md'
+$ritsuMonthlyDevSpec = Read-RepoText 'docs\archive\feature-audits\ritsulib-migration\monthly-dev-spec-stub-20260623.md'
+$ritsuBatch4cCandidates = Read-RepoText 'docs\archive\feature-audits\ritsulib-migration\batch-4c-candidates-20260623.md'
+$ritsuRuntimeHardBlock = Read-RepoText 'docs\archive\feature-audits\ritsulib-migration\runtime-hard-block-report-20260531.md'
 $historicalRevisionBoundaries = Read-RepoText 'docs\goals\historical-revision-boundaries.md'
 $goalWarningLedger = Read-RepoText 'docs\goals\warning-ledger.md'
 $overnightRunLedger = Read-RepoText 'docs\goals\overnight-run-ledger.md'
@@ -450,7 +450,7 @@ $gateLedgerCheckerScript = Read-RepoText 'scripts\check-sts1-v19-gate-ledger.ps1
 $v20FinalGateOverlayCheckerScript = Read-RepoText 'scripts\check-sts1-v20-final-gate-overlay.ps1'
 $staticFileHygieneScript = Read-RepoText 'scripts\check-sts1-static-file-hygiene.ps1'
 $runtimeChecklist = Read-RepoText 'docs\features\ritsulib-migration\runtime-smoke-checklist.md'
-$nextOvernight = Read-RepoText 'docs\features\ritsulib-migration\next-overnight-run.md'
+$nextOvernight = Read-RepoText 'docs\archive\feature-audits\ritsulib-migration\next-runtime-qa-run-20260623.md'
 $liveRiskIssue = Read-RepoText 'docs\issues\ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md'
 $sts1FeatureGoal = Read-RepoText 'docs\features\sts1-events\goal.md'
 $implementationPlan = Read-RepoText 'docs\features\sts1-events\implementation-plan.md'
@@ -510,9 +510,6 @@ $currentClaimFiles = @(
     'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md',
     'docs\integrations\ritsulib.md',
     'docs\features\ritsulib-migration\README.md',
-    'docs\features\ritsulib-migration\monthly-dev-spec.md',
-    'docs\features\ritsulib-migration\batch-4c-candidates.md',
-    'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md',
     'docs\goals\historical-revision-boundaries.md',
     'docs\goals\warning-ledger.md',
     'docs\goals\overnight-run-ledger.md',
@@ -524,7 +521,6 @@ $currentClaimFiles = @(
     'docs\review.md',
     'docs\toreview.md',
     'docs\features\ritsulib-migration\runtime-smoke-checklist.md',
-    'docs\features\ritsulib-migration\next-overnight-run.md',
     'docs\issues\ISSUE-2026-05-28-STS1EVENTS-INCOMPLETE-SKELETON-LIVE-RISK.md',
     'docs\features\sts1-events\README.md',
     'docs\features\sts1-events\localization.md',
@@ -577,11 +573,11 @@ Add-Check -Name 'current_claim_scan_includes_goal_refactor_doc' -Passed ($curren
 Add-Check -Name 'current_claim_scan_includes_legacy_v5_monthly_spec' -Passed ($currentClaimFiles -contains 'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md') -Detail 'legacy v5 monthly spec must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_integration' -Passed ($currentClaimFiles -contains 'docs\integrations\ritsulib.md') -Detail 'RitsuLib integration doc must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_migration_readme' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\README.md') -Detail 'RitsuLib migration README must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_ritsu_monthly_spec' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\monthly-dev-spec.md') -Detail 'RitsuLib monthly spec must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_ritsu_batch4c' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\batch-4c-candidates.md') -Detail 'Batch 4c proposal must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_ritsu_runtime_checklist' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\runtime-smoke-checklist.md') -Detail 'RitsuLib runtime smoke checklist must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_ritsu_runtime_hard_block' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md') -Detail 'RitsuLib runtime hard-block report must be in stale claim scan scope'
-Add-Check -Name 'current_claim_scan_includes_ritsu_next_overnight' -Passed ($currentClaimFiles -contains 'docs\features\ritsulib-migration\next-overnight-run.md') -Detail 'RitsuLib next overnight run plan must be in stale claim scan scope'
+Add-Check -Name 'current_claim_scan_excludes_archived_ritsu_monthly_spec' -Passed (-not ($currentClaimFiles -contains 'docs\features\ritsulib-migration\monthly-dev-spec.md')) -Detail 'archived RitsuLib monthly spec must not be in stale claim scan scope'
+Add-Check -Name 'current_claim_scan_excludes_archived_ritsu_batch4c' -Passed (-not ($currentClaimFiles -contains 'docs\features\ritsulib-migration\batch-4c-candidates.md')) -Detail 'archived RitsuLib Batch 4c record must not be in stale claim scan scope'
+Add-Check -Name 'current_claim_scan_excludes_archived_ritsu_runtime_hard_block' -Passed (-not ($currentClaimFiles -contains 'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md')) -Detail 'archived RitsuLib runtime hard-block report must not be in stale claim scan scope'
+Add-Check -Name 'current_claim_scan_excludes_archived_ritsu_next_overnight' -Passed (-not ($currentClaimFiles -contains 'docs\features\ritsulib-migration\next-overnight-run.md')) -Detail 'archived RitsuLib next-runtime plan must not be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_historical_revision_boundaries' -Passed ($currentClaimFiles -contains 'docs\goals\historical-revision-boundaries.md') -Detail 'historical revision boundaries must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_goal_warning_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\warning-ledger.md') -Detail 'current warning ledger must be in stale claim scan scope'
 Add-Check -Name 'current_claim_scan_includes_overnight_run_ledger' -Passed ($currentClaimFiles -contains 'docs\goals\overnight-run-ledger.md') -Detail 'overnight-run ledger must be in stale claim scan scope'
@@ -641,7 +637,7 @@ Add-ContainsCheck -Name 'root_readme_sts1_enabled_smokes_current_split' -Text $r
 Add-ContainsCheck -Name 'root_readme_manual_rows_pending' -Text $rootReadme -Needle 'beta.135 runtime smoke, manual feature gameplay, save-load, preview-tools live behavior, gated Vakuu fight-option/victory return, current enabled-mode registration/gameplay, co-op, independent QA rerun, and versioned tester-package handoff are still pending.'
 Add-ContainsCheck -Name 'ritsu_next_overnight_gated_vakuu_ui_run_order' -Text $nextOvernight -Needle 'Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.'
 Add-ContainsCheck -Name 'ritsu_next_overnight_gated_vakuu_ui_boundary' -Text $nextOvernight -Needle 'Gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.'
-Add-NoRegexCheck -Name 'ritsu_next_overnight_no_broad_clicked_ui_pending' -Paths @('docs\features\ritsulib-migration\next-overnight-run.md') -Pattern 'Gameplay, clicked UI, save-load|Capture gameplay, clicked UI, save-load'
+Add-NoRegexCheck -Name 'ritsu_runtime_checklist_no_broad_clicked_ui_pending' -Paths @('docs\features\ritsulib-migration\runtime-smoke-checklist.md') -Pattern 'Gameplay, clicked UI, save-load|Capture gameplay, clicked UI, save-load'
 Add-ContainsCheck -Name 'goal_guard_test_ready_not_release_ready' -Text $goalGuard -Needle 'Current target: test-ready manual build, not release-ready.'
 Add-ContainsCheck -Name 'goal_guard_no_source_only_completion' -Text $goalGuard -Needle 'No source-only pass may mark this goal complete.'
 Add-ContainsCheck -Name 'goal_guard_runtime_rows_need_evidence' -Text $goalGuard -Needle 'Runtime rows need game logs, screenshots, manual notes, or two-client evidence from the current beta package.'
@@ -650,7 +646,7 @@ Add-ContainsCheck -Name 'doc_restructure_spec_current_reading_path' -Text $docRe
 Add-ContainsCheck -Name 'restructure_doc_event_md_current' -Text $restructureDoc -Needle 'Use `docs/goals/event.md`, `docs/features/sts1-events/v19-gate-evidence-map.md`, `docs/features/sts1-events/v19-gate-ledger.csv`, `docs/features/sts1-events/v20-final-gate-overlay.csv`, `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`, `PROJECT_STATE.md`, and `docs/test-ready-development-goal.md` for current StS1 event guidance'
 Add-ContainsCheck -Name 'restructure_doc_current_ritsulib_only_target' -Text $restructureDoc -Needle 'Current package/runtime target is Spire Plus `v0.1.0-private-beta.135` on Slay'
 Add-ContainsCheck -Name 'restructure_doc_current_source_workspace_rule' -Text $restructureDoc -Needle 'scripts\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot'
-Add-ContainsCheck -Name 'doc_restructure_spec_beta105_ritsulib_boundary' -Text $docRestructureSpec -Needle 'The RitsuLib integration lane is current for beta.123: compile package,'
+Add-ContainsCheck -Name 'doc_restructure_spec_beta135_ritsulib_boundary' -Text $docRestructureSpec -Needle 'The RitsuLib integration lane is current for beta.135: compile package,'
 Add-ContainsCheck -Name 'project_map_register_all_57' -Text $projectMap -Needle 'RegisterAll is now 57 calls'
 Add-ContainsCheck -Name 'project_map_batch1_14' -Text $projectMap -Needle 'AdditiveBatch1 is 10 event types / 14 calls'
 Add-ContainsCheck -Name 'project_map_act1_duplicate_list' -Text $projectMap -Needle 'Big Fish, Golden Idol, The Cleric, and Shining Light moved to Act 1 bucket registration'
@@ -707,7 +703,7 @@ Add-ContainsCheck -Name 'goal_refactor_current_canary_4_6' -Text $goalRefactorDo
 Add-ContainsCheck -Name 'goal_refactor_current_batch1_10_14' -Text $goalRefactorDoc -Needle '10 event types / 14 registration calls'
 Add-ContainsCheck -Name 'goal_refactor_direct_off_default_only' -Text $goalRefactorDoc -Needle 'claim enabled-mode safe'
 Add-ContainsCheck -Name 'goal_refactor_direct_canary_current_4_6' -Text $goalRefactorDoc -Needle 'CanaryOnly beta.85 / v0.107.0 smoke'
-Add-ContainsCheck -Name 'goal_refactor_beta87_current_override' -Text $goalRefactorDoc -Needle 'Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, beta.93 AdditiveBatch1 is previous-package RitsuLib-only loader/registration proof, beta.96 Off is previous-package RitsuLib-only loader proof, and beta.99 settings/Off proof is previous-package context after the beta.123 pass.'
+Add-ContainsCheck -Name 'goal_refactor_beta87_current_override' -Text $goalRefactorDoc -Needle 'Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, beta.93 AdditiveBatch1 is previous-package RitsuLib-only loader/registration proof, beta.96 Off is previous-package RitsuLib-only loader proof, beta.99 settings/Off proof is previous-package context, and beta.128 clicked UI smoke is previous-package smoke proof after the beta.135 package/source validation pass.'
 Add-ContainsCheck -Name 'goal_refactor_direct_final_priority' -Text $goalRefactorDoc -Needle 'current enabled-mode proof'
 Add-Check -Name 'goal_refactor_no_old_exact_canary_registration_claim' -Passed (-not $goalRefactorDoc.Contains('exactly 4 canary registrations')) -Detail 'goal refactor current instructions must use event type / registration-call counts'
 Add-ContainsCheck -Name 'goal_event_compact_status' -Text $goalEventDoc -Needle 'Status: compact active boundary for the StS1 event prototype.'
@@ -754,13 +750,13 @@ Add-ContainsCheck -Name 'historical_refactor_qa_round2_no_current_proof' -Text $
 Add-ContainsCheck -Name 'ritsu_integration_beta96_off_nonclaim' -Text $ritsuIntegrationDoc -Needle 'Older beta.123/beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.'
 Add-ContainsCheck -Name 'ritsu_integration_beta99_latest_recheck' -Text $ritsuIntegrationDoc -Needle 'The NuGet flat-container index reports `STS2.RitsuLib` latest `0.4.34`'
 Add-ContainsCheck -Name 'ritsu_integration_20260623_github_recheck' -Text $ritsuIntegrationDoc -Needle 'GitHub release API now reports release tag/name `v0.4.34` / `0.4.34`'
-Add-ContainsCheck -Name 'ritsu_migration_readme_single_entry_point' -Text $ritsuMigrationReadme -Needle 'This is the single entry point for RitsuLib migration work.'
+Add-ContainsCheck -Name 'ritsu_migration_readme_single_entry_point' -Text $ritsuMigrationReadme -Needle 'This is the single entry point for RitsuLib migration and future RitsuLib-first'
 Add-ContainsCheck -Name 'ritsu_migration_readme_read_order' -Text $ritsuMigrationReadme -Needle 'Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.'
 Add-ContainsCheck -Name 'ritsu_migration_readme_api_rules' -Text $ritsuMigrationReadme -Needle 'Register settings data before the settings page: `BeginModDataRegistration`'
 Add-ContainsCheck -Name 'ritsu_integration_batch4c_migrated_source_only' -Text $ritsuIntegrationDoc -Needle 'Batch 4c: six ascension localization fallback patch classes now use'
 Add-ContainsCheck -Name 'ritsu_monthly_stub_boundary' -Text $ritsuMonthlyDevSpec -Needle 'This file is retained only because guarded historical docs and scripts still'
 Add-ContainsCheck -Name 'ritsu_monthly_stub_no_local_ledgers' -Text $ritsuMonthlyDevSpec -Needle 'new migration tables, runtime evidence ledgers, or package handoff notes.'
-Add-ContainsCheck -Name 'ritsu_monthly_routes_to_runtime_checklist' -Text $ritsuMonthlyDevSpec -Needle '`runtime-smoke-checklist.md` for future runtime evidence commands.'
+Add-ContainsCheck -Name 'ritsu_monthly_routes_to_runtime_checklist' -Text $ritsuMonthlyDevSpec -Needle '`docs/features/ritsulib-migration/runtime-smoke-checklist.md` for future'
 Add-ContainsCheck -Name 'ritsu_monthly_current_boundary_nonclaim' -Text $ritsuMonthlyDevSpec -Needle 'Settings, loader, and screenshot evidence remain scoped evidence only;'
 Add-ContainsCheck -Name 'ritsu_batch4c_owner_decision_recorded' -Text $ritsuBatch4cCandidates -Needle 'Owner decision recorded: 2026-06-22 continuation goal approved migrating the remaining six localization fallback candidates.'
 Add-ContainsCheck -Name 'ritsu_batch4c_release_blocked' -Text $ritsuBatch4cCandidates -Needle 'Release-ready remains blocked by gameplay, screenshot, save-load, image/render, replacement, multiplayer, independent QA, and tester-package handoff evidence.'
@@ -1169,11 +1165,12 @@ Add-ContainsCheck -Name 'static_file_hygiene_scans_goal_refactor_doc' -Text $sta
 Add-ContainsCheck -Name 'static_file_hygiene_scans_legacy_v5_monthly_spec' -Text $staticFileHygieneScript -Needle "'docs\goals\sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_integration' -Text $staticFileHygieneScript -Needle "'docs\integrations\ritsulib.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_migration_readme' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\README.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_monthly_spec' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\monthly-dev-spec.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_batch4c' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\batch-4c-candidates.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_archived_ritsu_readme' -Text $staticFileHygieneScript -Needle "'docs\archive\feature-audits\ritsulib-migration\README.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_archived_ritsu_monthly_spec' -Text $staticFileHygieneScript -Needle "'docs\archive\feature-audits\ritsulib-migration\monthly-dev-spec-stub-20260623.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_archived_ritsu_batch4c' -Text $staticFileHygieneScript -Needle "'docs\archive\feature-audits\ritsulib-migration\batch-4c-candidates-20260623.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_runtime_checklist' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\runtime-smoke-checklist.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_runtime_hard_block' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\runtime-hard-block-report-20260531.md'"
-Add-ContainsCheck -Name 'static_file_hygiene_scans_ritsu_next_overnight' -Text $staticFileHygieneScript -Needle "'docs\features\ritsulib-migration\next-overnight-run.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_archived_ritsu_runtime_hard_block' -Text $staticFileHygieneScript -Needle "'docs\archive\feature-audits\ritsulib-migration\runtime-hard-block-report-20260531.md'"
+Add-ContainsCheck -Name 'static_file_hygiene_scans_archived_ritsu_next_runtime_plan' -Text $staticFileHygieneScript -Needle "'docs\archive\feature-audits\ritsulib-migration\next-runtime-qa-run-20260623.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_historical_revision_boundaries' -Text $staticFileHygieneScript -Needle "'docs\goals\historical-revision-boundaries.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_goal_warning_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\warning-ledger.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_overnight_run_ledger' -Text $staticFileHygieneScript -Needle "'docs\goals\overnight-run-ledger.md'"
@@ -1186,10 +1183,10 @@ Add-ContainsCheck -Name 'static_file_hygiene_scans_private_beta_release_audit' -
 Add-ContainsCheck -Name 'static_file_hygiene_scans_test_ready_completion_audit' -Text $staticFileHygieneScript -Needle "'docs\test-ready-completion-audit.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_scans_scripts_readme' -Text $staticFileHygieneScript -Needle "'scripts\README.md'"
 Add-ContainsCheck -Name 'static_file_hygiene_guards_replacement_chars' -Text $staticFileHygieneScript -Needle "sts1_hygiene_no_replacement_chars"
-Add-ContainsCheck -Name 'static_file_hygiene_guards_ritsu_monthly_spec_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_ritsu_monthly_spec"
-Add-ContainsCheck -Name 'static_file_hygiene_guards_ritsu_batch4c_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_ritsu_batch4c"
+Add-ContainsCheck -Name 'static_file_hygiene_guards_archived_ritsu_monthly_spec_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_archived_ritsu_monthly_spec"
+Add-ContainsCheck -Name 'static_file_hygiene_guards_archived_ritsu_batch4c_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_archived_ritsu_batch4c"
 Add-ContainsCheck -Name 'static_file_hygiene_guards_runtime_checklist_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_ritsu_runtime_checklist"
-Add-ContainsCheck -Name 'static_file_hygiene_guards_next_overnight_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_ritsu_next_overnight"
+Add-ContainsCheck -Name 'static_file_hygiene_guards_archived_next_runtime_plan_scope' -Text $staticFileHygieneScript -Needle "sts1_hygiene_scans_archived_ritsu_next_runtime_plan"
 Add-ContainsCheck -Name 'static_file_hygiene_guards_status_board_ascii_chain' -Text $staticFileHygieneScript -Needle "sts1_hygiene_status_board_status_chain_ascii"
 Add-ContainsCheck -Name 'static_file_hygiene_guards_status_board_mojibake' -Text $staticFileHygieneScript -Needle "sts1_hygiene_status_board_no_arrow_mojibake"
 
@@ -1315,7 +1312,7 @@ Add-ContainsCheck -Name 'runtime_evidence_packet_script_reports_current_slice_bi
 Add-ContainsCheck -Name 'next_overnight_beta99_totals' -Text $nextOvernight -Needle 'Latest beta.135 no-launch package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target; previous beta.128 forced clicked UI smoke remains previous-package proof.'
 Add-ContainsCheck -Name 'next_overnight_latest_observed_head_recapture_boundary' -Text $nextOvernight -Needle 'Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.'
 Add-ContainsCheck -Name 'goal_migration_latest_observed_head_recapture_boundary' -Text $goalMigrationDoc -Needle 'Recapture `git log -1 --oneline --decorate` and `git status --short --branch` at the start of each continuation and immediately before handoff; older run-start hashes are historical notes, not current status.'
-Add-NoRegexCheck -Name 'no_brittle_current_pushed_head_pin_in_migration_docs' -Paths @('docs\goals\migration.md', 'docs\features\ritsulib-migration\next-overnight-run.md') -Pattern 'Current pushed HEAD is `[0-9a-f]{7,40}`|latest observed pushed HEAD is `[0-9a-f]{7,40}`'
+Add-NoRegexCheck -Name 'no_brittle_current_pushed_head_pin_in_migration_docs' -Paths @('docs\goals\migration.md', 'docs\features\ritsulib-migration\README.md', 'docs\features\ritsulib-migration\runtime-smoke-checklist.md') -Pattern 'Current pushed HEAD is `[0-9a-f]{7,40}`|latest observed pushed HEAD is `[0-9a-f]{7,40}`'
 Add-ContainsCheck -Name 'next_overnight_head_validation_beta87' -Text $nextOvernight -Needle 'Previous beta.128 smoke applied all 152 default runtime RitsuLib patch classes from the packaged beta.128 state. Current beta.135 package has 169 migrated patch classes and 0 raw Harmony declarations after the multiplayer save-quit diagnostic migration; recapture beta.135 runtime proof before claiming current in-game coverage.'
 Add-ContainsCheck -Name 'next_overnight_coordination_boundary' -Text $nextOvernight -Needle 'Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.'
 Add-ContainsCheck -Name 'next_overnight_post_baseline_scope' -Text $nextOvernight -Needle 'Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.'
@@ -1930,7 +1927,7 @@ Add-NoRegexCheck -Name 'no_enabled_log_command_without_audit_path' -Paths $curre
 Add-NoRegexCheck -Name 'no_enabled_log_command_without_outfile' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-enabled-mode-runtime-log\.ps1(?=.*-LogPath)(?!.*-OutFile)'
 Add-NoRegexCheck -Name 'no_enabled_log_command_without_fail_on_mismatch' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-enabled-mode-runtime-log\.ps1(?=.*-LogPath)(?!.*-FailOnMismatch)'
 Add-NoRegexCheck -Name 'no_enabled_log_command_uses_after_launch_as_canonical_log' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\check-sts1-enabled-mode-runtime-log\.ps1(?=.*-LogPath\s+"?[^"\r\n]*godot\.log\.after-launch)'
-Add-NoRegexCheck -Name 'no_next_overnight_untracked_batch4c_claim' -Paths @('docs\features\ritsulib-migration\next-overnight-run.md') -Pattern 'untracked `docs/features/ritsulib-migration/batch-4c-candidates\.md`'
+Add-NoRegexCheck -Name 'no_next_overnight_untracked_batch4c_claim' -Paths @('docs\archive\feature-audits\ritsulib-migration\next-runtime-qa-run-20260623.md') -Pattern 'untracked `docs/features/ritsulib-migration/batch-4c-candidates\.md`'
 Add-NoRegexCheck -Name 'no_current_validation_unscoped_canary4_content_claim' -Paths @('docs\reviews\current-validation.md') -Pattern 'CanaryOnly proves exactly 4 canary content registrations\.'
 Add-NoRegexCheck -Name 'no_unscoped_canary4_content_claim_in_current_claims' -Paths $currentClaimFiles -Pattern 'CanaryOnly proves exactly 4 canary content registrations\.'
 Add-NoRegexCheck -Name 'no_current_validation_unscoped_historical_runtime_pass_claims' -Paths @('docs\reviews\current-validation.md') -Pattern '^\s*## Revision J Current Snapshot\s*$|\| PASS \|.*(Off-mode Steam smoke|CanaryOnly|AdditiveBatch1|Clean audit)|Sts1Events (Off|CanaryOnly) runtime proof: \*\*PASS\*\*|Runtime loader gate: Off and CanaryOnly diagnostic smokes now pass'

@@ -232,7 +232,7 @@ public sealed partial class AncientUiReadinessGuardTests
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "manual-test-checklist.md"),
             ReadRepoText("docs", "features", "ancient-expansion-v2.2", "work-log.md"),
             ReadRepoText("docs", "features", "ancients-rework-v4", "work-log.md"),
-            ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md"));
+            ReadRepoText("docs", "features", "ritsulib-migration", "runtime-smoke-checklist.md"));
 
         Assert.Contains("smoke-level clicked UI proof", activeDocs, StringComparison.OrdinalIgnoreCase);
         Assert.Contains(".tools/runtime-evidence/monkey-stability-20260623-062913", activeDocs, StringComparison.Ordinal);

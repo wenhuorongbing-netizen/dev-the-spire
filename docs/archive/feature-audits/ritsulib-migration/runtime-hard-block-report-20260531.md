@@ -1,5 +1,9 @@
 # RitsuLib Runtime Boundary Report
 
+Archived 2026-06-23. The May 31 runtime hard block is historical; current
+RitsuLib dependency status is in `docs/integrations/ritsulib.md` and
+`PROJECT_STATE.md`.
+
 ## Current Boundary
 
 This file is the active pointer for the old RitsuLib runtime hard-block lane.

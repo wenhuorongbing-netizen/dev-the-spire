@@ -388,7 +388,7 @@ public sealed class RitsuLibMigrationGuardTests
     public void ClickedUiMigrationBoundaryStaysRitsuLibOnly()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
-        var nextRun = ReadRepoText("docs", "features", "ritsulib-migration", "next-overnight-run.md");
+        var runtimeChecklist = ReadRepoText("docs", "features", "ritsulib-migration", "runtime-smoke-checklist.md");
         var currentValidation = ReadRepoText("docs", "reviews", "current-validation.md");
         var projectState = ReadRepoText("PROJECT_STATE.md");
         var source = ReadSourceTree("EZMicroBalanceCode");
@@ -398,12 +398,12 @@ public sealed class RitsuLibMigrationGuardTests
                 StringComparison.Ordinal)..];
 
         AssertSourceContains(
-            nextRun,
-            "Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.",
-            "- [x] Previous beta.128 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/`",
-            "- [ ] Gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff rows completed or blocked with evidence.");
-        Assert.DoesNotContain("Capture gameplay, clicked UI, save-load", nextRun, StringComparison.Ordinal);
-        Assert.DoesNotContain("Gameplay, clicked UI, save-load", nextRun, StringComparison.Ordinal);
+            runtimeChecklist,
+            "[PENDING current beta.135 recapture; previous beta.128 clicked UI smoke is retained at `.tools/runtime-evidence/monkey-stability-20260623-062913/`]",
+            "Exercise the gated Vakuu fight-option UI",
+            "Event option, combat transition, victory return, and no-black-screen path work in a natural run");
+        Assert.DoesNotContain("Capture gameplay, clicked UI, save-load", runtimeChecklist, StringComparison.Ordinal);
+        Assert.DoesNotContain("Gameplay, clicked UI, save-load", runtimeChecklist, StringComparison.Ordinal);
 
         AssertSourceContains(
             currentValidation,
@@ -821,7 +821,7 @@ public sealed class RitsuLibMigrationGuardTests
     [Fact]
     public void Batch4cLocalizationPatchesAreMigratedAndDocumented()
     {
-        var record = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
+        var record = ReadRepoText("docs", "archive", "feature-audits", "ritsulib-migration", "batch-4c-candidates-20260623.md");
         var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
         var inventory = ReadRepoText("docs", "patch-inventory.md");
         var registrationSource = ReadRitsuLibIntegrationSource();
@@ -830,7 +830,8 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("Migrated candidate count is 6", record, StringComparison.Ordinal);
         Assert.Contains("Owner decision recorded: 2026-06-22 continuation goal approved migrating the remaining six localization fallback candidates.", record, StringComparison.Ordinal);
         Assert.Contains("This migration is source/registration work only; it is not gameplay, save-load, co-op, release, or handoff proof.", record, StringComparison.Ordinal);
-        Assert.Contains("Batch 4c localization fallback patches have moved to RitsuLib", migrationReadme, StringComparison.Ordinal);
+        Assert.Contains("final localization fallback batch for A11-A20 ascension table text also", migrationReadme, StringComparison.Ordinal);
+        Assert.Contains("docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md", migrationReadme, StringComparison.Ordinal);
         Assert.Contains("Do not migrate high-risk run/map/reward/save/multiplayer patches without explicit owner approval.", migrationReadme, StringComparison.Ordinal);
 
         var candidateSectionStart = record.IndexOf("## Migrated Candidates", StringComparison.Ordinal);
@@ -870,8 +871,9 @@ public sealed class RitsuLibMigrationGuardTests
     [Fact]
     public void Batch4cStaticReviewRecordsOwnerDecisionAndKeepsHighRiskClosed()
     {
-        var record = ReadRepoText("docs", "features", "ritsulib-migration", "batch-4c-candidates.md");
-        var nextRun = ReadRepoText("docs", "features", "ritsulib-migration", "next-overnight-run.md");
+        var record = ReadRepoText("docs", "archive", "feature-audits", "ritsulib-migration", "batch-4c-candidates-20260623.md");
+        var nextRun = ReadRepoText("docs", "archive", "feature-audits", "ritsulib-migration", "next-runtime-qa-run-20260623.md");
+        var migrationReadme = ReadRepoText("docs", "features", "ritsulib-migration", "README.md");
         var goal = ReadRepoText("docs", "goals", "migration.md");
 
         Assert.Contains("Static review recaptured: 2026-06-18", record, StringComparison.Ordinal);
@@ -891,6 +893,10 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains(
             "the 2026-06-22 continuation migrated the remaining 6 low-risk localization fallback candidates through RitsuLib after owner approval.",
             nextRun,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            "Historical migration-process files were moved out of the active feature folder",
+            migrationReadme,
             StringComparison.Ordinal);
         Assert.Contains("This is not current enabled-mode, gameplay, save-load, replacement, co-op, QA, release, or handoff proof.", nextRun, StringComparison.Ordinal);
         Assert.Contains("- [x] Batch 4c localization owner decision recorded and implemented for the six fallback localization patches.", nextRun, StringComparison.Ordinal);

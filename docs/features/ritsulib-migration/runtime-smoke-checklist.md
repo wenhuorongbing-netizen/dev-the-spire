@@ -46,6 +46,8 @@ It is previous-package startup/loading context only. Earlier
 beta.93 AdditiveBatch1 packets remain older package loader/registration context
 only. They do not prove beta.135 enabled-mode gameplay, full gameplay,
 save-load, replacement behavior, multiplayer/co-op, QA, or tester handoff.
+Clicked UI is limited to beta.128 forced Ancient smoke until a current beta.135
+run recaptures the same or broader UI paths.
 
 Coordination boundary: run this checklist's launch, gameplay, build, publish,
 package, or release-evidence steps only when a controlled validation lane is
@@ -94,8 +96,8 @@ Ensure `STS2-RitsuLib` is not moved out by any mod-isolation step.
 | # | Step | Expected | Evidence |
 |---|------|----------|----------|
 | 1 | Install STS2-RitsuLib | `<GameRoot>\mods\STS2-RitsuLib` exists and manifest version satisfies `>= 0.4.34` | PASS: E-drive install is `v0.4.34` in direct NuGet runtime layout |
-| 2 | Install Spire Plus beta.128 | Installed folder, manifest, DLL, PCK, and package hashes match beta.128 handoff docs | PASS: package parity is recorded in `PROJECT_STATE.md` |
-| 3 | Launch beta.128 with only the two allowed mods | Main menu loads without crash | PASS: `.tools/runtime-evidence/monkey-stability-20260623-062913/` |
+| 2 | Install Spire Plus beta.135 | Installed folder, manifest, DLL, PCK, and package hashes match beta.135 handoff docs | PASS: package parity is recorded in `PROJECT_STATE.md` |
+| 3 | Launch beta.135 with only the two allowed mods | Main menu loads without crash | [PENDING current beta.135 recapture; previous beta.128 clicked UI smoke is retained at `.tools/runtime-evidence/monkey-stability-20260623-062913/`] |
 | 4 | Check `godot.log` for RitsuLib init | RitsuLib initializes and reports no dependency errors | PASS: beta.128 monkey packet verifier 1621 / 0 |
 | 5 | Check `godot.log` for Spire Plus init | Single Spire Plus initialization line, technical id `EZMicroBalance`, package `v0.1.0-private-beta.135` | PASS: beta.128 monkey packet verifier 1621 / 0 |
 | 6 | Check `godot.log` for ModPatcher count | 152 default runtime patch classes register through RitsuLib and remaining raw Harmony patches load without dependency failures | PASS: beta.128 smoke applied all 152 default runtime patch classes |
@@ -198,6 +200,7 @@ checklist.
 | 3 | Visit first shop | Shop renders, no errors | [PENDING] |
 | 4 | Check Ancient reward visibility | Default-on Ancients show rebalanced rewards | [PENDING] |
 | 5 | Save and reload | Save/load succeeds, no data loss | [PENDING] |
+| 6 | Exercise the gated Vakuu fight-option UI | Event option, combat transition, victory return, and no-black-screen path work in a natural run | [PENDING] |
 
 ## Multiplayer Disposition
 
@@ -208,7 +211,7 @@ checklist.
 
 ## Exit Criteria
 
-- All beta.128 loader smoke items pass.
+- All beta.135 loader smoke items pass.
 - Off mode proves 0 StS1Events registrations in `godot.log`.
 - CanaryOnly proves 4 canary event types through 6 registration calls in
   `godot.log`.
@@ -227,7 +230,7 @@ handoff remain pending.
 ## Notes
 
 - This checklist supplements `docs/test-plan.md`,
-  `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md`,
+  `docs/features/ritsulib-migration/README.md`,
   and `docs/release-checklist.md`.
 - Evidence should be retained in `.tools/runtime-evidence/` with verifier JSON
   beside copied logs/screenshots.

@@ -15,7 +15,7 @@ Use these current files as the source of truth before acting on this goal:
 - `PROJECT_STATE.md`
 - `docs/test-ready-development-goal.md`
 - `docs/goals/migration.md`
-- `docs/features/ritsulib-migration/next-overnight-run.md`
+- `docs/features/ritsulib-migration/runtime-smoke-checklist.md`
 - `docs/features/sts1-events/status-board.md`
 
 The previous long-form strict audit is archived at
@@ -30,7 +30,7 @@ clean-audit blocker was previous package `v3.2.1` patch drift for the older depe
 dependency floor is now aligned on STS2-RitsuLib `v0.4.34`, and Spire Plus no longer has a project,
 manifest, package, or current runtime dependency on previous package.
 
-Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, beta.93 AdditiveBatch1 is previous-package RitsuLib-only loader/registration proof, beta.96 Off is previous-package RitsuLib-only loader proof, and beta.99 settings/Off proof is previous-package context after the beta.123 pass.
+Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, beta.93 AdditiveBatch1 is previous-package RitsuLib-only loader/registration proof, beta.96 Off is previous-package RitsuLib-only loader proof, beta.99 settings/Off proof is previous-package context, and beta.128 clicked UI smoke is previous-package smoke proof after the beta.135 package/source validation pass.
 Previous beta.128 clicked Ancient UI smoke exists under `.tools/runtime-evidence/monkey-stability-20260623-062913/`; previous beta.96 RitsuLib-only Off proof exists under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 RitsuLib-only AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
 
 This is still source/static/no-game governance plus loader/registration proof. Do not claim enabled-mode safe beyond the retained loader evidence. Gameplay, Mod Settings UI page proof,
@@ -41,9 +41,9 @@ release readiness, and tester-package handoff remain pending.
 
 | Area | Current state | Evidence / notes |
 | --- | --- | --- |
-| Runtime dependency blocker | Closed for package/dependency; gameplay/runtime recapture pending | STS2-RitsuLib `v0.4.34` direct NuGet runtime layout is installed for Slay the Spire 2 `v0.107.1`; beta.123 package parity and clicked UI smoke are current, while beta.99/beta.96 Off direct proof is previous-package startup/loading evidence only. |
+| Runtime dependency blocker | Closed for package/dependency; gameplay/runtime recapture pending | STS2-RitsuLib `v0.4.34` direct NuGet runtime layout is installed for Slay the Spire 2 `v0.107.1`; beta.135 package parity, runtime preflight, and source-workspace validation are current, while beta.128 clicked UI and beta.99/beta.96 Off direct proof are previous-package evidence only. |
 | CanaryOnly proof | Historical loader pass | CanaryOnly beta.85 / v0.107.0 smoke remains previous-package loader proof only: 4 event types / 6 registration calls. |
-| AdditiveBatch1 proof | Previous-package loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Current beta.123 enabled-mode proof still needs recapture before gameplay claims. |
+| AdditiveBatch1 proof | Previous-package loader/registration pass | beta.93 direct proof records 10 event types / 14 registration calls, 25/25 Spire Plus patches, clean audit, enabled-mode verifier 31 / 0, and packet verifier 61 / 0. Current beta.135 enabled-mode proof still needs recapture before gameplay claims. |
 | AutoSlay/runtime evidence governance | Current no-game hardening | Packet/analyzer guards reject malformed, escaped, noncanonical, missing, or blank retained artifact paths before owner routing; this protects future runtime packets from stale or shadow evidence. |
 | Batch 4c | Proposal only / static review recaptured | The 2026-06-18 recapture confirmed 10 low-risk candidates, no forbidden high-risk categories, and no migration performed. Owner approval is still required before any migration. |
 | Documentation compactness | In progress | Player-facing naming guard coverage may be split into source-preserving partial files when the assertions remain unchanged and focused tests pass. |

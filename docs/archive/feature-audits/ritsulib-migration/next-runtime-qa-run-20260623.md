@@ -1,5 +1,10 @@
 # Next Runtime QA Run - RitsuLib Migration
 
+Archived 2026-06-23 when the current RitsuLib migration entry was slimmed to
+the active README plus runtime smoke checklist. Use
+`docs/features/ritsulib-migration/runtime-smoke-checklist.md` for current
+runtime proof commands.
+
 Run date: TBD.
 Status: compact execution boundary. This replaces the long historical overnight plan; use archive docs and Git history for old detail.
 

@@ -17,9 +17,11 @@ Start every development pass from:
 For migration work, use `docs/features/ritsulib-migration/README.md` as the
 entry point, then read `docs/goals/migration.md`,
 `docs/integrations/ritsulib.md`, and `docs/reviews/current-validation.md`.
-The RitsuLib integration lane is current for beta.123: compile package,
-manifest dependency, package parity and source-workspace validation are RitsuLib-only;
-beta.99, beta.96, and beta.93 loader or settings proof remain previous-package evidence only.
+The RitsuLib integration lane is current for beta.135: compile package,
+manifest dependency, package parity, runtime preflight, and source-workspace validation
+are RitsuLib-only for the 169/0 source state. Previous beta.128
+clicked UI smoke, beta.99 settings/Off proof, beta.96 Off proof, and beta.93
+AdditiveBatch1 proof remain previous-package evidence only.
 
 ## Cleanup Rules
 
@@ -41,8 +43,8 @@ beta.99, beta.96, and beta.93 loader or settings proof remain previous-package e
 
 - Do not move broad directory trees while code behavior is changing.
 - Do not delete docs guarded by `scripts/check-sts1-event-current-doc-claims.ps1`
-  or `scripts/check-sts1-static-file-hygiene.ps1`; compress them first and then
-  update the guards in a separate validation pass.
+  or `scripts/check-sts1-static-file-hygiene.ps1`; compress or archive them
+  first, then update the guards in the same cleanup validation pass.
 - Do not turn loader, settings, or screenshot evidence into gameplay,
   save-load, co-op, QA, release, or handoff claims.
 - Do not add any runtime dependency besides STS2-RitsuLib for Spire Plus

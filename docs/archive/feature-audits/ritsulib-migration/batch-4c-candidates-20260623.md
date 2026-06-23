@@ -1,5 +1,10 @@
 # Batch 4c Low-Risk Localization Migration
 
+Archived 2026-06-23 after the full source migration reached 169 migrated patch
+classes and 0 raw Harmony declarations. This is traceability history only; use
+`docs/features/ritsulib-migration/README.md` and `docs/integrations/ritsulib.md`
+for current RitsuLib development.
+
 Date: 2026-06-22
 Static review recaptured: 2026-06-18
 Dependency gate refreshed: 2026-06-22

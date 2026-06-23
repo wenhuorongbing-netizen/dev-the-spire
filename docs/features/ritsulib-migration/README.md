@@ -1,7 +1,8 @@
 # RitsuLib Migration
 
-This is the single entry point for RitsuLib migration work. Start here, then
-read only the support file that matches the task.
+This is the single entry point for RitsuLib migration and future RitsuLib-first
+development. The source migration is complete; start new work from the current
+rules here, then use the runtime checklist only when capturing game evidence.
 
 ## Current Boundary
 
@@ -25,10 +26,10 @@ read only the support file that matches the task.
   mod-info localization UI patches, combat hand stale-input safety, and the
   Meat Cleaver rest-site Cook option UI/click hooks are registered through RitsuLib
   `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
-- Batch 4c localization fallback patches for A11-A20 ascension table text now
-  also use RitsuLib `IPatchMethod` / `ModPatcher`.
-- Batch 4c localization fallback patches have moved to RitsuLib; this is still
-  source/registration work, not runtime gameplay proof.
+- The final localization fallback batch for A11-A20 ascension table text also
+  uses RitsuLib `IPatchMethod` / `ModPatcher`. Its detailed candidate table is
+  archived because it is completed migration history, not a current development
+  entry point.
 - Sere Talon relic icon/texture getter patches, Prismatic Gem hover patches,
   Jewelry Box hover patches, and the A20 courtyard portrait now also use
   RitsuLib `IPatchMethod` / `ModPatcher` as visual/event UI patches.
@@ -72,8 +73,6 @@ read only the support file that matches the task.
 4. `docs/reviews/current-validation.md` for the latest validation record.
 5. `runtime-smoke-checklist.md` only when preparing or reviewing runtime
    evidence.
-6. `batch-4c-candidates.md` only when reviewing the completed Batch 4c
-   localization fallback migration and its remaining proof boundaries.
 
 Do not start future implementation from historical plans, archived prompt dumps, or old runtime reports.
 
@@ -142,11 +141,16 @@ Do not start future implementation from historical plans, archived prompt dumps,
 
 | File | Role |
 | --- | --- |
-| `monthly-dev-spec.md` | Compatibility stub retained for guarded historical references. Not a default entry point. |
 | `runtime-smoke-checklist.md` | Runtime evidence checklist and verifier command source. |
-| `next-overnight-run.md` | Future controlled runtime QA run order. |
-| `batch-4c-candidates.md` | Completed Batch 4c localization fallback migration record and proof boundary. |
-| `runtime-hard-block-report-20260531.md` | Current pointer for the old runtime hard-block lane; the original blocker is historical. |
+
+Historical migration-process files were moved out of the active feature folder:
+
+| Archive file | Role |
+| --- | --- |
+| `docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md` | Completed localization fallback batch record. |
+| `docs/archive/feature-audits/ritsulib-migration/next-runtime-qa-run-20260623.md` | Superseded controlled runtime QA run plan. |
+| `docs/archive/feature-audits/ritsulib-migration/runtime-hard-block-report-20260531.md` | Historical May 31 runtime hard-block boundary. |
+| `docs/archive/feature-audits/ritsulib-migration/monthly-dev-spec-stub-20260623.md` | Superseded monthly spec compatibility stub. |
 
 ## Stop Lines
 

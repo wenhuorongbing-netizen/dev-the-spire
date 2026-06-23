@@ -213,8 +213,7 @@ Current manifest dependency:
   by the local provider registry instead of copied game tables.
 - RitsuLib compatibility patch: the `ModSettingsGameSettingsEntryButton`
   SelectionReticle compatibility patch uses RitsuLib `IPatchMethod` and keeps
-  the beta.123 settings-button startup path compatible with Slay the Spire 2
-  `v0.107.1`.
+  the settings-button startup path compatible with Slay the Spire 2 `v0.107.1`.
   Previous beta.128 clicked Ancient UI smoke applied all 152 default runtime registered patch classes from the packaged beta.128 state; beta.135 runtime smoke, gameplay, enabled-mode proof, and the debug-only replacement-prototype branch remain pending.
 - Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
@@ -226,5 +225,6 @@ Current raw Harmony remaining: 0 declarations, tracked in `docs/patch-inventory.
 
 - Loader proof and command status, including current `v0.107.1` runtime dependency status: `docs/reviews/current-validation.md`.
 - Runtime smoke checklist: `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
-- Batch 4c localization migration record: `docs/features/ritsulib-migration/batch-4c-candidates.md`.
+- Archived Batch 4c localization migration record:
+  `docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md`.
 - Patch inventory: `docs/patch-inventory.md`.

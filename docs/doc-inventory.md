@@ -19,7 +19,7 @@
 - `docs/month-plan/commit-boundaries.md`
 - `docs/test-ready-development-goal.md`
 - `docs/features/ancient-expansion-v2.2/README.md`
-- `docs/features/ritsulib-migration/README.md` (single active RitsuLib migration entry point; support files remain guarded but are not default reading path)
+- `docs/features/ritsulib-migration/README.md` (single active RitsuLib migration entry point; historical process files are archived)
 - `website/README.md`
 
 Current support docs, not default reading path:
@@ -48,7 +48,7 @@ Current support docs, not default reading path:
 - `docs/features/ancient-expansion-v2.2/` (current roadmap/prototype docs; Urda, Morvi, Lotha, and the single-player Vakuu fight are source-active/live-pending)
 - `docs/features/ancients-rework-v4/reference-inputs/` (traceability input only; do not implement from it without checking current issues/goal/source-design)
 - `docs/features/preview-tools/` (Crystal Sphere peek and transform preview integrated into Spire Plus)
-- `docs/features/ritsulib-migration/` (RitsuLib-only migration entry and guarded runtime/migration support files)
+- `docs/features/ritsulib-migration/` (RitsuLib-only migration entry and runtime smoke checklist; completed migration-process records live under `docs/archive/feature-audits/ritsulib-migration/`)
 
 ## C. Style / agent docs
 
@@ -149,9 +149,10 @@ Current support docs, not default reading path:
 - ignored `forum/node_modules/` dependency cache deleted; restore with `npm ci` under `forum/` when forum validation needs dependencies.
 - ignored local zip residue `docs/STS2-RitsuLib.0.3.3.variant-pack.zip` and `docs/codex-app-better-token-main.zip` deleted after confirming neither file was tracked nor referenced; use official RitsuLib release URLs instead of copied archives.
 - `docs/BETA_COMPATIBILITY.md` historical dependency log compressed into a current RitsuLib-only compatibility policy; detailed old compatibility archaeology remains available through Git history and archived implementation records, not the active reading path.
-- `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md` historical May 31 runtime table compressed into a current RitsuLib runtime-boundary stub; old environment archaeology remains in Git history, not the active migration reading path.
+- `docs/features/ritsulib-migration/runtime-hard-block-report-20260531.md` historical May 31 runtime table first compressed into a boundary stub, then moved to `docs/archive/feature-audits/ritsulib-migration/runtime-hard-block-report-20260531.md`; current RitsuLib runtime proof starts from `docs/features/ritsulib-migration/runtime-smoke-checklist.md`.
 - `docs/test-plan.md` current artifact and manual load checks now require the RitsuLib-only lane (`STS2-RitsuLib >= 0.4.34` plus `EZMicroBalance`) and are guarded against reintroducing old dependency-package setup instructions.
 - `docs/features/ritsulib-migration/runtime-smoke-checklist.md` active launch checklist compressed into beta.96 RitsuLib-only prerequisites, verifier commands, UI-proof status, and still-pending loader/gameplay gates; old smoke-history tables are no longer in the active checklist.
+- Completed RitsuLib migration process files moved from the active feature folder to `docs/archive/feature-audits/ritsulib-migration/`: Batch 4c candidate record, next-runtime QA run plan, May 31 hard-block boundary, and monthly dev-spec stub. Current RitsuLib development starts from `docs/features/ritsulib-migration/README.md`, `docs/integrations/ritsulib.md`, and installed RitsuLib XML/API evidence.
 - `docs/migration.md` active PR-sequencing table compressed again into a compatibility stub; current migration rules live in `docs/features/ritsulib-migration/README.md`, goal/evidence routes through `docs/goals/migration.md` and `docs/integrations/ritsulib.md`, and patch counts stay in `docs/patch-inventory.md`.
 - `docs/goals/debug.md` mojibake prompt dump -> `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md`; active `docs/goals/debug.md` is now a compact debug-governance note.
 - `docs/goals/sts1_event_port_strict_audit_monthly_spec_v5_overnight_subagents.md` long StS1 v5 overnight/subagent prompt dump -> `docs/archive/feature-inputs/sts1-event-port-strict-audit-monthly-spec-v5-overnight-subagents-20260620.md`; active file is now a compact historical-boundary stub.

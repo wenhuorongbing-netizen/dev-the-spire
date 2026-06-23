@@ -4,8 +4,10 @@ Date: 2026-06-10
 
 Current note: this ledger is a historical June 10 snapshot. Batch 4c
 localization fallback patches were later migrated through RitsuLib on
-2026-06-22; use `docs/features/ritsulib-migration/batch-4c-candidates.md` and
-`docs/patch-inventory.md` for current status.
+2026-06-22; use
+`docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md`
+for the historical batch record and `docs/patch-inventory.md` for current
+patch status.
 
 ## Diff Groups
 

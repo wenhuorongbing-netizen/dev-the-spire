@@ -2,7 +2,7 @@
 
 This folder tracks the Urda Ancient vertical slice for private beta.
 
-Status: Urda is default-on for private-beta testing with eleven source-backed blessing ids: Seedbed, Humus Pact, Molting, Moss Map, Trial Branch, Shallow-Root Relic, Elite Root, Rooted Route, After the Rain, Root-Sight, and Seed Bank. Historical previous package resource evidence under `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` verified that the installed PCK resolved the custom scene/icon with 0 `ERROR` / `WARNING` lines; beta.123 forced clicked UI smoke covers the Urda Ancient screen only. Live gameplay, Root Eyes/Seed Bank hover and follow-through, save/load, and co-op are still pending and tracked through live Urda issues in `docs/issues.md`.
+Status: Urda is default-on for private-beta testing with eleven source-backed blessing ids: Seedbed, Humus Pact, Molting, Moss Map, Trial Branch, Shallow-Root Relic, Elite Root, Rooted Route, After the Rain, Root-Sight, and Seed Bank. Historical previous package resource evidence under `.tools/runtime-evidence/urda-pck-resource-load-20260513-123345` verified that the installed PCK resolved the custom scene/icon with 0 `ERROR` / `WARNING` lines; previous beta.128 forced clicked UI smoke covers the Urda Ancient screen only. Live gameplay, Root Eyes/Seed Bank hover and follow-through, save/load, and co-op are still pending and tracked through live Urda issues in `docs/issues.md`.
 
 Ancient Expansion v2.2 is the current source of truth for the combined Urda/Morvi/Lotha/Vakuu Ancient expansion in `../ancient-expansion-v2.2/README.md`. This folder remains the Urda-specific evidence and checklist folder.
 

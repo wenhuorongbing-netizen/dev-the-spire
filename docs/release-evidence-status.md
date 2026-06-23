@@ -22,7 +22,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 | Row | Status | Owner | Evidence Needed | Notes |
 | --- | --- | --- | --- | --- |
-| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.128 publish/package sync, installed package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are refreshed. Beta.123/beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
+| Current package automation | Partial | Codex | Build, normal tests, format, package sync, opt-in artifact tests | Latest hashes are in `docs/issues.md`. Beta.135 publish/package sync, installed package parity, runtime preflight, and source-workspace validation are refreshed; previous beta.128 clicked Ancient UI smoke is retained as previous-package proof. Beta.123/beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 RitsuLib-only AdditiveBatch1 direct loader smoke remain previous-package context only. Gameplay/manual evidence remains pending. |
 
 ## Verifier Row IDs
 

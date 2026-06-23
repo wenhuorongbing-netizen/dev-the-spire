@@ -541,13 +541,16 @@ public sealed partial class DocumentationCompactnessGuardTests
             docRestructureSpec,
             "# Documentation Restructure Boundary",
             "This is the current documentation cleanup rule set, not an old move plan.",
-            "The RitsuLib integration lane is current for beta.123",
+            "The RitsuLib integration lane is current for beta.135",
             "compile package",
             "manifest dependency",
             "package parity",
+            "runtime preflight",
             "source-workspace validation",
-            "beta.99, beta.96, and beta.93 loader or",
-            "settings proof remain previous-package evidence only");
+            "Previous beta.128",
+            "beta.99 settings/Off proof",
+            "beta.93",
+            "previous-package evidence only");
         AssertSourceContains(
             integration,
             "# RitsuLib Integration - Current Record",
@@ -573,7 +576,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             migrationReadme,
             "# RitsuLib Migration",
-            "This is the single entry point for RitsuLib migration work.",
+            "This is the single entry point for RitsuLib migration and future RitsuLib-first",
             "Spire Plus is RitsuLib-only for beta.135.",
             "`docs/integrations/ritsulib.md` for dependency/version/API evidence.",
             "Use installed `STS2-RitsuLib.xml` and the public RitsuLib docs",
