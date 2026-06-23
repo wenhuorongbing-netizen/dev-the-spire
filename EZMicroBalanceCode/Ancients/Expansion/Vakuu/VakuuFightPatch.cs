@@ -116,21 +116,31 @@ internal sealed class VakuuFightResumePatch : IPatchMethod
     }
 }
 
-[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]
-internal static class VakuuFightPreFinishedSavePatch
+internal sealed class VakuuFightPreFinishedSavePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-prefinished-save-parent";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Preserve Vakuu's parent event marker when saving a prefinished trial combat";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))];
+
     [HarmonyPostfix]
-    private static void PreserveVakuuParentForPreFinishedSave(
+    private static void Postfix(
         CombatRoom __instance,
         SerializableRoom __result) =>
         VakuuFightService.PreserveParentEventForPreFinishedSave(__instance, __result);
 }
 
-[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]
-internal static class VakuuFightPreFinishedParentRestorePatch
+internal sealed class VakuuFightPreFinishedParentRestorePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-prefinished-parent-restore";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Arm Vakuu's parent-event restore guard before a saved event room enters";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(EventRoom), nameof(EventRoom.EnterInternal))];
+
     [HarmonyPrefix]
-    private static void ArmVakuuPreFinishedParentRestoreHealSkip(
+    private static void Prefix(
         EventRoom __instance,
         IRunState? runState,
         bool isRestoringRoomStackBase) =>
@@ -164,11 +174,16 @@ internal sealed class VakuuFightPreFinishedParentRestoreHealPatch : IPatchMethod
     }
 }
 
-[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]
-internal static class VakuuFightNoRewardRestorePatch
+internal sealed class VakuuFightNoRewardRestorePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "vakuu-fight-no-reward-victory-restore";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Resume a loaded Vakuu trial victory without offering room-end rewards";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))];
+
     [HarmonyPrefix]
-    private static bool SkipVakuuLoadedTerminalRewards(CombatRoom __instance, ref Task __result)
+    private static bool Prefix(CombatRoom __instance, ref Task __result)
     {
         if (__instance.Encounter is not EzmbVakuuTrialEncounter)
         {

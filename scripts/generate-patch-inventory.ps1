@@ -141,6 +141,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'MorviAct2AncientService.cs'; Classes = 1; PatchIds = 'morvi-hive-ancient-unlock'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'LothaAct3AncientService.cs'; Classes = 1; PatchIds = 'lotha-glory-ancient-unlock'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'VakuuFightPatch.cs'; Classes = 5; PatchIds = 'vakuu-force-ancient-unlock, vakuu-fight-option, vakuu-fight-command-force-cleanup, vakuu-fight-victory-resume, vakuu-fight-prefinished-parent-heal-skip'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'VakuuFightPatch.cs'; Classes = 3; PatchIds = 'vakuu-fight-prefinished-save-parent, vakuu-fight-prefinished-parent-restore, vakuu-fight-no-reward-victory-restore'; Batch = 'vakuu-lifecycle' },
     [pscustomobject]@{ File = 'UrdaMapUiPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaRootSightMapClickPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaRootSightRoomPatches.cs'; Classes = 2; PatchIds = 'urda-root-sight-roll-room-type, urda-root-sight-create-room'; Batch = 'urda-root-sight-routing' },

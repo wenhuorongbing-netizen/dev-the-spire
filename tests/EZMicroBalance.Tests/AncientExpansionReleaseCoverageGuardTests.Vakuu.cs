@@ -71,7 +71,15 @@ public sealed partial class AncientExpansionReleaseCoverageGuardTests
             "VakuuFightResumePatch : IPatchMethod",
             "IPatchMethod.PatchId => \"vakuu-fight-victory-resume\"",
             "new ModPatchTarget(typeof(EventModel), nameof(EventModel.Resume), [typeof(AbstractRoom)])",
-            "[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]");
+            "VakuuFightPreFinishedSavePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-prefinished-save-parent\"",
+            "new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))",
+            "VakuuFightPreFinishedParentRestorePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-prefinished-parent-restore\"",
+            "new ModPatchTarget(typeof(EventRoom), nameof(EventRoom.EnterInternal))",
+            "VakuuFightNoRewardRestorePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"vakuu-fight-no-reward-victory-restore\"",
+            "new ModPatchTarget(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))");
         var vakuuCommandSource = string.Join(Environment.NewLine, command, vakuuSource);
         Assert.False(
             Regex.IsMatch(

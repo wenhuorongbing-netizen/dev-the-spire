@@ -40,6 +40,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterInlineLocalizationPatches(patcher);
         RegisterRitsuLibCompatibilityPatches(patcher);
         RegisterUrdaBehaviorPatches(patcher);
+        RegisterVakuuLifecyclePatches(patcher);
         RegisterAscensionMapGenerationPatches(patcher);
         RegisterAscensionDiagnosticPatches(patcher);
 #if REPLACEMENT_PROTOTYPE_ENABLED
@@ -148,6 +149,13 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<WitheredHuskTransformationOptionsPatch>();
         patcher.RegisterPatch<UrdaSeedbedAfterCardDrawnPatch>();
         patcher.RegisterPatch<UrdaSeedbedCardPileDrawPatch>();
+    }
+
+    private static void RegisterVakuuLifecyclePatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<VakuuFightPreFinishedSavePatch>();
+        patcher.RegisterPatch<VakuuFightPreFinishedParentRestorePatch>();
+        patcher.RegisterPatch<VakuuFightNoRewardRestorePatch>();
     }
 
     private static void RegisterAscensionMapGenerationPatches(ModPatcher patcher)

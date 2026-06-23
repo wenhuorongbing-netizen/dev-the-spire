@@ -1,4 +1,4 @@
-# Debug Governance
+﻿# Debug Governance
 
 This file is the current, compact debug-governance note for Spire Plus. The previous mojibake prompt-dump version was archived to `docs/archive/feature-inputs/debug-goal-mojibake-intake-20260620.md` and is traceability input only.
 
@@ -6,9 +6,9 @@ Use `PROJECT_STATE.md`, `docs/goals/migration.md`, `docs/features/ritsulib-migra
 
 ## Current Runtime Boundary
 
-Current beta.133 package truth is RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`: package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are current. Beta.128 clicked UI proof at `.tools/runtime-evidence/monkey-stability-20260623-062913/` is smoke-level UI evidence only: 4 / 4 forced UI iterations, 152/152 default runtime patches, and packet verification 1621 / 0. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 AdditiveBatch1 proof remain previous-package context only.
+Current beta.134 package truth is RitsuLib-only on Slay the Spire 2 `v0.107.1` with STS2-RitsuLib `v0.4.34`: package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke are current. Beta.128 clicked UI proof at `.tools/runtime-evidence/monkey-stability-20260623-062913/` is smoke-level UI evidence only: 4 / 4 forced UI iterations, 152/152 default runtime patches, and packet verification 1621 / 0. Beta.99 settings/Off proof, previous beta.96 Off proof, and previous beta.93 AdditiveBatch1 proof remain previous-package context only.
 
-Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and beta.88/beta.93/beta.96/beta.99 proof remains previous-package context. These rows are loader proof only; they do not prove beta.133 gameplay, save-load, current enabled-mode registration/gameplay, replacement behavior, multiplayer, independent QA, release readiness, or handoff readiness.
+Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, and beta.88/beta.93/beta.96/beta.99 proof remains previous-package context. These rows are loader proof only; they do not prove beta.134 gameplay, save-load, current enabled-mode registration/gameplay, replacement behavior, multiplayer, independent QA, release readiness, or handoff readiness.
 
 ## Debug Decision
 

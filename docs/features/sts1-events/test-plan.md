@@ -1,4 +1,4 @@
-# StS1 Events Test Plan
+﻿# StS1 Events Test Plan
 
 Current coordination note, 2026-06-21: the v19 trace at `docs/features/sts1-events/hard-stop-blocker-report-v19-validation-coordination-20260611.md` is historical beta.85/v0.107.0 coordination-blocker context only; beta.93 RitsuLib-only loader/registration evidence is the current proof boundary. Do not start new `dotnet build`, `dotnet test`, `dotnet publish`, package/release-evidence validation, or game/runtime smoke from a parallel same-repository thread while a migration validation lane is active. Use this plan only after the coordination pause is lifted, or for read-only/static planning. The current v20 hard-stop trace is `docs/features/sts1-events/hard-stop-blocker-report-v20-coordination-pause-20260617.md`.
 
@@ -184,9 +184,9 @@ $evidence = '.tools\runtime-evidence\sts1-canary-v01071-YYYYMMDD-HHMMSS'
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.133 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode CanaryOnly -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.134 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.133 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode CanaryOnly -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.134 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 
@@ -198,9 +198,9 @@ $evidence = '.tools\runtime-evidence\sts1-additive-batch1-v01071-YYYYMMDD-HHMMSS
 # After the main menu loads:
 Copy-Item "$env:APPDATA\SlayTheSpire2\logs\godot.log" "$evidence\godot.log.after-launch" -Force
 .\scripts\spire-plus-live-session.ps1 -Mode Restore -EvidenceDir $evidence -StopGameOnRestore -PreserveNewCurrentRunsOnRestore
-.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.133 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
+.\scripts\check-sts1-runtime-evidence-packet.ps1 -Mode AdditiveBatch1 -EvidenceDir $evidence -ExpectedPackageVersion v0.1.0-private-beta.134 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\runtime-evidence-packet-check.json" -FailOnMismatch
 .\scripts\audit-godot-log.ps1 "$evidence\godot.log.current-iteration" -OutFile "$evidence\godot-log-current-iteration-audit.json" -FailOnHit
-.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.133 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
+.\scripts\check-sts1-enabled-mode-runtime-log.ps1 -Mode AdditiveBatch1 -LogPath "$evidence\godot.log.current-iteration" -AuditPath "$evidence\godot-log-current-iteration-audit.json" -ExpectedPackageVersion v0.1.0-private-beta.134 -ExpectedRitsuCompatBranch 0.107.1 -ExpectedRitsuLibVersion 0.4.34 -ExpectedGameVersion 0.107.1 -OutFile "$evidence\enabled-mode-log-check.json" -FailOnMismatch
 Remove-Item Env:\SPIREPLUS_STS1_EVENT_MODE -ErrorAction SilentlyContinue
 ```
 

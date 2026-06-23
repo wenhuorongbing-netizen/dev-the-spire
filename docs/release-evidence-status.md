@@ -1,4 +1,4 @@
-﻿# Release Evidence Status
+# Release Evidence Status
 
 Current target: `Spire Plus` manual-test build for user validation. This page is a compact dashboard for evidence state; it does not replace `docs/release-checklist.md`.
 
@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `658AAB5F5FE0793253513F472B2BD5DC6C93BA2FF9EA6911E3130DFC6719115E` |
-| DLL | `6F257CCF31280FA002AF75C3507307FA288867BDFF13825CC9289BBB9825F53B` |
-| PCK | `2472578F14D4572A2888F41F10D449F0331CB057A112939C7EC43196F501F87B` |
-| Manifest | `2FA3920BC1EC84485A7FBA43E5446F09E8E5AB6A575BBD2FB4C114DA9E34879C` |
-| README_INSTALL | `7607A59DBA274931641B041028B5A06E96EE4DBF9E12EE4D21215B16CDEEAABB` |
+| ZIP | `ACE8FDD7ED1D7A70BBF1B1767B81632790D4568279321F3907318455FD120201` |
+| DLL | `AF3EC06BBC6E708C8AC13DB4AC2C39C166929A1EB57CFADFA15B4EB103809288` |
+| PCK | `4353CDC0AE2E0531C0E7A3956646895FC7234E748F7FDF3DF2CF07EAC9971A85` |
+| Manifest | `EEC56722EE87F579A4A63D9A980AD2EA62A6596BE1D1E950F64DBA9A4A1F8B83` |
+| README_INSTALL | `F6B0DFE657E2C7B9BE3A246FCFC1FC9CDAB7F02AC8D62F38FD92B1197BD9143C` |
 
 ## Automation Summary
 
@@ -26,7 +26,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.133. Current beta.133 covers package parity, runtime preflight, and source-workspace identity; previous beta.128 covers smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.134. Current beta.134 covers package parity, runtime preflight, and source-workspace identity; previous beta.128 covers smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |

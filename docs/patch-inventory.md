@@ -15,11 +15,11 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 4 |
-| Migrated to RitsuLib ModPatcher | 165 |
-| Raw HarmonyPatch remaining | 4 |
+| Total raw HarmonyPatch declarations | 1 |
+| Migrated to RitsuLib ModPatcher | 168 |
+| Raw HarmonyPatch remaining | 1 |
 | Tracked patch units total | 169 |
-| High risk (raw Harmony) | 4 |
+| High risk (raw Harmony) | 1 |
 | Medium risk (raw Harmony) | 0 |
 | Low risk (raw Harmony) | 0 |
 | Unclassified owner | 0 |
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 165 patch classes implement `IPatchMethod` and are registered via
+These 168 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -68,6 +68,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `MorviAct2AncientService.cs` | 1 | `morvi-hive-ancient-unlock` | clicked-ui |
 | `LothaAct3AncientService.cs` | 1 | `lotha-glory-ancient-unlock` | clicked-ui |
 | `VakuuFightPatch.cs` | 5 | `vakuu-force-ancient-unlock, vakuu-fight-option, vakuu-fight-command-force-cleanup, vakuu-fight-victory-resume, vakuu-fight-prefinished-parent-heal-skip` | clicked-ui |
+| `VakuuFightPatch.cs` | 3 | `vakuu-fight-prefinished-save-parent, vakuu-fight-prefinished-parent-restore, vakuu-fight-no-reward-victory-restore` | vakuu-lifecycle |
 | `UrdaMapUiPatches.cs` | 3 | `urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh` | clicked-ui |
 | `UrdaRootSightMapClickPatches.cs` | 3 | `urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close` | clicked-ui |
 | `UrdaRootSightRoomPatches.cs` | 2 | `urda-root-sight-roll-room-type, urda-root-sight-create-room` | urda-root-sight-routing |
@@ -113,11 +114,8 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 4 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 1 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
-| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 119 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]` |
-| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 129 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
-| Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 167 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
 | Ascension patches | High | `EZMicroBalanceCode/Ascension/Patches/AscensionA20Patches.cs` | 10 | `[HarmonyPatch(typeof(RunManager), nameof(RunManager.GenerateRooms))]` |
