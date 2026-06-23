@@ -39,7 +39,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterBatch4cLocalizationPatches(patcher);
         RegisterInlineLocalizationPatches(patcher);
         RegisterRitsuLibCompatibilityPatches(patcher);
-        RegisterUrdaTransformAndSeedbedPatches(patcher);
+        RegisterUrdaBehaviorPatches(patcher);
         RegisterAscensionMapGenerationPatches(patcher);
 #if REPLACEMENT_PROTOTYPE_ENABLED
         RegisterSts1ReplacementPrototypePatches(patcher);
@@ -139,8 +139,10 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<RitsuLibModSettingsButtonSelectionReticlePatch>();
     }
 
-    private static void RegisterUrdaTransformAndSeedbedPatches(ModPatcher patcher)
+    private static void RegisterUrdaBehaviorPatches(ModPatcher patcher)
     {
+        patcher.RegisterPatch<UrdaRootSightRollRoomTypePatch>();
+        patcher.RegisterPatch<UrdaRootSightCreateRoomPatch>();
         patcher.RegisterPatch<WitheredHuskTransformablePatch>();
         patcher.RegisterPatch<WitheredHuskTransformationOptionsPatch>();
         patcher.RegisterPatch<UrdaSeedbedAfterCardDrawnPatch>();

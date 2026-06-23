@@ -5,7 +5,7 @@
 Current compatibility work targets:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.128`
+- Spire Plus `v0.1.0-private-beta.129`
 - STS2-RitsuLib `v0.4.34` in direct NuGet runtime layout
 - Stable technical manifest id `EZMicroBalance`
 
@@ -15,13 +15,13 @@ only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 
 Current evidence:
 
-- beta.128 build, publish, package refresh, installed package parity, runtime
+- beta.129 build, publish, package refresh, installed package parity, runtime
   preflight, and source-workspace validation are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
-- beta.128 runtime preflight passed 28 / 0 and source-workspace validation passed
-  58 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
+- beta.129 runtime preflight passed 28 / 0 and source-workspace validation passed
+  57 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
   coverage.
-- Latest clicked Ancient UI smoke is beta.128 current-package evidence at
+- Latest clicked Ancient UI smoke remains previous beta.128 package evidence at
   `.tools/runtime-evidence/monkey-stability-20260623-062913/`.
   The smoke covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations,
   152/152 default runtime Spire Plus patches applied, and packet verification 1621 / 0.
@@ -39,7 +39,7 @@ Current evidence:
   `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`.
   It proves startup/loading and default-Off StS1Events behavior only.
 - Older beta.93 AdditiveBatch1 loader packets are retained only as older
-  package loader/registration context. They do not prove beta.128 enabled-mode
+  package loader/registration context. They do not prove beta.129 enabled-mode
   gameplay or tester readiness.
 
 Treat loader, settings, and clicked-UI smoke evidence as scoped proof only:

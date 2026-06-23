@@ -3,7 +3,7 @@
 RitsuLib bootstrap integration lives here.
 
 Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
-`0.4.34`, and Spire Plus `v0.1.0-private-beta.128`.
+`0.4.34`, and Spire Plus `v0.1.0-private-beta.129`.
 
 This directory owns the RitsuLib bootstrap, migrated patch registration,
 content-pack registration, and SavedAttachedState field registration helper.
@@ -58,13 +58,14 @@ assembly, while the `SpirePlusModConfig.SettingsPage.PreviewToolEntries.*.cs`
 partials own Crystal Sphere, transform, and preview-diagnostic RitsuLib entry
 builders separately.
 
-Packaged beta.128 evidence covers build, publish, package parity, runtime
-preflight, source-workspace validation for the current 153/17 source state, and
-forced clicked Ancient UI smoke for Urda, Morvi, Lotha, and normal Vakuu. The
-default runtime registers 152 patches because the migrated StS1 replacement
-prototype is behind `REPLACEMENT_PROTOTYPE_ENABLED`. This proves forced clicked
-UI visibility only; gameplay, save-load, gated Vakuu fight-option and victory
-return, co-op, release, and handoff proof remain separate gates.
+Packaged beta.129 evidence covers build, publish, package parity, runtime
+preflight, and source-workspace validation for the packaged 155/15 source state.
+Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
+Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch registration
+from that older package. This proves forced clicked UI visibility only;
+gameplay, save-load, gated Vakuu fight-option and victory return, co-op,
+release, and handoff proof remain separate gates. Recapture beta.129 runtime
+proof before citing the current 155/15 source state in-game.
 
 Previous beta.99 settings/off proof, beta.96 direct Off proof, and beta.93
 AdditiveBatch1 proof are retained only as previous-package context. Use

@@ -143,6 +143,7 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'VakuuFightPatch.cs'; Classes = 5; PatchIds = 'vakuu-force-ancient-unlock, vakuu-fight-option, vakuu-fight-command-force-cleanup, vakuu-fight-victory-resume, vakuu-fight-prefinished-parent-heal-skip'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaMapUiPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-ready, urda-root-sight-map-refresh-state, urda-root-sight-map-quest-icon-refresh'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'UrdaRootSightMapClickPatches.cs'; Classes = 3; PatchIds = 'urda-root-sight-map-point-click, urda-root-sight-disabled-map-point-click, urda-root-sight-map-close'; Batch = 'clicked-ui' },
+    [pscustomobject]@{ File = 'UrdaRootSightRoomPatches.cs'; Classes = 2; PatchIds = 'urda-root-sight-roll-room-type, urda-root-sight-create-room'; Batch = 'urda-root-sight-routing' },
     [pscustomobject]@{ File = 'SpirePlusMapPointHoverComposer.cs'; Classes = 1; PatchIds = 'spire-plus-map-point-hover-composer'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionMapIconPatches.cs'; Classes = 1; PatchIds = 'ascension-map-marker-icon-refresh'; Batch = 'clicked-ui' },
     [pscustomobject]@{ File = 'AscensionMapBossSealHoverPatches.cs'; Classes = 1; PatchIds = 'ascension-boss-map-point-hover'; Batch = 'clicked-ui' },

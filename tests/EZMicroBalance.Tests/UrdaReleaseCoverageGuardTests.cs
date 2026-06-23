@@ -531,10 +531,15 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         var rootSightRoomPatches = ReadRepoText("EZMicroBalanceCode", "Ancients", "Expansion", "Urda", "UrdaRootSightRoomPatches.cs");
         AssertSourceContains(
             rootSightRoomPatches,
-            "HarmonyPatch(typeof(RunManager), \"RollRoomTypeFor\")",
+            "UrdaRootSightRollRoomTypePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-root-sight-roll-room-type\"",
+            "new ModPatchTarget(typeof(RunManager), \"RollRoomTypeFor\")",
             "TryGetRootSightRoomTypeForCurrentPoint",
-            "HarmonyPatch(typeof(RunManager), \"CreateRoom\")",
+            "UrdaRootSightCreateRoomPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-root-sight-create-room\"",
+            "new ModPatchTarget(typeof(RunManager), \"CreateRoom\")",
             "TryGetRootSightModelForCurrentPoint");
+        Assert.DoesNotContain("HarmonyPatch(typeof(RunManager)", rootSightRoomPatches, StringComparison.Ordinal);
         AssertSourceContains(
             urdaAncient,
             "RootSightHoverTips",

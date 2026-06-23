@@ -6,7 +6,7 @@ Date: 2026-06-22
 
 Active branch target: GitHub `main`
 
-Current package target: Spire Plus `v0.1.0-private-beta.128`
+Current package target: Spire Plus `v0.1.0-private-beta.129`
 
 Runtime dependency target: STS2-RitsuLib `v0.4.34` direct NuGet runtime layout, Slay the Spire 2 `v0.107.1`. previous package is not a current Spire Plus dependency.
 
@@ -31,7 +31,7 @@ dependency floor is now aligned on STS2-RitsuLib `v0.4.34`, and Spire Plus no lo
 manifest, package, or current runtime dependency on previous package.
 
 Beta.85/beta.86/beta.87 loader proof remains previous-package/game-version context, beta.88 remains previous-package context, beta.93 AdditiveBatch1 is previous-package RitsuLib-only loader/registration proof, beta.96 Off is previous-package RitsuLib-only loader proof, and beta.99 settings/Off proof is previous-package context after the beta.123 pass.
-Current beta.128 clicked Ancient UI smoke exists under `.tools/runtime-evidence/monkey-stability-20260623-062913/`; previous beta.96 RitsuLib-only Off proof exists under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 RitsuLib-only AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
+Previous beta.128 clicked Ancient UI smoke exists under `.tools/runtime-evidence/monkey-stability-20260623-062913/`; previous beta.96 RitsuLib-only Off proof exists under `.tools/runtime-evidence/v01071-beta96-ritsulib0431-off-direct-20260621-185056/`, and previous beta.93 RitsuLib-only AdditiveBatch1 loader/registration proof exists under `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`.
 
 This is still source/static/no-game governance plus loader/registration proof. Do not claim enabled-mode safe beyond the retained loader evidence. Gameplay, Mod Settings UI page proof,
 save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA,
