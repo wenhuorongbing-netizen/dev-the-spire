@@ -3,12 +3,12 @@
 Prepared: 2026-05-07
 Updated: 2026-06-22
 
-Status: automated gates passed for the current RitsuLib-only beta.130 no-launch package shape; previous beta.128 clicked UI smoke is retained separately.
+Status: automated gates passed for the current RitsuLib-only beta.131 no-launch package shape; previous beta.128 clicked UI smoke is retained separately.
 Previous beta.128 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/` with 4 / 4 Urda, Morvi, Lotha, and normal Vakuu iterations, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, 152/152 default runtime Spire Plus patches applied, and packet verification 1621 / 0.
 Beta.99 clicked settings UI and direct Off loader proof remain previous-package context only.
 Previous beta.96 Off proof is previous-package startup/loading evidence only.
 Previous beta.93 AdditiveBatch1 proof is previous-package loader/registration evidence only.
-Earlier normal Steam-client startup/log verification, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.130.
+Earlier normal Steam-client startup/log verification, A0/A10/A20 DevConsole combat smoke, A11 map/save-load spot checks, and targeted A14 Rootblight hover/starter-notice checks are historical package contexts until rerun on beta.131.
 
 Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran build/publish plus tests and real installed-folder package checks, but did not rerun live verification. Earlier opt-in artifact work exposed stale installed-folder risk while the game was running; the current package hash check uses the refreshed real installed folder and game-root ZIP. Full live Ancient reward gameplay, Rootblight combat-end behavior/notices, natural route-click first-node checks beyond the historical A11 spot check, Ancient save/load, natural A11 click-by-click traversal, and multiplayer verification are still pending.
 
@@ -23,7 +23,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | Simplified Chinese UTF-8 JSON parse | Pass |
 | Simplified Chinese no-space numeric formatting guard | Pass |
 | Ancient and Ascension source guard tests | Pass |
-| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.130.zip`, SHA256 `34A63DAD1A44C6E91D03AFE705DCA7F6C9849E64A699D0DC7676DF0923006DAD`; previous beta.128 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/` |
+| Private-beta package | Pass for package refresh and real installed-folder checker, `publish\SpirePlus-v0.1.0-private-beta.131.zip`, SHA256 `40A867AF57BE9EEA74D3A0E425391F52C159FA0F4BF4DDBDD4E9BFFEC7F017F5`; previous beta.128 clicked Ancient UI smoke is captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/` |
 
 ## Runtime Load Checklist
 
@@ -31,7 +31,7 @@ Latest Urda UI/art, Lotha, Vakuu, Root Eyes, and package refresh passes reran bu
 | --- | --- | --- |
 | Confirm STS2-RitsuLib and `EZMicroBalance` are installed in the game `mods` folder | `STS2-RitsuLib\mod_manifest.json`, `STS2-RitsuLib\lib\0.107.1\STS2-RitsuLib.dll`, `EZMicroBalance.json`, `EZMicroBalance.dll`, and `EZMicroBalance.pck` are present | Prepared |
 | Launch Slay the Spire 2 public/main branch | Game reaches main menu | Previous beta.128 clicked Ancient UI smoke captured under `.tools/runtime-evidence/monkey-stability-20260623-062913/`; this is smoke-level UI evidence only |
-| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Captured for beta.99 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean same-session log audit; previous-package context after beta.130 |
+| Open Settings -> Mod Settings | STS2-RitsuLib appears and Spire Plus appears with id `EZMicroBalance` | Captured for beta.99 under `.tools/runtime-evidence/mod-settings-beta99-ritsulib-click-20260621-223210/` with clean same-session log audit; previous-package context after beta.131 |
 | Open Compendium -> Card Library | Card lists display and filtering/sorting works without `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException` errors in `godot.log` | Pending |
 | Start a run with Spire Plus enabled | No startup exception in `godot.log` for `EZMicroBalance`. Natural route-click first-node path remains pending. | Pending gameplay proof |
 | Disable Spire Plus and restart | Spire Plus patches do not apply while disabled or plugged off | Pending gameplay proof |

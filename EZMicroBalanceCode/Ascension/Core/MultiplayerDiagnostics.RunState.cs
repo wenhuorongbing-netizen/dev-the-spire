@@ -1,4 +1,6 @@
 using MegaCrit.Sts2.Core.Nodes;
+using MegaCrit.Sts2.Core.Multiplayer.Game.Lobby;
+using MegaCrit.Sts2.Core.Models;
 using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
@@ -8,9 +10,28 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ascension;
 /// RunState creation but before the run launches.
 /// This catches the HP state before any mod hooks fire.
 /// </summary>
-[HarmonyPatch(typeof(NGame), "StartNewMultiplayerRun")]
-internal static class NGameStartNewMultiplayerRunDiagPatch
+internal sealed class NGameStartNewMultiplayerRunDiagPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-start-new-run";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log multiplayer RunState HP after NGame.StartNewMultiplayerRun creates the run";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+    [
+        new ModPatchTarget(
+            typeof(NGame),
+            "StartNewMultiplayerRun",
+            [
+                typeof(StartRunLobby),
+                typeof(bool),
+                typeof(IReadOnlyList<ActModel>),
+                typeof(IReadOnlyList<ModifierModel>),
+                typeof(string),
+                typeof(int),
+                typeof(DateTimeOffset?)
+            ])
+    ];
+
+    [HarmonyPostfix]
     private static void Postfix(NGame __instance)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
@@ -30,9 +51,15 @@ internal static class NGameStartNewMultiplayerRunDiagPatch
 /// <summary>
 /// Patches RunManager.EnterAct to log player HP before and after act entry.
 /// </summary>
-[HarmonyPatch(typeof(RunManager), "EnterAct")]
-internal static class RunManagerEnterActDiagPatch
+internal sealed class RunManagerEnterActDiagPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "multiplayer-diagnostics-enter-act";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Log multiplayer RunState HP before and after RunManager.EnterAct";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(RunManager), "EnterAct", [typeof(int), typeof(bool)])];
+
+    [HarmonyPrefix]
     private static void Prefix(RunManager __instance)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;
@@ -44,6 +71,7 @@ internal static class RunManagerEnterActDiagPatch
         }
     }
 
+    [HarmonyPostfix]
     private static void Postfix(RunManager __instance)
     {
         if (!MultiplayerDiagnostics.IsEnabled) return;

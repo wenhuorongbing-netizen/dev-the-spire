@@ -1,11 +1,11 @@
-# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-23 beta.130:
+# Spire Plus Issues - Current target: test-ready manual build, not release-ready. Current package hashes, 2026-06-23 beta.131:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `34A63DAD1A44C6E91D03AFE705DCA7F6C9849E64A699D0DC7676DF0923006DAD` |
-| DLL | `6642A540458D119510BD992E0E3FDEC21CABD75D308F2D306B3FB0502B312DAA` |
-| PCK | `57B7AE652BD3F375EE6F9730C79D495CC513415CE8DCD50D94690DE6E0D28462` |
-| Manifest | `90400C06C926D303E789EF05496833BDEA189448F0C6E290E16DCBD1D7B257C8` |
-| README_INSTALL | `E8F552D66C6B16D8ACC6553D6C06AE11B5BF4C79F2536EA6B1E0FCFB4CC86CC0` |
+| ZIP | `40A867AF57BE9EEA74D3A0E425391F52C159FA0F4BF4DDBDD4E9BFFEC7F017F5` |
+| DLL | `0B17B22400C3804AB1F05B025C0841CBF50AC9ED2AC869A9751F92B9C7A403A2` |
+| PCK | `DCD1EF840CAB05E8FDD4688EC1DCE31534059FAF9BFF21901886AA48141A34B9` |
+| Manifest | `FD536EB87100F283AF8B86BADD372B6346FA2DDBC9C979774DB539599C3430F8` |
+| README_INSTALL | `77CBF63263F1C0F4B2017AD6F24C709F6438194ABB01486D5F880A47593EC7CE` |
 ## Active blockers
 - `SERE-TALON/TANX-CLAWS-ROUTING` and `SERE-TALON-VISUAL-IDENTITY` P0 source/package-fixed / live-pending
 - `ASCENSION-SELECTOR-LOCALIZATION` P0 source/package-fixed / live-pending: character-select Ascension A11-A20 panels must show localized titles/descriptions, not raw keys like `ascension.LEVEL_20.title`.
@@ -16,7 +16,7 @@
 - `COOP-PREVIEW-TOOLS-CRASH` P0 source/package-fixed / live-pending: Crystal Sphere and transform preview now run in co-op as local UI only; no choices, rewards, or real RNG calls.
 - `ENEMY-DAMAGE-POLISH` P1 source/package-fixed / live-pending: strengthened Bulk now uses the same getter polish as Writhe/Constrict, so visible intent and real damage no longer stay at 7.
 - `ROOTBLIGHT-STARTER-MISSING` / `BOSS-BLIGHT-SPROUT-PLAYED-STILL-ROOTBLIGHT` P1 source-fixed / live-pending: combat start retries A14 starter Rootblight before growth marking; played/planted Blight Sprouts still do not grow.
-- `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 鎾曞挰+; live pickup proof still pending.
+- `TANX-CLAWS-MAUL-TUNING` P2 source-fixed / live-pending: Tanx Claws now creates upgraded Maul+ / 撕咬+; live pickup proof still pending.
 - `QUEEN-BOSS-SEAL-RUNTIME` P0 source/package-fixed / live-pending: Royal Decree now skips un-enchantable Bound cards before `CardCmd.Enchant`; retest Queen/Royal Decree and capture `godot.log`.
 - `URDA-PROTOTYPE` P0 open / live-pending: default-on with eleven source-backed ids, including Elite Root; live gameplay and save/load proof remain pending.
 - `MORVI/LOTHA/VAKUU` P0/P1 live-pending: default-on morvi_forbidden_loan/lotha_death_reprieve need gameplay proof; hidden Vakuu fight needs victory, death/failure, save/load, and no-black-screen proof.
@@ -34,7 +34,7 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.130 package parity, runtime preflight 28 / 0, and source-workspace validation 57 / 0 are current for the packaged 156/14 source state.
+- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.131 package parity, runtime preflight 28 / 0, and source-workspace validation 57 / 0 are current for the packaged 158/12 source state.
   Previous beta.128 forced clicked Ancient UI smoke remains previous-package evidence; its default runtime patch-count is 152 because the StS1 replacement prototype is compile-symbol gated.
   Latest clicked smoke is `.tools/runtime-evidence/monkey-stability-20260623-062913/` packet 1621 / 0 for Urda, Morvi, Lotha, and normal Vakuu.
   beta.123/beta.99/beta.96/beta.93 and earlier smokes are previous-package context; enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.

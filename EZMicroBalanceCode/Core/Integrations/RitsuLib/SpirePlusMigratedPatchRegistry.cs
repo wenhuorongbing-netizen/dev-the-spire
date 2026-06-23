@@ -157,6 +157,8 @@ internal static partial class SpirePlusMigratedPatchRegistry
 
     private static void RegisterAscensionDiagnosticPatches(ModPatcher patcher)
     {
+        patcher.RegisterPatch<NGameStartNewMultiplayerRunDiagPatch>();
+        patcher.RegisterPatch<RunManagerEnterActDiagPatch>();
         patcher.RegisterPatch<AncientEventModelBeforeEventStartedDiagPatch>();
     }
 

@@ -10,11 +10,11 @@ Source of truth: `docs/issues.md`.
 
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `34A63DAD1A44C6E91D03AFE705DCA7F6C9849E64A699D0DC7676DF0923006DAD` |
-| DLL | `6642A540458D119510BD992E0E3FDEC21CABD75D308F2D306B3FB0502B312DAA` |
-| PCK | `57B7AE652BD3F375EE6F9730C79D495CC513415CE8DCD50D94690DE6E0D28462` |
-| Manifest | `90400C06C926D303E789EF05496833BDEA189448F0C6E290E16DCBD1D7B257C8` |
-| README_INSTALL | `E8F552D66C6B16D8ACC6553D6C06AE11B5BF4C79F2536EA6B1E0FCFB4CC86CC0` |
+| ZIP | `40A867AF57BE9EEA74D3A0E425391F52C159FA0F4BF4DDBDD4E9BFFEC7F017F5` |
+| DLL | `0B17B22400C3804AB1F05B025C0841CBF50AC9ED2AC869A9751F92B9C7A403A2` |
+| PCK | `DCD1EF840CAB05E8FDD4688EC1DCE31534059FAF9BFF21901886AA48141A34B9` |
+| Manifest | `FD536EB87100F283AF8B86BADD372B6346FA2DDBC9C979774DB539599C3430F8` |
+| README_INSTALL | `77CBF63263F1C0F4B2017AD6F24C709F6438194ABB01486D5F880A47593EC7CE` |
 
 ## Automation Summary
 
@@ -26,7 +26,7 @@ This row is not a live verifier row. It records the latest no-game package autom
 
 ## Verifier Row IDs
 
-These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.130. Current beta.130 covers package parity, runtime preflight, and source-workspace identity; previous beta.128 covers smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
+These are the exact row IDs required by `scripts/verify-spire-plus-release-evidence.ps1`. Keep a row pending until the matching live files exist or the owner explicitly accepts a deferral and reruns the verifier with `-AllowDeferred`. The beta.19 loader smoke is historical startup evidence only; beta.99 RitsuLib settings/off proof is previous-package context after beta.131. Current beta.131 covers package parity, runtime preflight, and source-workspace identity; previous beta.128 covers smoke-level clicked Ancient UI for Urda, Morvi, Lotha, and normal Vakuu. Gameplay, gated Vakuu fight-option/victory return, save-load, preview-tools live behavior, current enabled-mode proof, co-op, and full release-evidence packaging rows remain pending.
 
 | Row ID | Kind | Status | Owner | Evidence Needed |
 | --- | --- | --- | --- | --- |

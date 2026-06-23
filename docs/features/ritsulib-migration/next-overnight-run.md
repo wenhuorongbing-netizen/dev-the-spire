@@ -11,8 +11,8 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 
 - Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
-- Latest beta.130 no-launch package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target; previous beta.128 forced clicked UI smoke remains previous-package proof. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
-- Previous beta.128 smoke applied all 152 default runtime RitsuLib patch classes from the packaged beta.128 state. Current beta.130 package has 156 migrated patch classes and 14 raw Harmony declarations after the Urda Root Sight room-routing migration; recapture beta.130 runtime proof before claiming current in-game coverage.
+- Latest beta.131 no-launch package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target; previous beta.128 forced clicked UI smoke remains previous-package proof. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
+- Previous beta.128 smoke applied all 152 default runtime RitsuLib patch classes from the packaged beta.128 state. Current beta.131 package has 158 migrated patch classes and 12 raw Harmony declarations after the Urda Root Sight room-routing migration; recapture beta.131 runtime proof before claiming current in-game coverage.
 - Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 
 ## Retained Evidence Boundaries
@@ -21,13 +21,13 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 - AdditiveBatch1: `.tools\runtime-evidence\additive-batch1-20260602-150445`, 10 event types through the old 11 registration calls, clean audit. Current source expects 10 event types through 14 registration calls.
 - Retained CanaryOnly enabled-mode proof is clean under `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/`: 4 event types / 6 registration lines with retained verifier reports.
 - Before any StS1 canary gameplay claim, recapture current-version CanaryOnly loader proof; `.tools/runtime-evidence/v01070-beta85-canary-20260617-233621/` is retained previous-package/game-version context only.
-- Before any AdditiveBatch1 gameplay claim, confirm the beta.130 package and STS2-RitsuLib `v0.4.34` direct NuGet runtime are installed and recapture current-package enabled-mode proof.
+- Before any AdditiveBatch1 gameplay claim, confirm the beta.131 package and STS2-RitsuLib `v0.4.34` direct NuGet runtime are installed and recapture current-package enabled-mode proof.
 
 ## Required Run Order
 
 1. Recapture HEAD/worktree and installed game/RitsuLib versions.
 2. Run no-game validation in one controlled lane if source changed.
-3. Capture current beta.130 enabled-mode loader/registration proof separately before any current enabled-mode claim.
+3. Capture current beta.131 enabled-mode loader/registration proof separately before any current enabled-mode claim.
 4. Capture current StS1 CanaryOnly/AdditiveBatch1 enabled-mode proof before StS1 gameplay claims.
 5. Capture gameplay, gated Vakuu fight-option UI, save-load, replacement, co-op, QA, and handoff evidence, or record exact blockers.
 

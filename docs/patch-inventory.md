@@ -15,11 +15,11 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 14 |
-| Migrated to RitsuLib ModPatcher | 156 |
-| Raw HarmonyPatch remaining | 14 |
+| Total raw HarmonyPatch declarations | 12 |
+| Migrated to RitsuLib ModPatcher | 158 |
+| Raw HarmonyPatch remaining | 12 |
 | Tracked patch units total | 170 |
-| High risk (raw Harmony) | 13 |
+| High risk (raw Harmony) | 11 |
 | Medium risk (raw Harmony) | 0 |
 | Low risk (raw Harmony) | 1 |
 | Unclassified owner | 0 |
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 156 patch classes implement `IPatchMethod` and are registered via
+These 158 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -102,7 +102,7 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |
 | `UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |
 | `AscensionMapGenerationPatches.cs` | 1 | `ascension-act-model-create-map` | ascension-map-generation |
-| `MultiplayerDiagnostics.RunState.cs` | 1 | `multiplayer-diagnostics-ancient-event-start` | ascension-diagnostics |
+| `MultiplayerDiagnostics.RunState.cs` | 3 | `multiplayer-diagnostics-start-new-run, multiplayer-diagnostics-enter-act, multiplayer-diagnostics-ancient-event-start` | ascension-diagnostics |
 | `Sts1ReplacementPrototype.cs` | 1 | `sts1-replacement-prototype-generate-rooms` | sts1-replacement-prototype |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
@@ -110,7 +110,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 14 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 12 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -121,8 +121,6 @@ These 14 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs` | 10 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs` | 40 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunLocally")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs` | 58 | `[HarmonyPatch(typeof(StartRunLobby), "UpdateMaxMultiplayerAscension")]` |
-| Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.RunState.cs` | 11 | `[HarmonyPatch(typeof(NGame), "StartNewMultiplayerRun")]` |
-| Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.RunState.cs` | 33 | `[HarmonyPatch(typeof(RunManager), "EnterAct")]` |
 | Ascension core | Low | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 8 | `[HarmonyPatch]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 11 | `[HarmonyPatch(typeof(SaveManager), nameof(SaveManager.SaveRun), typeof(AbstractRoom), typeof(bool))]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.SaveQuit.cs` | 26 | `[HarmonyPatch(typeof(NGame), "ReturnToMainMenu")]` |
