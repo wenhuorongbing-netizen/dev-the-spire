@@ -31,10 +31,13 @@ This file owns the dependency/API ledger and detailed RitsuLib ownership plan;
 and `docs/patch-inventory.md` owns generated patch counts.
 `SpirePlusMigratedPatchRegistry.cs` now keeps only the ordered registration
 entry point. Its sibling partials own the feature domains:
-`SpirePlusMigratedPatchRegistry.Ui.cs` for event, clicked, map, settings, and
-selection UI; `SpirePlusMigratedPatchRegistry.PreviewUi.cs` for local-only
-preview-tool UI; `SpirePlusMigratedPatchRegistry.DisplayUi.cs` for display-only
-icon, hover, intent, and damage-number registrations;
+`SpirePlusMigratedPatchRegistry.AncientUi.cs` for Ancient event-option and
+Ancient marker UI, `SpirePlusMigratedPatchRegistry.MapUi.cs` for map-click and
+map-hover UI, `SpirePlusMigratedPatchRegistry.HostUi.cs` for reward-screen,
+mod-info, rest-site, combat-hand, and Ascension lobby UI,
+`SpirePlusMigratedPatchRegistry.PreviewUi.cs` for local-only preview-tool UI,
+`SpirePlusMigratedPatchRegistry.DisplayUi.cs` for display-only icon, hover,
+intent, and damage-number registrations;
 `SpirePlusMigratedPatchRegistry.Rewards.cs` for card, relic, and reward hooks;
 `SpirePlusMigratedPatchRegistry.Localization.cs` for localization and
 RitsuLib compatibility hooks; and

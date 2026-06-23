@@ -565,7 +565,7 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<JewelryBoxExtraHoverTipsPatch>();",
             "RegisterPatch<JewelryBoxHoverTipsPatch>();",
             "RegisterPatch<JewelryBoxHoverTipsExcludingRelicPatch>();",
-            "RegisterRemainingUiPatches(patcher);",
+            "RegisterHostUiPatches(patcher);",
             "RegisterPatch<PrismaticGemRewardScreenHintPatch>();",
             "RegisterPatch<AscensionA20RewardScreenReadyPatch>();",
             "RegisterPatch<AscensionA20RewardScreenStatePatch>();",

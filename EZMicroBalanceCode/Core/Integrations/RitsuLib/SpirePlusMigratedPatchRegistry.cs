@@ -22,7 +22,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterSereTalonUiPatches(patcher);
         RegisterPreviewUiPatches(patcher);
         RegisterRelicVisualHoverPatches(patcher);
-        RegisterRemainingUiPatches(patcher);
+        RegisterHostUiPatches(patcher);
         RegisterAscensionSelectionUiPatches(patcher);
         RegisterAscensionIntentUiPatches(patcher);
         RegisterEnemyDamagePolishPatches(patcher);

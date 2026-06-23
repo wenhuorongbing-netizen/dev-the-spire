@@ -68,8 +68,12 @@ Do not start future implementation from copied migration lists either.
 - Patch bootstrap and ordered registration live in
   `EZMicroBalanceCode/Core/Integrations/RitsuLib`.
 - `SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.
-- `SpirePlusMigratedPatchRegistry.Ui.cs` owns event, clicked, map, settings,
-  and selection UI registrations.
+- `SpirePlusMigratedPatchRegistry.AncientUi.cs` owns Ancient event-option and
+  Ancient marker UI registrations.
+- `SpirePlusMigratedPatchRegistry.MapUi.cs` owns map-click and map-hover UI
+  registrations.
+- `SpirePlusMigratedPatchRegistry.HostUi.cs` owns reward-screen, mod-info,
+  rest-site, combat-hand, and Ascension lobby UI registrations.
 - `SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns local-only preview-tool
   UI registrations.
 - `SpirePlusMigratedPatchRegistry.DisplayUi.cs` owns display-only icon, hover,
