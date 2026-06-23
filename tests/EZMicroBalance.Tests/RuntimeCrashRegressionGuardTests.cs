@@ -47,7 +47,12 @@ public sealed class RuntimeCrashRegressionGuardTests
             "UrdaSeedbedCardPileDrawPatch.cs");
         AssertSourceContains(
             seedbedDrawPatch,
-            "HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))",
+            "class UrdaSeedbedCardPileDrawPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-seedbed-card-pile-draw\"",
+            "new ModPatchTarget(",
+            "typeof(CardPileCmd)",
+            "nameof(CardPileCmd.Draw)",
+            "[typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool)])",
             "BeginSeedbedDraw(player)",
             "EndSeedbedDraw(player)",
             "try",
@@ -55,7 +60,11 @@ public sealed class RuntimeCrashRegressionGuardTests
             "EndSeedbedDraw(player)");
         AssertSourceContains(
             seedbedAfterCardDrawnPatch,
-            "HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))",
+            "class UrdaSeedbedAfterCardDrawnPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-seedbed-after-card-drawn\"",
+            "typeof(Hook)",
+            "nameof(Hook.AfterCardDrawn)",
+            "[typeof(ICombatState), typeof(PlayerChoiceContext), typeof(CardModel), typeof(bool)])",
             "__result = Task.CompletedTask",
             "return false;");
         Assert.DoesNotContain("private static bool Prefix(CardModel card)", seedbedAfterCardDrawnPatch, StringComparison.Ordinal);

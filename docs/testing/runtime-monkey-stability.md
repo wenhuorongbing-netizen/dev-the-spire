@@ -343,7 +343,7 @@ After the packet is captured, verify it with:
   -EvidenceDir "<evidence>" `
   -MinRuns 1000 `
   -ExpectedAncientIds VAKUU,URDA,MORVI,LOTHA `
-  -ExpectedPackageVersion v0.1.0-private-beta.124 `
+  -ExpectedPackageVersion v0.1.0-private-beta.125 `
   -ExpectedGameVersion v0.107.1 `
   -ExpectedRitsuLibVersion 0.4.34 `
   -ExpectedRitsuCompatBranch 0.107.1 `
@@ -565,7 +565,7 @@ After a launched run, verify the retained packet without launching anything:
 .\scripts\check-spire-plus-runtime-monkey-packet.ps1 `
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
-  -ExpectedPackageVersion v0.1.0-private-beta.124 `
+  -ExpectedPackageVersion v0.1.0-private-beta.125 `
   -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.34 `
   -ExpectedRitsuCompatBranch 0.107.1 `

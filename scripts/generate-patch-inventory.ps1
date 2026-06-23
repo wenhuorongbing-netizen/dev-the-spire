@@ -167,7 +167,10 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'EnemyDamagePolishPatches.cs'; Classes = 7; PatchIds = 'decimillipede-writhe-damage-polish, decimillipede-constrict-damage-polish, decimillipede-bulk-damage-polish, terror-eel-crash-damage-polish, terror-eel-thrash-damage-polish, phantasmal-gardener-bite-damage-polish, phantasmal-gardener-lash-damage-polish'; Batch = 'enemy-damage-polish' },
     [pscustomobject]@{ File = 'AscensionLocalizationTablePatches.cs'; Classes = 6; PatchIds = 'ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key'; Batch = '4c-localization' },
     [pscustomobject]@{ File = 'SpirePlusInlineLocalizationPatches.cs'; Classes = 4; PatchIds = 'spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key'; Batch = 'inline-localization' },
-    [pscustomobject]@{ File = 'RitsuLibModSettingsButtonSelectionReticlePatch.cs'; Classes = 1; PatchIds = 'ritsulib-mod-settings-button-selection-reticle'; Batch = 'ritsulib-compatibility' }
+    [pscustomobject]@{ File = 'RitsuLibModSettingsButtonSelectionReticlePatch.cs'; Classes = 1; PatchIds = 'ritsulib-mod-settings-button-selection-reticle'; Batch = 'ritsulib-compatibility' },
+    [pscustomobject]@{ File = 'UrdaWitheredHuskTransformPatches.cs'; Classes = 2; PatchIds = 'urda-withered-husk-transformable, urda-withered-husk-transformation-options'; Batch = 'urda-transform-seedbed' },
+    [pscustomobject]@{ File = 'UrdaSeedbedAfterCardDrawnPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-after-card-drawn'; Batch = 'urda-transform-seedbed' },
+    [pscustomobject]@{ File = 'UrdaSeedbedCardPileDrawPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-card-pile-draw'; Batch = 'urda-transform-seedbed' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

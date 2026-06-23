@@ -5,7 +5,7 @@
 Current compatibility work targets:
 
 - Slay the Spire 2 `v0.107.1`
-- Spire Plus `v0.1.0-private-beta.124`
+- Spire Plus `v0.1.0-private-beta.125`
 - STS2-RitsuLib `v0.4.34` in direct NuGet runtime layout
 - Stable technical manifest id `EZMicroBalance`
 
@@ -15,12 +15,12 @@ only `STS2-RitsuLib >= 0.4.34` as the runtime dependency.
 
 Current evidence:
 
-- beta.124 build, publish, package refresh, installed package parity, runtime
+- beta.125 build, publish, package refresh, installed package parity, runtime
   preflight, and source-workspace validation are
   recorded in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`.
-- beta.124 runtime preflight passed 28 / 0 and source-workspace validation passed
+- beta.125 runtime preflight passed 28 / 0 and source-workspace validation passed
   58 / 0 with the retained GDRE warnings only and local RitsuLib XML/API marker
-  coverage. beta.124 still needs game-launch/runtime patch-count proof.
+  coverage. beta.125 still needs game-launch/runtime patch-count proof.
 - Latest clicked Ancient UI smoke remains beta.123 previous-package evidence at
   `.tools/runtime-evidence/monkey-stability-20260622-235746/`.
   The smoke covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations,

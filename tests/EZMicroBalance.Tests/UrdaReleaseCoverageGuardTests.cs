@@ -304,7 +304,12 @@ public sealed partial class UrdaReleaseCoverageGuardTests
             "WasPlantedBySeedbed(CardModel card)");
         AssertSourceContains(
             seedbedPatchSource,
-            "HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))",
+            "class UrdaSeedbedAfterCardDrawnPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-seedbed-after-card-drawn\"",
+            "new ModPatchTarget(",
+            "typeof(Hook)",
+            "nameof(Hook.AfterCardDrawn)",
+            "[typeof(ICombatState), typeof(PlayerChoiceContext), typeof(CardModel), typeof(bool)])",
             "WasPlantedBySeedbed(card)",
             "skipped AfterCardDrawn hooks for planted card");
         Assert.DoesNotContain("HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))", seedbedCombatSource, StringComparison.Ordinal);
@@ -604,10 +609,16 @@ public sealed partial class UrdaReleaseCoverageGuardTests
         Assert.DoesNotContain("[Pool(typeof(TokenCardPool))]", witheredHusk, StringComparison.Ordinal);
         AssertSourceContains(
             huskTransformPatch,
-            "HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)",
+            "class WitheredHuskTransformablePatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-withered-husk-transformable\"",
+            "new ModPatchTarget(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)",
             "__instance is WitheredHusk",
             "__result = false",
-            "HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))",
+            "class WitheredHuskTransformationOptionsPatch : IPatchMethod",
+            "IPatchMethod.PatchId => \"urda-withered-husk-transformation-options\"",
+            "typeof(CardFactory)",
+            "nameof(CardFactory.GetDefaultTransformationOptions)",
+            "[typeof(CardModel), typeof(bool)])",
             "__result.Where(card => card is not WitheredHusk)");
         AssertSourceContains(
             witheredHusk,

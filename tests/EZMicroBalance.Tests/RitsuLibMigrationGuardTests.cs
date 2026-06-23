@@ -179,7 +179,12 @@ public sealed class RitsuLibMigrationGuardTests
         "spire-plus-inline-localization-has-entry",
         "spire-plus-inline-localization-is-local-key",
         // RitsuLib compatibility patches
-        "ritsulib-mod-settings-button-selection-reticle"
+        "ritsulib-mod-settings-button-selection-reticle",
+        // Urda transform and Seedbed hook patches
+        "urda-withered-husk-transformable",
+        "urda-withered-husk-transformation-options",
+        "urda-seedbed-after-card-drawn",
+        "urda-seedbed-card-pile-draw"
     ];
 
     private const int ExpectedBatch4aCount = 9;
@@ -194,8 +199,9 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedBatch4cLocalizationCount = 6;
     private const int ExpectedInlineLocalizationCount = 4;
     private const int ExpectedRitsuLibCompatibilityCount = 1;
-    private const int ExpectedTotalMigratedCount = 144;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 26;
+    private const int ExpectedUrdaTransformSeedbedCount = 4;
+    private const int ExpectedTotalMigratedCount = 148;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 22;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -242,14 +248,14 @@ public sealed class RitsuLibMigrationGuardTests
     /// + 1 event visual UI patch + 2 intent UI patches
     /// + 7 enemy damage polish getter patches
     /// + 6 Batch 4c localization patches + 4 inline localization patches
-    /// + 1 RitsuLib compatibility patch.
+    /// + 1 RitsuLib compatibility patch + 4 Urda transform/Seedbed patches.
     /// </summary>
     [Fact]
     public void MigratedPatchCountMatchesExpected()
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount + ExpectedUrdaTransformSeedbedCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -362,7 +368,7 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             currentValidation,
-            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.124 runtime patch registration.",
+            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.125 runtime patch registration.",
             "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
         AssertSourceContains(
             projectState,
@@ -560,7 +566,14 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<SpirePlusInlineLocalizationRawTextPatch>();",
             "RegisterPatch<SpirePlusInlineLocalizationLocStringPatch>();",
             "RegisterPatch<SpirePlusInlineLocalizationHasEntryPatch>();",
-            "RegisterPatch<SpirePlusInlineLocalizationIsLocalKeyPatch>();");
+            "RegisterPatch<SpirePlusInlineLocalizationIsLocalKeyPatch>();",
+            "RegisterRitsuLibCompatibilityPatches(patcher);",
+            "RegisterPatch<RitsuLibModSettingsButtonSelectionReticlePatch>();",
+            "RegisterUrdaTransformAndSeedbedPatches(patcher);",
+            "RegisterPatch<WitheredHuskTransformablePatch>();",
+            "RegisterPatch<WitheredHuskTransformationOptionsPatch>();",
+            "RegisterPatch<UrdaSeedbedAfterCardDrawnPatch>();",
+            "RegisterPatch<UrdaSeedbedCardPileDrawPatch>();");
     }
 
     [Fact]
@@ -616,7 +629,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Spire Plus is RitsuLib-only for beta.124", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus is RitsuLib-only for beta.125", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -706,7 +719,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.124 package parity, runtime preflight, and source-workspace validation passed for the packaged 144/26 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.125 package parity, runtime preflight, and source-workspace validation passed for the packaged 148/22 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -860,8 +873,8 @@ public sealed class RitsuLibMigrationGuardTests
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 144", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 26", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 148", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 22", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
@@ -912,7 +925,10 @@ public sealed class RitsuLibMigrationGuardTests
             "`AeonglassIntentPatches.cs` | 2 | `aeonglass-laser-echo-intent-label, aeonglass-laser-echo-intent-damage` | intent-ui |",
             "`EnemyDamagePolishPatches.cs` | 7 | `decimillipede-writhe-damage-polish, decimillipede-constrict-damage-polish, decimillipede-bulk-damage-polish, terror-eel-crash-damage-polish, terror-eel-thrash-damage-polish, phantasmal-gardener-bite-damage-polish, phantasmal-gardener-lash-damage-polish` | enemy-damage-polish |",
             "`AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |",
-            "`SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |");
+            "`SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |",
+            "`UrdaWitheredHuskTransformPatches.cs` | 2 | `urda-withered-husk-transformable, urda-withered-husk-transformation-options` | urda-transform-seedbed |",
+            "`UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |",
+            "`UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |");
     }
 
     [Fact]

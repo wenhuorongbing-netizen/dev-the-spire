@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 26 |
-| Migrated to RitsuLib ModPatcher | 144 |
-| Raw HarmonyPatch remaining | 26 |
+| Total raw HarmonyPatch declarations | 22 |
+| Migrated to RitsuLib ModPatcher | 148 |
+| Raw HarmonyPatch remaining | 22 |
 | Tracked patch units total | 170 |
 | High risk (raw Harmony) | 15 |
-| Medium risk (raw Harmony) | 6 |
-| Low risk (raw Harmony) | 5 |
+| Medium risk (raw Harmony) | 4 |
+| Low risk (raw Harmony) | 3 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 144 patch classes implement `IPatchMethod` and are registered via
+These 148 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -95,22 +95,21 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `AscensionLocalizationTablePatches.cs` | 6 | `ascension-localization-locstring-raw-text, ascension-localization-get-table, ascension-localization-raw-text, ascension-localization-loc-string, ascension-localization-has-entry, ascension-localization-is-local-key` | 4c-localization |
 | `SpirePlusInlineLocalizationPatches.cs` | 4 | `spire-plus-inline-localization-raw-text, spire-plus-inline-localization-loc-string, spire-plus-inline-localization-has-entry, spire-plus-inline-localization-is-local-key` | inline-localization |
 | `RitsuLibModSettingsButtonSelectionReticlePatch.cs` | 1 | `ritsulib-mod-settings-button-selection-reticle` | ritsulib-compatibility |
+| `UrdaWitheredHuskTransformPatches.cs` | 2 | `urda-withered-husk-transformable, urda-withered-husk-transformation-options` | urda-transform-seedbed |
+| `UrdaSeedbedAfterCardDrawnPatch.cs` | 1 | `urda-seedbed-after-card-drawn` | urda-transform-seedbed |
+| `UrdaSeedbedCardPileDrawPatch.cs` | 1 | `urda-seedbed-card-pile-draw` | urda-transform-seedbed |
 
 Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 `Harmony.PatchAll()` will not pick them up. Verified clean separation.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 26 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 22 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 5 | `[HarmonyPatch(typeof(RunManager), "RollRoomTypeFor")]` |
 | Urda | High | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaRootSightRoomPatches.cs` | 21 | `[HarmonyPatch(typeof(RunManager), "CreateRoom")]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedAfterCardDrawnPatch.cs` | 7 | `[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaSeedbedCardPileDrawPatch.cs` | 9 | `[HarmonyPatch(typeof(CardPileCmd), nameof(CardPileCmd.Draw), typeof(PlayerChoiceContext), typeof(decimal), typeof(Player), typeof(bool))]` |
-| Urda | Medium | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs` | 3 | `[HarmonyPatch(typeof(CardModel), nameof(CardModel.IsTransformable), MethodType.Getter)]` |
-| Urda | Low | `EZMicroBalanceCode/Ancients/Expansion/Urda/UrdaWitheredHuskTransformPatches.cs` | 15 | `[HarmonyPatch(typeof(CardFactory), nameof(CardFactory.GetDefaultTransformationOptions))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 119 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 129 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 167 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |

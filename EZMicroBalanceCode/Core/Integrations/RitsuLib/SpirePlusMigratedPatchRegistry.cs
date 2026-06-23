@@ -37,6 +37,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterBatch4cLocalizationPatches(patcher);
         RegisterInlineLocalizationPatches(patcher);
         RegisterRitsuLibCompatibilityPatches(patcher);
+        RegisterUrdaTransformAndSeedbedPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -123,6 +124,14 @@ internal static partial class SpirePlusMigratedPatchRegistry
     private static void RegisterRitsuLibCompatibilityPatches(ModPatcher patcher)
     {
         patcher.RegisterPatch<RitsuLibModSettingsButtonSelectionReticlePatch>();
+    }
+
+    private static void RegisterUrdaTransformAndSeedbedPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<WitheredHuskTransformablePatch>();
+        patcher.RegisterPatch<WitheredHuskTransformationOptionsPatch>();
+        patcher.RegisterPatch<UrdaSeedbedAfterCardDrawnPatch>();
+        patcher.RegisterPatch<UrdaSeedbedCardPileDrawPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)

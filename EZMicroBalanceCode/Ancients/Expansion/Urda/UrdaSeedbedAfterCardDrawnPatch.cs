@@ -1,12 +1,25 @@
 using HarmonyLib;
+using MegaCrit.Sts2.Core.Combat;
 using MegaCrit.Sts2.Core.Hooks;
+using STS2RitsuLib.Patching.Models;
 using System.Threading.Tasks;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients.Expansion.Urda;
 
-[HarmonyPatch(typeof(Hook), nameof(Hook.AfterCardDrawn))]
-internal static class UrdaSeedbedAfterCardDrawnPatch
+internal sealed class UrdaSeedbedAfterCardDrawnPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "urda-seedbed-after-card-drawn";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Skip recursive AfterCardDrawn hooks for cards Urda Seedbed just planted";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+    [
+        new ModPatchTarget(
+            typeof(Hook),
+            nameof(Hook.AfterCardDrawn),
+            [typeof(ICombatState), typeof(PlayerChoiceContext), typeof(CardModel), typeof(bool)])
+    ];
+
+    [HarmonyPrefix]
     private static bool Prefix(CardModel card, ref Task __result)
     {
         if (!UrdaBlessingService.WasPlantedBySeedbed(card))
