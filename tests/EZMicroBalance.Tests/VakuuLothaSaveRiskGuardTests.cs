@@ -95,8 +95,13 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
             "EventNodeBackingField",
             "ClearEventNode(vakuu)",
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
+            "Core's CombatRoom.ToSerializable rejects ParentEventId while combat",
+            "prefinished-save postfix restore the parent marker only after",
+            "Clearing the event node first avoids",
             "ShouldResumeParentEventAfterCombat = true",
             "PreserveParentEventForPreFinishedSave",
+            "This is the only place the fight writes ParentEventId.",
+            "fight deliberately avoids it",
             "ArmPrefinishedParentRestoreHealSkip",
             "VakuuFightPreFinishedParentRestoreHealPatch : IPatchMethod",
             "IPatchMethod.PatchId => \"vakuu-fight-prefinished-parent-heal-skip\"",
@@ -146,8 +151,10 @@ public sealed partial class VakuuLothaSaveRiskGuardTests
             "EnterRoomWithoutExitingCurrentRoom(combatRoom, fadeToBlack: true)",
             "ClearEventNode(vakuu)",
             "EventNodeBackingField",
+            "Core's CombatRoom.ToSerializable rejects ParentEventId while combat",
             "ShouldResumeParentEventAfterCombat = true",
-            "PreserveParentEventForPreFinishedSave");
+            "PreserveParentEventForPreFinishedSave",
+            "This is the only place the fight writes ParentEventId.");
         var startFight = SliceBetween(entry, "private static async Task StartFight", "private static void ClearEventNode");
         Assert.DoesNotContain("ParentEventId =", startFight, StringComparison.Ordinal);
         Assert.DoesNotContain("EnterCombatWithoutExitingEventMethod", string.Join(Environment.NewLine, patch, entry, parentRestore), StringComparison.Ordinal);

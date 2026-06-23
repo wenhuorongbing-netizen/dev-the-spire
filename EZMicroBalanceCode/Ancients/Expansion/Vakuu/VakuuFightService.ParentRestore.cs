@@ -20,6 +20,10 @@ internal static partial class VakuuFightService
             return;
         }
 
+        // This is the only place the fight writes ParentEventId. The active
+        // fight deliberately avoids it because Core rejects active
+        // parent-linked combat serialization; prefinished victory restore is
+        // the safe shape Core already knows how to reconstruct.
         serializableRoom.ParentEventId =
             ModelDb.AncientEvent<MegaCrit.Sts2.Core.Models.Events.Vakuu>().Id;
         serializableRoom.ShouldResumeParentEvent = true;

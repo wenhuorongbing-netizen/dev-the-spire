@@ -55,12 +55,19 @@ internal static partial class VakuuFightService
             vakuu.Owner,
             FightOptionKey);
 
+        // Core's CombatRoom.ToSerializable rejects ParentEventId while combat
+        // is still active. Keep the live fight as a plain child room and let
+        // the prefinished-save postfix restore the parent marker only after
+        // victory, when Core permits serializing a parent-linked combat room.
         var encounter = ModelDb.Encounter<EzmbVakuuTrialEncounter>().ToMutable();
         var combatRoom = new CombatRoom(encounter, vakuu.Owner.RunState)
         {
             ShouldResumeParentEventAfterCombat = true
         };
 
+        // EnterRoomWithoutExitingCurrentRoom keeps the Vakuu event below the
+        // trial combat on the room stack. Clearing the event node first avoids
+        // leaving the old event scene attached while the child combat owns UI.
         ClearEventNode(vakuu);
         ReleaseEvidenceLog.Log("VakuuFight", "fight_started", vakuu.Owner);
         MainFile.Logger.Info("[Spire Plus] Starting Vakuu fight encounter through the explicit parent-room stack transition.");
