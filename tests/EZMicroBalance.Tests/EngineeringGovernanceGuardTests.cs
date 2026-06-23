@@ -214,7 +214,7 @@ public sealed partial class EngineeringGovernanceGuardTests
         var migratedPatchCount = Directory
             .GetFiles(
                 RepoPath("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib"),
-                "SpirePlusMigratedPatchRegistry*.cs",
+                "SpirePlusRitsuLibPatchRegistry*.cs",
                 SearchOption.TopDirectoryOnly)
             .Sum(path => Regex.Matches(File.ReadAllText(path), @"\.RegisterPatch<").Count);
 

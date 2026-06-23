@@ -12,7 +12,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// <summary>
 /// Gameplay and diagnostic registrations whose runtime behavior still needs live proof.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterUrdaBehaviorPatches(ModPatcher patcher)
     {

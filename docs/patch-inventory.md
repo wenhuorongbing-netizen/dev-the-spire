@@ -34,7 +34,7 @@ Risk labels apply only to raw class-level `[HarmonyPatch]` declarations. Current
 ## Migrated Patches (RitsuLib ModPatcher)
 
 These 169 patch classes implement `IPatchMethod` and are registered via
-`SpirePlusMigratedPatchRegistry.RegisterAll(...)`. `RitsuLibBootstrap` applies them through
+`SpirePlusRitsuLibPatchRegistry.RegisterAll(...)`. `RitsuLibBootstrap` applies them through
 `RitsuLibFramework.ApplyRequiredPatcher(...)`; they are NOT picked up by raw `Harmony.PatchAll()`.
 
 | File | Classes | PatchIds | Batch |

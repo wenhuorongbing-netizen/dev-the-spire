@@ -366,7 +366,7 @@ public sealed partial class DocumentationCompactnessGuardTests
         AssertSourceContains(
             apiResearch,
             "registers narrow RitsuLib `IPatchMethod` patches for the original single-player lobby selector/start paths",
-            "`RitsuLibBootstrap` applies `SpirePlusMigratedPatchRegistry` through RitsuLib `ApplyRequiredPatcher(...)`",
+            "`RitsuLibBootstrap` applies `SpirePlusRitsuLibPatchRegistry` through RitsuLib `ApplyRequiredPatcher(...)`",
             "diagnostic RitsuLib patch classes cover:");
 
         Assert.DoesNotContain("The current development build adds narrow Harmony patches", apiResearch, StringComparison.Ordinal);
@@ -612,12 +612,12 @@ public sealed partial class DocumentationCompactnessGuardTests
             "The repository hygiene",
             "guard scans Git-tracked text files and rejects retired shared-runtime wording.",
             "Register settings data before the settings page: `BeginModDataRegistration`",
-            "`SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.",
-            "`SpirePlusMigratedPatchRegistry.AncientUi.cs` owns Ancient event-option",
-            "`SpirePlusMigratedPatchRegistry.MapUi.cs` owns map-click and map-hover",
-            "`SpirePlusMigratedPatchRegistry.HostUi.cs` owns reward-screen",
-            "`SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns local-only preview-tool",
-            "`SpirePlusMigratedPatchRegistry.DisplayUi.cs` owns display-only icon, hover,",
+            "`SpirePlusRitsuLibPatchRegistry.cs` keeps only the ordered entry point.",
+            "`SpirePlusRitsuLibPatchRegistry.AncientUi.cs` owns Ancient event-option",
+            "`SpirePlusRitsuLibPatchRegistry.MapUi.cs` owns map-click and map-hover",
+            "`SpirePlusRitsuLibPatchRegistry.HostUi.cs` owns reward-screen",
+            "`SpirePlusRitsuLibPatchRegistry.PreviewUi.cs` owns local-only preview-tool",
+            "`SpirePlusRitsuLibPatchRegistry.DisplayUi.cs` owns display-only icon, hover,",
             "The current ids live in",
             "`SpirePlusModConfig.SettingsPage.Ids.cs`.",
             "Keep Crystal Sphere preview defaults and RitsuLib slider bounds in",
@@ -639,7 +639,8 @@ public sealed partial class DocumentationCompactnessGuardTests
             coreIntegrationReadme,
             "Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`",
             "`0.4.34`, and Spire Plus `v0.1.0-private-beta.135`.",
-            "This directory owns the RitsuLib bootstrap, migrated patch registration,",
+            "This directory owns the RitsuLib bootstrap, explicit patch registration,",
+            "`SpirePlusRitsuLibPatchRegistry` owns the explicit RitsuLib patch list",
             "Settings UI registration lives in `EZMicroBalanceCode/Config`: the entry file",
             "keeps only registration order, `SpirePlusModConfig.Constants.cs` owns",
             "`SpirePlusModConfig.SettingsPage.Ids.cs` owns stable page/entry ids",

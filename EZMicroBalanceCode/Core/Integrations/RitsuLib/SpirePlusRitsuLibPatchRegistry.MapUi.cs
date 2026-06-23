@@ -8,7 +8,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// <summary>
 /// RitsuLib registrations for map-click and map-hover UI patches.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterClickedUiPatches(ModPatcher patcher)
     {

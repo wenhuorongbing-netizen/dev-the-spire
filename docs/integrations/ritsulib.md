@@ -21,9 +21,9 @@ Revision M source-fix context exists under `.tools/runtime-evidence/v01070-curre
 
 Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.34` after NuGet and Nexus showed `0.4.34` as the latest available package line. The current package version is `v0.1.0-private-beta.135` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, rest-site UI migration, Preview transform prediction source/lifetime migration, Act Ancient unlock-list and Vakuu event-state UI migration, Ancient reward getter/relic hook migration, low-risk reward hook migration, Aeonglass intent UI migration, Enemy Damage polish getter migration, Urda Root Sight room-routing migration, multiplayer join/lobby/run-state/save-quit diagnostic migration, and beta.135 package refresh.
 
-Bootstrap structure: `RitsuLibBootstrap` now applies migrated patches through
+Bootstrap structure: `RitsuLibBootstrap` applies registered Spire Plus patches through
 `RitsuLibFramework.ApplyRequiredPatcher(...)` instead of calling
-`patcher.PatchAll()` directly. If a required migrated patch fails to resolve or
+`patcher.PatchAll()` directly. If a required patch fails to resolve or
 apply, Spire Plus stops before saved-state, settings, content, or feature
 registration so the runtime cannot continue in a partially migrated state.
 The bootstrap also avoids creating a separate ad hoc Harmony owner; RitsuLib's
@@ -31,19 +31,19 @@ The bootstrap also avoids creating a separate ad hoc Harmony owner; RitsuLib's
 This file owns the dependency/API ledger and detailed RitsuLib ownership plan;
 `docs/features/ritsulib-migration/README.md` is kept as the compact entry point,
 and `docs/patch-inventory.md` owns generated patch counts.
-`SpirePlusMigratedPatchRegistry.cs` now keeps only the ordered registration
+`SpirePlusRitsuLibPatchRegistry.cs` now keeps only the ordered registration
 entry point. Its sibling partials own the feature domains:
-`SpirePlusMigratedPatchRegistry.AncientUi.cs` for Ancient event-option and
-Ancient marker UI, `SpirePlusMigratedPatchRegistry.MapUi.cs` for map-click and
-map-hover UI, `SpirePlusMigratedPatchRegistry.HostUi.cs` for reward-screen,
+`SpirePlusRitsuLibPatchRegistry.AncientUi.cs` for Ancient event-option and
+Ancient marker UI, `SpirePlusRitsuLibPatchRegistry.MapUi.cs` for map-click and
+map-hover UI, `SpirePlusRitsuLibPatchRegistry.HostUi.cs` for reward-screen,
 mod-info, rest-site, combat-hand, and Ascension lobby UI,
-`SpirePlusMigratedPatchRegistry.PreviewUi.cs` for local-only preview-tool UI,
-`SpirePlusMigratedPatchRegistry.DisplayUi.cs` for display-only icon, hover,
+`SpirePlusRitsuLibPatchRegistry.PreviewUi.cs` for local-only preview-tool UI,
+`SpirePlusRitsuLibPatchRegistry.DisplayUi.cs` for display-only icon, hover,
 intent, and damage-number registrations;
-`SpirePlusMigratedPatchRegistry.Rewards.cs` for card, relic, and reward hooks;
-`SpirePlusMigratedPatchRegistry.Localization.cs` for localization and
+`SpirePlusRitsuLibPatchRegistry.Rewards.cs` for card, relic, and reward hooks;
+`SpirePlusRitsuLibPatchRegistry.Localization.cs` for localization and
 RitsuLib compatibility hooks; and
-`SpirePlusMigratedPatchRegistry.Gameplay.cs` for gameplay and diagnostics. This
+`SpirePlusRitsuLibPatchRegistry.Gameplay.cs` for gameplay and diagnostics. This
 keeps the completed clicked-UI migration auditable in code, not only in docs.
 
 ## What Is RitsuLib

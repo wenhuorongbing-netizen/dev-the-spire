@@ -5,26 +5,26 @@ RitsuLib bootstrap integration lives here.
 Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
 `0.4.34`, and Spire Plus `v0.1.0-private-beta.135`.
 
-This directory owns the RitsuLib bootstrap, migrated patch registration,
+This directory owns the RitsuLib bootstrap, explicit patch registration,
 content-pack registration, and SavedAttachedState field registration helper.
-`SpirePlusMigratedPatchRegistry` owns the explicit migrated patch list so
+`SpirePlusRitsuLibPatchRegistry` owns the explicit RitsuLib patch list so
 `RitsuLibBootstrap` can stay focused on startup order and fail-closed patcher
 application. The registry partials keep ownership visible in source:
-`SpirePlusMigratedPatchRegistry.cs` is only the ordered entry point,
-`SpirePlusMigratedPatchRegistry.AncientUi.cs` owns Ancient event-option and
-Ancient marker UI registrations, `SpirePlusMigratedPatchRegistry.MapUi.cs` owns
-map-click and map-hover registrations, `SpirePlusMigratedPatchRegistry.HostUi.cs`
+`SpirePlusRitsuLibPatchRegistry.cs` is only the ordered entry point,
+`SpirePlusRitsuLibPatchRegistry.AncientUi.cs` owns Ancient event-option and
+Ancient marker UI registrations, `SpirePlusRitsuLibPatchRegistry.MapUi.cs` owns
+map-click and map-hover registrations, `SpirePlusRitsuLibPatchRegistry.HostUi.cs`
 owns reward-screen, mod-info, rest-site, combat-hand, and Ascension lobby UI
-registrations, `SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns local-only
+registrations, `SpirePlusRitsuLibPatchRegistry.PreviewUi.cs` owns local-only
 preview-tool UI registrations,
-`SpirePlusMigratedPatchRegistry.DisplayUi.cs` owns display-only icon, hover,
-intent, and damage-number registrations, `SpirePlusMigratedPatchRegistry.Rewards.cs`
-owns card/relic/reward hooks, `SpirePlusMigratedPatchRegistry.Localization.cs` owns
+`SpirePlusRitsuLibPatchRegistry.DisplayUi.cs` owns display-only icon, hover,
+intent, and damage-number registrations, `SpirePlusRitsuLibPatchRegistry.Rewards.cs`
+owns card/relic/reward hooks, `SpirePlusRitsuLibPatchRegistry.Localization.cs` owns
 localization and RitsuLib compatibility hooks, and
-`SpirePlusMigratedPatchRegistry.Gameplay.cs` owns gameplay and diagnostic hooks
+`SpirePlusRitsuLibPatchRegistry.Gameplay.cs` owns gameplay and diagnostic hooks
 that still need live proof. This keeps the completed clicked-UI migration
 auditable in code instead of only in docs.
-`RitsuLibBootstrap` applies the migrated registry with
+`RitsuLibBootstrap` applies the RitsuLib patch registry with
 `RitsuLibFramework.ApplyRequiredPatcher(...)`; if that required patcher fails,
 startup stops before saved-state, content, settings, or feature initialization
 can create a half-booted Spire Plus session. It does not create a separate

@@ -10,7 +10,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// <summary>
 /// Reward, relic, and card-behavior registrations migrated to RitsuLib ModPatcher.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterCardRelicBehaviorPatches(ModPatcher patcher)
     {

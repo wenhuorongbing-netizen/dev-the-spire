@@ -9,7 +9,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// contract is local-only: they must display predictions without adding
 /// choices, rewards, or real RNG advancement.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterPreviewUiPatches(ModPatcher patcher)
     {

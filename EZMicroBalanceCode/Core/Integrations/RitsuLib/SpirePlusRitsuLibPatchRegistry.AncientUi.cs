@@ -10,7 +10,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// <summary>
 /// RitsuLib registrations for Ancient event-option and Ancient marker UI patches.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterAncientEventUiPatches(ModPatcher patcher)
     {

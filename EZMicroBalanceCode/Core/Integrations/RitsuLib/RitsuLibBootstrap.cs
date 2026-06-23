@@ -17,18 +17,18 @@ internal static class RitsuLibBootstrap
         logger.Info($"RitsuLib {GetRitsuLibVersion()} bootstrap starting.");
         SpirePlusDebug.Log("RitsuLib", $"Bootstrap starting. RitsuLib {GetRitsuLibVersion()}.");
 
-        ApplyMigratedRitsuLibPatches();
+        ApplyRitsuLibPatches();
         LogLegacyPatchDiscoveryDisabled();
         AuditRitsuLibRuntimeState();
 
-        void ApplyMigratedRitsuLibPatches()
+        void ApplyRitsuLibPatches()
         {
-            // RitsuLib ModPatcher owns every migrated patch class. Keeping this
-            // path first makes the RitsuLib migration the canonical route and
-            // prevents a migrated patch from drifting back to legacy broad
+            // RitsuLib ModPatcher owns every Spire Plus patch class. Keeping this
+            // path first makes RitsuLib the canonical route and prevents a
+            // registered patch from drifting back to legacy broad
             // class-attribute discovery.
             var patcher = RitsuLibFramework.CreatePatcher(modId, "SpirePlus");
-            SpirePlusMigratedPatchRegistry.RegisterAll(patcher);
+            SpirePlusRitsuLibPatchRegistry.RegisterAll(patcher);
             var applied = RitsuLibFramework.ApplyRequiredPatcher(
                 patcher,
                 () =>
@@ -56,7 +56,7 @@ internal static class RitsuLibBootstrap
             // RitsuLib ModPatcher creates the underlying Harmony patch owner.
             // This bootstrap deliberately avoids creating a second ad hoc
             // patch owner so legacy broad discovery cannot return.
-            // New patch work must enter through SpirePlusMigratedPatchRegistry.
+            // New patch work must enter through SpirePlusRitsuLibPatchRegistry.
             logger.Info($"Legacy broad patch discovery disabled; RitsuLib ModPatcher owns Spire Plus patches for {modId}.");
             SpirePlusDebug.Log("RitsuLib", "Legacy broad patch discovery disabled; ModPatcher owns patch registration.");
         }

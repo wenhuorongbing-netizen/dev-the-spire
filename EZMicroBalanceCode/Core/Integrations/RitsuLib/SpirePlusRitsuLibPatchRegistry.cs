@@ -3,9 +3,9 @@ using STS2RitsuLib.Patching.Core;
 namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 
 /// <summary>
-/// Owns the RitsuLib ModPatcher migration list so bootstrap code can focus on startup order.
+/// Owns the explicit RitsuLib ModPatcher registration list so bootstrap code can focus on startup order.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     public static void RegisterAll(ModPatcher patcher)
     {

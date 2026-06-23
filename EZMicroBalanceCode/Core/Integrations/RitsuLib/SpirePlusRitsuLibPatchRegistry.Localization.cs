@@ -7,7 +7,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// <summary>
 /// Localization and RitsuLib compatibility registrations.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterAscensionLocalizationFallbackPatches(ModPatcher patcher)
     {

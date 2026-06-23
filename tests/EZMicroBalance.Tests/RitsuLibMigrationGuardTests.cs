@@ -7,12 +7,12 @@ namespace EZMicroBalance.Tests;
 /// Guards for RitsuLib patch migration integrity:
 /// - PatchId uniqueness
 /// - No double-patching (migrated class must not have [HarmonyPatch])
-/// - Raw HarmonyPatch classes must not be registered in the migrated patch registry
+/// - Raw HarmonyPatch classes must not be registered in the RitsuLib patch registry
 /// - Migration counts match docs
 /// </summary>
 public sealed class RitsuLibMigrationGuardTests
 {
-    // All PatchId strings registered in SpirePlusMigratedPatchRegistry.RegisterAll().
+    // All PatchId strings registered in SpirePlusRitsuLibPatchRegistry.RegisterAll().
     // Keep this list synchronized with the source.
     private static readonly string[] ExpectedMigratedPatchIds =
     [
@@ -252,7 +252,7 @@ public sealed class RitsuLibMigrationGuardTests
     ];
 
     /// <summary>
-    /// All PatchId values registered in SpirePlusMigratedPatchRegistry must be unique.
+    /// All PatchId values registered in SpirePlusRitsuLibPatchRegistry must be unique.
     /// </summary>
     [Fact]
     public void MigratedPatchIdsAreUnique()
@@ -292,7 +292,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// Patch classes registered in the migrated patch registry must NOT have
+    /// Patch classes registered in the RitsuLib patch registry must NOT have
     /// class-level [HarmonyPatch] attributes. If they did, Harmony.PatchAll()
     /// would pick them up again, causing double-patching.
     /// </summary>
@@ -339,7 +339,7 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// Classes with [HarmonyPatch] attributes must NOT be registered in
-    /// SpirePlusMigratedPatchRegistry. This is the inverse of the above check.
+    /// SpirePlusRitsuLibPatchRegistry. This is the inverse of the above check.
     /// </summary>
     [Fact]
     public void RawHarmonyPatchClassesAreNotMigrated()
@@ -373,7 +373,7 @@ public sealed class RitsuLibMigrationGuardTests
         }
 
         Assert.True(conflicts.Count == 0,
-            $"Classes with [HarmonyPatch] that are also registered in RegisterMigratedPatches (double-patch risk):{Environment.NewLine}" +
+            $"Classes with [HarmonyPatch] that are also registered in the RitsuLib patch registry (double-patch risk):{Environment.NewLine}" +
             string.Join(Environment.NewLine, conflicts));
     }
 
@@ -432,7 +432,7 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The migrated patch registry call count must match
+    /// The RitsuLib patch registry call count must match
     /// the expected total. This guards against source drift.
     /// </summary>
     [Fact]
@@ -445,26 +445,26 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     [Fact]
-    public void RitsuLibBootstrapDelegatesMigratedPatchRegistration()
+    public void RitsuLibBootstrapDelegatesPatchRegistration()
     {
         var bootstrap = ReadRepoText("EZMicroBalanceCode", "Core", "Integrations", "RitsuLib", "RitsuLibBootstrap.cs");
         var registry = ReadRitsuLibIntegrationSource();
 
-        Assert.Contains("SpirePlusMigratedPatchRegistry.RegisterAll(patcher);", bootstrap, StringComparison.Ordinal);
+        Assert.Contains("SpirePlusRitsuLibPatchRegistry.RegisterAll(patcher);", bootstrap, StringComparison.Ordinal);
         Assert.Contains("public static void ApplyPatches(string modId)", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain(".RegisterPatch<", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
             bootstrap,
-            "ApplyMigratedRitsuLibPatches();",
+            "ApplyRitsuLibPatches();",
             "LogLegacyPatchDiscoveryDisabled();",
             "AuditRitsuLibRuntimeState();",
             "RitsuLibFramework.ApplyRequiredPatcher(",
             "Required RitsuLib ModPatcher apply failed; Spire Plus bootstrap stopped before feature initialization.",
-            "RitsuLib ModPatcher owns every migrated patch class",
+            "RitsuLib ModPatcher owns every Spire Plus patch class",
             "Legacy broad patch discovery disabled",
             "avoids creating a second ad hoc",
             "New patch",
-            "work must enter through SpirePlusMigratedPatchRegistry",
+            "work must enter through SpirePlusRitsuLibPatchRegistry",
             "fallback to another mod framework");
         Assert.DoesNotContain("patcher.PatchAll();", bootstrap, StringComparison.Ordinal);
         Assert.DoesNotContain("using HarmonyLib;", bootstrap, StringComparison.Ordinal);
@@ -472,7 +472,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.DoesNotContain("return new Harmony", bootstrap, StringComparison.Ordinal);
         AssertSourceContains(
             registry,
-            "internal static partial class SpirePlusMigratedPatchRegistry",
+            "internal static partial class SpirePlusRitsuLibPatchRegistry",
             "public static void RegisterAll(ModPatcher patcher)",
             "RegisterCardRelicBehaviorPatches(patcher);",
             "RegisterCardTextAndPickupPatches(patcher);",

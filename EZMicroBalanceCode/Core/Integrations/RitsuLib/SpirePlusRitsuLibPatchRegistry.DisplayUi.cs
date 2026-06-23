@@ -8,7 +8,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// RitsuLib registrations for display-only UI patches: icon getters, hover tips,
 /// intent labels, and damage preview numbers.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterRelicVisualHoverPatches(ModPatcher patcher)
     {

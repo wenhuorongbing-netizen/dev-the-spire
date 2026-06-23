@@ -11,7 +11,7 @@ namespace EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 /// RitsuLib registrations for host-screen UI patches such as rewards, mod info,
 /// combat hand safety, rest-site buttons, and Ascension lobby selection.
 /// </summary>
-internal static partial class SpirePlusMigratedPatchRegistry
+internal static partial class SpirePlusRitsuLibPatchRegistry
 {
     private static void RegisterHostUiPatches(ModPatcher patcher)
     {

@@ -70,22 +70,22 @@ Do not start future implementation from copied migration lists either.
 
 - Patch bootstrap and ordered registration live in
   `EZMicroBalanceCode/Core/Integrations/RitsuLib`.
-- `SpirePlusMigratedPatchRegistry.cs` keeps only the ordered entry point.
-- `SpirePlusMigratedPatchRegistry.AncientUi.cs` owns Ancient event-option and
+- `SpirePlusRitsuLibPatchRegistry.cs` keeps only the ordered entry point.
+- `SpirePlusRitsuLibPatchRegistry.AncientUi.cs` owns Ancient event-option and
   Ancient marker UI registrations.
-- `SpirePlusMigratedPatchRegistry.MapUi.cs` owns map-click and map-hover UI
+- `SpirePlusRitsuLibPatchRegistry.MapUi.cs` owns map-click and map-hover UI
   registrations.
-- `SpirePlusMigratedPatchRegistry.HostUi.cs` owns reward-screen, mod-info,
+- `SpirePlusRitsuLibPatchRegistry.HostUi.cs` owns reward-screen, mod-info,
   rest-site, combat-hand, and Ascension lobby UI registrations.
-- `SpirePlusMigratedPatchRegistry.PreviewUi.cs` owns local-only preview-tool
+- `SpirePlusRitsuLibPatchRegistry.PreviewUi.cs` owns local-only preview-tool
   UI registrations.
-- `SpirePlusMigratedPatchRegistry.DisplayUi.cs` owns display-only icon, hover,
+- `SpirePlusRitsuLibPatchRegistry.DisplayUi.cs` owns display-only icon, hover,
   intent, and damage-number registrations.
-- `SpirePlusMigratedPatchRegistry.Rewards.cs` owns card, relic, and reward-hook
+- `SpirePlusRitsuLibPatchRegistry.Rewards.cs` owns card, relic, and reward-hook
   registrations.
-- `SpirePlusMigratedPatchRegistry.Localization.cs` owns localization fallback
+- `SpirePlusRitsuLibPatchRegistry.Localization.cs` owns localization fallback
   and RitsuLib compatibility registrations.
-- `SpirePlusMigratedPatchRegistry.Gameplay.cs` owns gameplay and diagnostic
+- `SpirePlusRitsuLibPatchRegistry.Gameplay.cs` owns gameplay and diagnostic
   registrations whose runtime behavior still needs live proof.
 - StS1 event registration stays mode-specific: the dispatcher belongs in
   `Sts1EventRegistrationService.cs`, and each mode's RitsuLib content-pack
