@@ -339,6 +339,9 @@ public sealed partial class DocumentationCompactnessGuardTests
             "revalidate against the current `v0.107.1` source snapshot");
         AssertSourceContains(
             implementationPlan,
+            "The active implementation is the independent `EZMicroBalance` project:",
+            "`docs/features/ritsulib-migration/README.md`, `docs/integrations/ritsulib.md`, and `docs/patch-inventory.md` are the active migration references.",
+            "Historical scaffold-era probe details are preserved in archived work logs and in the traceability prompt below only.",
             "Historical scaffold-era wording referenced supported game/previous package/template APIs.",
             "Current release work must instead use native game command APIs, RitsuLib APIs, and template-supported APIs",
             "do not reintroduce previous package without owner-approved dependency documentation.");
@@ -350,7 +353,25 @@ public sealed partial class DocumentationCompactnessGuardTests
 
         Assert.DoesNotContain("Evidence source remains local `sts2.dll` from public beta `v0.104.0`", apiDiscovery, StringComparison.Ordinal);
         Assert.DoesNotContain("through supported game/previous package/template APIs", implementationPlan, StringComparison.Ordinal);
+        Assert.DoesNotContain("Original observed code state:", implementationPlan, StringComparison.Ordinal);
+        Assert.DoesNotContain("creates a Harmony instance and calls `PatchAll()`", implementationPlan, StringComparison.Ordinal);
         Assert.DoesNotContain("Verified baseline target: `v0.104.0`, `2026.04.23`", manualChecklist, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void AscensionResearchKeepsCurrentPatchLaneOnRitsuLib()
+    {
+        var apiResearch = ReadRepoText("docs", "features", "ascension-11-20", "api-research.md");
+
+        AssertSourceContains(
+            apiResearch,
+            "registers narrow RitsuLib `IPatchMethod` patches for the original single-player lobby selector/start paths",
+            "`RitsuLibBootstrap` applies `SpirePlusMigratedPatchRegistry` through RitsuLib `ApplyRequiredPatcher(...)`",
+            "diagnostic RitsuLib patch classes cover:");
+
+        Assert.DoesNotContain("The current development build adds narrow Harmony patches", apiResearch, StringComparison.Ordinal);
+        Assert.DoesNotContain("| Existing Harmony use |", apiResearch, StringComparison.Ordinal);
+        Assert.DoesNotContain("the remaining multiplayer diagnostics patches stay on raw Harmony", apiResearch, StringComparison.Ordinal);
     }
 
     [Fact]

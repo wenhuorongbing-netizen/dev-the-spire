@@ -31,23 +31,14 @@ The current v4.3 implementation updates and supersedes the v4.2 adjustment point
 
 ## 2. Current Repository Baseline
 
-Original observed code state:
+The active implementation is the independent `EZMicroBalance` project:
 
-- `EzDailyContentCode/MainFile.cs` creates a Harmony instance and calls `PatchAll()`.
-- `EzDailyContentCode/Cards`, `Powers`, and `Relics` contain abstract template scaffolding only.
-- At the original planning pass, `EzDailyContentCode/AncientRewardNoopProbe.cs` was the only Ancient-specific code.
-- The probe patches `AncientEventModel.GenerateInitialOptionsWrapper` as a postfix and logs generated option metadata.
-- The probe began as no-op telemetry. Release readiness requires either removing it or gating it so normal player builds are not noisy.
+- `EZMicroBalanceCode/Ancients/` owns Ancient reward behavior.
+- `EZMicroBalanceCode/Core/Integrations/RitsuLib/` owns RitsuLib bootstrap, content registration, saved attached state, and explicit `IPatchMethod` registration.
+- `docs/features/ritsulib-migration/README.md`, `docs/integrations/ritsulib.md`, and `docs/patch-inventory.md` are the active migration references.
+- `source code/src/Core/` remains the primary game API evidence before any new Ancient reward, UI, save-load, or hook change.
 
-Planning-pass probe improvement:
-
-- The probe now logs a safe summary of the relic object behind each option: runtime type plus public `Id`, `Name`, `Entry`, `TextKey`, `LocalizationKey`, `Rarity`, and `Pool` values when present.
-- `dotnet build` passed after this change on 2026-05-05 with 0 warnings and 0 errors.
-
-Current implementation note:
-
-- The historical `EzDailyContentCode/Ancients/AncientRewardBalancePatches.cs` and `EzDailyContentCode/Ancients/PaelsHornPhase1Patch.cs` paths are no longer active release code.
-- The active release implementation is already isolated in the independent `EZMicroBalance` project under `EZMicroBalanceCode/Ancients/`.
+Historical scaffold-era probe details are preserved in archived work logs and in the traceability prompt below only. They are not current release instructions, source evidence, or implementation entry points.
 
 ## 3. API Discovery Needs
 
@@ -258,7 +249,7 @@ Validation:
 - `dotnet publish`.
 - Manual game launch and Mod Settings verification.
 - In-game smoke tests for every implemented reward.
-- Log inspection for `EZMicroBalance`, `previous package`, `error`, and `exception`; legacy `EzDailyContent` should be disabled or absent during private-beta testing.
+- Log inspection for `EZMicroBalance`, `STS2-RitsuLib`, `error`, and `exception`; legacy `EzDailyContent` should be disabled or absent during private-beta testing.
 
 ## 7. Historical Phase-1 /goal Prompt
 
