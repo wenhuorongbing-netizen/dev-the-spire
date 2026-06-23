@@ -28,9 +28,9 @@ apply, Spire Plus stops before saved-state, settings, content, or feature
 registration so the runtime cannot continue in a partially migrated state.
 `SpirePlusMigratedPatchRegistry.Ui.cs` owns the clicked, hover, settings, and
 selection UI registration groups as a separate partial class, while the main
-registry file keeps reward, localization, compatibility, and legacy migration
-batch groups. This keeps the completed clicked-UI migration auditable in code,
-not only in docs.
+registry file keeps reward, localization, compatibility, and gameplay-hook
+registration groups. This keeps the completed clicked-UI migration auditable in
+code, not only in docs.
 
 ## What Is RitsuLib
 
@@ -156,15 +156,22 @@ Current manifest dependency:
 { "id": "STS2-RitsuLib", "min_version": "0.4.34" }
 ```
 
-## RitsuLib API Adoption Plan
+## RitsuLib API Ownership Plan
 
-- Batch 1: bootstrap and diagnostics scaffold complete; historical `v0.106.1` loader-gate validated by diagnostic smoke, beta.85/beta.86 Off/CanaryOnly loader proof remains previous-package context, beta.87 AdditiveBatch1 proof remains retained `v0.107.0` context, beta.135 package parity/source validation is current on `v0.107.1` with RitsuLib `v0.4.34`, previous beta.128 clicked Ancient UI smoke is retained as smoke-level previous-package proof, enabled-mode recapture is pending, and beta.123/beta.99/beta.96/beta.93 loader proof remains previous-package evidence.
-- Batch 2: future new content registration is not currently applicable because Spire Plus does not register new cards, relics, or potions through RitsuLib.
+- Bootstrap and patching: `RitsuLibBootstrap` uses `CreatePatcher` and
+  `ApplyRequiredPatcher(...)` so critical patch failure disables Spire Plus
+  before feature registration. Historical loader packets remain previous-package
+  context; beta.135 package parity/source validation is current on `v0.107.1`
+  with RitsuLib `v0.4.34`, and beta.135 runtime recapture is still pending.
+- Content registration: future new cards, relics, or potions should register
+  through RitsuLib `CreateContentPack(...)`. Spire Plus currently does not add
+  new card/relic/potion model content through this path.
 - StS1 event registration is mode-split under
   `EZMicroBalanceCode/Sts1Events/Runtime`: the dispatcher selects Off,
   CanaryOnly, AdditiveBatch1, or draft modes, while each partial file owns the
   explicit `CreateContentPack` registration calls for that mode.
-- Batch 3: persistence sidecar experiments are not currently applicable because current saved-state usage has migrated to RitsuLib `SavedAttachedState`; no additional RitsuLib data-store sidecar is planned for this pass.
+- Persistence: saved gameplay markers use RitsuLib `SavedAttachedState`; no
+  additional RitsuLib data-store sidecar is planned for this pass.
 - Settings persistence: preview-tool settings use RitsuLib `ModDataStore` under
   `BeginModDataRegistration(...)`, then bind the RitsuLib settings UI entries to
   that store. The entry ids are source constants because settings screenshots
@@ -217,7 +224,9 @@ Current manifest dependency:
   SelectionReticle compatibility patch uses RitsuLib `IPatchMethod` and keeps
   the settings-button startup path compatible with Slay the Spire 2 `v0.107.1`.
   Previous beta.128 clicked Ancient UI smoke applied all 152 default runtime registered patch classes from the packaged beta.128 state; beta.135 runtime smoke, gameplay, enabled-mode proof, and the debug-only replacement-prototype branch remain pending.
-- Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
+- High-risk surfaces: run lifecycle, map generation, reward-state, save-load,
+  death, multiplayer/lobby, and A20 boss-flow patches remain blocked on
+  live/manual evidence and explicit owner approval.
 
 Current migrated total: 169 patch classes.
 

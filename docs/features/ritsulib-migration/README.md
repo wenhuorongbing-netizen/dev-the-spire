@@ -26,10 +26,10 @@ rules here, then use the runtime checklist only when capturing game evidence.
   mod-info localization UI patches, combat hand stale-input safety, and the
   Meat Cleaver rest-site Cook option UI/click hooks are registered through RitsuLib
   `IPatchMethod` / `ModPatcher`, not broad Harmony discovery.
-- The final localization fallback batch for A11-A20 ascension table text also
-  uses RitsuLib `IPatchMethod` / `ModPatcher`. Its detailed candidate table is
-  archived because it is completed migration history, not a current development
-  entry point.
+- The A11-A20 ascension localization fallback patches also use RitsuLib
+  `IPatchMethod` / `ModPatcher`. Their detailed candidate table is archived
+  because it is completed migration history, not a current development entry
+  point.
 - Sere Talon relic icon/texture getter patches, Prismatic Gem hover patches,
   Jewelry Box hover patches, and the A20 courtyard portrait now also use
   RitsuLib `IPatchMethod` / `ModPatcher` as visual/event UI patches.
@@ -147,7 +147,7 @@ Historical migration-process files were moved out of the active feature folder:
 
 | Archive file | Role |
 | --- | --- |
-| `docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md` | Completed localization fallback batch record. |
+| `docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md` | Completed localization fallback migration record. |
 | `docs/archive/feature-audits/ritsulib-migration/next-runtime-qa-run-20260623.md` | Superseded controlled runtime QA run plan. |
 | `docs/archive/feature-audits/ritsulib-migration/runtime-hard-block-report-20260531.md` | Historical May 31 runtime hard-block boundary. |
 | `docs/archive/feature-audits/ritsulib-migration/monthly-dev-spec-stub-20260623.md` | Superseded monthly spec compatibility stub. |

@@ -823,7 +823,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("Migrated candidate count is 6", record, StringComparison.Ordinal);
         Assert.Contains("Owner decision recorded: 2026-06-22 continuation goal approved migrating the remaining six localization fallback candidates.", record, StringComparison.Ordinal);
         Assert.Contains("This migration is source/registration work only; it is not gameplay, save-load, co-op, release, or handoff proof.", record, StringComparison.Ordinal);
-        Assert.Contains("final localization fallback batch for A11-A20 ascension table text also", migrationReadme, StringComparison.Ordinal);
+        Assert.Contains("A11-A20 ascension localization fallback patches also use RitsuLib", migrationReadme, StringComparison.Ordinal);
         Assert.Contains("docs/archive/feature-audits/ritsulib-migration/batch-4c-candidates-20260623.md", migrationReadme, StringComparison.Ordinal);
         Assert.Contains("Do not migrate high-risk run/map/reward/save/multiplayer patches without explicit owner approval.", migrationReadme, StringComparison.Ordinal);
 
