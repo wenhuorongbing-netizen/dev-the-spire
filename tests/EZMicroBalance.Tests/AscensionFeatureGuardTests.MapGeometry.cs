@@ -87,7 +87,9 @@ public sealed partial class AscensionFeatureGuardTests
 
         AssertSourceContains(
             mapGenerationPatch,
-            "HarmonyPatch(typeof(ActModel), nameof(ActModel.CreateMap))",
+            "internal sealed class AscensionActModelCreateMapPatch : IPatchMethod",
+            "static string IPatchMethod.PatchId => \"ascension-act-model-create-map\"",
+            "new ModPatchTarget(typeof(ActModel), nameof(ActModel.CreateMap), [typeof(RunState), typeof(bool)])",
             "Postfix(RunState runState, ref ActMap __result)",
             "AscensionMapService.ApplyA11MapGeometryAtCreateMapBoundary",
             "runState.CurrentActIndex");

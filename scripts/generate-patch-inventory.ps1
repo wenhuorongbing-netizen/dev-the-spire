@@ -172,7 +172,8 @@ $migratedPatchRows = @(
     [pscustomobject]@{ File = 'RitsuLibModSettingsButtonSelectionReticlePatch.cs'; Classes = 1; PatchIds = 'ritsulib-mod-settings-button-selection-reticle'; Batch = 'ritsulib-compatibility' },
     [pscustomobject]@{ File = 'UrdaWitheredHuskTransformPatches.cs'; Classes = 2; PatchIds = 'urda-withered-husk-transformable, urda-withered-husk-transformation-options'; Batch = 'urda-transform-seedbed' },
     [pscustomobject]@{ File = 'UrdaSeedbedAfterCardDrawnPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-after-card-drawn'; Batch = 'urda-transform-seedbed' },
-    [pscustomobject]@{ File = 'UrdaSeedbedCardPileDrawPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-card-pile-draw'; Batch = 'urda-transform-seedbed' }
+    [pscustomobject]@{ File = 'UrdaSeedbedCardPileDrawPatch.cs'; Classes = 1; PatchIds = 'urda-seedbed-card-pile-draw'; Batch = 'urda-transform-seedbed' },
+    [pscustomobject]@{ File = 'AscensionMapGenerationPatches.cs'; Classes = 1; PatchIds = 'ascension-act-model-create-map'; Batch = 'ascension-map-generation' }
 )
 $migratedPatchCount = ($migratedPatchRows | Measure-Object -Property Classes -Sum).Sum
 $trackedPatchUnitCount = $migratedPatchCount + $patches.Count

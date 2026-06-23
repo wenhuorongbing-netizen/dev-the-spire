@@ -39,6 +39,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterInlineLocalizationPatches(patcher);
         RegisterRitsuLibCompatibilityPatches(patcher);
         RegisterUrdaTransformAndSeedbedPatches(patcher);
+        RegisterAscensionMapGenerationPatches(patcher);
     }
 
     private static void RegisterBatch4a(ModPatcher patcher)
@@ -140,6 +141,11 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<WitheredHuskTransformationOptionsPatch>();
         patcher.RegisterPatch<UrdaSeedbedAfterCardDrawnPatch>();
         patcher.RegisterPatch<UrdaSeedbedCardPileDrawPatch>();
+    }
+
+    private static void RegisterAscensionMapGenerationPatches(ModPatcher patcher)
+    {
+        patcher.RegisterPatch<AscensionActModelCreateMapPatch>();
     }
 
     private static void RegisterFiddlePatches(ModPatcher patcher)
