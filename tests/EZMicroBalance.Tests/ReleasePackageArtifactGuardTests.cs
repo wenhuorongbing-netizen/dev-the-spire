@@ -204,7 +204,7 @@ public sealed partial class ReleasePackageArtifactGuardTests
             "PublishedPckContainsOnlyActiveReleaseResources",
             "InstalledDllMatchesABuildOutput",
             "InstalledManifestMatchesRepositoryManifest",
-            "HarmonyPatchesResolveAgainstInstalledGameApi",
+            "InstalledRitsuLibPatchClassesMatchPatchInventory",
             "InstalledUrdaUsesCustomAncientAssetPaths",
             "PrismaticGemRewardBannerContractMatchesInstalledGameApi",
             "PackageStagingVersionedZipAndInstalledArtifactsHaveMatchingHashes",

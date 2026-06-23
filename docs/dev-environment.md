@@ -123,7 +123,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Last PCK hash check: the 2026-06-23 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `9EF01340EE2118A2ECA1E721A9B131C4D104D35EB1665A698372CF26B89A9F7C`.
 - Last staging/versioned DLL hash check: SHA256 `10649A95C03F762B73CA15D13024308CB53E8412B89BC53236B37425535437E2`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
-- Retired raw `PatchAll` audit: a historical standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`. Current patch ownership is RitsuLib-only: `docs/patch-inventory.md` records 169 migrated `IPatchMethod` classes and 0 class-level `[HarmonyPatch]` declarations.
+- Retired raw `PatchAll` audit: a historical standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`. Current patch ownership is RitsuLib-only: `docs/patch-inventory.md` records 169 migrated source `IPatchMethod` classes and 0 class-level `[HarmonyPatch]` declarations; default beta.135 DLLs compile 168 patch classes because the debug-only StS1 replacement prototype is symbol-gated.
 - Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.135.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-06-23. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
   - Zip SHA256: `91D67F837BE34DDEDBECC636D8CF5182FDF201F7490DC05229B1F914A51721CC`

@@ -14,9 +14,12 @@ development.
 - Compile dependency: NuGet `STS2.RitsuLib` `0.4.34`.
 - Runtime dependency: manifest `STS2-RitsuLib >= 0.4.34`.
 - Current package proof: beta.135 build, publish, package parity, runtime
-  preflight, and source-workspace validation for the 169/0 source state.
+  preflight, and source-workspace validation for the 169/0 source state and
+  168 default compiled patch classes.
 - Current source inventory: 169 migrated `IPatchMethod` / `ModPatcher` patch
   classes and 0 raw Harmony declarations in `docs/patch-inventory.md`.
+- Default compiled beta.135 DLLs exclude the debug-only
+  `Sts1ReplacementPrototype` unless `REPLACEMENT_PROTOTYPE_ENABLED` is defined.
 - Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
   Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch
   registration from that older package. Recapture beta.135 runtime smoke before

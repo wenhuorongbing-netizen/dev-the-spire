@@ -34,7 +34,7 @@
 - `PLATFORM-PACKAGE-CHECKS` P2 tooling-ready / tester-pending: Windows/macOS package checker docs and scripts exist; cross-machine live package parity still needs tester evidence.
 - `STS1EVENTS-NULL-SAFETY-WARNINGS` P1 source-fixed / runtime-open: current mod-project forced build is 0 errors / 0 warnings; live Sts1Events proof remains pending.
 - `REFACTOR-PHASE0-1-VALIDATION` P1 current: beta.93 build/source checks pass; retained split no-build lane passed 475 / 0 / 21 / 496. Phase 2 patch adapter checklist drafted; StS1Events default Off, guards active, combat events declare `IsShared`.
-- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.135 package parity, runtime preflight 28 / 0, and source-workspace validation 57 / 0 are current for the packaged 169/0 source state.
+- `RITSULIB-RUNTIME-SMOKE` P0 smoke-current / broader-runtime pending: beta.135 package parity, runtime preflight 28 / 0, and source-workspace validation 57 / 0 are current for the 169/0 source state and 168 default compiled patch classes.
   Previous beta.128 forced clicked Ancient UI smoke remains previous-package evidence; its default runtime patch-count is 152 because the StS1 replacement prototype is compile-symbol gated.
   Latest clicked smoke is `.tools/runtime-evidence/monkey-stability-20260623-062913/` packet 1621 / 0 for Urda, Morvi, Lotha, and normal Vakuu.
   beta.123/beta.99/beta.96/beta.93 and earlier smokes are previous-package context; enabled-mode proof, gameplay, save-load, co-op, QA, clean-worktree recapture, and handoff remain blocked.

@@ -291,7 +291,7 @@ public sealed partial class ReleaseArtifactTests
     }
 
     [ReleaseArtifactFact]
-    public void HarmonyPatchesResolveAgainstInstalledGameApi()
+    public void InstalledRitsuLibPatchClassesMatchPatchInventory()
     {
         var dataDir = GamePath("data_sts2_windows_x86_64");
         var ritsuLibDll = FindInstalledRitsuLibDll();
@@ -305,18 +305,24 @@ public sealed partial class ReleaseArtifactTests
         AppDomain.CurrentDomain.AssemblyResolve += resolver;
         try
         {
-            Assembly.LoadFrom(Path.Combine(dataDir, "0Harmony.dll"));
             Assembly.LoadFrom(Path.Combine(dataDir, "GodotSharp.dll"));
             Assembly.LoadFrom(Path.Combine(dataDir, "sts2.dll"));
-            Assembly.LoadFrom(ritsuLibDll);
+            var ritsuLib = Assembly.LoadFrom(ritsuLibDll);
             var ez = Assembly.LoadFrom(Path.Combine(installedModDir, "EZMicroBalance.dll"));
 
-            var harmonyType = Type.GetType("HarmonyLib.Harmony, 0Harmony", throwOnError: true)!;
-            var harmony = Activator.CreateInstance(harmonyType, "EZMicroBalance.test")!;
-            var patchAll = harmonyType.GetMethod("PatchAll", new[] { typeof(Assembly) })!;
+            var patchMethodType = ritsuLib.GetType("STS2RitsuLib.Patching.Models.IPatchMethod", throwOnError: true)!;
+            var installedPatchClasses = ez.GetTypes()
+                .Where(type => type is { IsAbstract: false, IsInterface: false } && patchMethodType.IsAssignableFrom(type))
+                .ToArray();
+            var classLevelHarmonyPatchTypes = ez.GetTypes()
+                .Where(type => type.GetCustomAttributesData()
+                    .Any(attribute => attribute.AttributeType.FullName == "HarmonyLib.HarmonyPatch"))
+                .Select(type => type.FullName)
+                .OrderBy(name => name, StringComparer.Ordinal)
+                .ToArray();
 
-            var exception = Record.Exception(() => patchAll.Invoke(harmony, new object[] { ez }));
-            Assert.Null(Unwrap(exception));
+            Assert.Equal(ExpectedDefaultCompiledPatchClassCount(), installedPatchClasses.Length);
+            Assert.Empty(classLevelHarmonyPatchTypes);
         }
         finally
         {
@@ -559,6 +565,30 @@ public sealed partial class ReleaseArtifactTests
         return expected
             .OrderBy(entry => entry, StringComparer.Ordinal)
             .ToArray();
+    }
+
+    private static int ExpectedMigratedPatchClassCount()
+    {
+        var inventory = ReadRepoText("docs", "patch-inventory.md");
+        var match = Regex.Match(inventory, @"\| Migrated to RitsuLib ModPatcher \| (?<count>\d+) \|");
+        Assert.True(match.Success, "docs/patch-inventory.md must record the migrated RitsuLib patch class count.");
+        return int.Parse(match.Groups["count"].Value);
+    }
+
+    private static int ExpectedDefaultCompiledPatchClassCount()
+    {
+        return ExpectedMigratedPatchClassCount() - CompileSymbolGatedPatchClassCount();
+    }
+
+    private static int CompileSymbolGatedPatchClassCount()
+    {
+        var replacementPrototype = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Runtime", "Sts1ReplacementPrototype.cs");
+        if (!replacementPrototype.Contains("#if REPLACEMENT_PROTOTYPE_ENABLED", StringComparison.Ordinal))
+        {
+            return 0;
+        }
+
+        return Regex.Matches(replacementPrototype, @"\bclass\s+\w+\s*:\s*IPatchMethod\b").Count;
     }
 
     private static IEnumerable<string> CandidateBuildDlls()

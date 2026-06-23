@@ -14,7 +14,7 @@ This test project guards source shape, localization, release documentation, pack
 | `AscensionFeatureGuardTests.cs` / `AscensionFeatureGuardTests.Rootblight.cs` | Ascension selector, gate, Rootblight/RootBud, docs, and source constraints. |
 | `AscensionV2MilestoneGuardTests.cs` / `AscensionV2MilestoneGuardTests.Rootblight.cs` / `AscensionV2MilestoneGuardTests.BossSeals.cs` | Ascension milestone-level source/localization expectations, Rootblight milestone guards, and Boss seal power/source-shape guards. |
 | `EngineeringGovernanceGuardTests.cs` / `EngineeringGovernanceGuardTests.ArchitectureCanary.cs` / `EngineeringGovernanceGuardTests.FeatureModuleMetadata.cs` / `EngineeringGovernanceGuardTests.FeatureBootstrap.cs` | Governance ownership for diagnostics, repository hygiene, release dashboard/planning docs, worktree batch script coverage, feature module metadata, feature bootstrap records/default-off gates/environment overrides, and architecture canary policy/diagnostic contracts. |
-| `ReleaseArtifactTests.cs` | Installed/package artifacts and Harmony target resolution. |
+| `ReleaseArtifactTests.cs` | Installed/package artifacts and RitsuLib patch inventory parity. |
 | `ReleaseCoverageGuardTests.cs` | Release docs, source coverage, and active feature completion claims. |
 | `ReleaseEvidenceGateTests.cs` / `ReleaseEvidenceGateTests.NoLaunchTemplates.cs` / `ReleaseEvidenceGateTests.ManualEvidenceTemplates.cs` / `ReleaseEvidenceGateTests.ManualHandoff.cs` / `ReleaseEvidenceGateTests.EvidenceHelpers.cs` | Release evidence verifier contracts, package hash checks, no-launch evidence-template scaffolding, manual handoff guards, and shared evidence helpers. |
 | `ReleaseHashGuardTests.cs` | Current package hash claims and stale-hash rejection. |

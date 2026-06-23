@@ -72,7 +72,8 @@ partials own Crystal Sphere, transform, and preview-diagnostic RitsuLib entry
 builders separately.
 
 Packaged beta.135 evidence covers build, publish, package parity, runtime
-preflight, and source-workspace validation for the packaged 169/0 source state.
+preflight, and source-workspace validation for the 169/0 source state and 168
+default compiled patch classes.
 Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,
 Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch registration
 from that older package. This proves forced clicked UI visibility only;

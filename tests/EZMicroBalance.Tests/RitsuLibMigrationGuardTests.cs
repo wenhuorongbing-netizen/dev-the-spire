@@ -885,7 +885,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("beta.135 package parity, runtime preflight, and source-workspace validation passed for the packaged 169/0 source state; previous beta.128 clicked Ancient UI smoke applied all 152 default runtime patch classes from that package.", record, StringComparison.Ordinal);
+        Assert.Contains("current source inventory and the 168 default compiled Spire Plus patch classes apply in the installed game.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -982,7 +982,8 @@ public sealed class RitsuLibMigrationGuardTests
         AssertSourceContains(
             coreReadme,
             "Packaged beta.135 evidence covers build, publish, package parity, runtime",
-            "preflight, and source-workspace validation for the packaged 169/0 source state.",
+            "preflight, and source-workspace validation for the 169/0 source state and 168",
+            "default compiled patch classes.",
             "Previous beta.128 evidence covers forced clicked Ancient UI smoke for Urda,",
             "Morvi, Lotha, and normal Vakuu with 152/152 default runtime patch registration",
             "Recapture beta.135 runtime",

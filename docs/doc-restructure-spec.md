@@ -22,7 +22,8 @@ and generated migrated/raw patch counts in `docs/patch-inventory.md`; do not
 duplicate those ledgers in the migration entry point.
 The RitsuLib integration lane is current for beta.135: compile package,
 manifest dependency, package parity, runtime preflight, and source-workspace validation
-are RitsuLib-only for the 169/0 source state. Previous beta.128
+are RitsuLib-only for the 169/0 source state and 168 default compiled patch
+classes. Previous beta.128
 clicked UI smoke, beta.99 settings/Off proof, beta.96 Off proof, and beta.93
 AdditiveBatch1 proof remain previous-package evidence only.
 
