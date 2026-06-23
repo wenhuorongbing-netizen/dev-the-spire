@@ -49,8 +49,9 @@ Path note:
 
 Patch:
 
-- `HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))`
-- Prefix sets `__result` to the modded async task and returns `false`, skipping the vanilla method.
+- Current source registers `PaelsHornPhase1Patch` through RitsuLib `IPatchMethod` with patch id `paels-horn-after-obtained`.
+- Target declaration: `new ModPatchTarget(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))`.
+- The prefix sets `__result` to the modded async task and returns `false`, skipping the vanilla method.
 
 Reason:
 

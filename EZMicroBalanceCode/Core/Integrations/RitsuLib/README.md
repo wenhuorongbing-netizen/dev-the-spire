@@ -3,7 +3,7 @@
 RitsuLib bootstrap integration lives here.
 
 Current source target: Slay the Spire 2 `v0.107.1`, `STS2.RitsuLib`
-`0.4.34`, and Spire Plus `v0.1.0-private-beta.123`.
+`0.4.34`, and Spire Plus `v0.1.0-private-beta.124`.
 
 This directory owns the RitsuLib bootstrap, migrated patch registration,
 content-pack registration, and SavedAttachedState field registration helper.

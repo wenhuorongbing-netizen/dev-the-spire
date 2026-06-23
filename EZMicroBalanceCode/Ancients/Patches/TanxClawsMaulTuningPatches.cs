@@ -1,10 +1,17 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]
-internal static class TanxClawsMaulTuningPatches
+internal sealed class TanxClawsMaulTuningPatches : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "tanx-claws-after-obtained";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Replace Tanx Claws pickup with upgraded Maul transformations";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Claws), nameof(Claws.AfterObtained))];
+
     [HarmonyPrefix]
-    private static bool UpgradeAllCreatedMauls(Claws __instance, ref Task __result)
+    private static bool Prefix(Claws __instance, ref Task __result)
     {
         __result = TransformIntoUpgradedMauls(__instance);
         return false;

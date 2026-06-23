@@ -69,6 +69,24 @@ public sealed class RitsuLibMigrationGuardTests
         "velvet-choker-turn-reset",
         "velvet-choker-room-reset",
         "velvet-choker-combat-reset",
+        // Low-risk Ancient reward hooks migrated after the RitsuLib-only cleanup
+        "jeweled-mask-combat-start",
+        "jewelry-box-after-obtained",
+        "jewelry-box-apotheosis-keywords",
+        "paels-horn-after-obtained",
+        "paels-tooth-after-obtained",
+        "paels-tooth-after-combat-end",
+        "paels-tooth-act-transition",
+        "preserved-fog-after-obtained",
+        "preserved-fog-folly-keywords",
+        "sozu-initial-potion-gate",
+        "ectoplasm-initial-gold-gate",
+        "sere-talon-after-obtained",
+        "sovereign-blade-forge-exhaust",
+        "sovereign-blade-on-play-jade-boons",
+        "tanx-claws-after-obtained",
+        "toasty-mittens-before-hand-draw",
+        "whispering-earring-auto-pre-play",
         // Clicked UI patches - owner-approved targeted migration
         "neow-initial-option-reroll",
         "urda-overgrowth-ancient-unlock",
@@ -167,6 +185,7 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedBatch4aCount = 9;
     private const int ExpectedBatch4bCount = 16;
     private const int ExpectedAncientRewardCount = 18;
+    private const int ExpectedLowRiskRewardHookCount = 17;
     private const int ExpectedClickedUiCount = 50;
     private const int ExpectedVisualHoverUiCount = 13;
     private const int ExpectedEventVisualUiCount = 1;
@@ -175,8 +194,8 @@ public sealed class RitsuLibMigrationGuardTests
     private const int ExpectedBatch4cLocalizationCount = 6;
     private const int ExpectedInlineLocalizationCount = 4;
     private const int ExpectedRitsuLibCompatibilityCount = 1;
-    private const int ExpectedTotalMigratedCount = 127;
-    private const int ExpectedRawHarmonyPatchDeclarationCount = 43;
+    private const int ExpectedTotalMigratedCount = 144;
+    private const int ExpectedRawHarmonyPatchDeclarationCount = 26;
 
     private static readonly string[] ExpectedBatch4cLocalizationPatchClasses =
     [
@@ -216,8 +235,9 @@ public sealed class RitsuLibMigrationGuardTests
     }
 
     /// <summary>
-    /// The expected migrated patch count must be 127:
+    /// The expected migrated patch count must be 144:
     /// 9 Batch 4a + 16 Batch 4b + 18 Ancient reward patches
+    /// + 17 low-risk reward hooks
     /// + 50 clicked/UI patches + 13 visual/hover UI patches
     /// + 1 event visual UI patch + 2 intent UI patches
     /// + 7 enemy damage polish getter patches
@@ -229,7 +249,7 @@ public sealed class RitsuLibMigrationGuardTests
     {
         Assert.Equal(ExpectedTotalMigratedCount, ExpectedMigratedPatchIds.Length);
         Assert.Equal(
-            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount,
+            ExpectedBatch4aCount + ExpectedBatch4bCount + ExpectedAncientRewardCount + ExpectedLowRiskRewardHookCount + ExpectedClickedUiCount + ExpectedVisualHoverUiCount + ExpectedEventVisualUiCount + ExpectedIntentUiCount + ExpectedEnemyDamagePolishCount + ExpectedBatch4cLocalizationCount + ExpectedInlineLocalizationCount + ExpectedRitsuLibCompatibilityCount,
             ExpectedTotalMigratedCount);
     }
 
@@ -342,7 +362,7 @@ public sealed class RitsuLibMigrationGuardTests
 
         AssertSourceContains(
             currentValidation,
-            "This is current-package smoke-level clicked Ancient UI migration proof",
+            "The retained beta.123 clicked Ancient UI proof covers the earlier packaged 127-patch state only; it does not prove beta.124 runtime patch registration.",
             "Gameplay, gated Vakuu fight-option UI, Vakuu victory return/no-black-screen, save-load");
         AssertSourceContains(
             projectState,
@@ -429,6 +449,24 @@ public sealed class RitsuLibMigrationGuardTests
             "RegisterPatch<VelvetChokerTurnResetPatch>();",
             "RegisterPatch<VelvetChokerRoomResetPatch>();",
             "RegisterPatch<VelvetChokerCombatResetPatch>();",
+            "RegisterLowRiskRewardHookPatches(patcher);",
+            "RegisterPatch<JeweledMaskCombatStartPatch>();",
+            "RegisterPatch<JewelryBoxPatch>();",
+            "RegisterPatch<JewelryBoxApotheosisCanonicalKeywordsPatch>();",
+            "RegisterPatch<PaelsHornPhase1Patch>();",
+            "RegisterPatch<PaelsToothPickupPatch>();",
+            "RegisterPatch<PaelsToothCombatPatch>();",
+            "RegisterPatch<PaelsToothActTransitionPatch>();",
+            "RegisterPatch<PreservedFogPatch>();",
+            "RegisterPatch<FollyKeywordsPatch>();",
+            "RegisterPatch<SozuPotionGatePatch>();",
+            "RegisterPatch<EctoplasmGoldGatePatch>();",
+            "RegisterPatch<SereTalonPickupPatches>();",
+            "RegisterPatch<SovereignBladeForgeExhaustPatch>();",
+            "RegisterPatch<SovereignBladeJadeBoonsOnPlayPatch>();",
+            "RegisterPatch<TanxClawsMaulTuningPatches>();",
+            "RegisterPatch<ToastyMittensPatch>();",
+            "RegisterPatch<WhisperingEarringPatch>();",
             "RegisterAncientEventUiPatches(patcher);",
             "RegisterPatch<NeowInitialOptionRerollPatch>();",
             "RegisterPatch<UrdaOvergrowthPatch>();",
@@ -578,7 +616,7 @@ public sealed class RitsuLibMigrationGuardTests
         Assert.Contains("`docs/goals/migration.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/integrations/ritsulib.md`", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("`docs/patch-inventory.md`", migrationDoc, StringComparison.Ordinal);
-        Assert.Contains("Current boundary: Spire Plus is RitsuLib-only for beta.123", migrationDoc, StringComparison.Ordinal);
+        Assert.Contains("Spire Plus is RitsuLib-only for beta.124", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Batch 4c localization fallback patches, the visual-hover UI getter batch", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Ancient reward getter/relic hook patches, Aeonglass intent UI patches", migrationDoc, StringComparison.Ordinal);
         Assert.Contains("Enemy Damage polish getter patches", migrationDoc, StringComparison.Ordinal);
@@ -668,7 +706,7 @@ public sealed class RitsuLibMigrationGuardTests
             "The 2026-06-18 recapture was static governance only; the 2026-06-22 continuation records owner approval for exactly the six localization fallback candidates.",
             record,
             StringComparison.Ordinal);
-        Assert.Contains("installed beta.123 package parity passed; current beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes.", record, StringComparison.Ordinal);
+        Assert.Contains("beta.124 package parity, runtime preflight, and source-workspace validation passed for the packaged 144/26 state; latest beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from that earlier package.", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.87 package parity passes", record, StringComparison.Ordinal);
         Assert.DoesNotContain("installed beta.86 package parity passes", record, StringComparison.Ordinal);
         Assert.Contains("Current accepted no-build test lanes pass with 0 failures.", record, StringComparison.Ordinal);
@@ -815,21 +853,32 @@ public sealed class RitsuLibMigrationGuardTests
 
     /// <summary>
     /// docs/patch-inventory.md must list the migrated patches section and
-    /// state the correct total migrated count (127).
+    /// state the correct current source migration counts.
     /// </summary>
     [Fact]
     public void PatchInventoryDocListsMigratedPatches()
     {
         var inventory = ReadRepoText("docs", "patch-inventory.md");
 
-        Assert.Contains("Migrated to RitsuLib ModPatcher | 127", inventory, StringComparison.Ordinal);
-        Assert.Contains("Raw HarmonyPatch remaining | 43", inventory, StringComparison.Ordinal);
+        Assert.Contains("Migrated to RitsuLib ModPatcher | 144", inventory, StringComparison.Ordinal);
+        Assert.Contains("Raw HarmonyPatch remaining | 26", inventory, StringComparison.Ordinal);
         Assert.Contains("## Migrated Patches (RitsuLib ModPatcher)", inventory, StringComparison.Ordinal);
         Assert.Contains("## Raw HarmonyPatch Declarations (Unmigrated)", inventory, StringComparison.Ordinal);
         AssertSourceContains(
             inventory,
             "`VakuRewardPatches.cs` | 8 | `iron-club-vars, brilliant-scarf-vars, beautiful-bracelet-vars, beautiful-bracelet-after-obtained, music-box-before-card-played, music-box-after-card-played, music-box-turn-reset, music-box-combat-reset` | ancient-reward |",
             "`VelvetChokerPatches.cs` | 10 | `velvet-choker-vars, velvet-choker-display-amount, velvet-choker-should-play, velvet-choker-energy-cost, velvet-choker-x-cost-can-play, velvet-choker-x-cost-spend, velvet-choker-after-card-played, velvet-choker-turn-reset, velvet-choker-room-reset, velvet-choker-combat-reset` | ancient-reward |",
+            "`JeweledMaskPatches.cs` | 1 | `jeweled-mask-combat-start` | ancient-reward-low-risk |",
+            "`JewelryBoxPatches.cs` | 2 | `jewelry-box-after-obtained, jewelry-box-apotheosis-keywords` | ancient-reward-low-risk |",
+            "`PaelsHornPhase1Patch.cs` | 1 | `paels-horn-after-obtained` | ancient-reward-low-risk |",
+            "`PaelsToothPatches.cs` | 3 | `paels-tooth-after-obtained, paels-tooth-after-combat-end, paels-tooth-act-transition` | ancient-reward-low-risk |",
+            "`PreservedFogPatches.cs` | 2 | `preserved-fog-after-obtained, preserved-fog-folly-keywords` | ancient-reward-low-risk |",
+            "`PickupRewardGatePatches.cs` | 2 | `sozu-initial-potion-gate, ectoplasm-initial-gold-gate` | ancient-reward-low-risk |",
+            "`SereTalonPickupPatches.cs` | 1 | `sere-talon-after-obtained` | ancient-reward-low-risk |",
+            "`SovereignBladeForgePatches.cs` | 2 | `sovereign-blade-forge-exhaust, sovereign-blade-on-play-jade-boons` | ancient-reward-low-risk |",
+            "`TanxClawsMaulTuningPatches.cs` | 1 | `tanx-claws-after-obtained` | ancient-reward-low-risk |",
+            "`ToastyMittensPatches.cs` | 1 | `toasty-mittens-before-hand-draw` | ancient-reward-low-risk |",
+            "`WhisperingEarringPatches.cs` | 1 | `whispering-earring-auto-pre-play` | ancient-reward-low-risk |",
             "`NeowInitialOptionRerollPatch.cs` | 1 | `neow-initial-option-reroll` | clicked-ui |",
             "`UrdaAct1AncientService.cs` | 2 | `urda-overgrowth-ancient-unlock, urda-underdocks-ancient-unlock` | clicked-ui |",
             "`UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |",

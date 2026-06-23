@@ -5,12 +5,18 @@ using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Entities.Cards;
 using MegaCrit.Sts2.Core.Models.Cards;
 using MegaCrit.Sts2.Core.Models.Relics;
+using STS2RitsuLib.Patching.Models;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]
-internal static class PaelsHornPhase1Patch
+internal sealed class PaelsHornPhase1Patch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "paels-horn-after-obtained";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add one Relax and one Relax+ when Pael's Horn is obtained";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))];
+
     [HarmonyPrefix]
     private static bool Prefix(PaelsHorn __instance, ref Task __result)
     {

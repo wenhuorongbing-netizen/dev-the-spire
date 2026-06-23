@@ -1,8 +1,15 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]
-internal static class ToastyMittensPatch
+internal sealed class ToastyMittensPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "toasty-mittens-before-hand-draw";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Offer Toasty Mittens top-card exhaust before owner hand draw";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))];
+
     [HarmonyPrefix]
     private static bool Prefix(ToastyMittens __instance, Player player, PlayerChoiceContext choiceContext, ICombatState combatState, ref Task __result)
     {

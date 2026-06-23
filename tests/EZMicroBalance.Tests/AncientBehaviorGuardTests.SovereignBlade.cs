@@ -16,7 +16,8 @@ public sealed partial class AncientBehaviorGuardTests
         AssertSourceContains(
             source,
             "public const decimal Amount = 3m",
-            "[HarmonyPatch(typeof(SovereignBlade), \"OnPlay\")]",
+            "IPatchMethod.PatchId => \"sovereign-blade-on-play-jade-boons\"",
+            "ModPatchTarget(typeof(SovereignBlade), \"OnPlay\")",
             "await original;",
             "PowerCmd.Apply<StrengthPower>(choiceContext, owner, Amount, owner, blade)",
             "PowerCmd.Apply<DexterityPower>(choiceContext, owner, Amount, owner, blade)",

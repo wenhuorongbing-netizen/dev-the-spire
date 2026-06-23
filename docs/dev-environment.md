@@ -1,14 +1,14 @@
 # Development Environment
 
-## 2026-06-22 Current Override
+## 2026-06-23 Current Override
 
 - Local `Directory.Build.props` points `Sts2Path` at `E:\Steam\steamapps\common\Slay the Spire 2`.
 - The installed game `release_info.json` currently reports Slay the Spire 2 `v0.107.1`, commit `59260271`, date `2026-06-18T15:43:56-07:00`.
 - Installed `STS2-RitsuLib` `v0.4.34` uses the direct NuGet runtime layout at `<GameRoot>\mods\STS2-RitsuLib`; the previous `v0.4.32` runtime install is backed up under `%TEMP%\codex-sts2-ritsulib-backup-0.4.32-20260622-025408`.
-- The recovered local source snapshot has been refreshed from the installed `v0.107.1` game PCK and `sts2.dll` using GDRE Tools `v2.5.0`. The 2026-06-22 `scripts\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot -ExpectedPackageVersion v0.1.0-private-beta.123 -ExpectedRitsuLibVersion 0.4.34 -ExpectedRitsuCompatBranch 0.107.1 -FailOnMismatch` recheck passed 57 checks / 0 mismatches for the current package, including local `STS2-RitsuLib.xml` API marker coverage. Retained warnings are the GDRE 18 failed scripts and one debug-scene parse warning, not source identity mismatches. Retained `v0.107.0` beta.85/beta.86/beta.87 direct smokes remain previous-package/game-version loader context.
+- The recovered local source snapshot has been refreshed from the installed `v0.107.1` game PCK and `sts2.dll` using GDRE Tools `v2.5.0`. The 2026-06-23 `scripts\check-local-godot-source-workspace.ps1 -RequireCurrentSourceSnapshot -ExpectedPackageVersion v0.1.0-private-beta.124 -ExpectedRitsuLibVersion 0.4.34 -ExpectedRitsuCompatBranch 0.107.1 -FailOnMismatch` recheck passed 58 checks / 0 mismatches for the current package, including local `STS2-RitsuLib.xml` API marker coverage. Retained warnings are the GDRE 18 failed scripts and one debug-scene parse warning, not source identity mismatches. Retained `v0.107.0` beta.85/beta.86/beta.87 direct smokes remain previous-package/game-version loader context.
   The first `v0.107.1` beta.87 recapture at `.tools\runtime-evidence\v01071-beta87-additive-batch1-direct-20260619-102309` reached main menu and matched AdditiveBatch1 registration shape, but failed clean-loader proof because previous package `v3.2.1` logged 2 patch failures against `v0.107.1`.
   The beta.88 previous package `v3.3.0` recapture at `.tools\runtime-evidence\v01071-beta88-previous-package330-additive-batch1-direct-cleanlog-20260619-103937` reached main menu on `v0.107.1`, loaded RitsuLib/Spire Plus, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus patches, audited clean, passed enabled-mode verifier 31 / 0, and passed packet verification with 0 mismatches.
-- Current RitsuLib-only migration evidence: solution build, focused guards, publish, package refresh, installed package checker, runtime preflight, source-workspace checker, and clicked Ancient UI smoke passed for beta.123 after the STS2-RitsuLib `v0.4.34` update. The retained beta.88/beta.90/beta.93/beta.96/beta.99 smokes are previous-package contexts only. The direct-smoke verifier now accepts both append-style current-log slices and Godot-rewritten logs only when `godot.log.current-iteration` matches the retained after-launch log. Earlier cross-thread aborts are runner-contamination evidence only.
+- Current RitsuLib-only migration evidence: solution build, focused guards, publish, package refresh, installed package checker, runtime preflight, and source-workspace checker passed for beta.124 after the STS2-RitsuLib `v0.4.34` update. Latest clicked Ancient UI smoke remains beta.123 previous-package evidence. The retained beta.88/beta.90/beta.93/beta.96/beta.99 smokes are previous-package contexts only. The direct-smoke verifier now accepts both append-style current-log slices and Godot-rewritten logs only when `godot.log.current-iteration` matches the retained after-launch log. Earlier cross-thread aborts are runner-contamination evidence only.
 
 Historical environment rows below are retained for setup history. Prefer this override and `PROJECT_STATE.md` for current status.
 
@@ -95,7 +95,7 @@ Historical environment rows below are retained for setup history. Prefer this ov
 - Last required diff check: `git diff --check` on 2026-06-20 during the RitsuLib/source-snapshot documentation alignment pass. Result: exit code 0 with no whitespace errors; Git reported the existing CRLF normalization warning for `scripts/check-sts1-event-current-doc-claims.ps1`.
 - Last attempted default publish: `dotnet publish EZMicroBalance.sln -m:1` on 2026-06-18 after the beta.86 package/source alignment pass. Result: succeeded against the real installed mods root. The attempted `dotnet publish EZMicroBalance.sln -m:1 --no-incremental` command failed because solution-level publish does not accept `--no-incremental`; the successful rerun omitted that switch.
 - Last successful isolated publish: `dotnet publish EZMicroBalance.sln -p:ModsPath=.tools\publish-game-root\mods\` on 2026-05-27 after the beta.84 Urda Seedbed Harmony patch bugfix. Result: succeeded against an isolated temporary mods root; the isolated root is tooling context only and is not the current package-parity source.
-- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.123.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.123.zip` were refreshed and hash-checked on 2026-06-22 for local manual testing.
+- Publish/package note: package staging, the versioned package folder, `publish\SpirePlus-v0.1.0-private-beta.124.zip`, `E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance`, and `E:\Steam\steamapps\common\Slay the Spire 2\SpirePlus-v0.1.0-private-beta.124.zip` were refreshed and hash-checked on 2026-06-22 for local manual testing.
   The zip uses the player-facing `SpirePlus` archive name while the install folder remains `EZMicroBalance`.
   Current loader context:
   - beta.123 package parity and source-workspace validation are current package context.
@@ -108,17 +108,17 @@ Historical environment rows below are retained for setup history. Prefer this ov
   - beta.88 AdditiveBatch1 is previous package loader/registration evidence only.
   The beta.85 Off and CanaryOnly loader rows remain previous-package context under `.tools\runtime-evidence\v01070-beta85-current-package-runtime-fix-20260611-0510` and `.tools\runtime-evidence\v01070-beta85-canary-20260617-233621`.
   Live gameplay, save-load, failure/death-path, gated Vakuu fight-option/victory return, and co-op verification remain pending; beta.123 clicked Ancient UI smoke exists under `.tools\runtime-evidence\monkey-stability-20260622-235746`.
-- Last PCK hash check: the 2026-06-22 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `017C143F99BE2327E606D1BA2EF38F0D392AD58BBEE9BA8C2108EAD546828FF9`.
-- Last staging/versioned DLL hash check: SHA256 `D05E6D38705AC96DFF986E5FEDC6730A68BAFC5FDE62FCF1AA1C4FE3A668346F`.
+- Last PCK hash check: the 2026-06-22 local package-hash refresh found the staging, versioned, and zip-entry PCK at SHA256 `E3DFE9E2D9C861D2F8283275AABA9153EA0A1B75B0E6167DB3C16F2FDA0C7E5A`.
+- Last staging/versioned DLL hash check: SHA256 `E91883807BE0B1628CB771CE7875A94FBB1E62E312EE00571E651B04F9BE9F00`.
   Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 - Last Harmony patch audit: standalone .NET 9 audit called `Harmony.PatchAll(...)` on `EZMicroBalance.dll` and returned `PatchAll OK`.
-- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.123.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-06-22. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
+- Last private beta package: `publish\SpirePlus-v0.1.0-private-beta.124.zip` was rebuilt from the real installed mod artifacts, copied to the game root, and synced into the real installed mod folder on 2026-06-22. The staging, versioned, installed, game-root zip, and zip-entry artifacts match the hashes below.
   - Package note: `README_INSTALL.txt` is a short manual-test install note and says Ancient selections grant visible marker relics.
-  - Zip SHA256: `C226EA4008807591756D475A710B251B41FD7E89582AA263F1F9057403559CB8`
-  - DLL SHA256: `D05E6D38705AC96DFF986E5FEDC6730A68BAFC5FDE62FCF1AA1C4FE3A668346F`
-  - README SHA256: `EE917D649E7E3B50058F3EFAD1C3750F2D8DDFB1598BBC07B7027F99C3332B61`
-  - Manifest SHA256: `A788E258B5454FEB0544C3888FFEADF1986C73C6E2E4EEF1AFF2A44D0BC79C4B`
-  - PCK SHA256: `017C143F99BE2327E606D1BA2EF38F0D392AD58BBEE9BA8C2108EAD546828FF9`
+  - Zip SHA256: `92CCAC62276DFACD24E6FA2EB3E5121BC2FB0B7C1298E1455F06D8F6EC17566D`
+  - DLL SHA256: `E91883807BE0B1628CB771CE7875A94FBB1E62E312EE00571E651B04F9BE9F00`
+  - README SHA256: `6F1F26FA53CDD6F1027C0277B422C4AF70B85A13BA790DFE1A66F301E1C29851`
+  - Manifest SHA256: `BD3CE20020D0BC1272FF3136E33D3F65ED16F0817B58047CCADC3CA242E616F4`
+  - PCK SHA256: `E3DFE9E2D9C861D2F8283275AABA9153EA0A1B75B0E6167DB3C16F2FDA0C7E5A`
   - Entries: `EZMicroBalance/EZMicroBalance.dll`, `.json`, `.pck`, and `README_INSTALL.txt`.
 - Last release art audit: `EZMicroBalance/mod_image.png` and `publish\EZMicroBalance-cover-source.png` currently have SHA256 `320112CC087B38C7FA1E1C92C67455A894B2435E3BB0A6B399D05576A3CFDE75` and were manually checked as original generated art with no visible text, letters, numbers, numerals, logos, or official game assets.
 - Publish note: Headless Godot export requires `export_presets.cfg` to be UTF-8 without BOM and needs local runtime references available to the editor assembly scan. `EZMicroBalance.csproj` copies `sts2.dll`, `0Harmony.dll`, and STS2-RitsuLib into the Godot temp build folders before export; the selected-resource PCK still contains only active mod resources.

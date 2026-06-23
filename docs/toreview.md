@@ -1,19 +1,19 @@
 # Spire Plus To Review
 Current queue for user manual testing. Full pre-slim implementation history is archived at `docs/archive/feature-audits/toreview-pre-slim-20260518.md`.
-Current test package: `publish/SpirePlus-v0.1.0-private-beta.123.zip`.
+Current test package: `publish/SpirePlus-v0.1.0-private-beta.124.zip`.
 
 Current package hashes:
 | Artifact | SHA256 |
 | --- | --- |
-| ZIP | `C226EA4008807591756D475A710B251B41FD7E89582AA263F1F9057403559CB8` |
-| DLL | `D05E6D38705AC96DFF986E5FEDC6730A68BAFC5FDE62FCF1AA1C4FE3A668346F` |
-| PCK | `017C143F99BE2327E606D1BA2EF38F0D392AD58BBEE9BA8C2108EAD546828FF9` |
-| Manifest | `A788E258B5454FEB0544C3888FFEADF1986C73C6E2E4EEF1AFF2A44D0BC79C4B` |
-| README_INSTALL | `EE917D649E7E3B50058F3EFAD1C3750F2D8DDFB1598BBC07B7027F99C3332B61` |
+| ZIP | `92CCAC62276DFACD24E6FA2EB3E5121BC2FB0B7C1298E1455F06D8F6EC17566D` |
+| DLL | `E91883807BE0B1628CB771CE7875A94FBB1E62E312EE00571E651B04F9BE9F00` |
+| PCK | `E3DFE9E2D9C861D2F8283275AABA9153EA0A1B75B0E6167DB3C16F2FDA0C7E5A` |
+| Manifest | `BD3CE20020D0BC1272FF3136E33D3F65ED16F0817B58047CCADC3CA242E616F4` |
+| README_INSTALL | `6F1F26FA53CDD6F1027C0277B422C4AF70B85A13BA790DFE1A66F301E1C29851` |
 
-Latest validation snapshot: beta.123 build, publish/package refresh, installed-package parity, runtime preflight, source-workspace check, and clicked Ancient UI smoke are the current package target.
+Latest validation snapshot: beta.124 build, publish/package refresh, installed-package parity, runtime preflight, and source-workspace check are the current package target. beta.124 still needs game-launch/runtime patch-count and clicked UI proof.
 
-Current beta.123 clicked UI proof is `.tools/runtime-evidence/monkey-stability-20260622-235746/` with 4 / 4 iterations, clean audit, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 migrated Spire Plus patches applied, and packet verifier 1621 / 0. Previous beta.99 settings/Off proof is previous-package context. Previous beta.96 Off proof and beta.93 AdditiveBatch1 proof remain previous-package loader/registration context only. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, beta.88 AdditiveBatch1, beta.90 RitsuLib-only proof, and beta.19 startup proof remain previous-package or historical context. Gameplay, save-load, preview-tools, Vakuu fight, current enabled-mode proof, and co-op proof remain pending.
+Latest beta.123 clicked UI proof is `.tools/runtime-evidence/monkey-stability-20260622-235746/` with 4 / 4 iterations, clean audit, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 migrated Spire Plus patches from that package applied, and packet verifier 1621 / 0. The current beta.124 package contains the 144/26 source state but is not yet runtime-smoked. Previous beta.99 settings/Off proof is previous-package context. Previous beta.96 Off proof and beta.93 AdditiveBatch1 proof remain previous-package loader/registration context only. Beta.85 Off and CanaryOnly, beta.87 AdditiveBatch1, beta.88 AdditiveBatch1, beta.90 RitsuLib-only proof, and beta.19 startup proof remain previous-package or historical context. Gameplay, save-load, preview-tools, Vakuu fight, current enabled-mode proof, and co-op proof remain pending.
 
 ## Retest Queue
 | ID | Area | What changed | Manual proof needed |

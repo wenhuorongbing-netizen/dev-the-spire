@@ -127,7 +127,8 @@ public sealed class GoalCompletionGuardTests
 
         AssertSourceContains(
             pickupPatch,
-            "[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]",
+            "IPatchMethod.PatchId => \"sere-talon-after-obtained\"",
+            "ModPatchTarget(typeof(SereTalon), nameof(SereTalon.AfterObtained))",
             "private const int CurseOfferCount = 4",
             "private const int CursePickCount = 1",
             "private const int NormalWishCount = 2",
@@ -138,7 +139,8 @@ public sealed class GoalCompletionGuardTests
 
         AssertSourceContains(
             tanxClawsPatch,
-            "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
+            "IPatchMethod.PatchId => \"tanx-claws-after-obtained\"",
+            "ModPatchTarget(typeof(Claws), nameof(Claws.AfterObtained))",
             "ModelDb.Card<Maul>()",
             "CardCmd.Upgrade(maul, CardPreviewStyle.None)",
             "Tanx Claws should always create the threatening version of Maul");

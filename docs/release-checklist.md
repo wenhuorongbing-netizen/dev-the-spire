@@ -13,14 +13,14 @@ Target manifest id: `EZMicroBalance`
 
 ## Build And Publish
 
-Current status note (2026-06-22): the active manifest is `v0.1.0-private-beta.123` after the RitsuLib compatibility, package refresh, and clicked Ancient UI smoke pass.
+Current status note (2026-06-23): the active manifest is `v0.1.0-private-beta.124` after the RitsuLib compatibility and package refresh pass.
 The beta.88 package/hash rows and direct `v0.107.1` AdditiveBatch1 smoke are previous-package context context only. The beta.90 rows are previous RitsuLib-only package context.
-The beta.123 package/hash rows, runtime preflight, source-workspace validation,
-and clicked Ancient UI smoke are current package evidence. The beta.123 smoke is
+The beta.124 package/hash rows, runtime preflight, and source-workspace validation
+are current package/no-launch evidence. beta.124 still needs game-launch and clicked UI proof. The latest beta.123 smoke is
 captured under `.tools\runtime-evidence\monkey-stability-20260622-235746`;
 it covered Urda, Morvi, Lotha, and normal Vakuu with 4 / 4 iterations, all 127
 migrated Spire Plus patches applied, clean audits, exact package/game/Ritsu
-markers, and packet verification 1621 / 0. The
+markers, and packet verification 1621 / 0 for the earlier packaged state. The
 beta.99 settings proof is previous-package context captured under
 `.tools\runtime-evidence\mod-settings-beta99-ritsulib-click-20260621-223210`;
 it rendered the Spire Plus RitsuLib settings page, retained same-session
@@ -49,8 +49,8 @@ Gameplay, save-load, current enabled-mode proof, co-op, and independent QA evide
 - [x] Normal source/localization/documentation guard tests do not require ignored publish/package artifacts.
 - [x] Release artifact tests are opt-in with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1` after publish and package refresh. Legacy `EZMB_RUN_RELEASE_ARTIFACT_TESTS=1` remains accepted.
 - [x] Release artifact, installed DLL/PCK, package hash, and runtime-evidence guard tests pass after the latest package refresh with `SPIREPLUS_RUN_RELEASE_ARTIFACT_TESTS=1`.
-- [x] `publish/SpirePlus-v0.1.0-private-beta.123.zip` is rebuilt from the beta.123 RitsuLib compatibility and package refresh pass and copied to the local game root for manual testing.
-- Current package hashes: DLL `D05E6D38705AC96DFF986E5FEDC6730A68BAFC5FDE62FCF1AA1C4FE3A668346F`; manifest `A788E258B5454FEB0544C3888FFEADF1986C73C6E2E4EEF1AFF2A44D0BC79C4B`; PCK `017C143F99BE2327E606D1BA2EF38F0D392AD58BBEE9BA8C2108EAD546828FF9`; ZIP-entry `README_INSTALL.txt` `EE917D649E7E3B50058F3EFAD1C3750F2D8DDFB1598BBC07B7027F99C3332B61`; zip `C226EA4008807591756D475A710B251B41FD7E89582AA263F1F9057403559CB8`.
+- [x] `publish/SpirePlus-v0.1.0-private-beta.124.zip` is rebuilt from the beta.123 RitsuLib compatibility and package refresh pass and copied to the local game root for manual testing.
+- Current package hashes: DLL `E91883807BE0B1628CB771CE7875A94FBB1E62E312EE00571E651B04F9BE9F00`; manifest `BD3CE20020D0BC1272FF3136E33D3F65ED16F0817B58047CCADC3CA242E616F4`; PCK `E3DFE9E2D9C861D2F8283275AABA9153EA0A1B75B0E6167DB3C16F2FDA0C7E5A`; ZIP-entry `README_INSTALL.txt` `6F1F26FA53CDD6F1027C0277B422C4AF70B85A13BA790DFE1A66F301E1C29851`; zip `92CCAC62276DFACD24E6FA2EB3E5121BC2FB0B7C1298E1455F06D8F6EC17566D`.
   - This hash refresh records automated source/package validation plus smoke-level clicked Ancient UI proof. Live gameplay, save-load, natural A11 route-click traversal, failure/death-path, gated Vakuu fight-option UI, and co-op verification remain pending.
   - Detailed pass history lives in `docs/review.md` and `docs/archive/**`.
 

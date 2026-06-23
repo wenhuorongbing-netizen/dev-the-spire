@@ -2,7 +2,7 @@
 
 ## Status
 
-Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 127 migrated RitsuLib `IPatchMethod` patch classes and 43 raw Harmony declarations remaining after the Batch 4c localization, visual-hover UI, A20 reward proceed/portrait, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, Act Ancient unlock-list UI, Vakuu event-state UI, core inline-localization fallback, Ancient reward getter/relic hook, Aeonglass intent UI, Enemy Damage polish getter, and RitsuLib compatibility migrations. Current beta.123 package parity and clicked Ancient UI smoke exist on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. The beta.123 smoke covers the current 127-patch migrated package under `.tools/runtime-evidence/monkey-stability-20260622-235746/`. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
+Compile and manifest dependency are active. `EZMicroBalance.csproj` references `STS2.RitsuLib` only, and `EZMicroBalance.json` declares only `STS2-RitsuLib` as the runtime dependency. Current source has 144 migrated RitsuLib `IPatchMethod` patch classes and 26 raw Harmony declarations remaining after the Batch 4c localization, visual-hover UI, A20 reward proceed/portrait, Meat Cleaver rest-site UI, Preview transform prediction source/lifetime, Ascension selection/lobby UI, Neow/Vakuu event-option UI, Act Ancient unlock-list UI, Vakuu event-state UI, core inline-localization fallback, Ancient reward getter/relic hook, low-risk reward hook, Aeonglass intent UI, Enemy Damage polish getter, and RitsuLib compatibility migrations. Current beta.124 package parity, runtime preflight, and source-workspace validation exist on Slay the Spire 2 `v0.107.1` with official `STS2-RitsuLib` `v0.4.34` in direct NuGet runtime layout. The latest beta.123 clicked UI smoke covers the previous packaged 127-patch migrated state under `.tools/runtime-evidence/monkey-stability-20260622-235746/`; beta.124 needs its own game-launch/runtime proof before being cited as installed-game patch-count evidence. Older beta.99/beta.96/beta.93 and earlier packets are previous-package or previous-game-version evidence only.
 
 - Compile package: `STS2.RitsuLib` `0.4.34` from NuGet.
 - Runtime dependency: manifest declares `STS2-RitsuLib` with `min_version: 0.4.34`.
@@ -15,11 +15,11 @@ Future migration work has two first checks: confirm the latest stable RitsuLib
 package line, then inspect the unpacked local game source under
 `source code/src/Core/` before changing game-facing behavior.
 
-The current `v0.107.1` game install uses the official RitsuLib `v0.4.34` direct NuGet runtime files. Installed beta.123 package parity is recorded on 2026-06-22. Packaged beta.123 evidence covers build, publish, package parity, runtime preflight 28 / 0, source-workspace validation 57 / 0 with retained GDRE warnings only, and clicked Ancient UI smoke. Current beta.123 clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-20260622-235746/` covered `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. This smoke is current-package smoke-level clicked Ancient UI proof only. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
+The current `v0.107.1` game install uses the official RitsuLib `v0.4.34` direct NuGet runtime files. Installed beta.124 package parity is recorded on 2026-06-23. Packaged beta.124 evidence covers build, publish, package parity, runtime preflight 28 / 0, and source-workspace validation 58 / 0 with retained GDRE warnings only. Latest beta.123 clicked Ancient UI smoke proof at `.tools/runtime-evidence/monkey-stability-20260622-235746/` covered `URDA`, `MORVI`, `LOTHA`, and normal `VAKUU` with command ACKs, screenshots, clean audits, StS1 Off verifier pass, exact game/Ritsu/package markers, all 127 Spire Plus ModPatcher patches applied, and packet verification 1621 / 0. This smoke is previous-package smoke-level clicked Ancient UI proof only. Previous beta.99 settings/off proof, beta.96 direct Off proof, beta.93 AdditiveBatch1 proof, and older loader packets remain previous-package or previous-game-version context.
 
-Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.123 proof includes package parity, runtime preflight, source-workspace validation, and clicked Ancient UI smoke. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
+Revision M source-fix context exists under `.tools/runtime-evidence/v01070-current-source-getter-targets-20260610-1000/`: it reached main menu on `v0.107.0`, selected RitsuLib compat branch `0.107.0`, applied 25/25 Spire Plus ModPatcher patches, and audited clean. Current beta.124 proof includes package parity, runtime preflight, and source-workspace validation only; beta.124 clicked UI and runtime launch proof remain pending. Gameplay, current enabled-mode registration/gameplay, gated Vakuu fight-option/victory return, save-load, image/render, replacement functional proof, co-op/fail-closed proof, independent QA, and versioned tester-package handoff remain pending. Handoff must recapture HEAD and worktree status after any later edits; post-baseline no-game/doc-governance recaptures do not close manual gameplay gates.
 
-Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.34` after NuGet and Nexus showed `0.4.34` as the latest available package line. The current package version is `v0.1.0-private-beta.123` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, rest-site UI migration, Preview transform prediction source/lifetime migration, Act Ancient unlock-list and Vakuu event-state UI migration, Ancient reward getter/relic hook migration, Aeonglass intent UI migration, Enemy Damage polish getter migration, and beta.123 package refresh.
+Package metadata decision: the beta.99 RitsuLib refresh bumped both `STS2.RitsuLib` and the `STS2-RitsuLib` manifest minimum to `0.4.34` after NuGet and Nexus showed `0.4.34` as the latest available package line. The current package version is `v0.1.0-private-beta.124` after SavedAttachedState initialization hardening, RitsuLib default localization alias coverage, visual-hover UI getter migration, rest-site UI migration, Preview transform prediction source/lifetime migration, Act Ancient unlock-list and Vakuu event-state UI migration, Ancient reward getter/relic hook migration, low-risk reward hook migration, Aeonglass intent UI migration, Enemy Damage polish getter migration, and beta.124 package refresh.
 
 Bootstrap structure: `RitsuLibBootstrap` now applies migrated patches through
 `RitsuLibFramework.ApplyRequiredPatcher(...)` instead of calling
@@ -194,6 +194,11 @@ Current manifest dependency:
 - Ancient reward hook migration: Iron Club, Brilliant Scarf, Beautiful Bracelet,
   Music Box, and Velvet Choker getter/relic hook patches now use `IPatchMethod`
   targets. This is source registration migration, not live gameplay proof.
+- Low-risk Ancient reward hook migration: Jeweled Mask, Jewelry Box, Pael's Horn,
+  Pael's Tooth, Preserved Fog, pickup reward gates, Sere Talon, Sovereign Blade,
+  Tanx Claws, Toasty Mittens, and Whispering Earring now use `IPatchMethod`
+  targets. This is source registration migration only until repackaged and
+  smoked in-game.
 - Intent UI migration: Aeonglass Laser Echo intent label and total-damage patches
   now use RitsuLib `IPatchMethod` targets.
 - Enemy Damage polish migration: Decimillipede, Terror Eel, and Phantasmal
@@ -206,12 +211,12 @@ Current manifest dependency:
   SelectionReticle compatibility patch uses RitsuLib `IPatchMethod` and keeps
   the beta.123 settings-button startup path compatible with Slay the Spire 2
   `v0.107.1`.
-  Current beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes; gameplay and enabled-mode proof remain pending.
+  Current beta.123 clicked Ancient UI smoke applied all 127 migrated patch classes from the packaged beta.123 state; gameplay, enabled-mode proof, and 144/26 source-state runtime proof remain pending.
 - Batch 5: high-risk run, map, reward, save, and multiplayer patches remain blocked on live/manual evidence and owner approval.
 
-Current migrated total: 127 patch classes.
+Current migrated total: 144 patch classes.
 
-Current raw Harmony remaining: 43 declarations, tracked in `docs/patch-inventory.md`.
+Current raw Harmony remaining: 26 declarations, tracked in `docs/patch-inventory.md`.
 
 ## Current Evidence Pointers
 

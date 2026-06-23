@@ -171,7 +171,8 @@ public sealed partial class ReleaseArtifactTests
         var source = ReadSourceTree("EZMicroBalanceCode", "Ancients", "Patches");
         var manualMatrix = ReadRepoText("docs", "features", "ancients-rework-v4", "manual-verification-matrix.md");
 
-        Assert.Contains("HarmonyPatch(typeof(Apotheosis), \"get_CanonicalKeywords\")", source, StringComparison.Ordinal);
+        Assert.Contains("IPatchMethod.PatchId => \"jewelry-box-apotheosis-keywords\"", source, StringComparison.Ordinal);
+        Assert.Contains("ModPatchTarget(typeof(Apotheosis), \"CanonicalKeywords\", MethodType.Getter)", source, StringComparison.Ordinal);
         Assert.Contains("JewelryBoxApotheosisMarker.IsMarked(__instance)", source, StringComparison.Ordinal);
         Assert.Contains("keyword => keyword != CardKeyword.Innate", source, StringComparison.Ordinal);
         Assert.Contains("JewelryBoxApotheosisMarker.Mark(card)", source, StringComparison.Ordinal);

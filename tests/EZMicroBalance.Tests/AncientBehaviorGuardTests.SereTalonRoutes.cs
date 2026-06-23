@@ -27,7 +27,8 @@ public sealed partial class AncientBehaviorGuardTests
 
         AssertSourceContains(
             sereTalonPickupPatch,
-            "[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]",
+            "IPatchMethod.PatchId => \"sere-talon-after-obtained\"",
+            "ModPatchTarget(typeof(SereTalon), nameof(SereTalon.AfterObtained))",
             "private const int CurseOfferCount = 4",
             "private const int CursePickCount = 1",
             "private const int NormalWishCount = 2",
@@ -73,7 +74,8 @@ public sealed partial class AncientBehaviorGuardTests
             "SereTalon uses Spire Plus art and Tanx Claws is untouched");
         AssertSourceContains(
             tanxClawsPatch,
-            "[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]",
+            "IPatchMethod.PatchId => \"tanx-claws-after-obtained\"",
+            "ModPatchTarget(typeof(Claws), nameof(Claws.AfterObtained))",
             "owner.RunState.CreateCard<Maul>(owner)",
             "maul.UpgradeInternal()",
             "CardCmd.Upgrade(maul, CardPreviewStyle.None)");

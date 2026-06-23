@@ -19,7 +19,8 @@ public sealed partial class AncientBehaviorGuardTests
         AssertSourceContains(
             source,
             "AncientSavedStateFields.PaelsToothNonBossCombatCounter[paelsTooth] = 0",
-            "[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))]",
+            "IPatchMethod.PatchId => \"paels-tooth-after-combat-end\"",
+            "ModPatchTarget(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))",
             "if (paelsTooth.Owner.Creature.IsDead)",
             "if (paelsTooth.SerializableCards.Count == 0)",
             "if (room.RoomType == RoomType.Boss)",

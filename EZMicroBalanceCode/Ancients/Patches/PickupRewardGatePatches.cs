@@ -1,8 +1,15 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]
-internal static class SozuPotionGatePatch
+internal sealed class SozuPotionGatePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "sozu-initial-potion-gate";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Allow Spire Plus initial potion grants through Sozu while leaving normal blocking intact";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))];
+
     private static readonly HashSet<Player> InitialPotionFillOwners = [];
 
     public static void BeginInitialPotionFill(Player player)
@@ -28,9 +35,14 @@ internal static class SozuPotionGatePatch
     }
 }
 
-[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ModifyGoldGained))]
-internal static class EctoplasmGoldGatePatch
+internal sealed class EctoplasmGoldGatePatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "ectoplasm-initial-gold-gate";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Allow Spire Plus initial gold grants through Ectoplasm while leaving normal blocking intact";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Ectoplasm), nameof(Ectoplasm.ModifyGoldGained))];
+
     private static readonly HashSet<Player> InitialGoldOwners = [];
 
     public static void BeginInitialGold(Player player)

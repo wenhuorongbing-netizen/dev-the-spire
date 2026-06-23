@@ -2,9 +2,14 @@ namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
 using STS2RitsuLib.Patching.Models;
 
-[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]
-internal static class JewelryBoxPatch
+internal sealed class JewelryBoxPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "jewelry-box-after-obtained";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Jewelry Box's non-Innate Apotheosis to the deck on pickup";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))];
+
     [HarmonyPrefix]
     private static bool Prefix(JewelryBox __instance, ref Task __result)
     {
@@ -36,11 +41,16 @@ internal static class JewelryBoxPatch
     }
 }
 
-[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]
-internal static class JewelryBoxApotheosisCanonicalKeywordsPatch
+internal sealed class JewelryBoxApotheosisCanonicalKeywordsPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "jewelry-box-apotheosis-keywords";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Remove Innate from Apotheosis cards created by Jewelry Box";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(Apotheosis), "CanonicalKeywords", MethodType.Getter)];
+
     [HarmonyPostfix]
-    private static void RemoveInnateForMarkedJewelryBoxApotheosis(Apotheosis __instance, ref IEnumerable<CardKeyword> __result)
+    private static void Postfix(Apotheosis __instance, ref IEnumerable<CardKeyword> __result)
     {
         if (JewelryBoxApotheosisMarker.IsMarked(__instance))
         {

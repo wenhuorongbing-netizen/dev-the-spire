@@ -40,9 +40,14 @@ internal static class SovereignBladeJadeBoons
     }
 }
 
-[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]
-internal static class SovereignBladeForgeExhaustPatch
+internal sealed class SovereignBladeForgeExhaustPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "sovereign-blade-forge-exhaust";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Add Exhaust to Sovereign Blades created by Forge";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(ForgeCmd), nameof(ForgeCmd.Forge))];
+
     [HarmonyPostfix]
     private static void Postfix(Player player, ref Task<IEnumerable<SovereignBlade>> __result)
     {
@@ -73,9 +78,14 @@ internal static class SovereignBladeForgeExhaustPatch
     }
 }
 
-[HarmonyPatch(typeof(SovereignBlade), "OnPlay")]
-internal static class SovereignBladeJadeBoonsOnPlayPatch
+internal sealed class SovereignBladeJadeBoonsOnPlayPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "sovereign-blade-on-play-jade-boons";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Apply Sovereign Blade's five jade boons after its original play effect";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(SovereignBlade), "OnPlay")];
+
     [HarmonyPostfix]
     private static void Postfix(SovereignBlade __instance, PlayerChoiceContext choiceContext, ref Task __result)
     {

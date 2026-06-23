@@ -12,7 +12,7 @@ Manual QA after clean RitsuLib-only Off loader proof, plus post-Batch 4c runtime
 - Use `git log -1 --oneline --decorate` and `git status --short --branch` as the source of truth; older run-start hashes from prior follow-ups are historical notes and must not be reused for handoff.
 - Any dirty files after the latest pushed HEAD are post-baseline follow-up scope. Classify them before any validation claim, package handoff, commit, or push.
 - Latest beta.123 package validation is summarized in `PROJECT_STATE.md` and `docs/reviews/current-validation.md`: build/publish/package refresh, installed-package parity, runtime preflight, and source-workspace checks passed for the current dependency target. Previous beta.99 settings/Off proof, beta.96 Off proof, and beta.93 AdditiveBatch1 packet verification remain previous-package or historical loader/registration evidence only.
-- Current beta.123 smoke applied all 127 migrated RitsuLib patch classes after the later localization, UI, reward, intent, enemy-damage, and RitsuLib compatibility migrations.
+- Current beta.123 smoke applied all 127 migrated RitsuLib patch classes from the packaged beta.123 state. Current source has since moved to 144 migrated patch classes and 26 raw Harmony declarations; recapture publish/package/runtime proof before claiming that source state in-game.
 - Coordination boundary: do not run overlapping validation, package/release, runtime/game smoke, staging, commit, or push steps.
 
 ## Retained Evidence Boundaries

@@ -1,6 +1,6 @@
 # Harmony Patch Inventory
 
-Generated: 2026-06-22
+Generated: 2026-06-23
 
 Purpose: keep every Harmony patch visible, owned, and risk-labeled. Regenerate after adding, moving, or deleting patch declarations.
 
@@ -15,13 +15,13 @@ Regenerate:
 
 | Metric | Count |
 | --- | ---: |
-| Total raw HarmonyPatch declarations | 43 |
-| Migrated to RitsuLib ModPatcher | 127 |
-| Raw HarmonyPatch remaining | 43 |
+| Total raw HarmonyPatch declarations | 26 |
+| Migrated to RitsuLib ModPatcher | 144 |
+| Raw HarmonyPatch remaining | 26 |
 | Tracked patch units total | 170 |
 | High risk (raw Harmony) | 15 |
-| Medium risk (raw Harmony) | 7 |
-| Low risk (raw Harmony) | 21 |
+| Medium risk (raw Harmony) | 6 |
+| Low risk (raw Harmony) | 5 |
 | Unclassified owner | 0 |
 
 ## Risk Meaning
@@ -32,7 +32,7 @@ Regenerate:
 
 ## Migrated Patches (RitsuLib ModPatcher)
 
-These 127 patch classes implement `IPatchMethod` and are registered via
+These 144 patch classes implement `IPatchMethod` and are registered via
 `SpirePlusMigratedPatchRegistry.RegisterAll(...)`. They use `ModPatcher.PatchAll()`
 and are NOT picked up by raw `Harmony.PatchAll()`.
 
@@ -49,6 +49,17 @@ and are NOT picked up by raw `Harmony.PatchAll()`.
 | `PickupRewardPatches.cs` | 1 | `ancient-pickup-balance` | 4b |
 | `VakuRewardPatches.cs` | 8 | `iron-club-vars, brilliant-scarf-vars, beautiful-bracelet-vars, beautiful-bracelet-after-obtained, music-box-before-card-played, music-box-after-card-played, music-box-turn-reset, music-box-combat-reset` | ancient-reward |
 | `VelvetChokerPatches.cs` | 10 | `velvet-choker-vars, velvet-choker-display-amount, velvet-choker-should-play, velvet-choker-energy-cost, velvet-choker-x-cost-can-play, velvet-choker-x-cost-spend, velvet-choker-after-card-played, velvet-choker-turn-reset, velvet-choker-room-reset, velvet-choker-combat-reset` | ancient-reward |
+| `JeweledMaskPatches.cs` | 1 | `jeweled-mask-combat-start` | ancient-reward-low-risk |
+| `JewelryBoxPatches.cs` | 2 | `jewelry-box-after-obtained, jewelry-box-apotheosis-keywords` | ancient-reward-low-risk |
+| `PaelsHornPhase1Patch.cs` | 1 | `paels-horn-after-obtained` | ancient-reward-low-risk |
+| `PaelsToothPatches.cs` | 3 | `paels-tooth-after-obtained, paels-tooth-after-combat-end, paels-tooth-act-transition` | ancient-reward-low-risk |
+| `PreservedFogPatches.cs` | 2 | `preserved-fog-after-obtained, preserved-fog-folly-keywords` | ancient-reward-low-risk |
+| `PickupRewardGatePatches.cs` | 2 | `sozu-initial-potion-gate, ectoplasm-initial-gold-gate` | ancient-reward-low-risk |
+| `SereTalonPickupPatches.cs` | 1 | `sere-talon-after-obtained` | ancient-reward-low-risk |
+| `SovereignBladeForgePatches.cs` | 2 | `sovereign-blade-forge-exhaust, sovereign-blade-on-play-jade-boons` | ancient-reward-low-risk |
+| `TanxClawsMaulTuningPatches.cs` | 1 | `tanx-claws-after-obtained` | ancient-reward-low-risk |
+| `ToastyMittensPatches.cs` | 1 | `toasty-mittens-before-hand-draw` | ancient-reward-low-risk |
+| `WhisperingEarringPatches.cs` | 1 | `whispering-earring-auto-pre-play` | ancient-reward-low-risk |
 | `NeowInitialOptionRerollPatch.cs` | 1 | `neow-initial-option-reroll` | clicked-ui |
 | `UrdaAct1AncientService.cs` | 2 | `urda-overgrowth-ancient-unlock, urda-underdocks-ancient-unlock` | clicked-ui |
 | `UrdaOptionRelicClickPatch.cs` | 1 | `urda-option-relic-click` | clicked-ui |
@@ -90,7 +101,7 @@ Double-patch guard: migrated classes contain no `[HarmonyPatch]` attributes.
 
 ## Raw HarmonyPatch Declarations (Unmigrated)
 
-These 43 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
+These 26 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 
 | Owner | Risk | File | Line | Patch |
 | --- | --- | --- | ---: | --- |
@@ -103,26 +114,9 @@ These 43 `[HarmonyPatch]` declarations remain on raw `Harmony.PatchAll()`.
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 119 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.ToSerializable))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 129 | `[HarmonyPatch(typeof(EventRoom), nameof(EventRoom.EnterInternal))]` |
 | Vakuu | High | `EZMicroBalanceCode/Ancients/Expansion/Vakuu/VakuuFightPatch.cs` | 167 | `[HarmonyPatch(typeof(CombatRoom), nameof(CombatRoom.OfferRoomEndRewards))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JeweledMaskPatches.cs` | 3 | `[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 5 | `[HarmonyPatch(typeof(JewelryBox), nameof(JewelryBox.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/JewelryBoxPatches.cs` | 39 | `[HarmonyPatch(typeof(Apotheosis), "get_CanonicalKeywords")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsHornPhase1Patch.cs` | 11 | `[HarmonyPatch(typeof(PaelsHorn), nameof(PaelsHorn.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 3 | `[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 13 | `[HarmonyPatch(typeof(PaelsTooth), nameof(PaelsTooth.AfterCombatEnd))]` |
-| Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PaelsToothPatches.cs` | 24 | `[HarmonyPatch(typeof(AbstractModel), nameof(AbstractModel.AfterActEntered))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 3 | `[HarmonyPatch(typeof(Sozu), nameof(Sozu.ShouldProcurePotion))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PickupRewardGatePatches.cs` | 31 | `[HarmonyPatch(typeof(Ectoplasm), nameof(Ectoplasm.ModifyGoldGained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 3 | `[HarmonyPatch(typeof(PreservedFog), nameof(PreservedFog.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/PreservedFogPatches.cs` | 29 | `[HarmonyPatch(typeof(Folly), "get_CanonicalKeywords")]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemPatches.cs` | 5 | `[HarmonyPatch(typeof(MegaCrit.Sts2.Core.Hooks.Hook), nameof(MegaCrit.Sts2.Core.Hooks.Hook.TryModifyCardRewardOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 3 | `[HarmonyPatch(typeof(PrismaticGem), nameof(PrismaticGem.ModifyCardRewardCreationOptions))]` |
 | Ancient reward rebalance | Medium | `EZMicroBalanceCode/Ancients/Patches/PrismaticGemRewardContextPatches.cs` | 14 | `[HarmonyPatch(typeof(CardReward), nameof(CardReward.Populate))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SereTalonPickupPatches.cs` | 3 | `[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 43 | `[HarmonyPatch(typeof(ForgeCmd), nameof(ForgeCmd.Forge))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/SovereignBladeForgePatches.cs` | 76 | `[HarmonyPatch(typeof(SovereignBlade), "OnPlay")]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/TanxClawsMaulTuningPatches.cs` | 3 | `[HarmonyPatch(typeof(Claws), nameof(Claws.AfterObtained))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/ToastyMittensPatches.cs` | 3 | `[HarmonyPatch(typeof(ToastyMittens), nameof(ToastyMittens.BeforeHandDraw))]` |
-| Ancient reward rebalance | Low | `EZMicroBalanceCode/Ancients/Patches/WhisperingEarringPatches.cs` | 3 | `[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.JoinFlow.cs` | 10 | `[HarmonyPatch(typeof(JoinFlow), "HandleInitialGameInfoMessage")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs` | 10 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunForAllPlayers")]` |
 | Ascension core | High | `EZMicroBalanceCode/Ascension/Core/MultiplayerDiagnostics.Lobby.cs` | 40 | `[HarmonyPatch(typeof(StartRunLobby), "BeginRunLocally")]` |

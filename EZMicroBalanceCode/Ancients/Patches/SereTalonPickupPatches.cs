@@ -1,15 +1,22 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(SereTalon), nameof(SereTalon.AfterObtained))]
-internal static class SereTalonPickupPatches
+internal sealed class SereTalonPickupPatches : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "sere-talon-after-obtained";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Replace Sere Talon pickup with one curse choice, two Wish, and one Wish+";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(SereTalon), nameof(SereTalon.AfterObtained))];
+
     private const int CurseOfferCount = 4;
     private const int CursePickCount = 1;
     private const int NormalWishCount = 2;
     private const int UpgradedWishCount = 1;
 
     [HarmonyPrefix]
-    private static bool ChooseCurseAndAddWishes(SereTalon __instance, ref Task __result)
+    private static bool Prefix(SereTalon __instance, ref Task __result)
     {
         __result = ApplyPickup(__instance);
         return false;

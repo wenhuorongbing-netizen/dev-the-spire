@@ -29,7 +29,8 @@ public sealed partial class AncientBehaviorGuardTests
 
         AssertSourceContains(
             combatSource,
-            "[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]",
+            "IPatchMethod.PatchId => \"jeweled-mask-combat-start\"",
+            "ModPatchTarget(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))",
             "combatState.RoundNumber > 1",
             "AncientCardHelpers.IsJeweledMaskPower",
             "await CardPileCmd.Add(markedPower, PileType.Hand)",

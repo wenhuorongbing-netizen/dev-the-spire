@@ -1,8 +1,15 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))]
-internal static class WhisperingEarringPatch
+internal sealed class WhisperingEarringPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "whispering-earring-auto-pre-play";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Auto-play Whispering Earring's highest-cost playable card during early rounds";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(WhisperingEarring), nameof(WhisperingEarring.AfterAutoPrePlayPhaseEnteredLate))];
+
     [HarmonyPrefix]
     private static bool Prefix(WhisperingEarring __instance, PlayerChoiceContext choiceContext, Player player, ref Task __result)
     {

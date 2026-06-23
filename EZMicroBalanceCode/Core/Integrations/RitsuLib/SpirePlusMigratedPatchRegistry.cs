@@ -23,6 +23,7 @@ internal static partial class SpirePlusMigratedPatchRegistry
         RegisterBatch4a(patcher);
         RegisterBatch4b(patcher);
         RegisterAncientRewardPatches(patcher);
+        RegisterLowRiskRewardHookPatches(patcher);
         RegisterAncientEventUiPatches(patcher);
         RegisterClickedUiPatches(patcher);
         RegisterMapUiPatches(patcher);
@@ -75,6 +76,30 @@ internal static partial class SpirePlusMigratedPatchRegistry
         patcher.RegisterPatch<VelvetChokerTurnResetPatch>();
         patcher.RegisterPatch<VelvetChokerRoomResetPatch>();
         patcher.RegisterPatch<VelvetChokerCombatResetPatch>();
+    }
+
+    private static void RegisterLowRiskRewardHookPatches(ModPatcher patcher)
+    {
+        // These were direct Harmony attributes on narrow reward hooks. Keeping
+        // them in one RitsuLib group makes the remaining fallback boundary
+        // smaller without mixing reward behavior into the clicked-UI registry.
+        patcher.RegisterPatch<JeweledMaskCombatStartPatch>();
+        patcher.RegisterPatch<JewelryBoxPatch>();
+        patcher.RegisterPatch<JewelryBoxApotheosisCanonicalKeywordsPatch>();
+        patcher.RegisterPatch<PaelsHornPhase1Patch>();
+        patcher.RegisterPatch<PaelsToothPickupPatch>();
+        patcher.RegisterPatch<PaelsToothCombatPatch>();
+        patcher.RegisterPatch<PaelsToothActTransitionPatch>();
+        patcher.RegisterPatch<PreservedFogPatch>();
+        patcher.RegisterPatch<FollyKeywordsPatch>();
+        patcher.RegisterPatch<SozuPotionGatePatch>();
+        patcher.RegisterPatch<EctoplasmGoldGatePatch>();
+        patcher.RegisterPatch<SereTalonPickupPatches>();
+        patcher.RegisterPatch<SovereignBladeForgeExhaustPatch>();
+        patcher.RegisterPatch<SovereignBladeJadeBoonsOnPlayPatch>();
+        patcher.RegisterPatch<TanxClawsMaulTuningPatches>();
+        patcher.RegisterPatch<ToastyMittensPatch>();
+        patcher.RegisterPatch<WhisperingEarringPatch>();
     }
 
     private static void RegisterBatch4cLocalizationPatches(ModPatcher patcher)

@@ -1,8 +1,15 @@
+using STS2RitsuLib.Patching.Models;
+
 namespace EZMicroBalance.EZMicroBalanceCode.Ancients;
 
-[HarmonyPatch(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))]
-internal static class JeweledMaskCombatStartPatch
+internal sealed class JeweledMaskCombatStartPatch : IPatchMethod
 {
+    static string IPatchMethod.PatchId => "jeweled-mask-combat-start";
+    static bool IPatchMethod.IsCritical => false;
+    static string IPatchMethod.Description => "Pull Jeweled Mask's marked Power card to hand at combat start";
+    static ModPatchTarget[] IPatchMethod.GetTargets() =>
+        [new ModPatchTarget(typeof(JeweledMask), nameof(JeweledMask.BeforeHandDraw))];
+
     [HarmonyPrefix]
     private static bool Prefix(JeweledMask __instance, Player player, ICombatState combatState, ref Task __result)
     {

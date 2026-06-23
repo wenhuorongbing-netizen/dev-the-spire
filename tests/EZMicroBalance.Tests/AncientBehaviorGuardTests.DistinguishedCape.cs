@@ -55,7 +55,7 @@ public sealed partial class AncientBehaviorGuardTests
         Assert.DoesNotContain(".Where(option => option.Relic is not DistinguishedCape)", source, StringComparison.Ordinal);
         Assert.DoesNotContain("AccessTools.Field(typeof(AncientEventModel)", source, StringComparison.Ordinal);
 
-        var distinguishedCapeSection = SliceBetween(source, "internal sealed class DistinguishedCapePickupPatch", "[HarmonyPatch(typeof(PreservedFog)");
+        var distinguishedCapeSection = SliceBetween(source, "internal sealed class DistinguishedCapePickupPatch", "internal sealed class PreservedFogPatch : IPatchMethod");
         Assert.DoesNotContain("CreatureCmd.Damage", distinguishedCapeSection, StringComparison.Ordinal);
         Assert.DoesNotContain("ValueProp", distinguishedCapeSection, StringComparison.Ordinal);
 
