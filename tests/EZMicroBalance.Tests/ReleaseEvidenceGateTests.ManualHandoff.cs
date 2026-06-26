@@ -205,11 +205,12 @@ public sealed partial class ReleaseEvidenceGateTests
             var loaderEvidenceDir = Path.Combine(evidenceDir, "release", "fresh-current-package-loader-smoke");
             Directory.CreateDirectory(loaderEvidenceDir);
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "command.txt"), "Synthetic current-package loader command fixture.");
+            var loaderLogPath = Path.Combine(loaderEvidenceDir, "godot.log");
             File.WriteAllText(
-                Path.Combine(loaderEvidenceDir, "godot.log"),
+                loaderLogPath,
                 "STS2-RitsuLib initialized. Spire Plus initialized. Loaded 2 mods. RitsuLib mod settings registered. RitsuLib content registered.");
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "STS2-RitsuLib" + Environment.NewLine + "Spire Plus");
-            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), "{ \"Clean\": true }");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), CleanGodotLogAuditJson(loaderLogPath));
 
             var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();
             var manifestRows = manifestNode["Rows"]!.AsArray();
@@ -219,6 +220,7 @@ public sealed partial class ReleaseEvidenceGateTests
             loaderRow["ResultNote"] = "Synthetic current-package loader preservation fixture for generator regression coverage.";
             loaderRow["ReleaseNote"] = "Loader row filled; gameplay rows remain pending.";
             loaderRow["Notes"] = "Preserve this pass row when regenerating the current handoff.";
+            WriteOwnerLiveLogOrigin(loaderRow);
             File.WriteAllText(manifestPath, manifestNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var preservedResult = RunPowerShell(script, "-EvidenceRoot", evidenceDir);

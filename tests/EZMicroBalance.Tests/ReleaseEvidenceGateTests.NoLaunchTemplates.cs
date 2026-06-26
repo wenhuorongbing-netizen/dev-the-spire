@@ -149,11 +149,35 @@ public sealed partial class ReleaseEvidenceGateTests
                         Assert.Equal(Path.Combine(evidenceDir, rowId), rowEvidenceDir);
                         Assert.True(Directory.Exists(rowEvidenceDir), $"Missing per-row evidence directory for {rowId}.");
                         Assert.True(File.Exists(Path.Combine(rowEvidenceDir, "README.md")), $"Missing per-row README.md for {rowId}.");
+                        Assert.True(File.Exists(Path.Combine(rowEvidenceDir, "run-manifest.json")), $"Missing per-row run-manifest.json for {rowId}.");
                         Assert.True(File.Exists(Path.Combine(rowEvidenceDir, "command.txt")), $"Missing per-row command.txt for {rowId}.");
+                        Assert.True(File.Exists(Path.Combine(rowEvidenceDir, "log-origin-note.md")), $"Missing per-row log-origin-note.md for {rowId}.");
+                        Assert.Contains(
+                            "run-manifest.json",
+                            row.GetProperty("RequiredFiles").EnumerateArray().Select(file => file.GetString()));
+                        Assert.Contains(
+                            "log-origin-note.md",
+                            row.GetProperty("RequiredFiles").EnumerateArray().Select(file => file.GetString()));
 
                         var rowReadme = File.ReadAllText(Path.Combine(rowEvidenceDir, "README.md"));
+                        var logOriginNote = File.ReadAllText(Path.Combine(rowEvidenceDir, "log-origin-note.md"));
+                        using var rowRunManifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(rowEvidenceDir, "run-manifest.json")));
+                        var runManifestRoot = rowRunManifest.RootElement;
+                        Assert.Equal("release-evidence", runManifestRoot.GetProperty("EvidenceKind").GetString());
+                        Assert.Equal("live-release-row-required", runManifestRoot.GetProperty("EvidenceBoundary").GetString());
+                        Assert.Equal(rowId, runManifestRoot.GetProperty("RowId").GetString());
+                        Assert.Equal(ManifestVersion(), runManifestRoot.GetProperty("PackageVersion").GetString());
+                        Assert.Equal(CurrentPackageZipRelativePath(), runManifestRoot.GetProperty("PackagePath").GetString());
+                        Assert.Equal(CurrentPackageZipSha256(), runManifestRoot.GetProperty("PackageSha256").GetString(), ignoreCase: true);
+                        Assert.Equal("0.107.1", runManifestRoot.GetProperty("ExpectedGameVersion").GetString());
+                        Assert.Equal("0.4.34", runManifestRoot.GetProperty("ExpectedRitsuLibVersion").GetString());
+                        Assert.Equal("0.107.1", runManifestRoot.GetProperty("ExpectedRitsuCompatBranch").GetString());
+                        Assert.Equal(168, runManifestRoot.GetProperty("ExpectedPatchCount").GetInt32());
+                        Assert.Equal("canonical-current-release-target", runManifestRoot.GetProperty("TrustAnchorMode").GetString());
                         Assert.Contains($"# {rowId}", rowReadme, StringComparison.Ordinal);
                         Assert.Contains("Required files for pass status:", rowReadme, StringComparison.Ordinal);
+                        Assert.Contains("LogOriginProofStatus: owner-live-release-log", logOriginNote, StringComparison.Ordinal);
+                        Assert.Contains("Status: pending-owner-live-release-log", logOriginNote, StringComparison.Ordinal);
                     }
 
                     var loaderDir = Path.Combine(evidenceDir, "fresh-current-package-loader-smoke");

@@ -5,6 +5,14 @@ param(
 
     [string]$PackagePath = "",
 
+    [string]$ExpectedGameVersion = "0.107.1",
+
+    [string]$ExpectedRitsuLibVersion = "0.4.34",
+
+    [string]$ExpectedRitsuCompatBranch = "0.107.1",
+
+    [int]$ExpectedPatchCount = 168,
+
     [switch]$Launch,
 
     [switch]$NoLaunch,
@@ -20,13 +28,23 @@ Set-StrictMode -Version 3.0
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
 
+$currentPackageVersion = Get-SpirePlusManifestVersion -RepoRoot $repoRoot
+$canonicalPackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
+$canonicalPackageFullPath = Resolve-SpirePlusPackagePath -RepoRoot $repoRoot -PackagePath $canonicalPackagePath
+$canonicalPackageSha256 = Get-SpirePlusPackageSha256 -RepoRoot $repoRoot -PackagePath $canonicalPackagePath
+
 if ([string]::IsNullOrWhiteSpace($PackagePath)) {
-    $PackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
+    $PackagePath = $canonicalPackagePath
+} elseif (-not [string]::Equals((Resolve-SpirePlusPackagePath -RepoRoot $repoRoot -PackagePath $PackagePath), $canonicalPackageFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "PackagePath must be the canonical current Spire Plus package '$canonicalPackagePath' for release evidence collection."
 }
 
 if ([string]::IsNullOrWhiteSpace($PackageSha256)) {
-    $PackageSha256 = Get-SpirePlusPackageSha256 -RepoRoot $repoRoot -PackagePath $PackagePath
+    $PackageSha256 = $canonicalPackageSha256
+} elseif (-not [string]::Equals($PackageSha256, $canonicalPackageSha256, [System.StringComparison]::OrdinalIgnoreCase)) {
+    throw "PackageSha256 must match the canonical current Spire Plus package '$canonicalPackagePath' for release evidence collection."
 }
+$PackageSha256 = $PackageSha256.ToUpperInvariant()
 
 $runtimeRoot = Join-Path $repoRoot '.tools\runtime-evidence'
 $liveSessionScript = Join-Path $PSScriptRoot 'spire-plus-live-session.ps1'
@@ -184,22 +202,22 @@ function Get-DefaultRequiredFiles {
 
     switch ($Kind) {
         'loader' {
-            return @('command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'enabled-mods.txt')
+            return @('run-manifest.json', 'command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'enabled-mods.txt', 'log-origin-note.md')
         }
         'clicked-ui' {
-            return @('command.txt', 'window-preflight.json', 'godot.log', 'godot-log-audit.json', 'route-note.md')
+            return @('run-manifest.json', 'command.txt', 'window-preflight.json', 'godot.log', 'godot-log-audit.json', 'route-note.md', 'log-origin-note.md')
         }
         'save-load' {
-            return @('command.txt', 'godot.log', 'godot-log-audit.json', 'save-load-note.md')
+            return @('run-manifest.json', 'command.txt', 'godot.log', 'godot-log-audit.json', 'save-load-note.md', 'log-origin-note.md')
         }
         'coop' {
-            return @('command.txt', 'host-godot.log', 'host-godot-log-audit.json', 'client-godot.log', 'client-godot-log-audit.json', 'result-note.md')
+            return @('run-manifest.json', 'command.txt', 'host-godot.log', 'host-godot-log-audit.json', 'client-godot.log', 'client-godot-log-audit.json', 'result-note.md', 'log-origin-note.md')
         }
         'preview-tools' {
-            return @('command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'result-note.md')
+            return @('run-manifest.json', 'command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'result-note.md', 'log-origin-note.md')
         }
         default {
-            return @('command.txt', 'godot.log', 'godot-log-audit.json', 'result-note.md')
+            return @('run-manifest.json', 'command.txt', 'godot.log', 'godot-log-audit.json', 'result-note.md', 'log-origin-note.md')
         }
     }
 }
@@ -224,13 +242,15 @@ function New-ReleaseRow {
         Kind = $Kind
         Status = 'pending'
         EvidenceDir = $EvidenceFull
+        EvidenceBoundary = 'live-release-row-required'
         RequiredFiles = $requiredFiles
         ScreenshotFile = if ($Kind -eq 'clicked-ui') { '' } else { $null }
+        LogOriginProofStatus = 'pending-owner-live-release-log'
         ResultNote = ''
         ReleaseNote = ''
         ExplicitOwnerDecision = $false
         Checkpoints = @($Checkpoints)
-        Notes = 'Fill with live evidence before changing Status to pass. Source review alone does not close this row.'
+        Notes = 'Fill with live evidence before changing Status to pass. Source review, marker-only runtime baseline evidence, offline log-marker checks, and renamed beta.135 godot.log.after-launch files do not close this row.'
     }
 }
 
@@ -465,6 +485,35 @@ $packageHashes = [ordered]@{
     )
 }
 
+function New-ReleaseRowRunManifest {
+    param([Parameter(Mandatory = $true)]$Row)
+
+    return [ordered]@{
+        SchemaVersion = 1
+        EvidenceKind = 'release-evidence'
+        EvidenceBoundary = 'live-release-row-required'
+        RowId = [string]$Row.Id
+        RowKind = [string]$Row.Kind
+        RowLabel = [string]$Row.Label
+        Status = 'pending-owner-live-release-log'
+        PackageVersion = $currentPackageVersion
+        PackagePath = $canonicalPackagePath
+        PackageSha256 = $PackageSha256
+        ExpectedGameVersion = $ExpectedGameVersion
+        ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
+        ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
+        ExpectedPatchCount = $ExpectedPatchCount
+        ModId = 'EZMicroBalance'
+        ModName = 'Spire Plus'
+        PackageAnchorMode = 'canonical-repo-publish'
+        TrustAnchorMode = 'canonical-current-release-target'
+        LaunchRequestedByCollector = [bool]$Launch
+        NoLaunchTemplate = -not [bool]$Launch
+        OwnerLiveLogRequired = $true
+        LogOriginProofStatus = 'pending-owner-live-release-log'
+    }
+}
+
 $enabledModsTemplate = @(
     '# Enabled Mods Template',
     '',
@@ -501,8 +550,13 @@ $readmeLines = @(
 $readme = $readmeLines -join [Environment]::NewLine
 
 $releaseManifest = [ordered]@{
+    PackageVersion = $currentPackageVersion
     PackageSha256 = $PackageSha256
     PackagePath = $PackagePath
+    ExpectedGameVersion = $ExpectedGameVersion
+    ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
+    ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
+    ExpectedPatchCount = $ExpectedPatchCount
     CreatedAt = (Get-Date).ToString('o')
     Rows = $manualRows
 }
@@ -525,6 +579,7 @@ foreach ($row in $manualRows) {
     Assert-PathInside -Child $rowEvidenceFull -Parent $evidenceFull -Label "Row $($row.Id) evidence"
     New-DirectoryIfMissing -Path $rowEvidenceFull
 
+    Save-Json -InputObject (New-ReleaseRowRunManifest -Row $row) -Path (Join-Path $rowEvidenceFull 'run-manifest.json')
     Format-DisplayCommand -Tokens $selfTokens | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'command.txt') -Encoding UTF8
 
     $requiredFiles = @($row.RequiredFiles | ForEach-Object { [string]$_ })
@@ -540,6 +595,25 @@ foreach ($row in $manualRows) {
         $enabledModsTemplate | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'enabled-mods-template.txt') -Encoding UTF8
     }
 
+    $expectedLogFiles = if ($row.Kind -eq 'coop') { 'host-godot.log, client-godot.log' } else { 'godot.log' }
+    $logOriginNote = @(
+        '# Log Origin Note',
+        '',
+        'Status: pending-owner-live-release-log',
+        '',
+        'Before marking this row pass:',
+        '- Set this manifest row LogOriginProofStatus to owner-live-release-log.',
+        '- Replace this file with Source and Log files lines from the owner/live release session.',
+        '',
+        'Required final shape:',
+        'LogOriginProofStatus: owner-live-release-log',
+        'Source: <owner/live Steam session, command, timestamp, and tester>',
+        "Log files: $expectedLogFiles",
+        '',
+        'Do not use beta135 runtime-baseline artifacts, marker-only offline checks, godot.log.after-launch, runtime-baseline-log-check.json, preflight.json, or no-launch owner-run scaffold files for this release row.'
+    ) -join [Environment]::NewLine
+    $logOriginNote | Set-Content -LiteralPath (Join-Path $rowEvidenceFull 'log-origin-note.md') -Encoding UTF8
+
     $rowReadmeLines = @(
         "# $($row.Id)",
         '',
@@ -551,7 +625,8 @@ foreach ($row in $manualRows) {
         'Required files for pass status:'
     ) + @($requiredFiles | ForEach-Object { "- $_" }) + @(
         '',
-        'Do not change this row to pass until the live evidence files and the manifest ResultNote describe this specific row.'
+        'Do not change this row to pass until the live evidence files, log-origin-note.md, manifest LogOriginProofStatus, and manifest ResultNote describe this specific row.',
+        'Do not reuse beta135 runtime-baseline marker-only evidence, renamed godot.log.after-launch files, or no-launch owner-run scaffold files for this release row.'
     )
 
     $checkpoints = @($row.Checkpoints | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })

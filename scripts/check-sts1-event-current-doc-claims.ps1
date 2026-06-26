@@ -126,6 +126,16 @@ function Test-AutoSlayProofCommandText {
         [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
 }
 
+function Test-RuntimeMonkeyProofCommandText {
+    param([AllowEmptyString()][string]$Text)
+
+    $normalized = $Text -replace '\s+', ' '
+    $scriptPathPattern = '(?:(?:\.{1,2}[\\/])?scripts[\\/])check-spire-plus-runtime-monkey-packet\.ps1'
+    $scriptPattern = '^\s*(?:&\s*)?(?:"{0}"|''{0}''|{0}\b)' -f $scriptPathPattern
+    return [regex]::IsMatch($normalized, $scriptPattern, [System.Text.RegularExpressions.RegexOptions]::IgnoreCase) -and
+        [regex]::IsMatch($normalized, '(?i)(^|\s)-FailOnMismatch(\s|$)')
+}
+
 function Add-AutoSlayProofCommandTargetCheck {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
@@ -361,6 +371,144 @@ function Add-AutoSlayProofCommandRequiredSwitchesCheck {
         "AutoSlay proof commands in active docs include required switches: $($SwitchNames -join ', ')"
     } else {
         "AutoSlay proof commands missing required switches: $($hits -join ' | ')"
+    }
+
+    Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
+}
+
+function Get-RuntimeMonkeyProofCommands {
+    param(
+        [Parameter(Mandatory = $true)][string[]]$Paths
+    )
+
+    $commands = [System.Collections.Generic.List[object]]::new()
+
+    foreach ($path in $Paths) {
+        $resolved = Resolve-RepoPath $path
+        if (-not (Test-Path -LiteralPath $resolved)) {
+            continue
+        }
+
+        $lines = [System.IO.File]::ReadAllLines($resolved)
+        $logicalLine = ''
+        $logicalStart = 1
+
+        for ($i = 0; $i -lt $lines.Length; $i++) {
+            $line = $lines[$i]
+            if ($logicalLine.Length -eq 0) {
+                $logicalStart = $i + 1
+            }
+
+            $trimmedRight = $line.TrimEnd()
+            $continues = $trimmedRight.EndsWith('`')
+            $segment = if ($continues) {
+                $trimmedRight.Substring(0, $trimmedRight.Length - 1)
+            } else {
+                $line
+            }
+
+            $logicalLine = if ($logicalLine.Length -eq 0) {
+                $segment
+            } else {
+                "$logicalLine $segment"
+            }
+
+            if ($continues) {
+                continue
+            }
+
+            $normalized = $logicalLine -replace '\s+', ' '
+            if (Test-RuntimeMonkeyProofCommandText -Text $normalized) {
+                $commands.Add([pscustomobject]@{
+                    Path = $path
+                    Line = $logicalStart
+                    Text = $normalized
+                }) | Out-Null
+            }
+
+            $logicalLine = ''
+        }
+    }
+
+    return @($commands)
+}
+
+function Add-RuntimeMonkeyProofCommandPresentCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths
+    )
+
+    $commands = @(Get-RuntimeMonkeyProofCommands -Paths $Paths)
+    $detail = if ($commands.Count -gt 0) {
+        "recognized runtime monkey proof commands: $(@($commands | ForEach-Object { "$($_.Path):$($_.Line)" }) -join ', ')"
+    } else {
+        'active docs must include at least one recognized check-spire-plus-runtime-monkey-packet.ps1 -FailOnMismatch proof command'
+    }
+
+    Add-Check -Name $Name -Passed ($commands.Count -gt 0) -Detail $detail
+}
+
+function Add-RuntimeMonkeyProofCommandRequiredSwitchesCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths,
+        [Parameter(Mandatory = $true)][string[]]$SwitchNames
+    )
+
+    $hits = [System.Collections.Generic.List[string]]::new()
+    $requiredSwitchPatterns = @{}
+    foreach ($switchName in $SwitchNames) {
+        $requiredSwitchPatterns[$switchName] = '(?i)(^|\s)-{0}(\s|$)' -f [regex]::Escape($switchName)
+    }
+
+    foreach ($path in $Paths) {
+        if (-not (Test-Path -LiteralPath (Resolve-RepoPath $path))) {
+            $hits.Add("${path}: missing file") | Out-Null
+        }
+    }
+
+    foreach ($command in (Get-RuntimeMonkeyProofCommands -Paths $Paths)) {
+        $missingSwitches = @($SwitchNames | Where-Object { -not [regex]::IsMatch($command.Text, $requiredSwitchPatterns[$_]) })
+        if ($missingSwitches.Count -gt 0) {
+            $hits.Add("$($command.Path):$($command.Line): missing $($missingSwitches -join ', '): $($command.Text)") | Out-Null
+        }
+    }
+
+    $detail = if ($hits.Count -eq 0) {
+        "Runtime monkey proof commands in active docs include required switches: $($SwitchNames -join ', ')"
+    } else {
+        "Runtime monkey proof commands missing required switches: $($hits -join ' | ')"
+    }
+
+    Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
+}
+
+function Add-RuntimeMonkeyProofCommandFreshPatchCountCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string[]]$Paths
+    )
+
+    $hits = [System.Collections.Generic.List[string]]::new()
+    $freshPatchCountPattern = '(?i)(^|\s)-ExpectedPatchCount\s+<fresh-current-runtime-ModPatcher-applied-count>(\s|$)'
+
+    foreach ($path in $Paths) {
+        if (-not (Test-Path -LiteralPath (Resolve-RepoPath $path))) {
+            $hits.Add("${path}: missing file") | Out-Null
+        }
+    }
+
+    foreach ($command in (Get-RuntimeMonkeyProofCommands -Paths $Paths)) {
+        if (-not [regex]::IsMatch($command.Text, $freshPatchCountPattern)) {
+            $hits.Add("$($command.Path):$($command.Line): expected fresh patch-count placeholder: $($command.Text)") | Out-Null
+        }
+    }
+
+    $detail = if ($hits.Count -eq 0) {
+        'Runtime monkey proof commands use the fresh current-runtime patch-count placeholder.'
+    } else {
+        "Runtime monkey proof commands use stale or hard-coded patch counts: $($hits -join ' | ')"
     }
 
     Add-Check -Name $Name -Passed ($hits.Count -eq 0) -Detail $detail
@@ -679,9 +827,10 @@ Add-ContainsCheck -Name 'docs_readme_sts1_subagent_coverage' -Text $docsReadme -
 Add-ContainsCheck -Name 'docs_readme_sts1_beta96_settings_boundary' -Text $docsReadme -Needle 'Current beta.135 RitsuLib-only package state, source-workspace proof, package parity, and forced clicked UI smoke boundary'
 Add-ContainsCheck -Name 'docs_readme_sts1_additive_pending_counts' -Text $docsReadme -Needle 'beta.93 AdditiveBatch1 proof covers previous-package loader/registration only with 10 event types / 14 registration calls'
 Add-ContainsCheck -Name 'root_test_plan_beta88_additive_path' -Text $rootTestPlan -Needle '.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621'
-Add-ContainsCheck -Name 'root_test_plan_historical_enabled_modes_only' -Text $rootTestPlan -Needle 'historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes'
+Add-ContainsCheck -Name 'root_test_plan_historical_enabled_modes_only' -Text $rootTestPlan -Needle 'Previous beta.128 clicked Ancient UI smoke is'
 Add-ContainsCheck -Name 'root_test_plan_off_canary_loader_only' -Text $rootTestPlan -Needle 'The beta.85 Off/CanaryOnly smokes remain older dependency/game-version context,'
-Add-ContainsCheck -Name 'root_test_plan_additive_still_requires_clean_packet' -Text $rootTestPlan -Needle 'Installed beta.99 package parity is the current package evidence.'
+Add-ContainsCheck -Name 'root_test_plan_additive_still_requires_clean_packet' -Text $rootTestPlan -Needle 'beta.135 package parity and no-launch validation are the'
+Add-ContainsCheck -Name 'root_test_plan_beta99_beta93_historical_loader_context' -Text $rootTestPlan -Needle 'remain historical loader/registration context only'
 Add-ContainsCheck -Name 'root_test_plan_manual_ritsulib_only' -Text $rootTestPlan -Needle 'Confirm the enabled mod set for this lane contains only `STS2-RitsuLib`'
 Add-Check -Name 'root_test_plan_no_previous_package_setup' -Passed (-not ($rootTestPlan -match '(?i)previous[- ]package')) -Detail 'root test plan must not instruct current testers to enable or expect the old dependency package'
 Add-ContainsCheck -Name 'migration_doc_compatibility_stub' -Text $migrationDoc -Needle 'This file stays only as a compatibility link'
@@ -882,12 +1031,40 @@ Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_direct_smoke_dependency_fr
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_direct_smoke_no_coop_false_positive' -Text $runtimeMonkeyDocs -Needle 'only explicit `coop_*override_enabled` runtime markers should produce that'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_run_result_hash_binding' -Text $runtimeMonkeyDocs -Needle 'requires `autoslay-summary.json` `Runs[].RunResultSha256` to match the retained'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_signal_binding' -Text $runtimeMonkeyDocs -Needle 'requires retained summary row `Passed`, `FailureReasonCodes`, and'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_numeric_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_summary_numeric_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_plan_numeric_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_summary_plan_numeric_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_expected_ancient_ids_array_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_expected_ancient_ids_array_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_summary_numeric_malformed' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_summary_numeric_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_summary_plan_numeric_malformed' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_summary_plan_numeric_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_case_sensitive_json_fields' -Text $runtimeMonkeyDocs -Needle 'Retained JSON property names are compared with ordinal case sensitivity'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_signal_array_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_signal_array_shape_invalid`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_bad_monkey_summary_not_silent' -Text $runtimeMonkeyDocs -Needle 'retained `monkey-summary.json` exists but cannot be parsed'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_result_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_result_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_summary_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_summary_result_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_summary_result_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_summary_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_passed_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_passed_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_probe_samples_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_probe_samples_shape_invalid`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_probe_samples_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`autoslay_runtime_probe_samples_shape_invalid`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_probe_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_probe_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_probe_boolean_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_runtime_probe_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_probe_hung_window' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_probe_hung_window`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_probe_not_responding' -Text $runtimeMonkeyDocs -Needle '`runtime_monkey_probe_not_responding`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_probe_hung_window' -Text $runtimeMonkeyDocs -Needle '`autoslay_runtime_probe_hung_window`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_probe_not_responding' -Text $runtimeMonkeyDocs -Needle '`autoslay_runtime_probe_not_responding`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_direct_autoslay_passed_boolean_malformed' -Text $runtimeMonkeyDocs -Needle 'direct `run-result.json` analysis without a matching `autoslay-summary.json`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_signal_array_malformed' -Text $runtimeMonkeyDocs -Needle '`autoslay_signal_array_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_packet_native_bool_false_values' -Text $runtimeMonkeyDocs -Needle 'no-acknowledgement or no-hang fields by defaulting to `false`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_packet_native_bool_false_values' -Text $runtimeMonkeyDocs -Needle 'no-hang fields by defaulting to `false`'
 Add-ContainsCheck -Name 'runtime_monkey_docs_packet_rejects_iteration_escape_paths' -Text $runtimeMonkeyDocs -Needle 'The packet checker rejects `iteration-result.json` log/probe'
 Add-ContainsCheck -Name 'runtime_monkey_docs_runtime_packet_native_array_shapes' -Text $runtimeMonkeyDocs -Needle 'retained `runtime-probe-samples.json` must be'
 Add-ContainsCheck -Name 'runtime_monkey_docs_runtime_packet_command_corpus_array_shape' -Text $runtimeMonkeyDocs -Needle '`CommandCorpus`, `PlannedCommands`, `Results[]`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_require_fresh_patch_count_target' -Text $runtimeMonkeyDocs -Needle '<fresh-current-runtime-ModPatcher-applied-count>'
+Add-ContainsCheck -Name 'runtime_monkey_docs_reject_historical_patch_count_targets' -Text $runtimeMonkeyDocs -Needle 'Do not reuse historical patch-count targets such as `144` or `152`'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_runtime_summary_array_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`monkey-summary.json` `Results` / `FailedIterationIds` shapes'
-Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_runs_shape_invalid' -Text $runtimeMonkeyDocs -Needle '`autoslay_summary_shape_invalid` `RuntimeHarness` blocker'
-Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_counter_mismatch' -Text $runtimeMonkeyDocs -Needle 'record `autoslay_summary_counter_mismatch` before any AutoSlay owner routing'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_runs_shape_invalid' -Text $runtimeMonkeyDocs -Needle 'AutoSlay run, probe, sidecar, audit, StS1, or log-derived owner-routing'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_summary_counter_mismatch' -Text $runtimeMonkeyDocs -Needle 'record `autoslay_summary_counter_mismatch` and clear the same batch-root'
+Add-ContainsCheck -Name 'runtime_monkey_docs_bad_autoslay_summary_stays_autoslay' -Text $runtimeMonkeyDocs -Needle 'the AutoSlay invalid-evidence path'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_launcher_provenance_mismatch' -Text $runtimeMonkeyDocs -Needle 'autoslay_launcher_provenance_mismatch'
 Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_autoslay_artifact_trust_closes_log_owner' -Text $runtimeMonkeyDocs -Needle 'if run, probe, sidecar, audit, or StS1'
 Add-ContainsCheck -Name 'runtime_failure_analyzer_closes_autoslay_log_owner_after_artifact_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle '$logOwnerArea = ''Runtime.Unknown'''
@@ -899,6 +1076,256 @@ Add-ContainsCheck -Name 'runtime_packet_script_allows_startup_only_idle_log' -Te
 Add-ContainsCheck -Name 'runtime_packet_script_rejects_top_level_array_shape_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'plan_planned_commands_array'
 Add-ContainsCheck -Name 'runtime_packet_script_rejects_command_corpus_array_shape_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'plan_command_corpus_array'
 Add-ContainsCheck -Name 'runtime_packet_script_rejects_per_iteration_array_shape_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'runtime_probe_samples_array'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_native_numeric_string_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Test-NativeJsonIntegerValue'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_native_bool_properties' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'function Test-JsonBoolProperty'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_all_native_bool_properties' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'function Add-AllBoolPropertiesCheck'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_sts1_check_passed_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle '${iterationName}_sts1_mode_log_check_checks'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'function Test-AllJsonRespondingPropertiesValid'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_sts1_check_passed_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_sts1_mode_log_check_checks_passed_bool status=fail'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_audit_clean_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_audit_clean_bool status=fail'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerAllowsNullRespondingBeforeMainWindowObserved'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_responding_null_after_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsNullRespondingAfterMainWindowObserved'
+Add-ContainsCheck -Name 'runtime_monkey_docs_reject_integer_decimal_tokens' -Text $runtimeMonkeyDocs -Needle 'integer-valued decimal'
+Add-ContainsCheck -Name 'test_plan_rejects_integer_decimal_tokens' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'docs\test-plan.md') -Raw -Encoding UTF8) -Needle 'integer-valued decimal tokens such as `1.0`'
+Add-ContainsCheck -Name 'test_plan_covers_audit_schema_native_tokens' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'docs\test-plan.md') -Raw -Encoding UTF8) -Needle 'Audit evidence has the same'
+Add-ContainsCheck -Name 'test_plan_covers_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'docs\test-plan.md') -Raw -Encoding UTF8) -Needle '`Length` plus every `SignatureHits[].Count` must be present'
+Add-ContainsCheck -Name 'test_plan_covers_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'docs\test-plan.md') -Raw -Encoding UTF8) -Needle 'every `SignatureHits[].Count` must be present'
+Add-ContainsCheck -Name 'test_plan_covers_audit_schema_v2' -Text $rootTestPlan -Needle 'AuditSchemaVersion: 2'
+Add-ContainsCheck -Name 'test_plan_covers_audit_signature_set_hash' -Text $rootTestPlan -Needle 'SignatureSetSha256'
+Add-ContainsCheck -Name 'test_plan_closes_log_owner_on_audit_signature_vector_drift' -Text $rootTestPlan -Needle 'signature-vector drift closes log-owner trust'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_plan_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle "Add-IntegerPropertyCheck -Prefix 'plan'"
+Add-ContainsCheck -Name 'runtime_packet_script_checks_summary_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle "Add-NumberPropertyCheck -Prefix 'summary'"
+Add-ContainsCheck -Name 'runtime_packet_script_checks_iteration_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-NumberPropertyCheck -Prefix $iterationName'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_main_menu_log_final_length_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle "'LogFinalLength'"
+Add-ContainsCheck -Name 'audit_godot_log_outputs_array_root' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\audit-godot-log.ps1') -Raw -Encoding UTF8) -Needle 'ConvertTo-Json -InputObject @($results)'
+Add-ContainsCheck -Name 'audit_godot_log_outputs_schema_v2' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\audit-godot-log.ps1') -Raw -Encoding UTF8) -Needle 'AuditSchemaVersion = $auditSchemaVersion'
+Add-ContainsCheck -Name 'audit_godot_log_outputs_signature_set_hash' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\audit-godot-log.ps1') -Raw -Encoding UTF8) -Needle 'SignatureSetSha256 = $signatureSetSha256'
+Add-ContainsCheck -Name 'audit_godot_log_hashes_ignored_error_patterns' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\audit-godot-log.ps1') -Raw -Encoding UTF8) -Needle '"ignored`t$pattern"'
+Add-ContainsCheck -Name 'audit_godot_log_hashes_order_independent_rule_set' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\audit-godot-log.ps1') -Raw -Encoding UTF8) -Needle '$sortedLines = @($lines.ToArray() | Sort-Object)'
+Add-ContainsCheck -Name 'audit_godot_log_tests_cover_array_root' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\AuditGodotLogGuardTests.cs') -Raw -Encoding UTF8) -Needle 'Assert.Equal(JsonValueKind.Array, document.RootElement.ValueKind)'
+Add-ContainsCheck -Name 'audit_godot_log_tests_cover_schema_v2' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\AuditGodotLogGuardTests.cs') -Raw -Encoding UTF8) -Needle 'Assert.Equal(2, logResult.GetProperty("AuditSchemaVersion").GetInt32())'
+Add-ContainsCheck -Name 'audit_godot_log_tests_cover_signature_set_hash' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\AuditGodotLogGuardTests.cs') -Raw -Encoding UTF8) -Needle 'SignatureSetSha256'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_array_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'audit_array_fields_native'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'audit_numeric_fields_native'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle "-not (Test-JsonProperty -Object `$item -Name 'Length')"
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle "-not (Test-JsonProperty -Object `$hit -Name 'Count')"
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Test-NativeJsonInt32Value -Value $hit.Count'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_clean_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'audit_clean_bool'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_schema_v2' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle '${iterationName}_audit_schema_fields_current'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_schema_version_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle '${iterationName}_audit_schema_version_matches_recomputed'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_signature_set_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle '${iterationName}_audit_signature_set_matches_recomputed'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_audit_signature_vector_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Test-StringArrayEquals -Actual $auditSignatureHitVector -Expected $recomputedSignatureHitVector'
+Add-ContainsCheck -Name 'runtime_packet_script_tracks_audit_signature_vector' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'SignatureHitVector'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_audit_array_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_audit_array_fields_native status=fail'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_object_root_audit_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsObjectRootAuditEvidence'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsAuditMissingLength'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsAuditSignatureHitMissingCount'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsAuditSignatureHitStringCount'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_missing_audit_schema_version' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsAuditMissingSchemaVersion'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_wrong_audit_signature_set' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsAuditWrongSignatureSetHash'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_empty_signature_hit_vector' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsAuditEmptySignatureHitVector'
+Add-ContainsCheck -Name 'runtime_analyzer_checks_audit_array_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_audit_array_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_checks_audit_bool_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_audit_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_checks_audit_numeric_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_audit_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_checks_audit_schema_v2' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'godot_log_audit_schema_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_checks_audit_rule_hash_vector_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Retained audit schema, rule-set hash, or signature vector'
+Add-ContainsCheck -Name 'runtime_analyzer_compares_audit_signature_vectors' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Test-StringArrayEquals -Actual $auditSignatureHitVector -Expected $recomputedAuditSignatureHitVector'
+Add-ContainsCheck -Name 'runtime_analyzer_rejects_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle "-not (Test-JsonProperty -Object `$item -Name 'Length')"
+Add-ContainsCheck -Name 'runtime_analyzer_rejects_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle "-not (Test-JsonProperty -Object `$hit -Name 'Count')"
+Add-ContainsCheck -Name 'runtime_analyzer_rejects_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Test-NativeJsonIntegerValue -Value $hit.Count'
+Add-ContainsCheck -Name 'runtime_analyzer_rejects_missing_runtime_monkey_audit' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_godot_log_audit_missing'
+Add-ContainsCheck -Name 'runtime_analyzer_closes_audit_schema_runtime_monkey_owner_routing' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle '$runtimeMonkeyRunArtifactsTrustedForOwner = $false'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_audit_array_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'root and SignatureHits must be retained as native JSON arrays'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_missing_runtime_monkey_audit' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMissingRuntimeMonkeyAuditWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_object_root_audit_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsObjectRootAuditEvidenceWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsAuditMissingLengthWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsAuditSignatureHitMissingCountWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsAuditSignatureHitStringCountWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_audit_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedAuditSchemaWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_missing_audit_schema_version' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsAuditMissingSchemaVersionWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_wrong_audit_signature_set' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsAuditWrongSignatureSetHashWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_empty_signature_hit_vector' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsAuditEmptySignatureHitVectorWithoutFailingOpen'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_audit_schema_owner_routing_closure' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean())'
+Add-ContainsCheck -Name 'runtime_analyzer_checks_probe_samples_raw_root_array' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Test-RawJsonRootArray -Json $probeSamplesRawJson'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_sts1_log_length_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-IntegerPropertyCheck -Prefix "${iterationName}_sts1_mode_log_check"'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_prepare_sidecar_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-IntegerPropertyCheck -Prefix "${iterationName}_prepare_output"'
+Add-ContainsCheck -Name 'runtime_packet_script_checks_restore_sidecar_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-IntegerPropertyCheck -Prefix "${iterationName}_restore_state"'
+Add-ContainsCheck -Name 'runtime_packet_script_rejects_probe_numeric_string_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-AllIntegerPropertiesCheck -Prefix "${iterationName}_runtime_probe_samples"'
+Add-ContainsCheck -Name 'autoslay_packet_script_rejects_native_numeric_string_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'Test-NativeJsonIntegerValue'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_plan_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle "Add-IntegerPropertyCheck -Prefix 'plan'"
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_summary_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle "Add-IntegerPropertyCheck -Prefix 'summary'"
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_source_workspace_schema_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle "Add-IntegerPropertyCheck -Prefix 'plan_source_workspace'"
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_audit_array_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'audit_array_fields_native'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_audit_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'audit_numeric_fields_native'
+Add-ContainsCheck -Name 'autoslay_packet_script_rejects_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle "-not (Test-JsonProperty -Object `$item -Name 'Length')"
+Add-ContainsCheck -Name 'autoslay_packet_script_rejects_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle "-not (Test-JsonProperty -Object `$hit -Name 'Count')"
+Add-ContainsCheck -Name 'autoslay_packet_script_rejects_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'Test-NativeJsonIntegerValue -Value $hit.Count'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_audit_schema_v2' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle '${runName}_audit_schema_fields_current'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_audit_signature_set_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle '${runName}_audit_signature_set_matches_recomputed'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_audit_signature_vector_recompute' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'Test-StringArrayEquals -Actual $auditSignatureHitVector -Expected $recomputedSignatureHitVector'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_audit_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayMalformedAuditSchema'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_audit_array_schema_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'godot_log_audit_array_malformed'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_object_root_audit_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayObjectRootAuditEvidence'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditMissingLength'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditSignatureHitMissingCount'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditSignatureHitStringCount'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_missing_audit_schema_version' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditMissingSchemaVersion'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_wrong_audit_signature_set' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditWrongSignatureSetHash'
+Add-ContainsCheck -Name 'autoslay_analyzer_tests_cover_empty_signature_hit_vector' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditEmptySignatureHitVector'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_sts1_log_length_numeric_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-IntegerPropertyCheck -Prefix "${runName}_sts1_mode_log_check"'
+Add-ContainsCheck -Name 'autoslay_packet_script_rejects_probe_numeric_string_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'Add-AllIntegerPropertiesCheck -Prefix "${runName}_runtime_probe_samples"'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_native_bool_properties' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'function Test-JsonBoolProperty'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_all_native_bool_properties' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'function Add-AllBoolPropertiesCheck'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_audit_clean_bool' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'audit_clean_bool'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_sts1_check_passed_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle '${runName}_sts1_mode_log_check_checks'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_probe_samples_root_array' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle '${runName}_runtime_probe_samples_array'
+Add-ContainsCheck -Name 'autoslay_packet_script_checks_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'function Test-AllJsonRespondingPropertiesValid'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_matching_numeric_strings' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'run_0001_runtime_probe_samples_process_id_integer status=fail'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_source_workspace_schema_numeric_string' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'plan_source_workspace_schema_version_integer status=fail'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_integer_decimal_tokens' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle '"SchemaVersion\": 1.0'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_native_bool_false_values' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'run_0001_runtime_probe_samples_responding_bool status=fail'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_audit_clean_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'run_0001_audit_clean_bool status=fail'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_audit_array_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'run_0001_audit_array_fields_native status=fail'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_object_root_audit_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsObjectRootAuditEvidence'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_missing_audit_length' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsAuditMissingLength'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_missing_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsAuditSignatureHitMissingCount'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_string_audit_count' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsAuditSignatureHitStringCount'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_missing_audit_schema_version' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsAuditMissingSchemaVersion'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_wrong_audit_signature_set' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsAuditWrongSignatureSetHash'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_empty_signature_hit_vector' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsAuditEmptySignatureHitVector'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_sts1_check_passed_bool_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'run_0001_sts1_mode_log_check_checks_passed_bool status=fail'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_probe_samples_root_array' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsObjectShapedRuntimeProbeSamples'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierAllowsNullRespondingBeforeMainWindowObserved'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_responding_null_after_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsNullRespondingAfterMainWindowObserved'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_expected_ancient_ids_scalar_shape' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsScalarExpectedAncientIdsShapeEvenWhenCoverageMatches'
+Add-ContainsCheck -Name 'runtime_monkey_docs_sts1_check_passed_bool_shape' -Text $runtimeMonkeyDocs -Needle 'StS1 verifier `Checks[].Passed` flags'
+Add-ContainsCheck -Name 'runtime_monkey_docs_probe_samples_root_array_shape' -Text $runtimeMonkeyDocs -Needle 'retained `runtime-probe-samples.json` roots must be native JSON arrays'
+Add-ContainsCheck -Name 'runtime_monkey_docs_responding_nullable_before_window' -Text $runtimeMonkeyDocs -Needle '`Responding` is the only runtime-probe exception'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_audit_array_schema_shape' -Text $runtimeMonkeyDocs -Needle '`godot_log_audit_array_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_audit_schema_shape' -Text $runtimeMonkeyDocs -Needle '`godot_log_audit_boolean_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_missing_audit_count' -Text $runtimeMonkeyDocs -Needle 'every `SignatureHits[].Count`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_audit_schema_v2' -Text $runtimeMonkeyDocs -Needle 'AuditSchemaVersion: 2'
+Add-ContainsCheck -Name 'runtime_monkey_docs_audit_signature_set_hash' -Text $runtimeMonkeyDocs -Needle 'SignatureSetSha256'
+Add-ContainsCheck -Name 'runtime_monkey_docs_audit_schema_malformed_signal' -Text $runtimeMonkeyDocs -Needle '`godot_log_audit_schema_malformed`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_audit_recomputed_mismatch_signal' -Text $runtimeMonkeyDocs -Needle '`godot_log_audit_recomputed_mismatch`'
+Add-ContainsCheck -Name 'runtime_monkey_docs_audit_named_signature_vector' -Text $runtimeMonkeyDocs -Needle 'named signature-count'
+Add-ContainsCheck -Name 'runtime_monkey_docs_missing_runtime_audit_signal' -Text $runtimeMonkeyDocs -Needle 'runtime_monkey_godot_log_audit_missing'
+Add-ContainsCheck -Name 'test_plan_missing_runtime_audit_signal' -Text $rootTestPlan -Needle 'runtime_monkey_godot_log_audit_missing'
+Add-ContainsCheck -Name 'runtime_monkey_docs_analyzer_audit_schema_owner_routing_closure' -Text $runtimeMonkeyDocs -Needle 'malformed audit schema also disables retained failure-signal owner routing'
+Add-ContainsCheck -Name 'sts1_enabled_log_script_checks_audit_schema_v2' -Text $enabledModeLogScript -Needle 'audit_schema_fields_current'
+Add-ContainsCheck -Name 'sts1_enabled_log_script_checks_signature_set_recompute' -Text $enabledModeLogScript -Needle 'audit_signature_set_matches_recomputed'
+Add-ContainsCheck -Name 'sts1_enabled_log_script_checks_signature_vector_recompute' -Text $enabledModeLogScript -Needle 'Test-StringArrayEquals -Actual $auditSignatureHitVector -Expected $recomputedSignatureHitVector'
+Add-ContainsCheck -Name 'sts1_enabled_log_tests_cover_missing_schema_version' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.Sts1RuntimeEvidence.cs') -Raw -Encoding UTF8) -Needle 'Sts1EnabledModeLogVerifierRejectsMissingAuditSchemaVersion'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_script_exists' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\new-beta135-runtime-baseline-evidence.ps1') -Raw -Encoding UTF8) -Needle "Set-ObjectProperty -Object `$manifest -Name 'OwnerRunRequired' -Value `$true"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_log_checker_exists' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-beta135-runtime-baseline-log.ps1') -Raw -Encoding UTF8) -Needle 'runtime-baseline-log-check.json'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_owner_boundary' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'docs\testing\beta135-runtime-baseline.md') -Raw -Encoding UTF8) -Needle 'Codex prepares the evidence scaffold and offline log checker.'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_guard_scripts' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.RuntimeBaseline.cs') -Raw -Encoding UTF8) -Needle 'Beta135RuntimeBaselineLogCheckerGuardsVersionAuditAndPatchCount'
+$beta135RuntimeBaselineDocs = Get-Content -LiteralPath (Resolve-RepoPath 'docs\testing\beta135-runtime-baseline.md') -Raw -Encoding UTF8
+$beta135RuntimeBaselineScaffold = Get-Content -LiteralPath (Resolve-RepoPath 'scripts\new-beta135-runtime-baseline-evidence.ps1') -Raw -Encoding UTF8
+$beta135RuntimeBaselineChecker = Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-beta135-runtime-baseline-log.ps1') -Raw -Encoding UTF8
+$beta135RuntimeBaselineTests = Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.RuntimeBaseline.cs') -Raw -Encoding UTF8
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_expected_168' -Text $beta135RuntimeBaselineDocs -Needle 'Expected runtime patch count `168`'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_169_168_boundary' -Text $beta135RuntimeBaselineDocs -Needle 'current source inventory is 169 migrated RitsuLib patch'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_expected_168' -Text $beta135RuntimeBaselineChecker -Needle '[int]$ExpectedPatchCount = 168'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_clean' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_clean'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_array_shape' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_signature_hits_array'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_schema_v2' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_schema_fields_current'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_signature_set' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_has_single_signature_set_sha256'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_file_binding' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_file_binding_current'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_signature_vector_present' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_signature_vector_present'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_signature_names_current' -Text $beta135RuntimeBaselineChecker -Needle 'godot_log_audit_signature_names_current'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_audit_expected_log_binding' -Text $beta135RuntimeBaselineChecker -Needle 'Read-AuditSummary -Path $auditOutputPath -ExpectedLogPath $resolvedLogPath'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_scaffold_manifest_required' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_present'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_scaffold_owner_run_required' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_owner_run_required'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_scaffold_no_launch_required' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_does_not_launch_game'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_package_zip_hash_bound' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_package_zip_hash_bound'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_spire_plus_files_hash_bound' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_spire_plus_files_hash_bound'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_ritsu_lib_files_hash_bound' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_ritsu_lib_files_hash_bound'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_recomputes_package_zip_hash' -Text $beta135RuntimeBaselineChecker -Needle 'Test-FileRecordMatchesCurrentFile -Record $packageZip'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_recomputes_installed_files_hash' -Text $beta135RuntimeBaselineChecker -Needle 'Test-ManifestDirectoryFileRecordMatchesCurrentFile'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_binds_install_dirs' -Text $beta135RuntimeBaselineChecker -Needle 'Test-DirectoryPathBound'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_reads_configured_game_root' -Text $beta135RuntimeBaselineChecker -Needle 'Get-Sts2PathFromDirectoryBuildProps'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_install_paths_match_configured_game_root' -Text $beta135RuntimeBaselineChecker -Needle 'scaffold_manifest_install_paths_match_configured_game_root'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_explicit_game_version_marker' -Text $beta135RuntimeBaselineChecker -Needle 'expected explicit release/host version marker'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_audit_schema_v2' -Text $beta135RuntimeBaselineTests -Needle 'AuditSchemaVersion'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_audit_signature_set' -Text $beta135RuntimeBaselineTests -Needle 'SignatureSetSha256'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_audit_file_binding' -Text $beta135RuntimeBaselineTests -Needle 'godot_log_audit_file_binding_current'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_audit_signature_vector_present' -Text $beta135RuntimeBaselineTests -Needle 'godot_log_audit_signature_vector_present'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_scaffold_manifest_required' -Text $beta135RuntimeBaselineTests -Needle 'scaffold_manifest_present'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_package_zip_hash_bound' -Text $beta135RuntimeBaselineTests -Needle 'scaffold_manifest_package_zip_hash_bound'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_evidence_contained' -Text $beta135RuntimeBaselineChecker -Needle 'EvidenceDir must stay under'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_rejects_reparse' -Text $beta135RuntimeBaselineChecker -Needle 'Evidence path must not pass through a reparse point'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_reparse_checks_repo_root_ancestors' -Text $beta135RuntimeBaselineChecker -Needle 'Evidence path must stay under repo root while checking reparse points'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_rejects_log_leaf_reparse' -Text $beta135RuntimeBaselineChecker -Needle "Assert-LeafIsNotReparsePoint -Path `$resolvedLogPath -Description 'LogPath'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_rejects_audit_output_leaf_reparse' -Text $beta135RuntimeBaselineChecker -Needle "Assert-NoReparsePointInPath -Path `$auditOutputPath"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_rejects_report_output_leaf_reparse' -Text $beta135RuntimeBaselineChecker -Needle "Assert-NoReparsePointInPath -Path `$reportPath"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_rejects_manifest_output_leaf_reparse' -Text $beta135RuntimeBaselineChecker -Needle "Assert-NoReparsePointInPath -Path `$manifestPath"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_exact_mod_manifest_set' -Text $beta135RuntimeBaselineChecker -Needle 'ritsu_only_mod_manifest_set_exact'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_rejects_baselib_marker' -Text $beta135RuntimeBaselineChecker -Needle 'no_base_lib_marker'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_checker_updates_manifest_hashes' -Text $beta135RuntimeBaselineChecker -Needle "Set-ObjectProperty -Object `$manifest -Name 'RuntimeBaselineLogCheckRecord'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_log_fail_on_mismatch' -Text $beta135RuntimeBaselineScaffold -Needle '-FailOnMismatch'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_hash_bound_owner_log' -Text $beta135RuntimeBaselineScaffold -Needle "Set-ObjectProperty -Object `$manifest -Name 'GodotLogAfterLaunchRecord'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_hash_bound_screenshot' -Text $beta135RuntimeBaselineScaffold -Needle "Set-ObjectProperty -Object `$manifest -Name 'MainMenuScreenshotRecord'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_hash_bound_package_zip' -Text $beta135RuntimeBaselineScaffold -Needle "Set-ObjectProperty -Object `$manifest -Name 'PackageZip'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_hash_bound_spire_plus_files' -Text $beta135RuntimeBaselineScaffold -Needle "Set-ObjectProperty -Object `$manifest -Name 'SpirePlusFiles'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_hash_bound_ritsu_lib_files' -Text $beta135RuntimeBaselineScaffold -Needle "Set-ObjectProperty -Object `$manifest -Name 'RitsuLibFiles'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_writes_manifest_before_checker' -Text $beta135RuntimeBaselineScaffold -Needle '$initialManifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath $manifestPath -Encoding UTF8'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_hash_bound_install_dirs' -Text $beta135RuntimeBaselineScaffold -Needle "Set-ObjectProperty -Object `$manifest -Name 'SpirePlusInstallDir'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_passes_game_root_to_checker' -Text $beta135RuntimeBaselineScaffold -Needle '-GameRoot $resolvedGameRoot'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_reads_configured_game_root' -Text $beta135RuntimeBaselineScaffold -Needle 'Get-Sts2PathFromDirectoryBuildProps'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_resolves_game_root_once' -Text $beta135RuntimeBaselineScaffold -Needle '$resolvedGameRoot = Resolve-ConfiguredGameRoot -Path $GameRoot'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_rejects_nonempty_force' -Text $beta135RuntimeBaselineScaffold -Needle 'Refusing to reuse non-empty evidence directory'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_rejects_reparse' -Text $beta135RuntimeBaselineScaffold -Needle 'Evidence path must not pass through a reparse point'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_reparse_checks_repo_root_ancestors' -Text $beta135RuntimeBaselineScaffold -Needle 'Evidence path must stay under repo root while checking reparse points'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_rejects_copied_artifact_reparse' -Text $beta135RuntimeBaselineScaffold -Needle "Assert-LeafIsNotReparsePoint -Path `$resolvedDestination -Description 'Artifact destination'"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_preserves_checker_status' -Text $beta135RuntimeBaselineScaffold -Needle 'runtime-baseline-log-markers-checked'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_rejects_missing_checker_status' -Text $beta135RuntimeBaselineScaffold -Needle 'Checker did not record successful runtime baseline status in run-manifest.json'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_scaffold_expected_mod_ids' -Text $beta135RuntimeBaselineScaffold -Needle "ExpectedModManifestIds = @('EZMicroBalance', 'STS2-RitsuLib')"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_checker_updates_manifest' -Text $beta135RuntimeBaselineDocs -Needle 'refreshes `run-manifest.json`'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_exact_mod_set' -Text $beta135RuntimeBaselineDocs -Needle "discovered mod manifest id set"
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_audit_file_binding' -Text $beta135RuntimeBaselineDocs -Needle 'bind `Path`, `Length`, and `Sha256`'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_audit_nonempty_signature_vector' -Text $beta135RuntimeBaselineDocs -Needle 'non-empty named signature vector'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_audit_signature_name_set' -Text $beta135RuntimeBaselineDocs -Needle 'current complete audit signature name set'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_reject_direct_log_only' -Text $beta135RuntimeBaselineDocs -Needle 'refuses direct log-only evidence'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_package_zip_hash_bound' -Text $beta135RuntimeBaselineDocs -Needle 'beta.135 package zip hash record'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_install_file_hash_bound' -Text $beta135RuntimeBaselineDocs -Needle 'hash-bound installed-file records'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_recomputes_current_files' -Text $beta135RuntimeBaselineDocs -Needle 'recomputes the current package zip'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_uses_configured_game_root' -Text $beta135RuntimeBaselineDocs -Needle 'Directory.Build.props'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_scaffold_checker_share_game_root' -Text $beta135RuntimeBaselineDocs -Needle 'scaffold and checker both read'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_game_root_fail_closed' -Text $beta135RuntimeBaselineDocs -Needle 'fail closed'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_rejects_fabricated_manifest_records' -Text $beta135RuntimeBaselineDocs -Needle 'fabricated manifest records'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_docs_marker_only_log_origin' -Text $beta135RuntimeBaselineDocs -Needle 'marker-only-origin-not-proven-by-offline-checker'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_expected_168' -Text $beta135RuntimeBaselineTests -Needle '[int]$ExpectedPatchCount = 168'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_reject_extra_mod_fixture' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineCheckerRejectsExtraModAndBaseLibMarkers'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_clean_manifest_fixture' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineCheckerWritesManifestForCleanLog'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_reject_log_only_without_scaffold' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineCheckerRejectsLogOnlyEvidenceWithoutScaffoldManifest'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_reject_fabricated_manifest' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineCheckerRejectsFabricatedManifestFileRecords'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_reject_missing_game_version_marker' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineCheckerRejectsLogWithoutGameVersionMarker'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_cover_captured_log_scaffold_path' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineScaffoldAcceptsAlreadyCapturedLogAfterWritingManifest'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_nonempty_force_fixture' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineScaffoldRejectsNonEmptyForceDirectory'
+Add-ContainsCheck -Name 'beta135_runtime_baseline_tests_output_reparse_fixture' -Text $beta135RuntimeBaselineTests -Needle 'Beta135RuntimeBaselineCheckerRejectsOutputLeafReparsePointWhenAvailable'
+Add-ContainsCheck -Name 'release_verifier_binds_audit_to_expected_log_path' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Read-CleanLogAudit -AuditPath $auditPath -ExpectedLogPath $expectedLogPath'
+Add-ContainsCheck -Name 'release_verifier_derives_log_from_audit_file' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Get-ExpectedLogFileForAuditFile'
+Add-ContainsCheck -Name 'release_verifier_recomputes_current_audit_script' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'audit-godot-log.ps1'
+Add-ContainsCheck -Name 'release_verifier_compares_recomputed_schema_version' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle '[long]$recomputed.AuditSchemaVersion -ne [long]$item.AuditSchemaVersion'
+Add-ContainsCheck -Name 'release_verifier_compares_signature_vectors' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Test-StringArrayEquals -Actual $retainedSignatureVector -Expected $recomputedSignatureVector'
+Add-ContainsCheck -Name 'release_verifier_requires_nonempty_signature_vector' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle '$retainedSignatureVector.Count -eq 0'
+Add-ContainsCheck -Name 'release_verifier_requires_current_target_manifest' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Test-ReleaseRowTargetManifest'
+Add-ContainsCheck -Name 'release_verifier_requires_row_run_manifest' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'run-manifest.json'
+Add-ContainsCheck -Name 'release_verifier_rejects_noncanonical_package_path' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'PackagePath must be the canonical current Spire Plus package'
+Add-ContainsCheck -Name 'release_verifier_rejects_noncanonical_package_hash' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'PackageSha256 must match the canonical current Spire Plus package'
+Add-ContainsCheck -Name 'release_verifier_rejects_reparse_paths' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Add-NoReparsePointInPathFailures'
+Add-ContainsCheck -Name 'release_verifier_rejects_hardlinked_files' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Get-ExistingPathHardlinkCount'
+Add-ContainsCheck -Name 'release_verifier_hardlink_count_unavailable_fails_closed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'hardlink count could not be determined; release evidence must fail closed'
+Add-NoRegexCheck -Name 'release_verifier_no_hardlink_count_zero_fallback' -Paths @('scripts\verify-spire-plus-release-evidence.ps1') -Pattern 'return\s+0\b'
+Add-ContainsCheck -Name 'release_verifier_rejects_pass_marker_aliases' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\verify-spire-plus-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'Add-OutputAliasFailures'
+Add-ContainsCheck -Name 'release_collector_writes_row_target_manifest' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\collect-release-evidence.ps1') -Raw -Encoding UTF8) -Needle 'New-ReleaseRowRunManifest'
+Add-ContainsCheck -Name 'release_verifier_tests_use_current_audit_generator' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\ReleaseEvidenceGateTests.EvidenceHelpers.cs') -Raw -Encoding UTF8) -Needle 'audit-godot-log.ps1'
+Add-ContainsCheck -Name 'release_verifier_tests_reject_clean_only_audit_schema' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\ReleaseEvidenceGateTests.cs') -Raw -Encoding UTF8) -Needle 'ReleaseVerifierRejectsCleanOnlyGodotLogAuditSchema'
+Add-ContainsCheck -Name 'release_verifier_tests_reject_forged_clean_audit' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\ReleaseEvidenceGateTests.cs') -Raw -Encoding UTF8) -Needle 'ReleaseVerifierRejectsDirtyGodotLogWithForgedCleanAudit'
+Add-Check -Name 'beta135_runtime_baseline_docs_no_positive_baselib_instruction' -Passed (-not ($beta135RuntimeBaselineDocs -match '(?i)Enable only .*BaseLib|BaseLib loaded successfully')) -Detail 'beta.135 runtime baseline docs must not instruct enabling BaseLib'
+Add-Check -Name 'beta135_runtime_baseline_checker_no_positive_baselib_requirement' -Passed (-not ($beta135RuntimeBaselineChecker -match '(?i)baselib_loaded_marker|BaseLib loaded successfully')) -Detail 'beta.135 runtime baseline checker must not require BaseLib'
+Add-Check -Name 'beta135_runtime_baseline_scaffold_no_baselib' -Passed (-not ($beta135RuntimeBaselineScaffold -match '(?i)BaseLib')) -Detail 'beta.135 runtime baseline scaffold must stay RitsuLib-only'
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_iteration_number_coverage' -Text $runtimeMonkeyDocs -Needle 'duplicate, missing, non-positive, or out-of-range'
 Add-ContainsCheck -Name 'runtime_packet_script_requires_plan_iteration_coverage' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'plan_planned_iteration_numbers_cover_expected'
 Add-ContainsCheck -Name 'runtime_packet_script_requires_summary_iteration_coverage' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-runtime-monkey-packet.ps1') -Raw -Encoding UTF8) -Needle 'summary_result_iteration_numbers_cover_expected'
@@ -917,6 +1344,7 @@ Add-ContainsCheck -Name 'runtime_monkey_docs_require_live_session_child_evidence
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_summary_failure_hang_binding' -Text $runtimeMonkeyDocs -Needle '`Results[]` row must also retain empty `FailureReasonCodes` and'
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_summary_failure_counter_binding' -Text $runtimeMonkeyDocs -Needle 'Top-level failed-iteration ids, failure-reason maps'
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_summary_batch_metadata_binding' -Text $runtimeMonkeyDocs -Needle 'Top-level `monkey-summary.json` batch metadata'
+Add-ContainsCheck -Name 'runtime_monkey_docs_autoslay_log_metadata_clears_run_trust' -Text $runtimeMonkeyDocs -Needle 'GameNativeAutoSlay log metadata drifts, the per-seed run artifact is also not'
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_analyzer_summary_counter_mismatch' -Text $runtimeMonkeyDocs -Needle 'summary counter mismatch versus `Results[]`'
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_analyzer_summary_result_mismatch' -Text $runtimeMonkeyDocs -Needle '`Results[]` row mismatch versus canonical'
 Add-ContainsCheck -Name 'runtime_monkey_docs_require_analyzer_summary_plan_mismatch' -Text $runtimeMonkeyDocs -Needle 'batch metadata drift versus'
@@ -967,6 +1395,68 @@ Add-ContainsCheck -Name 'runtime_packet_script_binds_summary_batch_metadata_to_p
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_summary_counter_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_counter_mismatch'
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_summary_result_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_result_mismatch'
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_summary_plan_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_plan_mismatch'
+Add-ContainsCheck -Name 'runtime_analyzer_rejects_native_numeric_string_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'Test-NativeJsonIntegerValue'
+Add-ContainsCheck -Name 'runtime_analyzer_integer_reader_rejects_strings' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle '$Value -is [bool] -or $Value -is [string]'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_autoslay_probe_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_probe_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_autoslay_summary_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_summary_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_autoslay_summary_plan_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_summary_plan_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_summary_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_summary_plan_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_plan_numeric_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_signal_array_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_signal_array_shape_invalid'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_result_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_result_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_summary_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_runtime_monkey_summary_result_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_summary_result_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_autoslay_summary_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_summary_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_autoslay_passed_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_passed_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_reports_autoslay_signal_array_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_signal_array_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_requires_autoslay_summary_signal_array_presence' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'SignalArrayFieldsMalformed'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_probe_numeric_strings' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlayProbeNumericEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_probe_numeric_strings' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyProbeNumericStringEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_probe_integer_decimal_tokens' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeIntegerValuedDecimalEvidence'
+Add-ContainsCheck -Name 'autoslay_packet_tests_cover_case_drifted_field_names' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'GameNativeAutoSlayPacketVerifierRejectsCaseDriftedEvidenceFieldNames'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_probe_integer_decimal_tokens' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyProbeIntegerValuedDecimalEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_summary_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerReportsGameNativeAutoSlaySummaryNumericMalformedSignal'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_summary_plan_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerReportsGameNativeAutoSlaySummaryPlanNumericMalformedSignal'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_case_drifted_plan_fields' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayCaseDriftedSummaryPlanFields'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_scalar_signal_arrays' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyScalarSignalArrays'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_malformed_runtime_monkey_summary_json' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedRuntimeMonkeySummaryJson'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_summary_missing_results' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeySummaryMissingResults'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_clean_runtime_monkey_summary_boolean_rows' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerAcceptsCleanRuntimeMonkeySummaryBooleanRows'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_missing_boolean_evidence' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyMissingBooleanEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_result_boolean_malformed_without_summary' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyResultBooleanMalformedWithoutSummaryRow'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_malformed_autoslay_summary_json' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlaySummaryJson'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_summary_missing_runner_kind' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlaySummaryMissingRunnerKind'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_summary_run_missing_passed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlaySummaryRunMissingPassed'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_clean_autoslay_summary_boolean_rows' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerAcceptsCleanGameNativeAutoSlaySummaryBooleanRows'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_summary_passed_only_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlaySummaryPassedOnly'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_direct_autoslay_run_result_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayRunResultBooleanMalformedWithoutSummaryRow'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_missing_signal_arrays' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsMissingGameNativeAutoSlaySignalArrays'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_direct_autoslay_missing_signal_arrays' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsDirectGameNativeAutoSlayMissingSignalArrays'
+Add-ContainsCheck -Name 'runtime_packet_tests_cover_native_bool_false_values' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_command_ack_required_bool status=fail'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_probe_samples_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyProbeObjectShapeEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_probe_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyProbeBooleanStringEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerAllowsNullRespondingBeforeMainWindowObserved'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_responding_null_after_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsNullRespondingAfterMainWindowObserved'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_probe_hung_not_responding' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerProbeEvidence.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsRuntimeMonkeyPostCommandProbeHungAndNotRespondingEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_probe_samples_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeObjectShapeEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_probe_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerAllowsGameNativeAutoSlayNullRespondingBeforeMainWindowObserved'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_responding_null_after_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayNullRespondingAfterMainWindowObserved'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_probe_hung_not_responding' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeHungAndNotRespondingEvidence'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_runtime_probe_samples_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_samples_shape_invalid'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_runtime_probe_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_runtime_probe_hung_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_hung_window'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_runtime_probe_not_responding' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_probe_not_responding'
+Add-ContainsCheck -Name 'runtime_analyzer_script_checks_responding_nullable_before_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'function Get-MalformedJsonRespondingPropertyLabels'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_autoslay_probe_samples_shape_invalid' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_samples_shape_invalid'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_autoslay_probe_boolean_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_boolean_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_autoslay_probe_hung_window' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_hung_window'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_autoslay_probe_not_responding' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_runtime_probe_not_responding'
+Add-ContainsCheck -Name 'runtime_analyzer_script_reports_autoslay_expected_ancient_ids_array_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'autoslay_expected_ancient_ids_array_malformed'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_autoslay_expected_ancient_ids_array_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.GameNativeAutoSlay.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsScalarGameNativeAutoSlayExpectedAncientIds'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_summary_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerReportsRuntimeMonkeySummaryNumericMalformedSignal'
+Add-ContainsCheck -Name 'runtime_analyzer_tests_cover_runtime_monkey_summary_plan_numeric_malformed' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerReportsRuntimeMonkeySummaryPlanNumericMalformedSignal'
 Add-ContainsCheck -Name 'runtime_analyzer_requires_summary_plan_target_field_presence' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'IsNullOrWhiteSpace($planValue)'
 Add-ContainsCheck -Name 'runtime_analyzer_requires_summary_plan_patch_count_positive' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle '$planPatchCount -le 0'
 Add-ContainsCheck -Name 'runtime_analyzer_rejects_plan_result_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\analyze-spire-plus-runtime-failure.ps1') -Raw -Encoding UTF8) -Needle 'runtime_monkey_plan_result_mismatch'
@@ -1015,6 +1505,17 @@ Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_autoslay_summary_ru
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_autoslay_summary_counter_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.AnalyzerArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlaySummaryCounterDrift'
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_analyzer_autoslay_launcher_provenance_mismatch' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeFailureAnalyzerRejectsGameNativeAutoSlayLauncherProvenanceDrift'
 Add-ContainsCheck -Name 'runtime_monkey_tests_cover_probe_expected_identity_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsProbeExpectedIdentityDrift'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_packet_numeric_shape_drift' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsMalformedNumericEvidence'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_packet_integer_decimal_tokens' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'RuntimeMonkeyPacketCheckerRejectsIntegerValuedDecimalNumericEvidence'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_plan_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'plan_iterations_integer status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_summary_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'summary_max_main_menu_elapsed_seconds_number status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_iteration_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_main_menu_elapsed_seconds_number status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_main_menu_log_final_length_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_main_menu_observation_log_final_length_integer status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_probe_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_runtime_probe_samples_log_length_bytes_integer status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_audit_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_audit_numeric_fields_native status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_sts1_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_sts1_mode_log_check_log_length_integer status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_prepare_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_prepare_output_launched_process_id_integer status=fail'
+Add-ContainsCheck -Name 'runtime_monkey_tests_cover_restore_numeric_shape_check_name' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'tests\EZMicroBalance.Tests\RuntimeMonkeyStabilityGuardTests.PacketArrayShape.cs') -Raw -Encoding UTF8) -Needle 'iteration-0001_restore_state_restore_schema_version_integer status=fail'
 Add-ContainsCheck -Name 'autoslay_packet_script_rejects_missing_event_traversal' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'batch_event_room_traversal_observed'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_autoslayer_start' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'AutoSlayer.Start(seed, logFile)'
 Add-ContainsCheck -Name 'autoslay_packet_script_requires_current_slice_match' -Text (Get-Content -LiteralPath (Resolve-RepoPath 'scripts\check-spire-plus-autoslay-packet.ps1') -Raw -Encoding UTF8) -Needle 'current_iteration_log_matches_after_launch_slice'
@@ -1903,11 +2404,15 @@ Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_
     ExpectedGameVersion = 'v0.107.1'
     ExpectedRitsuLibVersion = '0.4.34'
     ExpectedRitsuCompatBranch = '0.107.1'
-    ExpectedPatchCount = '144'
 }
 Add-AutoSlayProofCommandSwitchValuesCheck -Name 'autoslay_packet_proof_commands_pin_current_ancient_targets' -Paths $autoSlayProofCommandFiles -SwitchValues @{
     ExpectedAncientIds = 'VAKUU,URDA,MORVI,LOTHA'
 }
+$runtimePatchCountProofCommandFiles = @($currentClaimFiles + @('docs\testing\runtime-monkey-stability.md')) | Sort-Object -Unique
+Add-RuntimeMonkeyProofCommandPresentCheck -Name 'runtime_monkey_packet_proof_command_present' -Paths $runtimePatchCountProofCommandFiles
+Add-RuntimeMonkeyProofCommandRequiredSwitchesCheck -Name 'runtime_monkey_packet_proof_commands_include_current_targets_and_report' -Paths $runtimePatchCountProofCommandFiles -SwitchNames @('ExpectedIterations', 'ExpectedPackageVersion', 'ExpectedGameVersion', 'ExpectedRitsuLibVersion', 'ExpectedRitsuCompatBranch', 'ExpectedPatchCount', 'FailOnMismatch')
+Add-RuntimeMonkeyProofCommandFreshPatchCountCheck -Name 'runtime_monkey_packet_proof_commands_use_fresh_patch_count_placeholder' -Paths $runtimePatchCountProofCommandFiles
+Add-NoRegexCheck -Name 'runtime_monkey_docs_no_historical_patch_count_proof_commands' -Paths $runtimePatchCountProofCommandFiles -Pattern '(?i)-ExpectedPatchCount\s+["'']?(144|152)["'']?(\s|`|$)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_game_root' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-GameRoot)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_steam_exe' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-SteamExe)'
 Add-NoRegexCheck -Name 'no_live_session_prepare_command_without_steam_user_id' -Paths $currentClaimFiles -Pattern '^\s*\.\\scripts\\spire-plus-live-session\.ps1(?=.*-Mode\s+Prepare)(?!.*-SteamUserId)'

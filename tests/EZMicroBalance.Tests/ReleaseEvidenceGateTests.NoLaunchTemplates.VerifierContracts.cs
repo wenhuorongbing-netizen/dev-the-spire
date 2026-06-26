@@ -1,11 +1,68 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
 
 public sealed partial class ReleaseEvidenceGateTests
 {
+    [Fact]
+    public void ReleaseVerifierRequiresCurrentTargetManifestAndOrdinaryEvidenceFiles()
+    {
+        var verifier = ReadRepoText("scripts", "verify-spire-plus-release-evidence.ps1");
+        var collector = ReadRepoText("scripts", "collect-release-evidence.ps1");
+
+        Assert.Contains("Test-ReleaseRowTargetManifest", verifier, StringComparison.Ordinal);
+        Assert.Contains("run-manifest.json", verifier, StringComparison.Ordinal);
+        Assert.Contains("ExpectedGameVersion", verifier, StringComparison.Ordinal);
+        Assert.Contains("ExpectedRitsuLibVersion", verifier, StringComparison.Ordinal);
+        Assert.Contains("ExpectedRitsuCompatBranch", verifier, StringComparison.Ordinal);
+        Assert.Contains("ExpectedPatchCount", verifier, StringComparison.Ordinal);
+        Assert.Contains("PackagePath must be the canonical current Spire Plus package", verifier, StringComparison.Ordinal);
+        Assert.Contains("PackageSha256 must match the canonical current Spire Plus package", verifier, StringComparison.Ordinal);
+        Assert.Contains("SpirePlusReleaseEvidenceFileIdentity", verifier, StringComparison.Ordinal);
+        Assert.Contains("Get-ExistingPathHardlinkCount", verifier, StringComparison.Ordinal);
+        Assert.Contains("hardlink count could not be determined; release evidence must fail closed", verifier, StringComparison.Ordinal);
+        Assert.Contains("Add-NoReparsePointInPathFailures", verifier, StringComparison.Ordinal);
+        Assert.Contains("Add-OrdinaryEvidenceFileFailures", verifier, StringComparison.Ordinal);
+        Assert.Contains("Add-OutputAliasFailures", verifier, StringComparison.Ordinal);
+        Assert.Contains("canonical-current-release-target", verifier, StringComparison.Ordinal);
+
+        Assert.Contains("New-ReleaseRowRunManifest", collector, StringComparison.Ordinal);
+        Assert.Contains("PackageVersion = $currentPackageVersion", collector, StringComparison.Ordinal);
+        Assert.Contains("PackagePath = $canonicalPackagePath", collector, StringComparison.Ordinal);
+        Assert.Contains("PackageSha256 = $PackageSha256", collector, StringComparison.Ordinal);
+        Assert.Contains("TrustAnchorMode = 'canonical-current-release-target'", collector, StringComparison.Ordinal);
+        Assert.Contains("run-manifest.json", collector, StringComparison.Ordinal);
+
+        var hardlinkFunction = Regex.Match(
+            verifier,
+            @"function Get-ExistingPathHardlinkCount \{(?<Body>.*?)\r?\n\}\r?\n\r?\nfunction Add-NoReparsePointInPathFailures",
+            RegexOptions.Singleline);
+        Assert.True(hardlinkFunction.Success, "Could not find Get-ExistingPathHardlinkCount function body.");
+        var hardlinkFunctionBody = hardlinkFunction.Groups["Body"].Value;
+        Assert.DoesNotContain("return 0", hardlinkFunctionBody, StringComparison.Ordinal);
+        Assert.True(
+            Regex.IsMatch(hardlinkFunctionBody, @"Test-Path -LiteralPath \$Path -PathType Leaf\)\s*\{\s*return \$null", RegexOptions.Singleline),
+            "Missing-path hardlink-count branch must fail closed by returning $null.");
+        Assert.True(
+            Regex.IsMatch(hardlinkFunctionBody, @"-not \(Initialize-WindowsFileIdentityType\)\)\s*\{\s*return \$null", RegexOptions.Singleline),
+            "Unavailable hardlink-count implementation must fail closed by returning $null.");
+        Assert.True(
+            Regex.IsMatch(hardlinkFunctionBody, @"catch\s*\{\s*return \$null\s*\}", RegexOptions.Singleline),
+            "Hardlink-count exceptions must fail closed by returning $null.");
+
+        var ordinaryFileFunction = Regex.Match(
+            verifier,
+            @"function Add-OrdinaryEvidenceFileFailures \{(?<Body>.*?)\r?\n\}\r?\n\r?\nfunction Add-OutputAliasFailures",
+            RegexOptions.Singleline);
+        Assert.True(ordinaryFileFunction.Success, "Could not find Add-OrdinaryEvidenceFileFailures function body.");
+        Assert.True(
+            Regex.IsMatch(ordinaryFileFunction.Groups["Body"].Value, @"if \(\$null -eq \$linkCount\)\s*\{\s*Add-Failure", RegexOptions.Singleline),
+            "Ordinary evidence files must turn unknown hardlink count into a verifier failure.");
+    }
+
     private static void AssertReleaseEvidenceVerifierDeferredContract(string evidenceDir, string manifestPath, string verifier, JsonElement[] rows)
     {
         var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();
@@ -63,12 +120,13 @@ public sealed partial class ReleaseEvidenceGateTests
         }
 
         var ancientRewardEvidenceDir = ancientRewardNode["EvidenceDir"]!.GetValue<string>();
+        var ancientRewardLogPath = Path.Combine(ancientRewardEvidenceDir, "godot.log");
         File.WriteAllText(
-            Path.Combine(ancientRewardEvidenceDir, "godot.log"),
+            ancientRewardLogPath,
             "Synthetic live log for Ancient reward verifier contract.");
         File.WriteAllText(
             Path.Combine(ancientRewardEvidenceDir, "godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(ancientRewardLogPath));
         File.WriteAllText(
             Path.Combine(ancientRewardEvidenceDir, "result-note.md"),
             "Synthetic Ancient reward row result note for verifier contract.");
@@ -81,14 +139,16 @@ public sealed partial class ReleaseEvidenceGateTests
         ancientRewardNode["ResultNote"] = "Synthetic pass attempt with an unfilled Ancient reward checklist.";
         ancientRewardNode["ExplicitOwnerDecision"] = false;
         ancientRewardNode["ReleaseNote"] = "";
+        WriteOwnerLiveLogOrigin(ancientRewardNode);
 
         var playerTextEvidenceDir = playerTextNode["EvidenceDir"]!.GetValue<string>();
+        var playerTextLogPath = Path.Combine(playerTextEvidenceDir, "godot.log");
         File.WriteAllText(
-            Path.Combine(playerTextEvidenceDir, "godot.log"),
+            playerTextLogPath,
             "Synthetic live log for player text verifier contract.");
         File.WriteAllText(
             Path.Combine(playerTextEvidenceDir, "godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(playerTextLogPath));
         File.WriteAllText(
             Path.Combine(playerTextEvidenceDir, "result-note.md"),
             "Synthetic player text row result note for verifier contract.");
@@ -101,14 +161,16 @@ public sealed partial class ReleaseEvidenceGateTests
         playerTextNode["ResultNote"] = "Synthetic pass attempt with an unfilled player text QA checklist.";
         playerTextNode["ExplicitOwnerDecision"] = false;
         playerTextNode["ReleaseNote"] = "";
+        WriteOwnerLiveLogOrigin(playerTextNode);
 
         var artRoutingEvidenceDir = artRoutingNode["EvidenceDir"]!.GetValue<string>();
+        var artRoutingLogPath = Path.Combine(artRoutingEvidenceDir, "godot.log");
         File.WriteAllText(
-            Path.Combine(artRoutingEvidenceDir, "godot.log"),
+            artRoutingLogPath,
             "Synthetic live log for art routing verifier contract.");
         File.WriteAllText(
             Path.Combine(artRoutingEvidenceDir, "godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(artRoutingLogPath));
         File.WriteAllText(
             Path.Combine(artRoutingEvidenceDir, "route-note.md"),
             "Synthetic art routing row route note for verifier contract.");
@@ -125,15 +187,17 @@ public sealed partial class ReleaseEvidenceGateTests
         artRoutingNode["ScreenshotFile"] = "screenshot.png";
         artRoutingNode["ExplicitOwnerDecision"] = false;
         artRoutingNode["ReleaseNote"] = "";
+        WriteOwnerLiveLogOrigin(artRoutingNode);
         WriteTinyPng(Path.Combine(artRoutingEvidenceDir, "screenshot.png"), width: 800, height: 450);
 
         var rootblightEvidenceDir = rootblightNode["EvidenceDir"]!.GetValue<string>();
+        var rootblightLogPath = Path.Combine(rootblightEvidenceDir, "godot.log");
         File.WriteAllText(
-            Path.Combine(rootblightEvidenceDir, "godot.log"),
+            rootblightLogPath,
             "Synthetic live log for Rootblight verifier contract.");
         File.WriteAllText(
             Path.Combine(rootblightEvidenceDir, "godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(rootblightLogPath));
         File.WriteAllText(
             Path.Combine(rootblightEvidenceDir, "result-note.md"),
             "Synthetic Rootblight row result note for verifier contract.");
@@ -146,14 +210,16 @@ public sealed partial class ReleaseEvidenceGateTests
         rootblightNode["ResultNote"] = "Synthetic pass attempt with an unfilled Rootblight behavior checklist.";
         rootblightNode["ExplicitOwnerDecision"] = false;
         rootblightNode["ReleaseNote"] = "";
+        WriteOwnerLiveLogOrigin(rootblightNode);
 
         var bossAbilityEvidenceDir = bossAbilityNode["EvidenceDir"]!.GetValue<string>();
+        var bossAbilityLogPath = Path.Combine(bossAbilityEvidenceDir, "godot.log");
         File.WriteAllText(
-            Path.Combine(bossAbilityEvidenceDir, "godot.log"),
+            bossAbilityLogPath,
             "Synthetic live log for A19/A20 verifier contract.");
         File.WriteAllText(
             Path.Combine(bossAbilityEvidenceDir, "godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(bossAbilityLogPath));
         File.WriteAllText(
             Path.Combine(bossAbilityEvidenceDir, "result-note.md"),
             "Synthetic A19/A20 row result note for verifier contract.");
@@ -166,6 +232,7 @@ public sealed partial class ReleaseEvidenceGateTests
         bossAbilityNode["ResultNote"] = "Synthetic pass attempt with an unfilled A19/A20 checklist.";
         bossAbilityNode["ExplicitOwnerDecision"] = false;
         bossAbilityNode["ReleaseNote"] = "";
+        WriteOwnerLiveLogOrigin(bossAbilityNode);
 
         PrepareChecklistPassAttempt(
             modSettingsNode,
@@ -217,18 +284,21 @@ public sealed partial class ReleaseEvidenceGateTests
             noteText: "Synthetic co-op row result note for verifier contract.",
             resultNote: "Synthetic pass attempt with an unfilled co-op checklist.");
         var coopEvidenceDir = coopNode["EvidenceDir"]!.GetValue<string>();
+        var hostLogPath = Path.Combine(coopEvidenceDir, "host-godot.log");
         File.WriteAllText(
-            Path.Combine(coopEvidenceDir, "host-godot.log"),
+            hostLogPath,
             "Synthetic host live log for co-op verifier contract.");
         File.WriteAllText(
             Path.Combine(coopEvidenceDir, "host-godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(hostLogPath));
+        var clientLogPath = Path.Combine(coopEvidenceDir, "client-godot.log");
         File.WriteAllText(
-            Path.Combine(coopEvidenceDir, "client-godot.log"),
+            clientLogPath,
             "Synthetic client live log for co-op verifier contract.");
         File.WriteAllText(
             Path.Combine(coopEvidenceDir, "client-godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(clientLogPath));
+        WriteOwnerLiveLogOrigin(coopNode, "host-godot.log, client-godot.log");
 
         File.WriteAllText(
             manifestPath,

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -34,7 +35,21 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "summary_failed_runs_matches_runs_array",
             "$summaryProblemRunRows = @($summaryRuns | Where-Object {",
             "problemRows=$($summaryProblemRunRows.Count)",
+            "summary_retained_run_directory_count_matches_runs",
+            "summary_retained_run_directories_match_expected_sequence",
+            "function Get-RunDirectorySortKey",
+            "[long]::TryParse",
+            "[System.Globalization.NumberStyles]::None",
+            "[long]::MaxValue",
+            "$retainedRunDirectoryNames = @(Get-ChildItem -LiteralPath $resolvedEvidenceDir -Directory -Filter 'run-*'",
             "function Test-NormalizedPathEquals",
+            "function Test-ExistingPathChainHasNoReparsePoint",
+            "function Test-AllExistingPathChainsHaveNoReparsePoint",
+            "evidence_dir_reparse_point_free",
+            "top_level_canonical_artifact_paths_reparse_point_free",
+            "plan_launcher_path_reparse_point_free",
+            "plan_source_workspace_check_reparse_point_free",
+            "canonical_artifact_paths_reparse_point_free",
             "run_result_path_matches_expected_per_seed_dir",
             "runtime_probe_samples_path_matches_expected_per_seed_file",
             "autoslay_log_path_matches_expected_per_seed_file",
@@ -53,6 +68,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "expected_ritsu_lib_version_parameter_provided",
             "expected_ritsu_compat_branch_parameter_provided",
             "expected_patch_count_parameter_provided",
+            "function Assert-OutFileDoesNotOverwriteCanonicalEvidence",
+            "Refusing to write OutFile over canonical AutoSlay evidence",
             "${runName}_run_result_ancient_id_matches_summary");
     }
 
@@ -89,6 +106,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("plan_expected_patch_count_matches_expected status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_passed_matches_runs_array status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_failed_runs_matches_runs_array status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_retained_run_directory_count_matches_runs status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_retained_run_directories_match_expected_sequence status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_expected_ancient_ids_observed status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_ancient_id_counts_match_runs status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_sha256_recorded status=pass", result.Output, StringComparison.Ordinal);
@@ -111,6 +130,92 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("expected_ancient_ids_have_event_traversal status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("allow_missing_event_traversal_not_proof_mode status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("mismatches=0", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsExtraRetainedRunDirectory()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        Directory.CreateDirectory(Path.Combine(fixture.Workdir, "run-0002"));
+
+        var result = fixture.RunVerifier(
+            "-ExpectedAncientIds",
+            "VAKUU",
+            "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("summary_retained_run_directory_count_matches_runs status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_retained_run_directories_match_expected_sequence status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("expected=1, actual=2", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsNonStandardRetainedRunDirectoryName()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var nonStandardRunDir = Path.Combine(fixture.Workdir, "run-foo");
+        Directory.Move(fixture.RunDir, nonStandardRunDir);
+
+        var result = fixture.RunVerifier(
+            "-ExpectedAncientIds",
+            "VAKUU",
+            "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("summary_retained_run_directory_count_matches_runs status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_retained_run_directories_match_expected_sequence status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("expected=run-0001 actual=run-foo", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_exists status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierSortsNumericRunDirectoryNamesBeforeSequenceComparison()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        Directory.CreateDirectory(Path.Combine(fixture.Workdir, "run-10"));
+        Directory.CreateDirectory(Path.Combine(fixture.Workdir, "run-2"));
+
+        var result = fixture.RunVerifier(
+            "-ExpectedAncientIds",
+            "VAKUU",
+            "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("summary_retained_run_directory_count_matches_runs status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_retained_run_directories_match_expected_sequence status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("expected=run-0001 actual=run-0001,run-2,run-10", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsMissingExpectedRunDirectory()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        Directory.Delete(fixture.RunDir, recursive: true);
+
+        var result = fixture.RunVerifier(
+            "-ExpectedAncientIds",
+            "VAKUU",
+            "-FailOnMismatch");
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("summary_retained_run_directory_count_matches_runs status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_retained_run_directories_match_expected_sequence status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_exists status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsOutFileOverCanonicalEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+
+        var result = fixture.RunVerifier(
+            "-ExpectedAncientIds",
+            "VAKUU",
+            "-OutFile",
+            fixture.SummaryPath);
+
+        Assert.NotEqual(0, result.ExitCode);
+        Assert.Contains("Refusing to write OutFile over canonical AutoSlay evidence", result.Output + result.Error, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -240,6 +345,27 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("summary_expected_ancient_ids_observed status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_ancient_id_counts_match_runs status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("expected_ancient_ids_have_event_traversal status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsScalarExpectedAncientIdsShapeEvenWhenCoverageMatches()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var planJson = JsonNode.Parse(File.ReadAllText(fixture.PlanPath))!.AsObject();
+        planJson["ExpectedAncientIds"] = "VAKUU";
+        File.WriteAllText(fixture.PlanPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        summaryJson["ExpectedAncientIds"] = "VAKUU";
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("plan_expected_ancient_ids_array status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_ids_array status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_expected_ancient_ids_match_parameter status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_ancient_ids_match_plan status=pass", result.Output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -412,6 +538,161 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_run_result_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("run_0001_run_result_before_log_length_matches_summary status=fail", result.Output, StringComparison.Ordinal);
         }
+
+        using (var fixture = CreateGameNativeAutoSlayFixture())
+        {
+            var planJson = JsonNode.Parse(File.ReadAllText(fixture.PlanPath))!.AsObject();
+            planJson["SchemaVersion"] = "1";
+            planJson["ExpectedPatchCount"] = GameNativeAutoSlayFixture.ExpectedPatchCount.ToString(CultureInfo.InvariantCulture);
+            File.WriteAllText(fixture.PlanPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+            summaryJson["SchemaVersion"] = "1";
+            summaryJson["ExpectedPatchCount"] = GameNativeAutoSlayFixture.ExpectedPatchCount.ToString(CultureInfo.InvariantCulture);
+            summaryJson["TotalRuns"] = "1";
+            summaryJson["FailedRuns"] = "0";
+            summaryJson["AncientIdCounts"]!.AsObject()["VAKUU"] = "1";
+            var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+            summaryRunJson["ExitCode"] = "0";
+            summaryRunJson["GodotLogBeforeLengthBytes"] = fixture.BeforeLogLength.ToString(CultureInfo.InvariantCulture);
+            summaryRunJson["GodotLogAfterLaunchLengthBytes"] = fixture.AfterLaunchLogLength.ToString(CultureInfo.InvariantCulture);
+            summaryRunJson["GodotLogCurrentIterationLengthBytes"] = fixture.CurrentLogLength.ToString(CultureInfo.InvariantCulture);
+
+            var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+            runResultJson["SchemaVersion"] = "1";
+            runResultJson["ProcessId"] = "4242";
+            runResultJson["ExitCode"] = "0";
+            runResultJson["StaleProcessCount"] = "0";
+            runResultJson["GodotLogBeforeLengthBytes"] = fixture.BeforeLogLength.ToString(CultureInfo.InvariantCulture);
+            runResultJson["GodotLogAfterLaunchLengthBytes"] = fixture.AfterLaunchLogLength.ToString(CultureInfo.InvariantCulture);
+            runResultJson["GodotLogCurrentIterationLengthBytes"] = fixture.CurrentLogLength.ToString(CultureInfo.InvariantCulture);
+            runResultJson["MainMenuObservation"]!.AsObject()["MaxStaleProcessCount"] = "0";
+            var runtimeObservationJson = runResultJson["RuntimeObservation"]!.AsObject();
+            runtimeObservationJson["MaxStaleProcessCount"] = "0";
+            runtimeObservationJson["LogInitialLengthBytes"] = fixture.BeforeLogLength.ToString(CultureInfo.InvariantCulture);
+            runtimeObservationJson["LogFinalLengthBytes"] = fixture.AfterLaunchLogLength.ToString(CultureInfo.InvariantCulture);
+
+            var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+            foreach (var sampleNode in probeSamples)
+            {
+                var sample = sampleNode!.AsObject();
+                sample["LogLengthBytes"] = JsonScalarValueToInvariantString(sample["LogLengthBytes"]);
+                sample["ProcessId"] = JsonScalarValueToInvariantString(sample["ProcessId"]);
+                sample["ExpectedGameProcessId"] = JsonScalarValueToInvariantString(sample["ExpectedGameProcessId"]);
+                sample["StaleProcessCount"] = JsonScalarValueToInvariantString(sample["StaleProcessCount"]);
+                sample["CurrentProcessCount"] = JsonScalarValueToInvariantString(sample["CurrentProcessCount"]);
+                sample["UnknownStartTimeProcessCount"] = JsonScalarValueToInvariantString(sample["UnknownStartTimeProcessCount"]);
+                sample["AmbiguousCurrentProcessCount"] = JsonScalarValueToInvariantString(sample["AmbiguousCurrentProcessCount"]);
+            }
+
+            File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+            runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+            summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+
+            File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+            File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var auditJsonRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!.AsArray();
+            var auditJson = auditJsonRoot[0]!.AsObject();
+            auditJson["Length"] = JsonScalarValueToInvariantString(auditJson["Length"]);
+            auditJson["SignatureHits"] = new JsonObject
+            {
+                ["Name"] = "fixture-zero-count",
+                ["Count"] = "0",
+            };
+            File.WriteAllText(fixture.AuditPath, auditJsonRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var sts1ModeLogCheckJson = JsonNode.Parse(File.ReadAllText(fixture.Sts1ModeCheckPath))!.AsObject();
+            sts1ModeLogCheckJson["LogLength"] = JsonScalarValueToInvariantString(sts1ModeLogCheckJson["LogLength"]);
+            File.WriteAllText(fixture.Sts1ModeCheckPath, sts1ModeLogCheckJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("autoslay_plan_schema_version_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_expected_patch_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("autoslay_summary_schema_version_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_expected_patch_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_total_runs_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_runs_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_ancient_id_counts_valid status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_exit_code_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_godot_log_before_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_godot_log_after_launch_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_godot_log_current_iteration_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_log_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_process_id_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_expected_game_process_id_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_stale_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_current_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_unknown_start_time_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_ambiguous_current_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_audit_array_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_sts1_mode_log_check_log_length_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_schema_version_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_process_id_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_exit_code_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_stale_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_godot_log_before_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_godot_log_after_launch_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_godot_log_current_iteration_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_main_menu_observation_max_stale_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_observation_max_stale_process_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_observation_log_initial_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_runtime_observation_log_final_length_bytes_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_runtime_probe_samples_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("run_0001_run_result_sha256_matches_retained_file status=pass", result.Output, StringComparison.Ordinal);
+        }
+
+        using (var fixture = CreateGameNativeAutoSlayFixture())
+        {
+            File.WriteAllText(
+                fixture.PlanPath,
+                fixture.OriginalPlanJson
+                    .Replace("\"SchemaVersion\": 1", "\"SchemaVersion\": 1.0", StringComparison.Ordinal)
+                    .Replace("\"ExpectedPatchCount\": 25", "\"ExpectedPatchCount\": 25.0", StringComparison.Ordinal));
+            File.WriteAllText(
+                fixture.SummaryPath,
+                fixture.OriginalSummaryJson
+                    .Replace("\"SchemaVersion\": 1", "\"SchemaVersion\": 1.0", StringComparison.Ordinal)
+                    .Replace("\"ExpectedPatchCount\": 25", "\"ExpectedPatchCount\": 25.0", StringComparison.Ordinal)
+                    .Replace("\"TotalRuns\": 1", "\"TotalRuns\": 1.0", StringComparison.Ordinal)
+                    .Replace("\"FailedRuns\": 0", "\"FailedRuns\": 0.0", StringComparison.Ordinal)
+                    .Replace("\"VAKUU\": 1", "\"VAKUU\": 1.0", StringComparison.Ordinal));
+
+            var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("autoslay_plan_schema_version_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_expected_patch_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("autoslay_summary_schema_version_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_expected_patch_count_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_total_runs_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_failed_runs_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_ancient_id_counts_valid status=fail", result.Output, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsCaseDriftedEvidenceFieldNames()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var planJson = JsonNode.Parse(File.ReadAllText(fixture.PlanPath))!.AsObject();
+        var expectedPatchCount = planJson["ExpectedPatchCount"]!.DeepClone();
+        planJson.Remove("ExpectedPatchCount");
+        planJson["expectedpatchcount"] = expectedPatchCount;
+        File.WriteAllText(fixture.PlanPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("plan_expected_patch_count_integer status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_expected_patch_count_positive status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_expected_patch_count_matches_expected status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_expected_patch_count_matches_plan status=fail", result.Output, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -474,28 +755,184 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         summaryJson["Runs"]!.AsArray()[0]!.AsObject()["RunResultSha256"] = Sha256File(fixture.RunResultPath);
         File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-        var auditJson = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!.AsObject();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
         auditJson["Clean"] = "true";
-        File.WriteAllText(fixture.AuditPath, auditJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var sts1ModeLogCheckJson = JsonNode.Parse(File.ReadAllText(fixture.Sts1ModeCheckPath))!.AsObject();
+        foreach (var checkNode in sts1ModeLogCheckJson["Checks"]!.AsArray())
+        {
+            checkNode!.AsObject()["Passed"] = "true";
+        }
+
+        File.WriteAllText(fixture.Sts1ModeCheckPath, sts1ModeLogCheckJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
         var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
 
         Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
         Assert.Contains("plan_source_workspace_checked status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_source_workspace_checked_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_source_workspace_matches_installed_game status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_source_workspace_matches_installed_game_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("plan_source_workspace_origin_matches_installed_game_pck status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_source_workspace_origin_matches_installed_game_pck_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("plan_source_workspace_not_runtime_proof_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("summary_passed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("summary_passed_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_summary_run_passed_true status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_summary_run_passed_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_launch_true status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_launch_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_passed_true status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_passed_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_main_menu_observation_passed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_observation_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_observation_process_exited_after_observation_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_observation_hung_window_detected_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_observation_stale_process_observed_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_main_menu_observation_no_log_growth_timeout_exceeded_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_main_menu_no_process_exit status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_main_menu_no_hung_window status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_runtime_observation_passed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_process_exited_after_observation_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_hung_window_detected_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_stale_process_observed_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_no_log_growth_timeout_exceeded_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_run_result_runtime_observation_log_grew_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_runtime_log_grew status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_runtime_probe_samples_process_observed status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_process_observed_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_process_id_matches_expected_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_process_start_time_matches_expected_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_process_path_matches_expected_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_process_identity_matches_expected_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_log_exists_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_hung_window_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_responding_bool status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_runtime_probe_samples_no_hung_window status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_runtime_probe_samples_no_not_responding status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_sts1_mode_log_check_checks_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsObjectRootAuditEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!.AsArray();
+        File.WriteAllText(fixture.AuditPath, auditRoot[0]!.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_array_fields_native status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAuditMissingSchemaVersion()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson.Remove("AuditSchemaVersion");
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_schema_fields_current status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_has_single_schema_version status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAuditWrongSignatureSetHash()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureSetSha256"] = new string('0', 64);
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_signature_set_matches_recomputed status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAuditEmptySignatureHitVector()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureHits"] = new JsonArray();
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_signature_counts_match_recomputed status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAuditSignatureHitMissingCount()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureHits"] = new JsonArray(
+            new JsonObject
+            {
+                ["Name"] = "Godot ERROR line",
+            });
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAuditSignatureHitStringCount()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureHits"] = new JsonArray(
+            new JsonObject
+            {
+                ["Name"] = "Godot ERROR line",
+                ["Count"] = "0",
+            });
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsAuditMissingLength()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson.Remove("Length");
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
     }
 
@@ -526,6 +963,660 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Contains("run_0001_run_result_hang_signals_array status=fail", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_failure_reason_codes_match_summary status=pass", result.Output, StringComparison.Ordinal);
         Assert.Contains("run_0001_run_result_hang_signals_match_summary status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsObjectShapedRuntimeProbeSamples()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+
+        File.WriteAllText(
+            fixture.RuntimeProbeSamplesPath,
+            """
+            {
+              "Phase": "main-menu",
+              "SampledAt": "2026-06-23T12:00:00.0000000Z",
+              "LogExists": true,
+              "LogLengthBytes": 1
+            }
+            """);
+
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_runtime_probe_samples_array status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierAllowsNullRespondingBeforeMainWindowObserved()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var startupSample = probeSamples[0]!.AsObject();
+        startupSample["MainWindowObserved"] = false;
+        startupSample["Responding"] = null;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU", "-FailOnMismatch");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier should allow Responding=null before a main window is observed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_runtime_probe_samples_responding_field_present status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_responding_bool status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_no_not_responding status=pass", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void GameNativeAutoSlayPacketVerifierRejectsNullRespondingAfterMainWindowObserved()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var runtimeSample = probeSamples[1]!.AsObject();
+        runtimeSample["MainWindowObserved"] = true;
+        runtimeSample["Responding"] = null;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var result = fixture.RunVerifier("-ExpectedAncientIds", "VAKUU");
+
+        Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        Assert.Contains("run_0001_runtime_probe_samples_responding_field_present status=pass", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_responding_bool status=fail", result.Output, StringComparison.Ordinal);
+        Assert.Contains("run_0001_runtime_probe_samples_no_not_responding status=fail", result.Output, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeObjectShapeEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        File.WriteAllText(
+            fixture.RuntimeProbeSamplesPath,
+            """
+            {
+              "Phase": "main-menu",
+              "SampledAt": "2026-06-23T12:00:00.0000000Z",
+              "LogExists": true,
+              "LogLengthBytes": 1
+            }
+            """);
+
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-probe-object-shape.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_samples_shape_invalid");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsScalarGameNativeAutoSlayExpectedAncientIds()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var planJson = JsonNode.Parse(File.ReadAllText(fixture.PlanPath))!.AsObject();
+        planJson["ExpectedAncientIds"] = "VAKUU";
+        File.WriteAllText(fixture.PlanPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        summaryJson["ExpectedAncientIds"] = "VAKUU";
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-expected-ancient-ids-shape.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var malformedFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "autoslay_expected_ancient_ids_array_malformed");
+        var summaryPlanFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "autoslay_summary_plan_mismatch");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("Sts1ModeLogCheckTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains("ExpectedAncientIds", malformedFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        Assert.Contains("ExpectedAncientIdsArrayFieldsMalformed", summaryPlanFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlaySummaryRunIdentityDrift()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["Seed"] = "STALESEED";
+        summaryRunJson["EventKind"] = "StaleEvent";
+        summaryRunJson["AncientId"] = "URDA";
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-summary-run-identity-drift.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var identityFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "autoslay_summary_run_identity_mismatch");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Equal("RuntimeHarness", identityFinding.GetProperty("OwnerArea").GetString());
+        Assert.Equal("blocking", identityFinding.GetProperty("Severity").GetString());
+        Assert.Contains("Seed:summary='STALESEED'", identityFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        Assert.Contains("EventKind:summary='StaleEvent'", identityFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        Assert.Contains("AncientId:summary='URDA'", identityFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayMalformedAuditSchema()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = auditRoot is JsonArray auditArray
+            ? auditArray[0]!.AsObject()
+            : auditRoot.AsObject();
+        auditJson["Clean"] = "true";
+        auditJson["Length"] = auditJson["Length"]!.ToString();
+        auditJson["SignatureHits"] = new JsonObject
+        {
+            ["Name"] = "fixture-zero-count",
+            ["Count"] = 0,
+        };
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-malformed-audit-schema.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var arrayFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_array_malformed");
+        var boolFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_boolean_malformed");
+        var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Equal("RuntimeHarness", arrayFinding.GetProperty("OwnerArea").GetString());
+        Assert.Equal("RuntimeHarness", boolFinding.GetProperty("OwnerArea").GetString());
+        Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayObjectRootAuditEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!.AsArray();
+        File.WriteAllText(fixture.AuditPath, auditRoot[0]!.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-object-root-audit.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var arrayFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_array_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Equal("RuntimeHarness", arrayFinding.GetProperty("OwnerArea").GetString());
+        Assert.Contains("root and SignatureHits must be retained as native JSON arrays", arrayFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditMissingSchemaVersion()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson.Remove("AuditSchemaVersion");
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-audit-missing-schema-version.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var schemaFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_schema_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Contains("AuditSchemaVersion must be native integer 2", schemaFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditWrongSignatureSetHash()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureSetSha256"] = new string('0', 64);
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-audit-wrong-signature-set.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var mismatchFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_recomputed_mismatch");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Contains("rule-set hash", mismatchFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditEmptySignatureHitVector()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureHits"] = new JsonArray();
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-audit-empty-signature-vector.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var mismatchFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_recomputed_mismatch");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Contains("signature vector", mismatchFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditSignatureHitMissingCount()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureHits"] = new JsonArray(
+            new JsonObject
+            {
+                ["Name"] = "Godot ERROR line",
+            });
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-audit-missing-count.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+        Assert.Contains("SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditSignatureHitStringCount()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson["SignatureHits"] = new JsonArray(
+            new JsonObject
+            {
+                ["Name"] = "Godot ERROR line",
+                ["Count"] = "0",
+            });
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-audit-string-count.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+        Assert.Contains("Length and SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayAuditMissingLength()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var auditRoot = JsonNode.Parse(File.ReadAllText(fixture.AuditPath))!;
+        var auditJson = GetSingleJsonObject(auditRoot);
+        auditJson.Remove("Length");
+        File.WriteAllText(fixture.AuditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-audit-missing-length.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+        Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+        Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+        Assert.Contains("Length and SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerAllowsGameNativeAutoSlayNullRespondingBeforeMainWindowObserved()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var startupSample = probeSamples[0]!.AsObject();
+        startupSample["MainWindowObserved"] = false;
+        startupSample["Responding"] = null;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-null-responding-before-window.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_boolean_malformed");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_not_responding");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayNullRespondingAfterMainWindowObserved()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var runtimeSample = probeSamples[1]!.AsObject();
+        runtimeSample["MainWindowObserved"] = true;
+        runtimeSample["Responding"] = null;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-null-responding-after-window.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_boolean_malformed");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_not_responding");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeHungAndNotRespondingEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var runtimeSample = probeSamples[1]!.AsObject();
+        runtimeSample["HungWindow"] = true;
+        runtimeSample["Responding"] = false;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-probe-hung-not-responding.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_hung_window");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_not_responding");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeTimelineDefects()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var firstSample = probeSamples[0]!.AsObject();
+        var secondSample = probeSamples[1]!.AsObject();
+        firstSample["Phase"] = "runtime";
+        firstSample["SampledAt"] = "2026-06-18T10:00:25Z";
+        firstSample["LogLastWriteTimeUtc"] = "2026-06-18T10:00:25Z";
+        firstSample["LogLengthBytes"] = fixture.AfterLaunchLogLength;
+        secondSample["Phase"] = "main-menu";
+        secondSample["SampledAt"] = "2026-06-18T10:00:04Z";
+        secondSample["LogLastWriteTimeUtc"] = "2026-06-18T10:00:04Z";
+        secondSample["LogLengthBytes"] = 1;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-probe-timeline.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_sampled_at_order_invalid");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_phase_order_invalid");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_log_length_regression");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_timestamp_invalid");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeNegativeLogLength()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        var runtimeSample = probeSamples[1]!.AsObject();
+        runtimeSample["LogLengthBytes"] = -1;
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-probe-negative-log-length.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_log_length_negative");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_numeric_malformed");
     }
 
     [Fact]
@@ -591,11 +1682,133 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
         Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
         Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
         Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_passed_boolean_malformed");
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_boolean_malformed");
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_main_menu_observation_unhealthy");
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_observation_unhealthy");
         Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayRunResultBooleanMalformedWithoutSummaryRow()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["Passed"] = "true";
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-autoslay-direct-passed-string.json");
+        var result = RunPowerShell(script, "-IterationDir", fixture.RunDir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+        var malformedFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "autoslay_passed_boolean_malformed");
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Equal("RuntimeHarness", malformedFinding.GetProperty("OwnerArea").GetString());
+        Assert.Contains("run-result.json.Passed must be retained as a native JSON boolean", malformedFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsMalformedGameNativeAutoSlayProbeNumericEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        var probeSamples = JsonNode.Parse(File.ReadAllText(fixture.RuntimeProbeSamplesPath))!.AsArray();
+        foreach (var sampleNode in probeSamples)
+        {
+            var sample = sampleNode!.AsObject();
+            sample["LogLengthBytes"] = JsonScalarValueToInvariantString(sample["LogLengthBytes"]);
+            sample["ProcessId"] = JsonScalarValueToInvariantString(sample["ProcessId"]);
+            sample["StaleProcessCount"] = JsonScalarValueToInvariantString(sample["StaleProcessCount"]);
+            sample["CurrentProcessCount"] = JsonScalarValueToInvariantString(sample["CurrentProcessCount"]);
+        }
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-malformed-autoslay-probe-numeric.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_numeric_malformed");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_log_length_negative");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsGameNativeAutoSlayProbeIntegerValuedDecimalEvidence()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var probeSamplesJson = File.ReadAllText(fixture.RuntimeProbeSamplesPath);
+        foreach (var fieldName in new[] { "LogLengthBytes", "ProcessId", "StaleProcessCount", "CurrentProcessCount" })
+        {
+            probeSamplesJson = Regex.Replace(
+                probeSamplesJson,
+                $"\"{fieldName}\"\\s*:\\s*\\d+",
+                $"\"{fieldName}\": 1.0",
+                RegexOptions.CultureInvariant);
+        }
+
+        File.WriteAllText(fixture.RuntimeProbeSamplesPath, probeSamplesJson);
+        var probeHash = Sha256File(fixture.RuntimeProbeSamplesPath);
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        runResultJson["RuntimeProbeSamplesSha256"] = probeHash;
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        summaryRunJson["RuntimeProbeSamplesSha256"] = probeHash;
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-decimal-autoslay-probe-numeric.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_numeric_malformed");
+        Assert.DoesNotContain(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_runtime_probe_log_length_negative");
     }
 
     [Fact]
@@ -633,6 +1846,69 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
         Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_signal_array_malformed");
         Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsMissingGameNativeAutoSlaySignalArrays()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var summaryJson = JsonNode.Parse(File.ReadAllText(fixture.SummaryPath))!.AsObject();
+        var summaryRunJson = summaryJson["Runs"]!.AsArray()[0]!.AsObject();
+        Assert.True(summaryRunJson.Remove("FailureReasonCodes"));
+        Assert.True(summaryRunJson.Remove("HangSignals"));
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        Assert.True(runResultJson.Remove("FailureReasonCodes"));
+        Assert.True(runResultJson.Remove("HangSignals"));
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+        summaryRunJson["RunResultSha256"] = Sha256File(fixture.RunResultPath);
+        File.WriteAllText(fixture.SummaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-missing-autoslay-signal-arrays.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_signal_array_malformed");
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsDirectGameNativeAutoSlayMissingSignalArrays()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+
+        var runResultJson = JsonNode.Parse(File.ReadAllText(fixture.RunResultPath))!.AsObject();
+        Assert.True(runResultJson.Remove("FailureReasonCodes"));
+        Assert.True(runResultJson.Remove("HangSignals"));
+        File.WriteAllText(fixture.RunResultPath, runResultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-direct-autoslay-missing-signal-arrays.json");
+        var result = RunPowerShell(script, "-IterationDir", fixture.RunDir, "-OutFile", outputPath);
+
+        Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var iteration = FindIteration(root, 1);
+        var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+
+        Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+        Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+        Assert.False(iteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+        Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Contains(findings, finding => finding.GetProperty("Signal").GetString() == "autoslay_signal_array_malformed");
     }
 
     [Fact]
@@ -974,6 +2250,21 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("plan_source_workspace_check_hash_matches status=pass", result.Output, StringComparison.Ordinal);
             Assert.Contains("plan_source_workspace_schema_version_one status=fail", result.Output, StringComparison.Ordinal);
         }
+
+        using (var fixture = CreateGameNativeAutoSlayFixture())
+        {
+            File.WriteAllText(
+                fixture.SourceWorkspaceReportPath,
+                fixture.OriginalSourceWorkspaceReportJson.Replace("\"SchemaVersion\": 1", "\"SchemaVersion\": \"1\"", StringComparison.Ordinal));
+            var stringSchemaSourceWorkspaceReportHash = Sha256File(fixture.SourceWorkspaceReportPath);
+            File.WriteAllText(fixture.PlanPath, fixture.OriginalPlanJson.Replace(fixture.SourceWorkspaceReportHash, stringSchemaSourceWorkspaceReportHash, StringComparison.Ordinal));
+            var result = fixture.RunVerifier();
+
+            Assert.True(result.ExitCode == 0, $"AutoSlay packet verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_source_workspace_check_hash_matches status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_schema_version_integer status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("plan_source_workspace_schema_version_one status=pass", result.Output, StringComparison.Ordinal);
+        }
     }
 
     [Fact]
@@ -1001,6 +2292,42 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("run_0001_event_room_traversal_observed status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("batch_event_room_traversal_observed status=fail", result.Output, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerAnalyzesRetainedAutoSlayRunOmittedBySummary()
+    {
+        using var fixture = CreateGameNativeAutoSlayFixture();
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var run2Dir = Path.Combine(fixture.Workdir, "run-0002");
+        Directory.CreateDirectory(run2Dir);
+        foreach (var sourceFile in Directory.GetFiles(fixture.RunDir))
+        {
+            File.Copy(sourceFile, Path.Combine(run2Dir, Path.GetFileName(sourceFile)), overwrite: true);
+        }
+
+        var run2Result = JsonNode.Parse(fixture.OriginalRunResultJson.Replace("run-0001", "run-0002", StringComparison.Ordinal))!.AsObject();
+        run2Result["Passed"] = false;
+        run2Result["FailureReasonCodes"] = new JsonArray(JsonValue.Create("process_unresponsive"));
+        run2Result["HangSignals"] = new JsonArray(JsonValue.Create("process_unresponsive"));
+        File.WriteAllText(Path.Combine(run2Dir, "run-result.json"), run2Result.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+        var outputPath = Path.Combine(fixture.Workdir, "runtime-failure-analysis-omitted-autoslay-run.json");
+        var result = RunPowerShell(script, "-EvidenceDir", fixture.Workdir, "-OutFile", outputPath);
+        Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+        using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+        var root = document.RootElement;
+        var run2 = FindIteration(root, 2);
+        var summaryFinding = run2
+            .GetProperty("Findings")
+            .EnumerateArray()
+            .Single(item => item.GetProperty("Signal").GetString() == "autoslay_summary_shape_invalid");
+
+        Assert.Equal(2, root.GetProperty("AnalyzedIterationCount").GetInt32());
+        Assert.Contains("autoslay-summary.json omitted retained run directory run-0002", summaryFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        Assert.False(run2.GetProperty("LogTextTrustedForOwner").GetBoolean());
+        Assert.Equal("RuntimeHarness", FindFindingOwner(run2, "process_unresponsive"));
     }
 
     private static GameNativeAutoSlayFixture CreateGameNativeAutoSlayFixture() => new();
@@ -1508,4 +2835,18 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
     private static string Sha256File(string path) =>
         Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path))).ToLowerInvariant();
+
+    private static string JsonScalarValueToInvariantString(JsonNode? node)
+    {
+        Assert.NotNull(node);
+        var value = node!.GetValue<object?>();
+        return value switch
+        {
+            JsonElement element => element.ValueKind == JsonValueKind.String
+                ? element.GetString() ?? string.Empty
+                : element.GetRawText(),
+            IFormattable formattable => formattable.ToString(null, CultureInfo.InvariantCulture),
+            _ => value?.ToString() ?? string.Empty,
+        };
+    }
 }

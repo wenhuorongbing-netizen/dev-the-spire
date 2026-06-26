@@ -43,20 +43,39 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Test-BytePrefix",
             "Test-CurrentSliceBinding",
             "[long]$ScanOffsetBytes = -1",
-            "godot.log.current-iteration matches godot.log.after-launch from LogScanOffsetBytes after a log reset",
-            "LogScanOffsetBytes must equal retained godot.log.before length when the launch log appends, or 0 when Godot rewrites the launch log",
+            "godot.log.after-launch does not have non-empty godot.log.before as a byte prefix",
+            "godot.log.current-iteration matches godot.log.after-launch from offset 0 after an empty-before log reset",
+            "a reset is valid only with zero-byte godot.log.before and offset 0",
+            "Assert-OutFileDoesNotOverwriteCanonicalEvidence",
+            "function Test-ExistingPathChainHasNoReparsePoint",
+            "function Test-AllExistingPathChainsHaveNoReparsePoint",
+            "Get-ExistingPathHardlinkCount",
+            "Test-AllExistingLeafFilesHaveSingleHardlink",
+            "evidence_dir_reparse_point_free",
+            "directory_reparse_point_free",
+            "canonical_artifact_paths_reparse_point_free",
+            "canonical_artifact_files_single_hardlink",
             "Get-JsonArrayProperty",
             "plan_unresponsive_sample_threshold_positive",
             "RuntimeProbeSamplesPath",
             "RuntimeProbeSamplesSha256",
+            "Get-MaxConsecutiveUnresponsiveProbeSamples",
             "runtime_probe_samples_sha256_recorded",
             "runtime_probe_samples_sha256_matches_retained_file",
+            "runtime_probe_samples_startup_max_unresponsive_matches_main_menu_observation",
+            "runtime_probe_samples_runtime_max_unresponsive_matches_runtime_observation",
+            "runtime_probe_samples_max_unresponsive_matches_iteration",
+            "runtime_probe_samples_startup_threshold_matches_main_menu_observation",
+            "runtime_probe_samples_runtime_threshold_matches_runtime_observation",
+            "runtime_probe_samples_max_unresponsive_below_threshold",
             "runtime_probe_samples_log_growth_matches_runtime_observation",
             "runtime_probe_samples_log_length_within_recorded_after_launch",
             "runtime_probe_samples_log_length_within_retained_after_launch",
             "$postCommandProbeSamples",
             "post-command runtime probe samples must not report hung windows; startup transients are governed by MaxConsecutiveUnresponsiveSamples",
-            "post-command runtime probe samples must not report Responding=false; startup transients are governed by MaxConsecutiveUnresponsiveSamples",
+            "Test-AllJsonRespondingPropertiesValid",
+            "Test-NoJsonRespondingFalse",
+            "post-command runtime probe samples must not report Responding=false; null is allowed only before a main window is observed",
             "runtime_observation_log_length_growth_matches_log_grew",
             "GodotLogBeforePath",
             "GodotLogBeforeLengthBytes",
@@ -333,6 +352,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "audit_sha256_matches_current_iteration_log",
             "audit_recomputed_from_current_iteration_log",
             "audit_recomputed_clean",
+            "audit_signature_names_current",
             "audit_signature_counts_match_recomputed",
             "audit_sha256_matches_recomputed",
             "sts1-mode-log-check.json",
@@ -412,6 +432,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "'runtime_monkey_probe_unknown_phase'",
             "'runtime_monkey_probe_startup_sample_count_mismatch'",
             "'runtime_monkey_probe_runtime_sample_count_mismatch'",
+            "'runtime_monkey_probe_startup_unresponsive_mismatch'",
+            "'runtime_monkey_probe_runtime_unresponsive_mismatch'",
+            "'runtime_monkey_probe_max_unresponsive_mismatch'",
+            "'runtime_monkey_probe_startup_threshold_mismatch'",
+            "'runtime_monkey_probe_runtime_threshold_mismatch'",
             "'runtime_monkey_probe_runtime_log_growth_mismatch'",
             "$runtimeMonkeyRunArtifactsTrustedForOwner = $false",
             "$runtimeMonkeyProbeArtifactTrustedForOwner = $false",
@@ -504,6 +529,184 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Contains("iteration-0001_runtime_probe_samples_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_live_session_session_state_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_live_session_restore_state_under_iteration_dir status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsNonEmptyBeforeLogResetOffset()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var afterLaunchPath = Path.Combine(iterationDir, "godot.log.after-launch");
+            var currentPath = Path.Combine(iterationDir, "godot.log.current-iteration");
+            var resultPath = Path.Combine(iterationDir, "iteration-result.json");
+            File.WriteAllText(afterLaunchPath, File.ReadAllText(currentPath));
+
+            var resultJson = JsonNode.Parse(File.ReadAllText(resultPath))!.AsObject();
+            resultJson["LogScanOffsetBytes"] = 0;
+            resultJson["GodotLogAfterLaunchLengthBytes"] = new FileInfo(afterLaunchPath).Length;
+            resultJson["GodotLogAfterLaunchSha256"] = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(afterLaunchPath))).ToLowerInvariant();
+            File.WriteAllText(resultPath, resultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25");
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_log_scan_offset_matches_before_length status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_current_iteration_log_matches_after_launch_prefix status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_current_iteration_log_matches_after_launch_slice status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsOutFileOverCanonicalEvidence()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25",
+                "-OutFile",
+                Path.Combine(workdir, "monkey-summary.json"));
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical runtime monkey evidence", result.Output + result.Error, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsOutFileHardlinkToCanonicalEvidenceOutsideEvidenceDir()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        var externalRoot = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-outfile-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+        Directory.CreateDirectory(externalRoot);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var currentLogPath = Path.Combine(workdir, "iteration-0001", "godot.log.current-iteration");
+            var outFileHardlinkPath = Path.Combine(externalRoot, "packet-check-report.json");
+            if (!TryCreateFileHardLink(outFileHardlinkPath, currentLogPath))
+            {
+                return;
+            }
+
+            var originalLogHash = Sha256File(currentLogPath);
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25",
+                "-OutFile",
+                outFileHardlinkPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical runtime monkey evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalLogHash, Sha256File(currentLogPath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+
+            if (Directory.Exists(externalRoot))
+            {
+                Directory.Delete(externalRoot, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsNonCanonicalOutFileHardlinkToCanonicalEvidenceInsideEvidenceDir()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var currentLogPath = Path.Combine(workdir, "iteration-0001", "godot.log.current-iteration");
+            var outFileHardlinkPath = Path.Combine(workdir, "iteration-0001", "packet-check-report.json");
+            if (!TryCreateFileHardLink(outFileHardlinkPath, currentLogPath))
+            {
+                return;
+            }
+
+            var originalLogHash = Sha256File(currentLogPath);
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-ExpectedPatchCount",
+                "25",
+                "-OutFile",
+                outFileHardlinkPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical runtime monkey evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalLogHash, Sha256File(currentLogPath));
         }
         finally
         {
@@ -1478,9 +1681,10 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             sts1Json["LogLength"] = "oops";
             File.WriteAllText(sts1ModeLogCheckPath, sts1Json.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-            var auditJson = JsonNode.Parse(File.ReadAllText(auditPath))!.AsObject();
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
             auditJson["Length"] = "oops";
-            File.WriteAllText(auditPath, auditJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var result = RunPowerShell(
                 script,
@@ -1522,6 +1726,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var iterationResultPath = Path.Combine(iterationDir, "iteration-result.json");
             var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
             var auditPath = Path.Combine(iterationDir, "godot-log-audit.json");
+            var sts1ModeLogCheckPath = Path.Combine(iterationDir, "sts1-mode-log-check.json");
 
             var planJson = JsonNode.Parse(File.ReadAllText(planPath))!.AsObject();
             planJson["Launch"] = "true";
@@ -1529,9 +1734,16 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
             summaryJson["Passed"] = "true";
+            var summaryResultJson = summaryJson["Results"]!.AsArray()[0]!.AsObject();
+            summaryResultJson["Passed"] = "true";
+            summaryResultJson["CommandAckRequired"] = "false";
+            summaryResultJson["CommandAckObserved"] = "false";
             File.WriteAllText(summaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var iterationJson = JsonNode.Parse(File.ReadAllText(iterationResultPath))!.AsObject();
+            iterationJson["Passed"] = "true";
+            iterationJson["CommandAckRequired"] = "false";
+            iterationJson["CommandAckObserved"] = "false";
             iterationJson["MainMenuReached"] = "false";
             iterationJson["StaleProcessObserved"] = null;
             var mainMenuObservation = iterationJson["MainMenuObservation"]!.AsObject();
@@ -1559,9 +1771,18 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             summaryJson["Results"]!.AsArray()[0]!.AsObject()["RuntimeProbeSamplesSha256"] = probeSamplesHash;
             File.WriteAllText(summaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
-            var auditJson = JsonNode.Parse(File.ReadAllText(auditPath))!.AsObject();
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
             auditJson["Clean"] = "true";
-            File.WriteAllText(auditPath, auditJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var sts1ModeLogCheckJson = JsonNode.Parse(File.ReadAllText(sts1ModeLogCheckPath))!.AsObject();
+            foreach (var checkNode in sts1ModeLogCheckJson["Checks"]!.AsArray())
+            {
+                checkNode!.AsObject()["Passed"] = "true";
+            }
+
+            File.WriteAllText(sts1ModeLogCheckPath, sts1ModeLogCheckJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var result = RunPowerShell(
                 script,
@@ -1570,19 +1791,324 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "-ExpectedIterations",
                 "1");
             Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("plan_launch_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("plan_launch_true status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("summary_passed_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("summary_passed status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_ack_required_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_command_ack_observed_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_main_menu_reached status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_command_ack_required_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_summary_result_command_ack_observed_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_stale_process_observed_false status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_process_observed_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_hung_window_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_responding_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_probe_samples_process_observed status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_probe_samples_no_hung_window status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_probe_samples_no_not_responding status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_main_menu_observation_main_menu_reached_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_main_menu_observation_process_exited_after_observation_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_main_menu_observation_main_menu_reached status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_main_menu_observation_no_process_exit status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_observation_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_observation_process_exited_after_observation_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_observation_runtime_log_growth_required_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_observation_passed_detail status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_observation_no_process_exit status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_runtime_observation_log_growth_requirement_matches_command status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_audit_clean_bool status=fail", result.Output, StringComparison.Ordinal);
             Assert.Contains("iteration-0001_audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_sts1_mode_log_check_checks_passed_bool status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerAllowsNullRespondingBeforeMainWindowObserved()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamples = JsonNode.Parse(File.ReadAllText(probeSamplesPath))!.AsArray();
+            var startupSample = probeSamples[0]!.AsObject();
+            startupSample["MainWindowObserved"] = false;
+            startupSample["Responding"] = null;
+            File.WriteAllText(probeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1",
+                "-FailOnMismatch");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker should allow Responding=null before a main window is observed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_responding_field_present status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_responding_bool status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_not_responding status=pass", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsStartupProbeUnresponsiveDrift()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamples = JsonNode.Parse(File.ReadAllText(probeSamplesPath))!.AsArray();
+            var startupSample = probeSamples[0]!.AsObject();
+            startupSample["MainWindowObserved"] = true;
+            startupSample["HungWindow"] = true;
+            startupSample["Responding"] = false;
+            File.WriteAllText(probeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_startup_max_unresponsive_matches_main_menu_observation status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_runtime_max_unresponsive_matches_runtime_observation status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_below_threshold status=pass", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsStartupProbeThresholdBoundaryDrift()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamples = JsonNode.Parse(File.ReadAllText(probeSamplesPath))!.AsArray();
+            var startupSample = probeSamples[0]!.AsObject();
+            startupSample["MainWindowObserved"] = true;
+            startupSample["HungWindow"] = true;
+            startupSample["Responding"] = false;
+            probeSamples.Insert(1, JsonNode.Parse(startupSample.ToJsonString())!);
+            probeSamples.Insert(2, JsonNode.Parse(startupSample.ToJsonString())!);
+            File.WriteAllText(probeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var resultPath = Path.Combine(iterationDir, "iteration-result.json");
+            var resultJson = JsonNode.Parse(File.ReadAllText(resultPath))!.AsObject();
+            resultJson["MaxConsecutiveUnresponsiveSamples"] = 3;
+            var mainMenuObservation = resultJson["MainMenuObservation"]!.AsObject();
+            mainMenuObservation["Samples"] = 3;
+            mainMenuObservation["MaxConsecutiveUnresponsiveSamples"] = 3;
+            mainMenuObservation["HungWindowDetected"] = false;
+            File.WriteAllText(resultPath, resultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var summaryPath = Path.Combine(workdir, "monkey-summary.json");
+            var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
+            summaryJson["MaxConsecutiveUnresponsiveSamples"] = 3;
+            summaryJson["Results"]!.AsArray()[0]!.AsObject()["MaxConsecutiveUnresponsiveSamples"] = 3;
+            File.WriteAllText(summaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_startup_max_unresponsive_matches_main_menu_observation status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_matches_iteration status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_startup_threshold_matches_main_menu_observation status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_below_threshold status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_hung_window status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_not_responding status=pass", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsRuntimeProbeUnresponsiveDrift()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamples = JsonNode.Parse(File.ReadAllText(probeSamplesPath))!.AsArray();
+            var runtimeSample = probeSamples[1]!.AsObject();
+            runtimeSample["MainWindowObserved"] = true;
+            runtimeSample["HungWindow"] = true;
+            runtimeSample["Responding"] = false;
+            File.WriteAllText(probeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_runtime_max_unresponsive_matches_runtime_observation status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_matches_iteration status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_startup_max_unresponsive_matches_main_menu_observation status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_below_threshold status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_hung_window status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_not_responding status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsRuntimeProbeThresholdBoundaryDrift()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamples = JsonNode.Parse(File.ReadAllText(probeSamplesPath))!.AsArray();
+            var runtimeSample = probeSamples[1]!.AsObject();
+            runtimeSample["MainWindowObserved"] = true;
+            runtimeSample["HungWindow"] = true;
+            runtimeSample["Responding"] = false;
+            probeSamples.Insert(2, JsonNode.Parse(runtimeSample.ToJsonString())!);
+            probeSamples.Insert(3, JsonNode.Parse(runtimeSample.ToJsonString())!);
+            File.WriteAllText(probeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var resultPath = Path.Combine(iterationDir, "iteration-result.json");
+            var resultJson = JsonNode.Parse(File.ReadAllText(resultPath))!.AsObject();
+            resultJson["MaxConsecutiveUnresponsiveSamples"] = 3;
+            var runtimeObservation = resultJson["RuntimeObservation"]!.AsObject();
+            runtimeObservation["Samples"] = 3;
+            runtimeObservation["MaxConsecutiveUnresponsiveSamples"] = 3;
+            runtimeObservation["HungWindowDetected"] = false;
+            File.WriteAllText(resultPath, resultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var summaryPath = Path.Combine(workdir, "monkey-summary.json");
+            var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
+            summaryJson["MaxConsecutiveUnresponsiveSamples"] = 3;
+            summaryJson["Results"]!.AsArray()[0]!.AsObject()["MaxConsecutiveUnresponsiveSamples"] = 3;
+            File.WriteAllText(summaryPath, summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_runtime_max_unresponsive_matches_runtime_observation status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_matches_iteration status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_runtime_threshold_matches_runtime_observation status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_max_unresponsive_below_threshold status=fail", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeMonkeyPacketCheckerRejectsNullRespondingAfterMainWindowObserved()
+    {
+        var script = AssertRepoFileExists("scripts", "check-spire-plus-runtime-monkey-packet.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-packet-checker-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var probeSamplesPath = Path.Combine(iterationDir, "runtime-probe-samples.json");
+            var probeSamples = JsonNode.Parse(File.ReadAllText(probeSamplesPath))!.AsArray();
+            var runtimeSample = probeSamples[1]!.AsObject();
+            runtimeSample["MainWindowObserved"] = true;
+            runtimeSample["Responding"] = null;
+            File.WriteAllText(probeSamplesPath, probeSamples.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            RefreshRuntimeProbeSamplesHash(iterationDir);
+
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-ExpectedIterations",
+                "1");
+
+            Assert.True(result.ExitCode == 0, $"Packet checker crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("iteration-0001_runtime_probe_samples_responding_field_present status=pass", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_responding_bool status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("iteration-0001_runtime_probe_samples_no_not_responding status=fail", result.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -2517,15 +3043,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var fullLogPath = Path.Combine(iterationDir, "godot.log.after-launch");
             File.WriteAllText(
                 Path.Combine(iterationDir, "godot-log-audit.json"),
-                $$"""
-                [
-                  {
-                    "Path": {{JsonSerializer.Serialize(fullLogPath)}},
-                    "Clean": true,
-                    "SignatureHits": []
-                  }
-                ]
-                """);
+                ToBoundAuditJson(fullLogPath, """{"SignatureHits":[]}"""));
 
             var result = RunPowerShell(
                 script,
@@ -2564,20 +3082,18 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             var dirtyLog = File.ReadAllText(currentLogPath) + "[ERROR] TypeLoadException\r\n";
             File.WriteAllText(currentLogPath, dirtyLog);
             File.WriteAllText(fullLogPath, File.ReadAllText(beforeLogPath) + dirtyLog);
-            var dirtyLogLength = new FileInfo(currentLogPath).Length;
-            var dirtyLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(currentLogPath))).ToLowerInvariant();
-
             File.WriteAllText(
                 Path.Combine(iterationDir, "godot-log-audit.json"),
-                $$"""
-                {
-                  "Path": {{JsonSerializer.Serialize(currentLogPath)}},
-                  "Length": {{dirtyLogLength}},
-                  "Sha256": {{JsonSerializer.Serialize(dirtyLogHash)}},
-                  "Clean": true,
-                  "SignatureHits": []
-                }
-                """);
+                ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
+            var auditRoot = JsonNode.Parse(File.ReadAllText(Path.Combine(iterationDir, "godot-log-audit.json")))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["Clean"] = true;
+            foreach (var hitNode in auditJson["SignatureHits"]!.AsArray())
+            {
+                hitNode!.AsObject()["Count"] = 0;
+            }
+
+            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var result = RunPowerShell(
                 script,
@@ -2677,21 +3193,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             File.WriteAllText(currentLogPath, forgedCurrentLog);
             File.WriteAllText(afterLaunchLogPath, File.ReadAllText(beforeLogPath) + forgedCurrentLog);
 
-            var currentLogLength = new FileInfo(currentLogPath).Length;
             var afterLaunchLogLength = new FileInfo(afterLaunchLogPath).Length;
-            var currentLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(currentLogPath))).ToLowerInvariant();
             var afterLaunchLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(afterLaunchLogPath))).ToLowerInvariant();
             File.WriteAllText(
                 auditPath,
-                $$"""
-                {
-                  "Path": {{JsonSerializer.Serialize(currentLogPath)}},
-                  "Length": {{currentLogLength}},
-                  "Sha256": {{JsonSerializer.Serialize(currentLogHash)}},
-                  "Clean": true,
-                  "SignatureHits": []
-                }
-                """);
+                ToBoundAuditJson(currentLogPath, """{"SignatureHits":[]}"""));
+            var currentLogLength = new FileInfo(currentLogPath).Length;
+            var currentLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(currentLogPath))).ToLowerInvariant();
             File.WriteAllText(
                 sts1ModeLogCheckPath,
                 $$"""
@@ -2787,6 +3295,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "RuntimeMonkeyProbeArtifactTrustedForOwner",
             "AutoSlaySidecarTrustedForOwner",
             "AutoSlayRunArtifactsTrustedForOwner",
+            "artifactPathChainTrustedForOwner",
+            "topLevelPathChainCandidates",
+            "runtime_evidence_reparse_point_path",
+            "runtime_evidence_hardlinked_artifact_path",
+            "Test-AllExistingPathChainsHaveNoReparsePoint -Paths $canonicalPathChainCandidates",
+            "Test-AllExistingLeafFilesHaveSingleHardlink -Paths $canonicalPathChainCandidates",
             "RunResultPathMatchesExpectedPerSeedDir",
             "autoslay_run_result_path_not_per_seed_dir",
             "AutoSlayProbeArtifactTrustedForOwner",
@@ -2804,9 +3318,14 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "godot-log-audit.json",
             "LogScanOffsetBytes",
             "autoslay-summary.json",
+            "autoslay-plan.json",
             "run-result.json",
             "GameNativeAutoSlay",
             "Resolve-AnalysisPath",
+            "function Test-ExistingPathChainHasNoReparsePoint",
+            "function Test-AllExistingPathChainsHaveNoReparsePoint",
+            "Get-ExistingPathHardlinkCount",
+            "Test-AllExistingLeafFilesHaveSingleHardlink",
             "Test-CurrentSliceFromBeforeAfter",
             "GodotLogBeforePath",
             "GodotLogAfterLaunchPath",
@@ -2976,6 +3495,20 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "coop_gameplay_disabled",
             "coop_local_ui_preview_enabled",
             "ALLOW_UNVERIFIED_COOP",
+            "Assert-OutFileDoesNotOverwriteCanonicalEvidence",
+            "Assert-OutFileDoesNotOverwriteExplicitEvidence",
+            "Add-ProtectedOutputRootsForEvidenceFile",
+            "AdditionalPathChainCandidates",
+            "autoslay-summary.json omitted retained run directory",
+            "$runtimeMonkeySummaryClaimsWork",
+            "$runtimeMonkeyAnalysisTargetCount",
+            "RetainedIterationDirectories omitted=",
+            "ModeVerifierReportPath",
+            "PacketVerifierReportSha256",
+            "direct_smoke_verifier_report_binding_invalid",
+            "Bind DirectSmoke verifier mismatch counts to retained verifier report paths",
+            "runtime_monkey_no_iteration_targets",
+            "monkey-summary.json claims runtime monkey work but no iteration-* directories or analysis targets were retained",
             "blocking_findings=");
 
         Assert.DoesNotContain("@((Get-JsonValue", analyzer, StringComparison.Ordinal);
@@ -3367,6 +3900,60 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerRejectsRuntimeMonkeyResultBooleanMalformedWithoutSummaryRow()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient URDA confirm",
+                "ancient-ui",
+                "Runtime.Unknown",
+                """["process_unresponsive","command_ack_missing"]""",
+                """["process_unresponsive"]""",
+                "[INFO] stale full-log prefix before accepted scan offset",
+                "[SPIREPLUS-EVIDENCE] PreviewTransform [Spire Plus] Preview: Transform prediction",
+                """{"SignatureHits":[]}""");
+
+            var resultPath = Path.Combine(workdir, "iteration-0001", "iteration-result.json");
+            var resultJson = JsonNode.Parse(File.ReadAllText(resultPath))!.AsObject();
+            resultJson.Remove("CommandAckObserved");
+            File.WriteAllText(resultPath, resultJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-result-boolean-malformed-no-summary.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var malformedFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "runtime_monkey_result_boolean_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("RuntimeHarness", malformedFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("iteration-result.json.CommandAckObserved missing", malformedFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "command_ack_missing"));
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerRejectsMissingRuntimeMonkeySts1ModeLogCheck()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -3455,6 +4042,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HangProbeSchemaVersion": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient URDA confirm",
+                  "CommandAckRequired": false,
+                  "CommandAckObserved": false,
                   "ScenarioTag": "ancient-ui",
                   "OwnerArea": "Runtime.Unknown",
                   "GodotLogBeforePath": "godot.log.before",
@@ -3555,6 +4144,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HangProbeSchemaVersion": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient URDA confirm",
+                  "CommandAckRequired": false,
+                  "CommandAckObserved": false,
                   "ScenarioTag": "ancient-ui",
                   "OwnerArea": "Runtime.Unknown",
                   "GodotLogBeforePath": "shadow/godot.log.before",
@@ -3626,6 +4217,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HangProbeSchemaVersion": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient URDA confirm",
+                  "CommandAckRequired": false,
+                  "CommandAckObserved": false,
                   "ScenarioTag": "ancient-ui",
                   "OwnerArea": "Runtime.Unknown",
                   "GodotLogBeforePath": "godot.log.before",
@@ -3705,6 +4298,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Iteration": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient URDA confirm",
+                  "CommandAckRequired": false,
+                  "CommandAckObserved": false,
                   "ScenarioTag": "ancient-ui",
                   "OwnerArea": "Runtime.Unknown",
                 {{RuntimeMonkeyStateBindingFields(stateBindings)}}
@@ -3785,6 +4380,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Iteration": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient VAKUU confirm fight",
+                  "CommandAckRequired": true,
+                  "CommandAckObserved": false,
                   "ScenarioTag": "vakuu-fight",
                   "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
                 {{RuntimeMonkeyStateBindingFields(stateBindings)}}
@@ -4266,6 +4863,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Assert.Equal("HarnessEvidenceInvalid", summaryPlanDriftRoot.GetProperty("TriageDisposition").GetString());
                 Assert.Equal(0, summaryPlanDriftRoot.GetProperty("GameplayBlockingFindingCount").GetInt32());
                 Assert.False(summaryPlanDriftIteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+                Assert.False(summaryPlanDriftIteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+                Assert.False(summaryPlanDriftIteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+                Assert.False(summaryPlanDriftIteration.GetProperty("AutoSlaySts1ModeArtifactTrustedForOwner").GetBoolean());
+                Assert.False(summaryPlanDriftIteration.GetProperty("AutoSlaySidecarTrustedForOwner").GetBoolean());
+                Assert.False(summaryPlanDriftIteration.GetProperty("Sts1ModeLogCheckTrustedForOwner").GetBoolean());
                 Assert.False(summaryPlanDriftIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
                 Assert.Equal("RuntimeHarness", summaryPlanDriftFinding.GetProperty("OwnerArea").GetString());
                 Assert.Contains("ExpectedAncientIds missing='VAKUU' unexpected='URDA'", summaryPlanDriftFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
@@ -4333,6 +4935,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Assert.Equal("HarnessEvidenceInvalid", missingTargetsRoot.GetProperty("TriageDisposition").GetString());
                 Assert.Equal(0, missingTargetsRoot.GetProperty("GameplayBlockingFindingCount").GetInt32());
                 Assert.False(missingTargetsIteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
+                Assert.False(missingTargetsIteration.GetProperty("AutoSlayProbeArtifactTrustedForOwner").GetBoolean());
+                Assert.False(missingTargetsIteration.GetProperty("AutoSlayAuditArtifactTrustedForOwner").GetBoolean());
+                Assert.False(missingTargetsIteration.GetProperty("AutoSlaySts1ModeArtifactTrustedForOwner").GetBoolean());
+                Assert.False(missingTargetsIteration.GetProperty("AutoSlaySidecarTrustedForOwner").GetBoolean());
+                Assert.False(missingTargetsIteration.GetProperty("Sts1ModeLogCheckTrustedForOwner").GetBoolean());
                 Assert.False(missingTargetsIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
                 Assert.Equal("Runtime.Unknown", missingTargetsIteration.GetProperty("OwnerAreaFromLog").GetString());
                 Assert.Equal("RuntimeHarness", missingTargetsFinding.GetProperty("OwnerArea").GetString());
@@ -4702,6 +5309,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                     .Single(item => item.GetProperty("Signal").GetString() == "autoslay_godot_log_metadata_mismatch");
 
                 Assert.Equal("HarnessEvidenceInvalid", mismatchRoot.GetProperty("TriageDisposition").GetString());
+                Assert.Equal(0, mismatchRoot.GetProperty("GameplayBlockingFindingCount").GetInt32());
+                Assert.False(mismatchIteration.GetProperty("AutoSlayRunArtifactsTrustedForOwner").GetBoolean());
                 Assert.False(mismatchIteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
                 Assert.Equal("Runtime.Unknown", mismatchIteration.GetProperty("OwnerAreaFromLog").GetString());
                 Assert.Equal("RuntimeHarness", metadataFinding.GetProperty("OwnerArea").GetString());
@@ -5066,6 +5675,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Iteration": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient VAKUU confirm fight",
+                  "CommandAckRequired": true,
+                  "CommandAckObserved": false,
                   "ScenarioTag": "vakuu-fight",
                   "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
                 {{RuntimeMonkeyStateBindingFields(stateBindings)}}
@@ -5074,8 +5685,11 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "HangSignals": ["process_unresponsive"]
                 }
                 """);
-            File.WriteAllText(Path.Combine(iterationDir, "godot.log.after-launch"), "[ERROR] TypeLoadException stale full log should not route owner\r\n");
-            File.WriteAllText(Path.Combine(iterationDir, "godot-log-audit.json"), """{"SignatureHits":[]}""");
+            var afterLaunchLogPath = Path.Combine(iterationDir, "godot.log.after-launch");
+            File.WriteAllText(afterLaunchLogPath, "[ERROR] TypeLoadException stale full log should not route owner\r\n");
+            File.WriteAllText(
+                Path.Combine(iterationDir, "godot-log-audit.json"),
+                ToBoundAuditJson(afterLaunchLogPath, """{"SignatureHits":[]}"""));
             WriteMonkeySummary(workdir, 1);
 
             var outputPath = Path.Combine(workdir, "runtime-failure-analysis.json");
@@ -5152,6 +5766,254 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("RuntimeHarness", missingResultFinding.GetProperty("OwnerArea").GetString());
             Assert.Equal("blocking", missingResultFinding.GetProperty("Severity").GetString());
             Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerAnalyzesRetainedIterationOmittedByFailedIterationSummary()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient URDA confirm",
+                "ancient-ui",
+                "Ancients.Urda.MapSaveState",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "",
+                "[Startup] Time to main menu\r\n",
+                """{"SignatureHits":[]}""");
+            WriteIteration(
+                workdir,
+                2,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "",
+                "[Startup] Time to main menu\r\n",
+                """{"SignatureHits":[]}""");
+            File.WriteAllText(
+                Path.Combine(workdir, "monkey-summary.json"),
+                """
+                {
+                  "FailedIterationIds": [1],
+                  "Results": [
+                    {
+                      "Iteration": 1,
+                      "Passed": false,
+                      "Command": "spireplus_test_ancient URDA confirm",
+                      "ScenarioTag": "ancient-ui",
+                      "OwnerArea": "Ancients.Urda.MapSaveState",
+                      "FailureReasonCodes": ["process_unresponsive"],
+                      "HangSignals": ["process_unresponsive"]
+                    }
+                  ]
+                }
+                """);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-omitted-iteration.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration2 = FindIteration(root, 2);
+            var summaryFinding = iteration2
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "runtime_monkey_summary_counter_mismatch");
+
+            Assert.Equal(2, root.GetProperty("AnalyzedIterationCount").GetInt32());
+            Assert.Contains("RetainedIterationDirectories omitted=iteration-0002", summaryFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+            Assert.False(iteration2.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration2, "process_unresponsive"));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsSummaryWithoutRetainedIterations()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            Directory.Delete(Path.Combine(workdir, "iteration-0001"), recursive: true);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-no-iterations.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 0);
+            var finding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "runtime_monkey_no_iteration_targets");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal("RuntimeHarness", finding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("blocking", finding.GetProperty("Severity").GetString());
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsOutFileOverCanonicalEvidence()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var result = RunPowerShell(
+                script,
+                "-EvidenceDir",
+                workdir,
+                "-OutFile",
+                Path.Combine(workdir, "monkey-summary.json"));
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsIterationDirOutFileOverCanonicalEvidence()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var iterationDir = Path.Combine(workdir, "iteration-0001");
+            var result = RunPowerShell(
+                script,
+                "-IterationDir",
+                iterationDir,
+                "-OutFile",
+                Path.Combine(iterationDir, "iteration-result.json"));
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsLogPathOutFileOverParentCanonicalEvidence()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var logPath = Path.Combine(workdir, "iteration-0001", "godot.log.current-iteration");
+            var result = RunPowerShell(
+                script,
+                "-LogPath",
+                logPath,
+                "-OutFile",
+                Path.Combine(workdir, "monkey-summary.json"));
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsSummaryWithoutRetainedIterationsEvenWithDirectSmokeArtifact()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            Directory.Delete(Path.Combine(workdir, "iteration-0001"), recursive: true);
+            File.WriteAllText(
+                Path.Combine(workdir, "direct-smoke-summary.json"),
+                """
+                {
+                  "Mode": "AdditiveBatch1",
+                  "MainMenuReached": true,
+                  "AuditClean": true,
+                  "ModeVerifierMismatches": 0,
+                  "PacketVerifierMismatches": 0,
+                  "ExpectedGameVersion": "0.107.1",
+                  "Passed": true
+                }
+                """);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-direct-smoke-mask.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var harnessFindings = root.GetProperty("HarnessBlockingFindings").EnumerateArray().ToArray();
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.True(root.GetProperty("AnalyzedIterationCount").GetInt32() >= 2);
+            Assert.Contains(harnessFindings, finding => finding.GetProperty("Signal").GetString() == "runtime_monkey_no_iteration_targets");
         }
         finally
         {
@@ -5321,6 +6183,61 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerReportsRuntimeMonkeySummaryNumericMalformedSignal()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var summaryPath = Path.Combine(workdir, "monkey-summary.json");
+            var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
+            summaryJson["RequestedIterations"] = "1";
+            summaryJson["CompletedIterations"] = "1";
+            summaryJson["FailedIterations"] = "0";
+            summaryJson["FailureReasonCounts"] = new JsonObject
+            {
+                ["process_unresponsive"] = "0",
+            };
+            File.WriteAllText(
+                summaryPath,
+                summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true })
+                    .Replace("\"CompletedIterations\": \"1\"", "\"CompletedIterations\": 1.0", StringComparison.Ordinal));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-summary-numeric-malformed.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var malformedFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "runtime_monkey_summary_numeric_malformed");
+            var rationale = malformedFinding.GetProperty("Rationale").GetString()!;
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("RuntimeHarness", malformedFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("Summary.RequestedIterations", rationale, StringComparison.Ordinal);
+            Assert.Contains("Summary.CompletedIterations", rationale, StringComparison.Ordinal);
+            Assert.Contains("FailureReasonCounts.process_unresponsive", rationale, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerRejectsRuntimeMonkeySummaryResultDrift()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -5401,6 +6318,58 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             Assert.Equal("RuntimeHarness", summaryPlanFinding.GetProperty("OwnerArea").GetString());
             Assert.Contains("Scenario", summaryPlanFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
             Assert.Contains("ExpectedPatchCount", summaryPlanFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerReportsRuntimeMonkeySummaryPlanNumericMalformedSignal()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteCleanRuntimeMonkeyPacket(workdir, useShadowResultPaths: false);
+            var planPath = Path.Combine(workdir, "monkey-plan.json");
+            var summaryPath = Path.Combine(workdir, "monkey-summary.json");
+            var planJson = JsonNode.Parse(File.ReadAllText(planPath))!.AsObject();
+            var summaryJson = JsonNode.Parse(File.ReadAllText(summaryPath))!.AsObject();
+            planJson["ExpectedPatchCount"] = "25";
+            summaryJson["ExpectedPatchCount"] = "25";
+            File.WriteAllText(planPath, planJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(
+                summaryPath,
+                summaryJson.ToJsonString(new JsonSerializerOptions { WriteIndented = true })
+                    .Replace("\"ExpectedPatchCount\": \"25\"", "\"ExpectedPatchCount\": 25.0", StringComparison.Ordinal));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-summary-plan-numeric-malformed.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer crashed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var malformedFinding = iteration
+                .GetProperty("Findings")
+                .EnumerateArray()
+                .Single(item => item.GetProperty("Signal").GetString() == "runtime_monkey_summary_plan_numeric_malformed");
+            var rationale = malformedFinding.GetProperty("Rationale").GetString()!;
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.Equal("RuntimeHarness", malformedFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("Plan.ExpectedPatchCount", rationale, StringComparison.Ordinal);
+            Assert.Contains("Summary.ExpectedPatchCount", rationale, StringComparison.Ordinal);
         }
         finally
         {
@@ -5641,6 +6610,584 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     }
 
     [Fact]
+    public void RuntimeFailureAnalyzerRejectsMalformedAuditSchemaWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = auditRoot is JsonArray auditArray
+                ? auditArray[0]!.AsObject()
+                : auditRoot.AsObject();
+            auditJson["Clean"] = "true";
+            auditJson["Length"] = auditJson["Length"]!.ToString();
+            auditJson["SignatureHits"] = new JsonObject
+            {
+                ["Name"] = "fixture-zero-count",
+                ["Count"] = 0,
+            };
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-malformed-audit-schema.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var arrayFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_array_malformed");
+            var boolFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_boolean_malformed");
+            var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", arrayFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", boolFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Contains("root and SignatureHits must be retained as native JSON arrays", arrayFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+            Assert.Contains("Clean must be retained as a native JSON boolean", boolFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+            Assert.Contains("Length and SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsMissingRuntimeMonkeyAuditWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            File.Delete(Path.Combine(workdir, "iteration-0001", "godot-log-audit.json"));
+            WriteMonkeySummary(workdir, 1);
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-missing.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var auditMissingFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "runtime_monkey_godot_log_audit_missing");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", auditMissingFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Contains("missing canonical godot-log-audit.json", auditMissingFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsObjectRootAuditEvidenceWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!.AsArray();
+            File.WriteAllText(auditPath, auditRoot[0]!.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-object-root-audit.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var arrayFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_array_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", arrayFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Contains("root and SignatureHits must be retained as native JSON arrays", arrayFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditMissingSchemaVersionWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson.Remove("AuditSchemaVersion");
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-missing-schema-version.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var schemaFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_schema_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", schemaFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("AuditSchemaVersion must be native integer 2", schemaFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditWrongSignatureSetHashWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["SignatureSetSha256"] = new string('0', 64);
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-wrong-signature-set.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var mismatchFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_recomputed_mismatch");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", mismatchFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("rule-set hash", mismatchFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditEmptySignatureHitVectorWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["SignatureHits"] = new JsonArray();
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-empty-signature-vector.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var mismatchFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_recomputed_mismatch");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", mismatchFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("signature vector", mismatchFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditSignatureNameSetDriftWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["SignatureHits"]!.AsArray().RemoveAt(0);
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-signature-name-drift.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var driftFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_signature_names_drift");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", driftFinding.GetProperty("OwnerArea").GetString());
+            Assert.Contains("signature names", driftFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditSignatureHitMissingCountWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["SignatureHits"] = new JsonArray(
+                new JsonObject
+                {
+                    ["Name"] = "Godot ERROR line",
+                });
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-missing-count.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Contains("SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditSignatureHitStringCountWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["SignatureHits"] = new JsonArray(
+                new JsonObject
+                {
+                    ["Name"] = "Godot ERROR line",
+                    ["Count"] = "0",
+                });
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-string-count.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Contains("Length and SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void RuntimeFailureAnalyzerRejectsAuditMissingLengthWithoutFailingOpen()
+    {
+        var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "runtime-monkey-analyzer-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            WriteIteration(
+                workdir,
+                1,
+                "spireplus_test_ancient VAKUU confirm fight",
+                "vakuu-fight",
+                "Ancients.Vakuu.FightOptionSetup",
+                """["process_unresponsive"]""",
+                """["process_unresponsive"]""",
+                "[Startup] Time to main menu",
+                "[Startup] Time to main menu\r\nCrystal Sphere peek failed\r\n",
+                """{"SignatureHits":[]}""");
+            WriteMonkeySummary(workdir, 1);
+
+            var auditPath = Path.Combine(workdir, "iteration-0001", "godot-log-audit.json");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson.Remove("Length");
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var outputPath = Path.Combine(workdir, "runtime-failure-analysis-audit-missing-length.json");
+            var result = RunPowerShell(script, "-EvidenceDir", workdir, "-OutFile", outputPath);
+            Assert.True(result.ExitCode == 0, $"Analyzer failed:{Environment.NewLine}{result.Output}{result.Error}");
+
+            using var document = JsonDocument.Parse(File.ReadAllText(outputPath));
+            var root = document.RootElement;
+            var iteration = FindIteration(root, 1);
+            var findings = iteration.GetProperty("Findings").EnumerateArray().ToArray();
+            var numericFinding = findings.Single(item => item.GetProperty("Signal").GetString() == "godot_log_audit_numeric_malformed");
+
+            Assert.Equal("HarnessEvidenceInvalid", root.GetProperty("TriageDisposition").GetString());
+            Assert.Equal(0, root.GetProperty("GameplayBlockingFindingCount").GetInt32());
+            Assert.False(iteration.GetProperty("AuditTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("LogTextTrustedForOwner").GetBoolean());
+            Assert.False(iteration.GetProperty("RuntimeMonkeyRunArtifactsTrustedForOwner").GetBoolean());
+            Assert.Equal("Runtime.Unknown", iteration.GetProperty("OwnerAreaFromLog").GetString());
+            Assert.Equal("RuntimeHarness", numericFinding.GetProperty("OwnerArea").GetString());
+            Assert.Equal("RuntimeHarness", FindFindingOwner(iteration, "process_unresponsive"));
+            Assert.Contains("Length and SignatureHits[].Count must be retained as native JSON integers", numericFinding.GetProperty("Rationale").GetString(), StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
     public void RuntimeFailureAnalyzerRejectsAuditJsonNotBoundToCurrentIterationLog()
     {
         var script = AssertRepoFileExists("scripts", "analyze-spire-plus-runtime-failure.ps1");
@@ -5660,6 +7207,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                   "Iteration": 1,
                   "Passed": false,
                   "Command": "spireplus_test_ancient VAKUU confirm fight",
+                  "CommandAckRequired": true,
+                  "CommandAckObserved": true,
                   "ScenarioTag": "vakuu-fight",
                   "OwnerArea": "Ancients.Vakuu.FightOptionSetup",
                   "GodotLogBeforePath": "godot.log.before",
@@ -5732,7 +7281,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "$planExpectedAncientIdsForCoverage = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $plan -Name 'ExpectedAncientIds' -DefaultValue @()))",
             "$observedAncientIdSet.Add($normalizedAncientId)",
             "$traversedAncientIdSet.Add($ancientId.Trim().ToUpperInvariant())",
-            "${runName}_run_result_ancient_id_matches_summary");
+            "${runName}_run_result_ancient_id_matches_summary",
+            "Get-ExistingPathHardlinkCount",
+            "Test-AllExistingLeafFilesHaveSingleHardlink",
+            "canonical_artifact_files_single_hardlink",
+            "$diagnosticPassed = $mismatches.Count -eq 0",
+            "$passed = $diagnosticPassed -and -not [bool]$AllowMissingEventTraversal",
+            "DiagnosticPassed = $diagnosticPassed");
 
         var workdir = Path.Combine(Path.GetTempPath(), "autoslay-packet-verifier-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workdir);
@@ -7190,6 +8745,8 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
               "Passed": false,
               "Command": {{JsonSerializer.Serialize(command)}},
               "CommandAckPattern": "",
+              "CommandAckRequired": false,
+              "CommandAckObserved": false,
               "ScenarioTag": {{JsonSerializer.Serialize(scenarioTag)}},
               "OwnerArea": {{JsonSerializer.Serialize(ownerArea)}},
               "LiveSessionSessionStatePath": "session-state.json",
@@ -7719,15 +9276,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         var retainedRestoreStateHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(retainedRestoreStatePath))).ToLowerInvariant();
         File.WriteAllText(
             Path.Combine(iterationDir, "godot-log-audit.json"),
-            $$"""
-            {
-              "Path": {{JsonSerializer.Serialize(retainedCurrentLogPath)}},
-              "Length": {{retainedCurrentLogLength}},
-              "Sha256": {{JsonSerializer.Serialize(retainedCurrentLogHash)}},
-              "Clean": true,
-              "SignatureHits": []
-            }
-            """);
+            ToBoundAuditJson(retainedCurrentLogPath, """{"SignatureHits":[]}"""));
         WriteSts1ModeLogCheckJson(
             "Off",
             retainedCurrentLogPath,
@@ -8032,7 +9581,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 "LogGrew": true,
                 "LogObserved": true,
                 "LogInitialLengthBytes": {{fixtureBeforeLogLength}},
-                "LogFinalLengthBytes": {{fixtureAfterLaunchLogLength}},
+                "LogFinalLength": {{fixtureAfterLaunchLogLength}},
                 "Passed": true,
                 "Samples": 1,
                 "MaxConsecutiveUnresponsiveSamples": 0

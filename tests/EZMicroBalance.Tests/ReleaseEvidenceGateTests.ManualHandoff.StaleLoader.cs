@@ -24,8 +24,9 @@ public sealed partial class ReleaseEvidenceGateTests
 
             var manifestPath = Path.Combine(evidenceDir, "release", "release-evidence-manifest.json");
             var loaderEvidenceDir = Path.Combine(evidenceDir, "release", "fresh-current-package-loader-smoke");
-            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot.log"), "Stale loader log for an older package hash.");
-            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), """{ "Clean": true }""");
+            var loaderLogPath = Path.Combine(loaderEvidenceDir, "godot.log");
+            File.WriteAllText(loaderLogPath, "Stale loader log for an older package hash.");
+            File.WriteAllText(Path.Combine(loaderEvidenceDir, "godot-log-audit.json"), CleanGodotLogAuditJson(loaderLogPath));
             File.WriteAllText(Path.Combine(loaderEvidenceDir, "enabled-mods.txt"), "previous package\r\nSpire Plus\r\n");
 
             var manifestNode = JsonNode.Parse(File.ReadAllText(manifestPath))!.AsObject();

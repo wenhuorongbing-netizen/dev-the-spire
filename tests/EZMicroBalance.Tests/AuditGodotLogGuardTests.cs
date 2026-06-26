@@ -7,6 +7,27 @@ namespace EZMicroBalance.Tests;
 public sealed class AuditGodotLogGuardTests
 {
     [Fact]
+    public void AuditScriptProtectsOutFileAndInputLogIdentity()
+    {
+        var script = ReadRepoText("scripts", "audit-godot-log.ps1");
+
+        Assert.Contains("function Initialize-WindowsFileIdentityType", script, StringComparison.Ordinal);
+        Assert.Contains("GetLinkCount", script, StringComparison.Ordinal);
+        Assert.Contains("function Assert-OutFileIsSafe", script, StringComparison.Ordinal);
+        Assert.Contains("OutFile must not be a hardlink with multiple filesystem names", script, StringComparison.Ordinal);
+        Assert.Contains("OutFile must not overwrite or alias an audited log file", script, StringComparison.Ordinal);
+        Assert.Contains("Windows file identity checks are required before writing audit OutFile evidence", script, StringComparison.Ordinal);
+        Assert.Contains("OutFile must be an audit/report artifact, not canonical runtime evidence", script, StringComparison.Ordinal);
+        Assert.Contains("OutFile leaf must be audit-shaped JSON", script, StringComparison.Ordinal);
+        Assert.Contains("'godot.log.after-launch'", script, StringComparison.Ordinal);
+        Assert.Contains("'run-manifest.json'", script, StringComparison.Ordinal);
+        Assert.Contains("'command.txt'", script, StringComparison.Ordinal);
+        Assert.Contains("Assert-NoReparsePointInExistingPath -Path $file.FullName", script, StringComparison.Ordinal);
+        Assert.Contains("Assert-LeafIsNotReparsePoint -Path $file.FullName -Description 'Audited log'", script, StringComparison.Ordinal);
+        Assert.Contains("Assert-LeafIsNotReparsePoint -Path $resolvedOutFile -Description 'OutFile'", script, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public void AuditSkipsKnownThirdPartyManifestWarnings()
     {
         var script = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
@@ -29,7 +50,9 @@ public sealed class AuditGodotLogGuardTests
             Assert.Equal(0, result.ExitCode);
 
             using var document = JsonDocument.Parse(result.Output);
+            Assert.Equal(JsonValueKind.Array, document.RootElement.ValueKind);
             var logResult = GetSingleResult(document.RootElement);
+            AssertAuditSchemaV2(logResult);
 
             var clean = logResult.GetProperty("Clean").GetBoolean();
             var signatureHits = GetSignatureCounts(logResult);
@@ -68,7 +91,9 @@ public sealed class AuditGodotLogGuardTests
             Assert.Equal(0, result.ExitCode);
 
             using var document = JsonDocument.Parse(result.Output);
+            Assert.Equal(JsonValueKind.Array, document.RootElement.ValueKind);
             var logResult = GetSingleResult(document.RootElement);
+            AssertAuditSchemaV2(logResult);
 
             var clean = logResult.GetProperty("Clean").GetBoolean();
             var signatureHits = GetSignatureCounts(logResult);
@@ -118,6 +143,23 @@ public sealed class AuditGodotLogGuardTests
     private static JsonElement GetSingleResult(JsonElement root)
     {
         return root.ValueKind == JsonValueKind.Array ? root[0] : root;
+    }
+
+    private static void AssertAuditSchemaV2(JsonElement logResult)
+    {
+        Assert.Equal(2, logResult.GetProperty("AuditSchemaVersion").GetInt32());
+        var signatureSetSha256 = logResult.GetProperty("SignatureSetSha256").GetString();
+        Assert.NotNull(signatureSetSha256);
+        Assert.Equal(64, signatureSetSha256!.Length);
+        Assert.All(signatureSetSha256, c => Assert.True(Uri.IsHexDigit(c)));
+
+        var signatureHits = logResult.GetProperty("SignatureHits").EnumerateArray().ToArray();
+        Assert.True(signatureHits.Length >= 9);
+        Assert.All(signatureHits, hit =>
+        {
+            Assert.False(string.IsNullOrWhiteSpace(hit.GetProperty("Name").GetString()));
+            Assert.Equal(JsonValueKind.Number, hit.GetProperty("Count").ValueKind);
+        });
     }
 
     private static Dictionary<string, int> GetSignatureCounts(JsonElement logResult)

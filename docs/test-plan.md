@@ -78,6 +78,17 @@ Required artifact checks after publish:
     `VelvetChokerSoftLimitTracker.ShouldTax` or `CanonicalModelException`
     appears after opening the card encyclopedia.
 
+For release evidence rows, a clean `godot.log` plus audit is not enough by
+itself. Each pass row must also keep
+`LogOriginProofStatus = owner-live-release-log` in the manifest, a
+`run-manifest.json` that binds the row to the current canonical package
+version/path/hash plus the current game/RitsuLib target, and a filled
+`log-origin-note.md` with `LogOriginProofStatus: owner-live-release-log`,
+`Source:`, and `Log files:` lines for that row's own live session. Renamed
+beta.135 `godot.log.after-launch` files, marker-only offline checks, reparse
+point or hardlinked evidence files, placeholder source values such as `TBD` or
+`unknown`, and no-launch owner-run scaffolds do not satisfy release rows.
+
 ## Runtime Monkey Stability Lane
 
 Use `docs/testing/runtime-monkey-stability.md` and
@@ -141,7 +152,21 @@ retained full logs, `godot.log.current-iteration`, audits,
 `.tools/runtime-evidence/`. The runner records a pre-launch log baseline,
 checks the current-iteration log slice for acknowledgements and runtime
 expectations, and fails closed on pre-existing game processes so stale sessions
-or stale appended log content cannot prove a new iteration.
+or stale appended log content cannot prove a new iteration. Retained packet and
+analyzer evidence must keep integer telemetry as native JSON integer tokens;
+string values, `null`, booleans, and integer-valued decimal tokens such as `1.0`
+are rejected evidence, not values to coerce. Audit evidence has the same
+fail-closed rule: `godot-log-audit.json` must retain a native JSON array root,
+`SignatureHits` must be a native JSON array, `Clean` must be a native JSON
+boolean, and `Length` plus every `SignatureHits[].Count` must be present as
+native JSON integers in packet verifier and analyzer paths. Every audit item
+must also retain `AuditSchemaVersion: 2`, a valid `SignatureSetSha256` for the
+current audit rule set, and the complete named `SignatureHits[].Name` /
+`SignatureHits[].Count` vector; retained audit schema, rule-set hash, or
+signature-vector drift closes log-owner trust instead of proving a clean log.
+Missing canonical
+RuntimeMonkey `godot-log-audit.json` evidence records
+`runtime_monkey_godot_log_audit_missing` and closes log-owner trust.
 
 After a launched run, check the retained packet without launching the game:
 
@@ -150,9 +175,16 @@ After a launched run, check the retained packet without launching the game:
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -ExpectedIterations 5 `
   -ExpectedPackageVersion v0.1.0-private-beta.135 `
-  -ExpectedPatchCount 144 `
+  -ExpectedGameVersion 0.107.1 `
+  -ExpectedRitsuLibVersion 0.4.34 `
+  -ExpectedRitsuCompatBranch 0.107.1 `
+  -ExpectedPatchCount <fresh-current-runtime-ModPatcher-applied-count> `
   -FailOnMismatch
 ```
+
+Do not reuse historical patch-count targets such as `144` or `152` for a new
+beta.135 runtime-monkey proof. Derive the count from the fresh retained packet
+and current-iteration `ModPatcher` applied-count log lines for that exact run.
 
 If the packet fails, triage retained evidence before editing source:
 
@@ -225,13 +257,15 @@ Plus prerequisite.
 
 v4.3 is current for Ancient behavior. v4.2 rightmost-slot Prismatic Gem and v4.2 Distinguished Cape 40% min15 are historical only.
 
-Current runtime note: historical RitsuLib diagnostic loader gates exist for Off, CanaryOnly, and AdditiveBatch1 modes.
-Installed beta.99 package parity is the current package evidence. Earlier
-beta.93 `v0.107.1` RitsuLib-only direct AdditiveBatch1 proof under
+Current runtime note: beta.135 package parity and no-launch validation are the
+current package evidence. Previous beta.128 clicked Ancient UI smoke is
+historical forced UI proof only; it does not prove beta.135 gameplay,
+save-load, co-op, or handoff readiness. Earlier beta.99 settings/off evidence
+and beta.93 `v0.107.1` RitsuLib-only direct AdditiveBatch1 proof under
 `.tools/runtime-evidence/v01071-beta93-ritsulib0431-additivebatch1-direct-20260621/`
-reached main menu, applied 25/25 Spire Plus patches, audited clean, and passed
-retained log/packet verifiers with 10 event types / 14 registration calls.
-This is loader/registration proof only; gameplay, clicked UI, save-load, replacement behavior, co-op, QA, and handoff rows remain open.
+remain historical loader/registration context only.
+Gameplay, clicked UI follow-through, save-load, replacement behavior, co-op,
+QA, and handoff rows remain open.
 The earlier beta.86 Steam-client attempt under `.tools/runtime-evidence/v01070-beta86-additive-batch1-20260618-031043/` is diagnostic only because StS1 stayed disabled when the already-running Steam client did not inherit the transient environment.
 The beta.85 Off/CanaryOnly smokes remain older dependency/game-version context,
 beta.87 direct proof remains previous-game-version context, and the beta.85

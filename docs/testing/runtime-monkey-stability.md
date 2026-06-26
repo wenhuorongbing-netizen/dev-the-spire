@@ -132,7 +132,8 @@ The first implementation layer is deliberately conservative:
    nondecreasing whenever `LogExists` is true. `iteration-result.json` must also
    retain `RuntimeProbeSamplesSha256`, and the packet checker recomputes it from
    the retained `runtime-probe-samples.json`. Malformed numeric or boolean
-   values in nested observation or probe fields, including sample counts,
+   values in nested observation or probe fields, including string or
+   integer-valued decimal tokens in integer telemetry such as sample counts,
    stale-process counts, log lengths, expected process ids, pass flags, process
    health flags, and window responsiveness flags, are packet mismatches rather
    than verifier crashes, string-to-true coercions, or `null`-to-zero/false
@@ -144,25 +145,34 @@ The first implementation layer is deliberately conservative:
 6. Optionally send one short DevConsole command from the corpus.
 7. During the post-command window, sample process/window/log health again.
    Process disappearance or a hung/not-responding window fails the iteration;
-   post-main-menu log growth is recorded as telemetry but not required because
-   an idle main menu can legitimately stop writing.
+   command-bearing runtime observations require log growth, while idle/no-command
+   observations record post-main-menu log growth as telemetry only because an
+   idle main menu can legitimately stop writing.
 8. Before launch, retain the shared log as `godot.log.before` in the iteration
    folder. If no pre-launch log exists, retain an explicit zero-byte file.
 9. After observation, copy the full shared log to `godot.log.after-launch`, then
    write `godot.log.current-iteration` as the exact byte slice after
    `godot.log.before`. The retained `LogScanOffsetBytes` must equal the retained
-   before-log byte length; log reset/truncation is invalid packet evidence unless
-   the before snapshot is genuinely zero bytes.
+   before-log byte length, and a non-empty `godot.log.before` must be a byte
+   prefix of `godot.log.after-launch`. Log reset/truncation is invalid packet
+   evidence unless the before snapshot is genuinely zero bytes and
+   `LogScanOffsetBytes` is `0`.
 10. Run `scripts\audit-godot-log.ps1` on `godot.log.current-iteration` and
    retain `godot-log-audit.json`. If the current-iteration slice cannot be
    written, do not write the canonical audit from the full log; any full-log
-   diagnostic audit must use `godot-log-after-launch-audit.json`.
+   diagnostic audit must use `godot-log-after-launch-audit.json`. The retained
+   audit must use schema v2: every item keeps `AuditSchemaVersion: 2`,
+   `SignatureSetSha256` for the current audit rule set, scanned `Path`,
+   `Length`, `Sha256`, native-boolean `Clean`, and the complete named
+   `SignatureHits[].Name` / native-integer `SignatureHits[].Count` vector
+   emitted by `audit-godot-log.ps1`.
 11. Run `scripts\check-sts1-enabled-mode-runtime-log.ps1` for the requested
    Off/CanaryOnly/AdditiveBatch1 mode and retain `sts1-mode-log-check.json`.
    This uses `godot.log.current-iteration` as truth, not the evidence folder
-   name or older log content. Malformed numeric length/count values and boolean
-   pass/clean flags in retained audit or StS1 verifier JSON must fail the packet
-   check without aborting it.
+   name or older log content. Malformed numeric length/count values, including
+   string or decimal tokens for integer fields, and boolean pass/clean flags in
+   retained audit or StS1 verifier JSON must fail the packet check without
+   aborting it.
 12. Restore the live session with `-StopGameOnRestore` and
    `-PreserveNewCurrentRunsOnRestore`, retaining `session-state.json` and
    `restore-state.json` inside the same `iteration-####` directory. A clean
@@ -256,11 +266,26 @@ can close a game-native monkey proof row:
   accepted as proof unless the rows are also clean. All retained AutoSlay JSON
   boolean fields, including pass flags, source-workspace policy flags,
   observation health fields, runtime-probe process/window flags, audit `Clean`,
-  and StS1 verifier flags, must be native JSON booleans. String, null, blank, or
-  otherwise malformed boolean values are packet mismatches, not proof.
-  `Seeds`, `ExpectedAncientIds`, `Runs`, `FailureReasonCodes`, and
-  `HangSignals` must be native JSON arrays; scalar strings or nulls are
-  malformed retained evidence, not empty signal sets;
+  and StS1 verifier `Checks[].Passed` flags, must be native JSON booleans.
+  String, null, blank, or otherwise malformed boolean values are packet
+  mismatches, not proof. `Responding` is the only runtime-probe exception:
+  it must be retained on every sample, may be null only while
+  `MainWindowObserved=false`, and must be a native JSON boolean as soon as the
+  main window is observed.
+  `Seeds`, `ExpectedAncientIds`, `Runs`, `FailureReasonCodes`, `HangSignals`,
+  retained `runtime-probe-samples.json` roots, and retained
+  `godot-log-audit.json` roots plus `SignatureHits` fields must be native JSON
+  arrays; scalar strings, objects, or nulls are malformed retained evidence,
+  not empty signal, audit, or sample sets. Audit items must also retain
+  `AuditSchemaVersion: 2`, a valid `SignatureSetSha256`, and the complete
+  fixed name set plus named `SignatureHits` vector from the current audit rule set; an empty
+  `SignatureHits: []` vector is stale evidence, not proof that no signatures
+  were scanned;
+- retained top-level `run-*` directories must exactly match
+  `autoslay-summary.json` `Runs[]` as the sequence `run-0001` through
+  `run-####`. Extra retained run directories are stale or unowned evidence, and
+  missing expected run directories mean the summary rows do not bind to retained
+  per-seed artifacts;
 - top-level `autoslay-summary.json` `AncientIdCounts` keyed by normalized
   Ancient id, with non-negative integer counts that exactly match the
   aggregation of per-run `Runs[].AncientId` values and give every requested
@@ -285,7 +310,10 @@ can close a game-native monkey proof row:
   `run-result.json` bytes before the run-result data is trusted. `RunResultPath`
   must resolve exactly to the top-level per-seed path
   `run-####/run-result.json`; nested or shadow `run-####` directories are not
-  proof packets;
+  proof packets. Lexical containment is not enough: `EvidenceDir`, each
+  `run-####` directory, and every canonical per-run artifact path's existing
+  parent chain must be free of symlinks, junctions, and other reparse points
+  before hashes, audits, logs, or probes are trusted;
 - one retained `runtime-probe-samples.json` per seed with `Phase`, `SampledAt`,
   `LogExists`, `LogLengthBytes`, retained `LogLastWriteTimeUtc`, `ProcessId`,
   `ProcessStartTimeUtc`, `ProcessPath`, `ExpectedGameProcessId`,
@@ -299,7 +327,8 @@ can close a game-native monkey proof row:
   stable positive process id/start/path binding that matches the per-seed
   `run-result.json` `ProcessId`, `ProcessStartTimeUtc`, and `ProcessPath`,
   process and main-window observations, no hung-window samples, no
-  `Responding=false` samples, `StaleProcessCount: 0`,
+  `Responding=false` samples, no `Responding=null` samples after
+  `MainWindowObserved=true`, `StaleProcessCount: 0`,
   `UnknownStartTimeProcessCount: 0`, and `AmbiguousCurrentProcessCount: 0` on
   every sample; `SampledAt` must be parseable, and `LogLastWriteTimeUtc` must
   be parseable and not later than `SampledAt` whenever `LogExists` is true; the
@@ -309,6 +338,7 @@ can close a game-native monkey proof row:
   resolve exactly to `run-####/runtime-probe-samples.json`, and
   `RuntimeProbeSamplesSha256` must be retained in both `run-result.json` and
   `autoslay-summary.json` and match the retained file;
+  retained `runtime-probe-samples.json` roots must be native JSON arrays;
 - the seed, AutoSlay log path, exit code, Ancient id, ordered
   start/event/Ancient-dialogue/event-option/completion markers, with
   `AutoSlayLogSha256` bound to the retained log file; the sidecar log path must
@@ -347,10 +377,15 @@ After the packet is captured, verify it with:
   -ExpectedGameVersion v0.107.1 `
   -ExpectedRitsuLibVersion 0.4.34 `
   -ExpectedRitsuCompatBranch 0.107.1 `
-  -ExpectedPatchCount 144 `
+  -ExpectedPatchCount <fresh-current-runtime-ModPatcher-applied-count> `
   -OutFile "<evidence>\autoslay-packet-check.json" `
   -FailOnMismatch
 ```
+
+Do not reuse historical patch-count targets such as `144` or `152` for a new
+beta.135 proof. Set `-ExpectedPatchCount` from the fresh retained packet and
+current-iteration `ModPatcher` applied-count lines for the exact package,
+game, RitsuLib, and runtime mode under test.
 
 Pass multiple expected Ancient ids as a comma-separated `-ExpectedAncientIds`
 value; the verifier splits those tokens so process-launched test wrappers can
@@ -438,14 +473,39 @@ anything:
 
 For failed direct smoke evidence roots, the analyzer recognizes
 `direct-smoke-summary.json` as a `DirectSmoke` target even when the packet is
-incomplete. A failed or dirty DirectSmoke summary without retained
+incomplete or when the same evidence root also contains `autoslay-summary.json`.
+If that summary file exists but is malformed JSON, the analyzer still reports the
+DirectSmoke target with a `RuntimeHarness` blocker instead of falling back to
+stale AutoSlay or runtime-monkey evidence.
+A failed or dirty DirectSmoke summary without retained
 `godot.log.current-iteration` or `godot-log-audit.json` fails closed as
 `RuntimeHarness` evidence before owner routing. When those artifacts are
-present, it binds the audit back to the current slice and routes previous package
+present, it binds the audit back to the current slice, requires schema v2,
+requires retained-versus-recomputed `SignatureSetSha256` and named signature
+count vectors to match, and routes previous package
 dirty-audit signatures such as
 `dependency patch failure` and `[ERROR] [previous package]` to `PackageRuntimeDrift`, not to
 StS1 event source. Nonzero DirectSmoke mode or packet verifier mismatch counts
-are reported as `direct_smoke_verifier_mismatch` under `PackageRuntimeDrift`.
+are not trusted from `direct-smoke-summary.json` alone. The summary must retain
+`ModeVerifierReportPath` / `ModeVerifierReportSha256` and
+`PacketVerifierReportPath` / `PacketVerifierReportSha256` for every verifier
+family whose count fields are retained, including zero-count packet verifier
+rows. A verifier family that did not run should omit its fields entirely instead
+of recording summary-only zeros. Mode reports are
+named `sts1-off-runtime-log-check.json` or `enabled-mode-log-check.json` and
+packet reports named `runtime-evidence-packet-check.json`. The report paths must
+stay under the DirectSmoke evidence root, hashes must match retained files,
+`Checks` and `Mismatches` must be native JSON arrays, `Checks[].Passed` must be
+native booleans, summary check/mismatch counters must match report array counts,
+mode reports must bind `LogPath`, `LogLength`, and `LogSha256` to
+`godot.log.current-iteration`, and packet reports must bind `EvidenceDir` to the
+DirectSmoke evidence root. Any missing, stale, malformed, or count-mismatched
+verifier report adds `direct_smoke_verifier_report_binding_invalid` under
+`RuntimeHarness`. Only after that report binding is clean, retained
+`godot.log.current-iteration` and `godot-log-audit.json` are present, the
+artifact path chain is trusted, and the retained audit matches a fresh audit
+recomputation can `direct_smoke_verifier_mismatch` route to
+`PackageRuntimeDrift`; otherwise it stays under `RuntimeHarness`.
 The JSON report's `dependency patch failures` array records
 patch-level details such as `AdjustCustomMessageKeys::Fuckery()` undefined
 target-method failures, `NRelicCollectionCategory::LoadRelics` instruction
@@ -461,24 +521,90 @@ per-seed `run-result.json`, `runtime-probe-samples.json`, and sidecar log. It
 requires `autoslay-summary.json` `Runs[].RunResultPath` to resolve under the
 evidence root, and requires `autoslay-summary.json` `Runs[].RunResultSha256` to match the retained per-seed `run-result.json`. The AutoSlay summary target and
 per-seed `run-result.json` must also agree on `RunnerKind: GameNativeAutoSlay`
-before run-result fields can drive owner routing. It also requires retained summary row `Passed`, `FailureReasonCodes`, and
+before run-result fields can drive owner routing. The same retained summary row
+must agree with the hash-bound `run-result.json` on `Seed`, `EventKind`, and
+`AncientId`; identity drift reports `autoslay_summary_run_identity_mismatch` and
+clears run/log trust before owner routing. It also requires retained summary row `Passed`, `FailureReasonCodes`, and
 `HangSignals` to match the retained `run-result.json` before owner routing, and
-requires retained signal fields to be native JSON arrays rather than scalar
-strings.
+requires retained signal fields to be present as native JSON arrays rather than
+missing, null, or scalar strings. AutoSlay malformed or missing signal arrays
+report `autoslay_signal_array_malformed`; runtime-monkey scalar, missing, or
+null `FailureReasonCodes` / `HangSignals` fields report
+`runtime_monkey_signal_array_shape_invalid`. Both cases clear run, probe, and
+log trust before retained signals can route ownership.
+Trust-bearing boolean fields must also be present as native JSON booleans.
+Runtime-monkey `Passed`, `CommandAckRequired`, and `CommandAckObserved` drift
+reports `runtime_monkey_result_boolean_malformed`,
+`runtime_monkey_summary_boolean_malformed`, or
+`runtime_monkey_summary_result_boolean_malformed`; this applies even when a
+standalone `iteration-result.json` is analyzed without a matching
+`monkey-summary.json` row. AutoSlay missing or non-boolean `Passed`, including
+direct `run-result.json` analysis without a matching `autoslay-summary.json`
+row, reports `autoslay_summary_boolean_malformed` or
+`autoslay_passed_boolean_malformed`. These malformed booleans are harness
+evidence defects, not null-to-false or string-to-true defaults.
+Runtime probe sample root-shape drift reports
+`runtime_monkey_probe_samples_shape_invalid` or
+`autoslay_runtime_probe_samples_shape_invalid`, and probe boolean shape drift
+reports `runtime_monkey_probe_boolean_malformed` or
+`autoslay_runtime_probe_boolean_malformed`. For `Responding`, null is valid
+only before the main window is observed; null after `MainWindowObserved=true`
+or any non-boolean non-null value is malformed probe evidence.
+Runtime-monkey `PostCommandRuntime` probe samples with `HungWindow=true` or
+`Responding=false` report `runtime_monkey_probe_hung_window` or
+`runtime_monkey_probe_not_responding`; startup samples keep their existing
+transient window allowance, but raw startup and runtime consecutive
+unresponsive counts must still match the retained observation and
+iteration-result fields or the analyzer reports
+`runtime_monkey_probe_startup_unresponsive_mismatch`,
+`runtime_monkey_probe_runtime_unresponsive_mismatch`,
+`runtime_monkey_probe_max_unresponsive_mismatch`,
+`runtime_monkey_probe_startup_threshold_mismatch`, or
+`runtime_monkey_probe_runtime_threshold_mismatch`. GameNativeAutoSlay raw probe
+samples with the same defects report `autoslay_runtime_probe_hung_window` or
+`autoslay_runtime_probe_not_responding`. These signals clear run/probe/log trust
+before owner routing, matching the packet verifier's raw sample checks.
 It also rejects top-level AutoSlay analyzer summary-plan batch metadata drift:
 `autoslay-summary.json` `RunnerKind`, `Sts1EventMode`, package/game/Ritsu
 targets, `ExpectedPatchCount`, and normalized `ExpectedAncientIds` must match
 `autoslay-plan.json` before per-seed run/log artifacts can route source
-ownership; missing or blank target fields are invalid even when both files omit
-the same value, and non-positive `ExpectedPatchCount` or empty
+ownership. `ExpectedAncientIds` must also be retained as a native JSON array in
+both files; scalar strings report
+`autoslay_expected_ancient_ids_array_malformed` even when their normalized token
+values match; missing or blank target fields are invalid even when both files
+omit the same value, and non-positive `ExpectedPatchCount` or empty
 `ExpectedAncientIds` targets are invalid retained evidence.
 It refuses to route source ownership from `godot.log.current-iteration` unless
 `godot.log.before` and `godot.log.after-launch` prove the current slice by exact
 bytes and the run-result before/after/current Godot log byte-length/SHA256
 metadata matches the retained files. Malformed numeric, boolean, or array-shape evidence
-fields are treated as failed harness evidence checks with sentinel values rather
-than analyzer crashes, string-to-true coercions, null-to-false passes, or
-gameplay-owner signals. It rejects GameNativeAutoSlay
+fields are treated as failed harness evidence checks with sentinel values or
+ explicit `RuntimeHarness` signals, not analyzer crashes, string-to-true
+coercions, integer-valued decimal-to-integer coercions, null-to-false passes,
+or gameplay-owner signals. The runtime monkey and GameNativeAutoSlay packet
+verifiers check native JSON boolean shape for pass, acknowledgement,
+source-workspace policy, observation, probe, audit, and StS1 verifier
+`Checks[].Passed` flags before applying semantic true/false checks, so string
+values such as `"false"` cannot satisfy no-acknowledgement or no-hang fields by defaulting to `false`.
+Malformed retained audit schema reports `godot_log_audit_schema_malformed`
+and clears audit/log owner trust; retained audit fixed-name-set drift reports
+`godot_log_audit_signature_names_drift`, and retained audit rule-set hash or
+signature vector drift reports `godot_log_audit_recomputed_mismatch`. These are
+harness evidence, not gameplay source evidence.
+`Responding` is checked by a dedicated runtime-probe rule that permits null
+only before `MainWindowObserved=true`, rejects post-command `false` as
+not-responding evidence, and binds startup `false` samples through the raw
+consecutive-unresponsive recomputation. In particular,
+string-valued or decimal-valued
+AutoSlay probe integer telemetry reports
+`autoslay_runtime_probe_numeric_malformed` and clears run/probe/log trust.
+Retained JSON property names are compared with ordinal case sensitivity:
+`ExpectedPatchCount` and `expectedpatchcount` are different fields, and
+case-drifted evidence is rejected rather than normalized.
+Malformed AutoSlay summary or plan integer metadata reports
+`autoslay_summary_numeric_malformed` or
+`autoslay_summary_plan_numeric_malformed` and clears batch-root artifact trust
+before owner routing. It rejects GameNativeAutoSlay
 `RunResultPath` escapes, root/shared `run-result.json` paths that do not resolve
 exactly to `run-####/run-result.json`, and root/shared GameNativeAutoSlay Godot logs, runtime
 probe samples, audit JSON, and StS1 reports with
@@ -569,9 +695,14 @@ After a launched run, verify the retained packet without launching anything:
   -ExpectedGameVersion 0.107.1 `
   -ExpectedRitsuLibVersion 0.4.34 `
   -ExpectedRitsuCompatBranch 0.107.1 `
-  -ExpectedPatchCount 144 `
+  -ExpectedPatchCount <fresh-current-runtime-ModPatcher-applied-count> `
   -FailOnMismatch
 ```
+
+Do not reuse historical runtime patch-count targets such as `144` or `152` for
+beta.135 packet proof. The patch-count switch is a fresh current-runtime target
+derived from the retained packet and current-iteration `ModPatcher`
+applied-count log lines, not from older package smoke evidence.
 
 In `-FailOnMismatch` proof mode, the current package/game/Ritsu/patch target
 switches are required even though non-proof diagnostics may fall back to retained
@@ -587,6 +718,11 @@ current-source proof. That mode fails if the retained source-workspace report
 does not have `RecoveredSource.MatchesInstalledGame`,
 `RecoveredSource.OriginMatchesInstalledGamePck`, and
 `EvidenceUsePolicy.AuthorizedSourceOriginVerified` all true.
+This is a retained-report gate: it binds and checks the retained
+`check-local-godot-source-workspace.ps1 -OutFile` JSON, but it does not launch
+Godot or rerun the source-workspace checker during packet verification. Re-run
+the source-workspace checker separately before creating a fresh current-source
+packet.
 
 If the packet fails, triage it without launching anything:
 
@@ -595,6 +731,12 @@ If the packet fails, triage it without launching anything:
   -EvidenceDir .tools\runtime-evidence\<monkey-stability-dir> `
   -OutFile .tools\runtime-evidence\<monkey-stability-dir>\runtime-failure-analysis.json
 ```
+
+Packet checker and analyzer `-OutFile` paths may live under the evidence root,
+but they must not reuse canonical evidence names such as `monkey-summary.json`,
+`monkey-plan.json`, `iteration-result.json`, retained logs, audit files,
+runtime-probe samples, or live-session state files. Those scripts fail closed
+instead of writing over packet inputs.
 
 Use the analyzer's top-level `TriageDisposition` before changing gameplay
 source. `HarnessEvidenceInvalid` means the retained packet is not trustworthy
@@ -661,16 +803,25 @@ probe sample paths, probe sample SHA256 binding, and sliced-log paths that
 point to the retained standard files inside the current iteration folder,
 and no `../` or absolute-path escape from `iteration-result.json` log/probe
 path fields. The packet checker rejects `iteration-result.json` log/probe paths that resolve outside the current `iteration-####` directory.
+It also rejects `EvidenceDir`, `iteration-####` directories, and canonical
+artifact paths whose existing path chain crosses a symlink, junction, or other
+reparse point; a junctioned iteration directory cannot satisfy retained-file
+path/hash/audit trust by pointing at older or external evidence.
 `godot.log.before` path/length/SHA256 binding, `godot.log.after-launch`
 path/length/SHA256 binding, `LogScanOffsetBytes` equal to the retained
-before-log byte length, `godot.log.before` as a byte prefix of
-`godot.log.after-launch`, a `godot.log.current-iteration` byte slice that
-matches `godot.log.after-launch` after that before-log prefix, command
+before-log byte length for append logs, zero-byte before plus offset `0` for
+true reset logs, `godot.log.before` as a byte prefix of
+`godot.log.after-launch` whenever it is non-empty, a
+`godot.log.current-iteration` byte slice that matches `godot.log.after-launch`
+after that bound offset, command
 acknowledgement patterns that match known built-in command regexes and that
 retained slice when required, a `godot-log-audit.json` whose scanned `Path`,
-`Length`, and `Sha256` bind to the retained current-iteration slice and whose
-signature counts match a packet-checker recomputation from that slice, no raw probe sample with
-`Responding=false`, and no probe sample or observation with
+`Length`, and `Sha256` bind to the retained current-iteration slice, whose
+`AuditSchemaVersion`, `SignatureSetSha256`, and complete named signature-count
+vector match a packet-checker recomputation from that slice, no post-command raw
+probe sample with `Responding=false`, raw startup/runtime probe recomputation of
+`MaxConsecutiveUnresponsiveSamples` bound to the retained observation and
+iteration-result fields, and no probe sample or observation with
 `StaleProcessCount > 0`. It also requires the per-iteration
   `session-state.json` and `restore-state.json` files, validates that both
   states belong to the same iteration directory, validates result-file SHA256
@@ -682,7 +833,13 @@ signature counts match a packet-checker recomputation from that slice, no raw pr
 A clean packet means those signals stayed healthy for both sampled windows;
 the retained `runtime-probe-samples.json` must include `StartupMainMenu` and
 `PostCommandRuntime` samples, and those phase counts must match
-`MainMenuObservation.Samples` and `RuntimeObservation.Samples`. For
+`MainMenuObservation.Samples` and `RuntimeObservation.Samples`. The packet
+checker recomputes each phase's maximum consecutive `HungWindow=true` or native
+`Responding=false` sample streak from the raw file, then requires those derived
+values to match `MainMenuObservation.MaxConsecutiveUnresponsiveSamples`,
+`RuntimeObservation.MaxConsecutiveUnresponsiveSamples`, and top-level
+`iteration-result.json` `MaxConsecutiveUnresponsiveSamples`; startup raw
+unresponsive samples cannot be hidden by clean observation fields. For
 command-bearing iterations, the `PostCommandRuntime` samples' `LogLengthBytes`
 must also prove the `RuntimeObservation.LogGrew` claim by exceeding
 `RuntimeObservation.LogInitialLengthBytes` while staying within the retained
@@ -763,6 +920,9 @@ Current packet schema is `HangProbeSchemaVersion = 1`.
   Top-level `monkey-summary.json` batch metadata for `Scenario`,
   `CommandSelectionMode`, `Sts1EventMode`, expected package/game/Ritsu targets,
   and `ExpectedPatchCount` must match the retained `monkey-plan.json`.
+  If a retained `monkey-summary.json` exists but cannot be parsed, the analyzer
+  records a runtime-harness summary defect instead of silently treating the
+  packet as summary-less evidence.
   `CommandCorpus`, `PlannedCommands`, `Results[]`, `FailedIterationIds`,
   `FailureReasonCodes`, `HangSignals`, `LiveSessionPreLaunchSlayProcessIds`,
   `PreLaunchSlayProcessIds`, and retained `runtime-probe-samples.json` must be
@@ -829,6 +989,13 @@ as a `RuntimeHarness` blocker before owner routing.
 Runtime monkey batch analysis with `monkey-summary.json` requires a parseable
 `monkey-plan.json` with `PlannedCommands`; a missing or malformed batch plan
 is a `RuntimeHarness` blocker before owner routing.
+If `monkey-summary.json` claims requested iterations or retains `Results[]` but
+no `iteration-*` directory or analysis target can be discovered, the analyzer
+emits `runtime_monkey_no_iteration_targets` and keeps the disposition at
+`HarnessEvidenceInvalid`.
+If `FailedIterationIds` or `Results[]` omit an actual retained `iteration-*`
+directory, the analyzer still inspects that directory and treats the summary as
+untrusted `RuntimeHarness` evidence before owner routing.
 For runtime monkey packets, it treats missing `RuntimeProbeSamplesPath`,
 missing or hash-mismatched `RuntimeProbeSamplesSha256`,
 missing/invalid `runtime-probe-samples.json`, invalid probe timestamps, missing
@@ -836,7 +1003,11 @@ phase coverage, and phase-count or runtime log-growth timeline drift as `Runtime
 before source ownership routing. Those probe defects
 clear runtime-monkey run/probe/log trust, so retained `command_ack_missing` or
 unclassified `iteration-result.json` failure codes stay under `RuntimeHarness`
-until the packet evidence is valid. It also rejects probe `LogLengthBytes`
+until the packet evidence is valid. String-valued or decimal-valued probe
+integer telemetry reports `runtime_monkey_probe_numeric_malformed` before owner
+routing. Malformed top-level `monkey-summary.json` counters or summary/plan
+patch-count metadata report `runtime_monkey_summary_numeric_malformed` or
+`runtime_monkey_summary_plan_numeric_malformed` before owner routing. It also rejects probe `LogLengthBytes`
 values that exceed recorded or retained `godot.log.after-launch` bytes, and
 `iteration-result.json` log or probe paths that resolve outside the current
 `iteration-####` directory or to shadow/nonstandard files under that directory,
@@ -844,6 +1015,14 @@ and it does not use those escaped or noncanonical files for log-derived,
 audit-derived, or probe-derived owner routing. Retained probe samples must also
 bind to the `iteration-result.json` game process id, start time, and path, and
 to the live-session-selected process identity when those fields are present.
+If the evidence root, iteration/run directory, or canonical artifact path chain
+crosses a symlink, junction, or other reparse point, the analyzer emits
+`runtime_evidence_reparse_point_path`, clears log/audit/probe trust, and keeps
+the blocker under `RuntimeHarness`. This also applies to top-level metadata
+inputs the analyzer reads for target selection and owner-routing gates,
+including `monkey-plan.json`, `monkey-summary.json`, `autoslay-plan.json`,
+`autoslay-summary.json`, and `direct-smoke-summary.json`, plus direct
+`-LogPath` and `-AuditPath` inputs copied into temporary analyzer evidence.
 Stale-process, unknown-start-time, ambiguous-current-process, non-single-current-process,
 or process-identity defects make the runtime monkey log text untrusted for
 owner routing.
@@ -857,21 +1036,35 @@ requires `LogScanOffsetBytes` to equal the before-log byte length, requires
 It also requires `iteration-result.json` before/after/current log length and
 SHA256 metadata to match the retained files. Any slice or metadata mismatch is
 a `RuntimeHarness` blocker and the log is not trusted for owner routing. If
-`iteration-result.json` is missing or invalid, `monkey-summary.json` may still
+GameNativeAutoSlay log metadata drifts, the per-seed run artifact is also not
+trusted for owner routing. If `iteration-result.json` is missing or invalid,
+`monkey-summary.json` may still
 provide a fallback row for routing, but the analyzer reports a `RuntimeHarness`
 blocker because summary data does not replace the canonical per-iteration
 artifact. Empty retained JSON arrays such as `Mismatches`, `FailureReasonCodes`,
 `HangSignals`, and `SignatureHits` are treated as empty signal sets before owner
 routing. If `Passed=false` has no retained failure code, hang signal, audit hit,
 or other blocking harness finding, the analyzer emits
-`iteration_failed_without_failure_signal`. Invalid or empty
-`godot-log-audit.json` files are `RuntimeHarness` blockers because audit
-evidence cannot be trusted. Valid audit JSON is still not owner-routing
-evidence until its scanned `Path`, `Length`, and `Sha256` bind to
-`godot.log.current-iteration` and a fresh analyzer-side
+`iteration_failed_without_failure_signal`. Missing, invalid, or empty
+canonical `godot-log-audit.json` files are `RuntimeHarness` blockers because
+audit evidence cannot be trusted; RuntimeMonkey records
+`runtime_monkey_godot_log_audit_missing` and closes log-owner trust when the
+canonical audit is absent. Valid audit JSON is still not owner-routing evidence
+until its schema is native JSON, its scanned `Path`, `Length`, and `Sha256` bind
+to `godot.log.current-iteration`, and a fresh analyzer-side
 `audit-godot-log.ps1` recomputation agrees with the retained signature counts.
-Stale or hand-assembled audit JSON is reported as a `RuntimeHarness` blocker,
-and its signature hits are ignored for feature ownership.
+Audit `godot-log-audit.json` must keep a native JSON array root, each
+`SignatureHits` field must stay a native JSON array, audit `Clean` must be a
+native JSON boolean, and audit `Length` plus every `SignatureHits[].Count`
+must be present as native JSON integers; malformed audit array/bool/int schema records
+`godot_log_audit_array_malformed`, `godot_log_audit_boolean_malformed`, or
+`godot_log_audit_numeric_malformed`, closes log-owner trust, and is treated as
+retained-evidence failure rather than gameplay behavior. For RuntimeMonkey,
+malformed audit schema also disables retained failure-signal owner routing until
+the audit is regenerated, so `process_unresponsive` cannot be assigned to a
+feature from stale log-owner text. Stale or hand-assembled audit JSON is
+reported as a `RuntimeHarness` blocker, and its signature hits are ignored for
+feature ownership.
 During GameNativeAutoSlay analysis, if run, probe, sidecar, audit, or StS1
 artifact trust is revoked after initial slice binding, the analyzer clears
 `LogTextTrustedForOwner` and `OwnerAreaFromLog` before retained failure signals
@@ -880,11 +1073,20 @@ For GameNativeAutoSlay summaries, retained `Runs` must be a non-empty native
 JSON array. If the array shape is malformed, the analyzer still inspects
 retained `run-*` directories when present, but records an
 `autoslay_summary_shape_invalid` `RuntimeHarness` blocker and does not trust
-AutoSlay run or probe artifacts for owner routing.
+AutoSlay run, probe, sidecar, audit, StS1, or log-derived owner-routing
+evidence from that batch root.
+If a valid-looking `Runs[]` list omits an actual retained `run-*` directory,
+the analyzer adds that directory as an analysis target and records the same
+invalid-summary trust failure instead of letting stale summary rows narrow the
+batch.
+If `autoslay-summary.json` exists but cannot be parsed, or if its `RunnerKind`
+is missing or not exactly `GameNativeAutoSlay`, the analyzer keeps the packet on
+the AutoSlay invalid-evidence path and scans retained `run-*` directories
+instead of falling back to runtime-monkey iteration discovery.
 It also recomputes summary `Passed`, `TotalRuns`, `FailedRuns`, and
 `AncientIdCounts` from retained `Runs[]`; stale or hand-edited aggregate values
-record `autoslay_summary_counter_mismatch` before any AutoSlay owner routing is
-trusted.
+record `autoslay_summary_counter_mismatch` and clear the same batch-root
+artifact trust before any AutoSlay owner routing is trusted.
 The analyzer also requires the AutoSlay launcher/mod-hook provenance from
 `autoslay-plan.json` and each `run-result.json` to bind to the same retained
 launcher proof artifact. `LauncherKind`, `LauncherPath`, `LauncherSha256`,

@@ -7,6 +7,8 @@ namespace EZMicroBalance.Tests;
 
 public sealed partial class ReleaseEvidenceGateTests
 {
+    private const string OwnerLiveReleaseLogOrigin = "owner-live-release-log";
+
     private static RequiredEvidence[] RequiredReleaseEvidence()
     {
         return
@@ -304,6 +306,28 @@ public sealed partial class ReleaseEvidenceGateTests
         Assert.DoesNotContain("Copy this file to", templateChecklist, StringComparison.Ordinal);
     }
 
+    private static string CleanGodotLogAuditJson(string logPath)
+    {
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var auditResult = RunPowerShell(auditScript, "-Path", logPath);
+        Assert.True(auditResult.ExitCode == 0, $"audit-godot-log.ps1 failed:{Environment.NewLine}{auditResult.Output}");
+        return auditResult.Output;
+    }
+
+    private static void WriteOwnerLiveLogOrigin(JsonObject rowNode, string logFiles = "godot.log")
+    {
+        var evidenceDir = rowNode["EvidenceDir"]!.GetValue<string>();
+        File.WriteAllText(
+            Path.Combine(evidenceDir, "log-origin-note.md"),
+            string.Join(
+                Environment.NewLine,
+                $"LogOriginProofStatus: {OwnerLiveReleaseLogOrigin}",
+                "Source: synthetic owner/live release row for verifier contract.",
+                $"Log files: {logFiles}",
+                string.Empty));
+        rowNode["LogOriginProofStatus"] = OwnerLiveReleaseLogOrigin;
+    }
+
     private static void PrepareChecklistPassAttempt(
         JsonObject rowNode,
         string templateFile,
@@ -313,12 +337,13 @@ public sealed partial class ReleaseEvidenceGateTests
         string resultNote)
     {
         var evidenceDir = rowNode["EvidenceDir"]!.GetValue<string>();
+        var godotLogPath = Path.Combine(evidenceDir, "godot.log");
         File.WriteAllText(
-            Path.Combine(evidenceDir, "godot.log"),
+            godotLogPath,
             $"Synthetic live log for {checklistFile} verifier contract.");
         File.WriteAllText(
             Path.Combine(evidenceDir, "godot-log-audit.json"),
-            """{ "Clean": true }""");
+            CleanGodotLogAuditJson(godotLogPath));
         File.WriteAllText(Path.Combine(evidenceDir, requiredNoteFile), noteText);
         File.Copy(
             Path.Combine(evidenceDir, templateFile),
@@ -329,6 +354,7 @@ public sealed partial class ReleaseEvidenceGateTests
         rowNode["ResultNote"] = resultNote;
         rowNode["ExplicitOwnerDecision"] = false;
         rowNode["ReleaseNote"] = "";
+        WriteOwnerLiveLogOrigin(rowNode);
     }
 
     private static void WriteTinyPng(string path, int width, int height)

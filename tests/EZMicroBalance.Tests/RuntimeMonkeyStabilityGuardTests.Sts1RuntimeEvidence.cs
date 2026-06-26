@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Xunit;
 
 namespace EZMicroBalance.Tests;
@@ -838,24 +840,624 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
 
             var dirtyLog = cleanLog + Environment.NewLine + "[ERROR] TypeLoadException" + Environment.NewLine;
             File.WriteAllText(logPath, dirtyLog);
-            var dirtyLogLength = new FileInfo(logPath).Length;
-            var dirtyLogHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(logPath))).ToLowerInvariant();
-            File.WriteAllText(
-                auditPath,
-                $$"""
-                {
-                  "Path": {{JsonSerializer.Serialize(logPath)}},
-                  "Length": {{dirtyLogLength}},
-                  "Sha256": {{JsonSerializer.Serialize(dirtyLogHash)}},
-                  "Clean": true,
-                  "SignatureHits": []
-                }
-                """);
+            var dirtyAudit = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(dirtyAudit.ExitCode == 0, $"Audit failed:{Environment.NewLine}{dirtyAudit.Output}{dirtyAudit.Error}");
+            var dirtyAuditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var dirtyAuditJson = GetSingleJsonObject(dirtyAuditRoot);
+            dirtyAuditJson["Clean"] = true;
+            foreach (var hitNode in dirtyAuditJson["SignatureHits"]!.AsArray())
+            {
+                hitNode!.AsObject()["Count"] = 0;
+            }
+
+            File.WriteAllText(auditPath, dirtyAuditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var dirtyResult = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
             Assert.True(dirtyResult.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{dirtyResult.Output}{dirtyResult.Error}");
             Assert.Contains("audit_recomputed_clean status=fail", dirtyResult.Output, StringComparison.Ordinal);
             Assert.Contains("audit_signature_counts_match_recomputed status=fail", dirtyResult.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsOutFileOverLogPath()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+            var originalLogHash = Sha256File(logPath);
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", logPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over input StS1 runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalLogHash, Sha256File(logPath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsOutFileOverAuditPath()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+            var originalAuditHash = Sha256File(auditPath);
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", auditPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over input StS1 runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalAuditHash, Sha256File(auditPath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsOutFileOverCanonicalEvidenceNameInInputDirectory()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            var canonicalBeforePath = Path.Combine(workdir, "godot.log.before");
+            File.WriteAllText(canonicalBeforePath, "pre-launch sentinel");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+            var originalBeforeHash = Sha256File(canonicalBeforePath);
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", canonicalBeforePath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical StS1 runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalBeforeHash, Sha256File(canonicalBeforePath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierPrintExpectedAllowsReportOutFileNameWithoutLogPath()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var outFile = Path.Combine(workdir, "enabled-mode-log-check.json");
+            var result = RunPowerShell(verifier, "-Mode", "AdditiveBatch1", "-PrintExpected", "-OutFile", outFile);
+
+            Assert.True(result.ExitCode == 0, $"Verifier failed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("runtime_log_status=not-validated-print-expected-only", result.Output, StringComparison.Ordinal);
+            Assert.True(File.Exists(outFile), $"Verifier did not retain PrintExpected report:{Environment.NewLine}{result.Output}{result.Error}");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierAllowsNormalReportOutFileName()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            var outFile = Path.Combine(workdir, "sts1-mode-log-check.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", outFile);
+
+            Assert.True(result.ExitCode == 0, $"Verifier failed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("mismatches=0", result.Output, StringComparison.Ordinal);
+            Assert.True(File.Exists(outFile), $"Verifier did not retain normal branch report:{Environment.NewLine}{result.Output}{result.Error}");
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsOutFileHardlinkToLogPath()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            var outFileHardlinkPath = Path.Combine(workdir, "report-hardlink.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+            if (!TryCreateFileHardLink(outFileHardlinkPath, logPath))
+            {
+                return;
+            }
+
+            var originalLogHash = Sha256File(logPath);
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", outFileHardlinkPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over input StS1 runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalLogHash, Sha256File(logPath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsOutFileHardlinkToCanonicalSiblingEvidence()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            var canonicalBeforePath = Path.Combine(workdir, "godot.log.before");
+            var outFileHardlinkPath = Path.Combine(workdir, "report-hardlink.json");
+            File.WriteAllText(canonicalBeforePath, "pre-launch sentinel");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+            if (!TryCreateFileHardLink(outFileHardlinkPath, canonicalBeforePath))
+            {
+                return;
+            }
+
+            var originalBeforeHash = Sha256File(canonicalBeforePath);
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", outFileHardlinkPath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical StS1 runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalBeforeHash, Sha256File(canonicalBeforePath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsOutFileCanonicalEvidenceThroughJunctionAlias()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return;
+        }
+
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        var aliasRoot = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-alias-" + Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.current-iteration");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            var canonicalBeforePath = Path.Combine(workdir, "godot.log.before");
+            File.WriteAllText(canonicalBeforePath, "pre-launch sentinel");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            var auditResult = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(auditResult.ExitCode == 0, $"Audit failed:{Environment.NewLine}{auditResult.Output}{auditResult.Error}");
+            if (!TryCreateDirectoryJunction(aliasRoot, workdir))
+            {
+                return;
+            }
+
+            var originalBeforeHash = Sha256File(canonicalBeforePath);
+            var aliasBeforePath = Path.Combine(aliasRoot, "godot.log.before");
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath, "-OutFile", aliasBeforePath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over canonical StS1 runtime evidence", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalBeforeHash, Sha256File(canonicalBeforePath));
+        }
+        finally
+        {
+            DeleteDirectoryReparsePoint(aliasRoot);
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierPrintExpectedRejectsOutFileOverRegistrationServiceInput()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var registrationServicePath = Path.Combine(workdir, "Sts1EventRegistrationService.cs");
+            File.WriteAllText(
+                registrationServicePath,
+                """
+                public static class Sts1EventRegistrationService
+                {
+                }
+                """);
+            var originalHash = Sha256File(registrationServicePath);
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-PrintExpected", "-RegistrationServicePath", registrationServicePath, "-OutFile", registrationServicePath);
+
+            Assert.NotEqual(0, result.ExitCode);
+            Assert.Contains("Refusing to write OutFile over verifier input file", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.Equal(originalHash, Sha256File(registrationServicePath));
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierRejectsMissingAuditSchemaVersion()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+
+            var cleanAudit = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(cleanAudit.ExitCode == 0, $"Audit failed:{Environment.NewLine}{cleanAudit.Output}{cleanAudit.Error}");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson.Remove("AuditSchemaVersion");
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("audit_schema_fields_current status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_has_single_schema_version status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierReportsOutOfRangeAuditSchemaVersionAsFailedRows()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+
+            var cleanAudit = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(cleanAudit.ExitCode == 0, $"Audit failed:{Environment.NewLine}{cleanAudit.Output}{cleanAudit.Error}");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["AuditSchemaVersion"] = 2147483648L;
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("audit_schema_fields_current status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_has_single_schema_version status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("OverflowException", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierReportsOutOfRangeAuditSignatureCountAsFailedRows()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+
+            var cleanAudit = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(cleanAudit.ExitCode == 0, $"Audit failed:{Environment.NewLine}{cleanAudit.Output}{cleanAudit.Error}");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            var signatureHits = auditJson["SignatureHits"]!.AsArray();
+            signatureHits.Add(new JsonObject
+            {
+                ["Name"] = "synthetic_overflow_probe",
+                ["Count"] = 2147483648L
+            });
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("OverflowException", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierReportsNonArrayAuditRootAsFailedRows()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            File.WriteAllText(auditPath, "{}");
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("audit_array_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_schema_fields_current status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierReportsScalarAuditRootAsFailedRows()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            File.WriteAllText(auditPath, "\"not an audit array\"");
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("audit_array_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_schema_fields_current status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (Directory.Exists(workdir))
+            {
+                Directory.Delete(workdir, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void Sts1EnabledModeLogVerifierReportsInvalidAuditJsonAsFailedRows()
+    {
+        var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(workdir);
+
+        try
+        {
+            var logPath = Path.Combine(workdir, "godot.log.after-launch");
+            var auditPath = Path.Combine(workdir, "godot-log-audit.json");
+            File.WriteAllText(
+                logPath,
+                """
+                StS1 events default Off; set SPIREPLUS_STS1_EVENT_MODE to enable.
+                Feature Sts1Events bootstrap=disabled, live=Disabled
+                """);
+            File.WriteAllText(auditPath, "{ bad json");
+
+            var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
+
+            Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
+            Assert.Contains("audit_array_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_numeric_fields_native status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_schema_fields_current status=fail", result.Output, StringComparison.Ordinal);
+            Assert.Contains("audit_clean status=fail", result.Output, StringComparison.Ordinal);
+            Assert.DoesNotContain("ConvertFrom-Json", result.Output + result.Error, StringComparison.Ordinal);
+            Assert.DoesNotContain("mismatches=0", result.Output, StringComparison.Ordinal);
         }
         finally
         {
@@ -873,7 +1475,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
         AssertSourceContains(
             File.ReadAllText(verifier),
             "Read-RegistrationServiceText",
-            "Sts1EventRegistrationService*.cs");
+            "Sts1EventRegistrationService*.cs",
+            "Assert-OutFileDoesNotOverwriteExplicitEvidence",
+            "Assert-OutFileDoesNotOverwriteCanonicalEvidence",
+            "Refusing to write OutFile over input StS1 runtime evidence",
+            "Refusing to write OutFile over canonical StS1 runtime evidence",
+            "Refusing to write OutFile over verifier input file");
 
         var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workdir);
@@ -945,6 +1552,7 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
     public void Sts1EnabledModeLogVerifierReportsMalformedRetainedAuditPathAsFailedRows()
     {
         var verifier = AssertRepoFileExists("scripts", "check-sts1-enabled-mode-runtime-log.ps1");
+        var auditScript = AssertRepoFileExists("scripts", "audit-godot-log.ps1");
         var workdir = Path.Combine(Path.GetTempPath(), "sts1-enabled-mode-log-verifier-tests", Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workdir);
 
@@ -958,19 +1566,12 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 """;
             File.WriteAllText(logPath, cleanLog);
 
-            var logLength = new FileInfo(logPath).Length;
-            var logHash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(logPath))).ToLowerInvariant();
-            File.WriteAllText(
-                auditPath,
-                $$"""
-                {
-                  "Path": "\u0000bad-audit-path",
-                  "Length": {{logLength}},
-                  "Sha256": {{JsonSerializer.Serialize(logHash)}},
-                  "Clean": true,
-                  "SignatureHits": []
-                }
-                """);
+            var cleanAudit = RunPowerShell(auditScript, "-Path", logPath, "-OutFile", auditPath);
+            Assert.True(cleanAudit.ExitCode == 0, $"Audit failed:{Environment.NewLine}{cleanAudit.Output}{cleanAudit.Error}");
+            var auditRoot = JsonNode.Parse(File.ReadAllText(auditPath))!;
+            var auditJson = GetSingleJsonObject(auditRoot);
+            auditJson["Path"] = "\u0000bad-audit-path";
+            File.WriteAllText(auditPath, auditRoot.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
 
             var result = RunPowerShell(verifier, "-Mode", "Off", "-LogPath", logPath, "-AuditPath", auditPath);
             Assert.True(result.ExitCode == 0, $"Verifier crashed:{Environment.NewLine}{result.Output}{result.Error}");
@@ -985,5 +1586,38 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
                 Directory.Delete(workdir, recursive: true);
             }
         }
+    }
+
+    private static bool TryCreateFileHardLink(string linkPath, string targetPath)
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return false;
+        }
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = "cmd.exe",
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false
+        };
+        startInfo.ArgumentList.Add("/c");
+        startInfo.ArgumentList.Add("mklink");
+        startInfo.ArgumentList.Add("/H");
+        startInfo.ArgumentList.Add(linkPath);
+        startInfo.ArgumentList.Add(targetPath);
+
+        using var process = Process.Start(startInfo);
+        Assert.NotNull(process);
+        if (!process.WaitForExit(30_000))
+        {
+            process.Kill(entireProcessTree: true);
+            return false;
+        }
+
+        return process.ExitCode == 0 &&
+            File.Exists(linkPath) &&
+            (File.GetAttributes(linkPath) & FileAttributes.ReparsePoint) == 0;
     }
 }

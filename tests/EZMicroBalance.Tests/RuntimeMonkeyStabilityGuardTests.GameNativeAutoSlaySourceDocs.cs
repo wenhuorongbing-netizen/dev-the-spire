@@ -163,11 +163,13 @@ public sealed partial class RuntimeMonkeyStabilityGuardTests
             "Target coverage compares expected, plan, summary, and traversed Ancient ids",
             "case-insensitively after normalizing them to uppercase",
             "`run-result.json` and `autoslay-summary.json` `AncientId` values must still",
-            "-ExpectedPatchCount 144");
+            "-ExpectedPatchCount <fresh-current-runtime-ModPatcher-applied-count>",
+            "Do not reuse historical patch-count targets such as `144` or `152`");
 
         Assert.DoesNotContain("Current runtime dependency: `STS2-RitsuLib v0.4.31` with `lib\\0.107.0`", docs, StringComparison.Ordinal);
         Assert.DoesNotContain("currently reports `v0.106.0`", docs, StringComparison.Ordinal);
         Assert.DoesNotContain("as warnings until `source code/`", docs, StringComparison.Ordinal);
+        Assert.DoesNotContain("-ExpectedPatchCount 144", docs, StringComparison.Ordinal);
 
         Assert.DoesNotContain("AutoSlayer", runner, StringComparison.Ordinal);
         Assert.DoesNotContain("AutoSlayLog", runner, StringComparison.Ordinal);

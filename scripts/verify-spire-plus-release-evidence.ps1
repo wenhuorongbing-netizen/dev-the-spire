@@ -7,6 +7,14 @@ param(
 
     [string]$PackagePath = "",
 
+    [string]$ExpectedGameVersion = "0.107.1",
+
+    [string]$ExpectedRitsuLibVersion = "0.4.34",
+
+    [string]$ExpectedRitsuCompatBranch = "0.107.1",
+
+    [int]$ExpectedPatchCount = 168,
+
     [int]$MinScreenshotWidth = 800,
 
     [int]$MinScreenshotHeight = 450,
@@ -26,15 +34,25 @@ Set-StrictMode -Version 3.0
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 . (Join-Path $PSScriptRoot 'spire-plus-package-evidence.ps1')
 
+$currentPackageVersion = Get-SpirePlusManifestVersion -RepoRoot $repoRoot
+$canonicalPackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
+$canonicalPackageFullPath = Resolve-SpirePlusPackagePath -RepoRoot $repoRoot -PackagePath $canonicalPackagePath
+$canonicalPackageSha256 = ''
+if (Test-Path -LiteralPath $canonicalPackageFullPath -PathType Leaf) {
+    $canonicalPackageSha256 = Get-SpirePlusPackageSha256 -RepoRoot $repoRoot -PackagePath $canonicalPackagePath
+}
+
 if ([string]::IsNullOrWhiteSpace($PackagePath)) {
-    $PackagePath = Get-SpirePlusPackageRelativePath -RepoRoot $repoRoot
+    $PackagePath = $canonicalPackagePath
 }
 
 if ([string]::IsNullOrWhiteSpace($PackageSha256)) {
-    $defaultPackageFullPath = Resolve-SpirePlusPackagePath -RepoRoot $repoRoot -PackagePath $PackagePath
-    if (Test-Path -LiteralPath $defaultPackageFullPath -PathType Leaf) {
-        $PackageSha256 = Get-SpirePlusPackageSha256 -RepoRoot $repoRoot -PackagePath $PackagePath
+    if (-not [string]::IsNullOrWhiteSpace($canonicalPackageSha256)) {
+        $PackageSha256 = $canonicalPackageSha256
     }
+}
+if (-not [string]::IsNullOrWhiteSpace($PackageSha256)) {
+    $PackageSha256 = $PackageSha256.ToUpperInvariant()
 }
 
 $requiredReleaseRows = @(
@@ -120,8 +138,42 @@ $requiredReleaseRows = @(
     }
 )
 
-$invalidEvidenceNotePattern = '(?i)\b(not counted|invalid|main menu|wrong surface|covered by|not gameplay evidence|do not satisfy|does not satisfy|loader health only)\b'
+$invalidEvidenceNotePattern = '(?i)\b(not counted|invalid|main menu|wrong surface|covered by|not gameplay evidence|do not satisfy|does not satisfy|loader health only|marker-only|origin not proven)\b'
 $invalidChecklistCellPattern = '(?i)^\s*(pending|todo|tbd|n/?a|none|not tested|untested|unknown|skip|skipped|-+)?\s*$'
+$requiredReleaseLogOriginProofStatus = 'owner-live-release-log'
+$releaseLogOriginForbiddenNotePattern = '(?i)(marker-only|baseline-log-markers|origin-not-proven|pending-owner-run|pending-owner-live-release-log|noncanonical-override-test-only|<[^>]+>|runtime[- ]baseline|godot\.log\.after-launch|runtime-baseline-log-check|preflight\.json)'
+$releaseLogOriginPlaceholderValuePattern = '(?i)(^\s*-+\s*$|\b(todo|tbd|n/?a|none|unknown|pending)\b)'
+$markerOnlyRuntimeBaselinePattern = '(?i)(marker-only|baseline-log-markers|origin-not-proven|pending-owner-run|noncanonical-override-test-only)'
+$markerOnlyRuntimeBaselineRowFields = @(
+    'EvidenceBoundary',
+    'EvidenceKind',
+    'EvidenceType',
+    'RuntimeEvidenceKind',
+    'RuntimeBaselineStatus',
+    'LogOriginProofStatus',
+    'TrustAnchorMode'
+)
+$markerOnlyRuntimeBaselineHardSentinelFiles = @(
+    'runtime-baseline-log-check.json',
+    'runtime-baseline-notes.md',
+    'godot.log.after-launch',
+    'preflight.json'
+)
+$markerOnlyRuntimeBaselineSoftSentinelFiles = @(
+    'main-menu-screenshot.png'
+)
+$markerOnlyRuntimeBaselineManifestSpecificFields = @(
+    'GodotLogAfterLaunch',
+    'GodotLogAfterLaunchRecord',
+    'RuntimeBaselineLogCheckRecord',
+    'BaselineLogCheckUpdatedAtUtc',
+    'StartupMainMenuScreenshotStatus',
+    'PendingOwnerRunArtifacts',
+    'GameRootAnchorMode',
+    'PackageAnchorMode',
+    'TrustAnchorMode'
+)
+$markerOnlyRuntimeBaselineManifestJsonPattern = '(?i)(RuntimeBaseline|GodotLogAfterLaunch|BaselineLogCheck|StartupMainMenuScreenshotStatus|PendingOwnerRunArtifacts|TrustAnchorMode|noncanonical-override-test-only|runtime-baseline-|godot\.log\.after-launch|runtime-baseline-log-check\.json|runtime-baseline-notes\.md)'
 
 $requiredBossAbilityRows = @(
     'Ceremonial Beast',
@@ -302,6 +354,229 @@ function Test-PathWithin {
         $childFull.StartsWith($baseFull + [System.IO.Path]::DirectorySeparatorChar, $comparison)
 }
 
+function Initialize-WindowsFileIdentityType {
+    if (-not [System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([System.Runtime.InteropServices.OSPlatform]::Windows)) {
+        return $false
+    }
+
+    if ('SpirePlusReleaseEvidenceFileIdentity' -as [type]) {
+        return $true
+    }
+
+    try {
+        Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+
+public static class SpirePlusReleaseEvidenceFileIdentity
+{
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ByHandleFileInformation
+    {
+        public uint FileAttributes;
+        public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
+        public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
+        public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
+        public uint VolumeSerialNumber;
+        public uint FileSizeHigh;
+        public uint FileSizeLow;
+        public uint NumberOfLinks;
+        public uint FileIndexHigh;
+        public uint FileIndexLow;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool GetFileInformationByHandle(SafeFileHandle hFile, out ByHandleFileInformation lpFileInformation);
+
+    public static string GetIdentity(string path)
+    {
+        using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+        {
+            ByHandleFileInformation information;
+            if (!GetFileInformationByHandle(stream.SafeFileHandle, out information))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            return string.Format(
+                "{0:x8}:{1:x8}:{2:x8}",
+                information.VolumeSerialNumber,
+                information.FileIndexHigh,
+                information.FileIndexLow);
+        }
+    }
+
+    public static uint GetLinkCount(string path)
+    {
+        using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
+        {
+            ByHandleFileInformation information;
+            if (!GetFileInformationByHandle(stream.SafeFileHandle, out information))
+            {
+                throw new Win32Exception(Marshal.GetLastWin32Error());
+            }
+
+            return information.NumberOfLinks;
+        }
+    }
+}
+'@ -ErrorAction Stop
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Get-ExistingPathPhysicalIdentity {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return ''
+    }
+
+    if (-not (Initialize-WindowsFileIdentityType)) {
+        return ''
+    }
+
+    try {
+        return [SpirePlusReleaseEvidenceFileIdentity]::GetIdentity([System.IO.Path]::GetFullPath($Path))
+    } catch {
+        return ''
+    }
+}
+
+function Test-SameExistingPathPhysicalIdentity {
+    param(
+        [AllowEmptyString()][string]$Left,
+        [AllowEmptyString()][string]$Right
+    )
+
+    $leftIdentity = Get-ExistingPathPhysicalIdentity -Path $Left
+    if ([string]::IsNullOrWhiteSpace($leftIdentity)) {
+        return $false
+    }
+
+    $rightIdentity = Get-ExistingPathPhysicalIdentity -Path $Right
+    return -not [string]::IsNullOrWhiteSpace($rightIdentity) -and
+        [string]::Equals($leftIdentity, $rightIdentity, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Get-ExistingPathHardlinkCount {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $null
+    }
+
+    if (-not (Initialize-WindowsFileIdentityType)) {
+        return $null
+    }
+
+    try {
+        return [int][SpirePlusReleaseEvidenceFileIdentity]::GetLinkCount([System.IO.Path]::GetFullPath($Path))
+    } catch {
+        return $null
+    }
+}
+
+function Add-NoReparsePointInPathFailures {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[string]]$Failures,
+        [string]$StopDirectory = $repoRoot
+    )
+
+    $current = [System.IO.Path]::GetFullPath($Path).TrimEnd([char[]]@('\', '/'))
+    while (-not (Test-Path -LiteralPath $current) -and -not [string]::IsNullOrWhiteSpace($current)) {
+        $parent = Split-Path -Parent $current
+        if ([string]::IsNullOrWhiteSpace($parent) -or [System.StringComparer]::OrdinalIgnoreCase.Equals($parent, $current)) {
+            break
+        }
+
+        $current = $parent
+    }
+
+    $normalizedStop = [System.IO.Path]::GetFullPath($StopDirectory).TrimEnd([char[]]@('\', '/'))
+    if (-not (Test-PathWithin -BasePath $normalizedStop -ChildPath $current)) {
+        Add-Failure -Failures $Failures -Message "$Label path leaves the trusted workspace while checking reparse points: $current."
+        return
+    }
+
+    while (-not [string]::IsNullOrWhiteSpace($current) -and (Test-PathWithin -BasePath $normalizedStop -ChildPath $current)) {
+        $item = Get-Item -LiteralPath $current -Force
+        if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+            Add-Failure -Failures $Failures -Message "$Label path must not pass through a reparse point: $current."
+            return
+        }
+
+        if ([System.StringComparer]::OrdinalIgnoreCase.Equals(([System.IO.Path]::GetFullPath($current).TrimEnd([char[]]@('\', '/'))), $normalizedStop)) {
+            break
+        }
+
+        $current = Split-Path -Parent $current
+    }
+}
+
+function Add-OrdinaryEvidenceFileFailures {
+    param(
+        [Parameter(Mandatory = $true)][string]$Path,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[string]]$Failures
+    )
+
+    Add-NoReparsePointInPathFailures -Path $Path -Label $Label -Failures $Failures
+    if (-not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return
+    }
+
+    $item = Get-Item -LiteralPath $Path -Force
+    if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        Add-Failure -Failures $Failures -Message "$Label must not be a reparse point: $Path."
+    }
+
+    $linkCount = Get-ExistingPathHardlinkCount -Path $Path
+    if ($null -eq $linkCount) {
+        Add-Failure -Failures $Failures -Message "$Label hardlink count could not be determined; release evidence must fail closed: $Path."
+    } elseif ($linkCount -gt 1) {
+        Add-Failure -Failures $Failures -Message "$Label must not be a hardlink with multiple filesystem names: $Path linkCount=$linkCount."
+    }
+}
+
+function Add-OutputAliasFailures {
+    param(
+        [Parameter(Mandatory = $true)][string]$OutputPath,
+        [Parameter(Mandatory = $true)][string[]]$ProtectedPaths,
+        [Parameter(Mandatory = $true)][string]$Label,
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[string]]$Failures
+    )
+
+    if (-not (Test-Path -LiteralPath $OutputPath -PathType Leaf)) {
+        return
+    }
+
+    Add-OrdinaryEvidenceFileFailures -Path $OutputPath -Label $Label -Failures $Failures
+    foreach ($protectedPath in @($ProtectedPaths)) {
+        if ([string]::IsNullOrWhiteSpace($protectedPath) -or -not (Test-Path -LiteralPath $protectedPath -PathType Leaf)) {
+            continue
+        }
+
+        $resolvedOutputPath = [System.IO.Path]::GetFullPath($OutputPath)
+        $resolvedProtectedPath = [System.IO.Path]::GetFullPath($protectedPath)
+        if ([System.StringComparer]::OrdinalIgnoreCase.Equals($resolvedOutputPath, $resolvedProtectedPath)) {
+            Add-Failure -Failures $Failures -Message "$Label must not overwrite protected release evidence: $resolvedProtectedPath."
+            continue
+        }
+
+        if (Test-SameExistingPathPhysicalIdentity -Left $resolvedOutputPath -Right $resolvedProtectedPath) {
+            Add-Failure -Failures $Failures -Message "$Label must not share physical identity with protected release evidence: $resolvedOutputPath -> $resolvedProtectedPath."
+        }
+    }
+}
+
 function Resolve-EvidenceFilePath {
     param(
         [Parameter(Mandatory = $true)][string]$EvidenceDir,
@@ -334,22 +609,22 @@ function Get-DefaultRequiredFiles {
 
     switch ($Kind) {
         'loader' {
-            return @('command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'enabled-mods.txt')
+            return @('run-manifest.json', 'command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'enabled-mods.txt', 'log-origin-note.md')
         }
         'clicked-ui' {
-            return @('command.txt', 'window-preflight.json', 'godot.log', 'godot-log-audit.json', 'route-note.md')
+            return @('run-manifest.json', 'command.txt', 'window-preflight.json', 'godot.log', 'godot-log-audit.json', 'route-note.md', 'log-origin-note.md')
         }
         'save-load' {
-            return @('command.txt', 'godot.log', 'godot-log-audit.json', 'save-load-note.md')
+            return @('run-manifest.json', 'command.txt', 'godot.log', 'godot-log-audit.json', 'save-load-note.md', 'log-origin-note.md')
         }
         'coop' {
-            return @('command.txt', 'host-godot.log', 'host-godot-log-audit.json', 'client-godot.log', 'client-godot-log-audit.json', 'result-note.md')
+            return @('run-manifest.json', 'command.txt', 'host-godot.log', 'host-godot-log-audit.json', 'client-godot.log', 'client-godot-log-audit.json', 'result-note.md', 'log-origin-note.md')
         }
         'preview-tools' {
-            return @('command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'result-note.md')
+            return @('run-manifest.json', 'command.txt', 'environment.json', 'package-hashes.json', 'godot.log', 'godot-log-audit.json', 'result-note.md', 'log-origin-note.md')
         }
         default {
-            return @('command.txt', 'godot.log', 'godot-log-audit.json', 'result-note.md')
+            return @('run-manifest.json', 'command.txt', 'godot.log', 'godot-log-audit.json', 'result-note.md', 'log-origin-note.md')
         }
     }
 }
@@ -395,25 +670,409 @@ function Get-RequiredEvidenceFilesForRow {
             -RowFiles (Get-RequiredRowExtraFiles -RequiredRow $RequiredRow))
 }
 
-function Read-CleanLogAudit {
-    param([Parameter(Mandatory = $true)][string]$AuditPath)
+function Read-JsonOrNull {
+    param([Parameter(Mandatory = $true)][string]$Path)
 
-    $audit = Get-Content -LiteralPath $AuditPath -Raw -Encoding UTF8 | ConvertFrom-Json
-    $items = @()
-    if ($audit -is [System.Array]) {
-        $items = @($audit)
-    } else {
-        $items = @($audit)
+    try {
+        return Get-Content -LiteralPath $Path -Raw -Encoding UTF8 | ConvertFrom-Json
+    } catch {
+        return $null
+    }
+}
+
+function Test-NoLaunchOwnerRunRuntimeBaselineFields {
+    param(
+        $OwnerRunRequired,
+        $DoesNotLaunchGame,
+        [AllowEmptyString()][string]$LaunchMethod
+    )
+
+    return $OwnerRunRequired -is [bool] -and [bool]$OwnerRunRequired -and
+        $DoesNotLaunchGame -is [bool] -and [bool]$DoesNotLaunchGame -and
+        [string]::Equals($LaunchMethod, 'owner-steam-launch-required', [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Test-ReleaseLogOriginNote {
+    param(
+        [Parameter(Mandatory = $true)][string]$NotePath,
+        [Parameter(Mandatory = $true)][string]$RowId,
+        [Parameter(Mandatory = $true)]$Failures
+    )
+
+    $note = Get-Content -LiteralPath $NotePath -Raw -Encoding UTF8
+    if ($note -notmatch "(?im)^\s*LogOriginProofStatus\s*:\s*$([regex]::Escape($requiredReleaseLogOriginProofStatus))\s*$") {
+        Add-Failure -Failures $Failures -Message "Row $RowId log-origin-note.md must declare LogOriginProofStatus: $requiredReleaseLogOriginProofStatus."
     }
 
-    if ($items.Count -eq 0) {
+    $sourceMatch = [regex]::Match($note, '(?im)^\s*Source\s*:\s*(?<Value>\S.*)$')
+    if (-not $sourceMatch.Success) {
+        Add-Failure -Failures $Failures -Message "Row $RowId log-origin-note.md must include a non-empty Source line for the owner/live release session."
+    } elseif ($sourceMatch.Groups['Value'].Value -match $releaseLogOriginPlaceholderValuePattern) {
+        Add-Failure -Failures $Failures -Message "Row $RowId log-origin-note.md Source line must not be a placeholder value."
+    }
+
+    $logFilesMatch = [regex]::Match($note, '(?im)^\s*Log files?\s*:\s*(?<Value>\S.*)$')
+    if (-not $logFilesMatch.Success) {
+        Add-Failure -Failures $Failures -Message "Row $RowId log-origin-note.md must include a non-empty Log files line naming the row log file(s)."
+    } elseif ($logFilesMatch.Groups['Value'].Value -match $releaseLogOriginPlaceholderValuePattern) {
+        Add-Failure -Failures $Failures -Message "Row $RowId log-origin-note.md Log files line must not be a placeholder value."
+    }
+
+    if ($note -match $releaseLogOriginForbiddenNotePattern) {
+        Add-Failure -Failures $Failures -Message "Row $RowId log-origin-note.md must not retain pending/template placeholders or reference beta.135 runtime baseline, marker-only checks, no-launch owner-run scaffolds, or godot.log.after-launch."
+    }
+}
+
+function Get-MarkerOnlyRuntimeBaselineEvidenceReasons {
+    param(
+        [Parameter(Mandatory = $true)]$Row,
+        [Parameter(Mandatory = $true)][string]$EvidenceDir
+    )
+
+    $reasons = [System.Collections.Generic.List[string]]::new()
+    foreach ($fieldName in $markerOnlyRuntimeBaselineRowFields) {
+        $value = [string](Get-PropertyValue -Object $Row -Name $fieldName -Default '')
+        if (-not [string]::IsNullOrWhiteSpace($value) -and $value -match $markerOnlyRuntimeBaselinePattern) {
+            [void]$reasons.Add("row.$fieldName=$value")
+        }
+    }
+
+    $rowOwnerRunRequired = Get-PropertyValue -Object $Row -Name 'OwnerRunRequired' -Default $null
+    $rowDoesNotLaunchGame = Get-PropertyValue -Object $Row -Name 'DoesNotLaunchGame' -Default $null
+    $rowLaunchMethod = [string](Get-PropertyValue -Object $Row -Name 'LaunchMethod' -Default '')
+    if (Test-NoLaunchOwnerRunRuntimeBaselineFields -OwnerRunRequired $rowOwnerRunRequired -DoesNotLaunchGame $rowDoesNotLaunchGame -LaunchMethod $rowLaunchMethod) {
+        [void]$reasons.Add('row is a no-launch owner-run runtime baseline scaffold')
+    }
+
+    $evidenceDirLeaf = Split-Path -Leaf $EvidenceDir
+    if ($evidenceDirLeaf -match '(?i)^beta135-runtime-baseline[-_]') {
+        [void]$reasons.Add("EvidenceDir leaf is beta.135 runtime baseline scaffold: $evidenceDirLeaf")
+    }
+
+    $hardSentinelFound = $false
+    foreach ($relativePath in $markerOnlyRuntimeBaselineHardSentinelFiles) {
+        $sentinelPath = Join-Path $EvidenceDir $relativePath
+        if (Test-Path -LiteralPath $sentinelPath -PathType Leaf) {
+            $hardSentinelFound = $true
+            [void]$reasons.Add("baseline scaffold sentinel file present: $relativePath")
+        }
+    }
+
+    if ($hardSentinelFound) {
+        foreach ($relativePath in $markerOnlyRuntimeBaselineSoftSentinelFiles) {
+            $sentinelPath = Join-Path $EvidenceDir $relativePath
+            if (Test-Path -LiteralPath $sentinelPath -PathType Leaf) {
+                [void]$reasons.Add("baseline scaffold companion file present: $relativePath")
+            }
+        }
+    }
+
+    $manifestPath = Join-Path $EvidenceDir 'run-manifest.json'
+    if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
+        $manifest = Read-JsonOrNull -Path $manifestPath
+        if ($null -eq $manifest) {
+            [void]$reasons.Add('run-manifest.json is present but not parseable')
+            return @($reasons)
+        }
+
+        $manifestEvidenceKind = [string](Get-PropertyValue -Object $manifest -Name 'EvidenceKind' -Default '')
+        $manifestEvidenceBoundary = [string](Get-PropertyValue -Object $manifest -Name 'EvidenceBoundary' -Default '')
+        if (-not [string]::Equals($manifestEvidenceKind, 'release-evidence', [System.StringComparison]::OrdinalIgnoreCase) -or
+            -not [string]::Equals($manifestEvidenceBoundary, 'live-release-row-required', [System.StringComparison]::OrdinalIgnoreCase)) {
+            [void]$reasons.Add('run-manifest.json has no release-evidence provenance')
+        }
+
+        foreach ($fieldName in @('Status', 'RuntimeLogStatus', 'RuntimeAuditStatus', 'BaselineLogCheckStatus', 'LogOriginProofStatus', 'LaunchMethod', 'GameRootAnchorMode', 'PackageAnchorMode', 'TrustAnchorMode')) {
+            $value = [string](Get-PropertyValue -Object $manifest -Name $fieldName -Default '')
+            if (-not [string]::IsNullOrWhiteSpace($value) -and $value -match $markerOnlyRuntimeBaselinePattern) {
+                [void]$reasons.Add("run-manifest.json $fieldName=$value")
+            }
+        }
+
+        foreach ($fieldName in $markerOnlyRuntimeBaselineManifestSpecificFields) {
+            if ($manifest.PSObject.Properties.Name -contains $fieldName) {
+                [void]$reasons.Add("run-manifest.json contains beta.135 runtime baseline field: $fieldName")
+            }
+        }
+
+        $manifestJson = $manifest | ConvertTo-Json -Depth 20 -Compress
+        if ($manifestJson -match $markerOnlyRuntimeBaselineManifestJsonPattern) {
+            [void]$reasons.Add('run-manifest.json contains beta.135 runtime baseline-specific keys or values')
+        }
+
+        $ownerRunRequired = Get-PropertyValue -Object $manifest -Name 'OwnerRunRequired' -Default $null
+        $doesNotLaunchGame = Get-PropertyValue -Object $manifest -Name 'DoesNotLaunchGame' -Default $null
+        $launchMethod = [string](Get-PropertyValue -Object $manifest -Name 'LaunchMethod' -Default '')
+        if (Test-NoLaunchOwnerRunRuntimeBaselineFields -OwnerRunRequired $ownerRunRequired -DoesNotLaunchGame $doesNotLaunchGame -LaunchMethod $launchMethod) {
+            [void]$reasons.Add('run-manifest.json is a no-launch owner-run runtime baseline scaffold')
+        }
+
+        $forbiddenClaims = @(Get-PropertyValue -Object $manifest -Name 'ForbiddenClaims' -Default @())
+        foreach ($claim in $forbiddenClaims) {
+            if ([string]::Equals([string]$claim, 'release-ready', [System.StringComparison]::OrdinalIgnoreCase)) {
+                [void]$reasons.Add('run-manifest.json forbids release-ready claims')
+                break
+            }
+        }
+    }
+
+    return @($reasons)
+}
+
+function Test-NativeJsonIntegerValue {
+    param([object]$Value)
+
+    return $Value -is [byte] -or
+        $Value -is [sbyte] -or
+        $Value -is [int16] -or
+        $Value -is [uint16] -or
+        $Value -is [int] -or
+        $Value -is [uint32] -or
+        $Value -is [long] -or
+        $Value -is [uint64]
+}
+
+function Get-AuditJsonItems {
+    param([Parameter(Mandatory = $true)][string]$RawJson)
+
+    if ([string]::IsNullOrWhiteSpace($RawJson) -or -not $RawJson.TrimStart().StartsWith('[', [System.StringComparison]::Ordinal)) {
+        return @()
+    }
+
+    try {
+        $audit = $RawJson | ConvertFrom-Json
+    } catch {
+        return @()
+    }
+    if ($null -eq $audit) {
+        return @()
+    }
+
+    if ($audit -is [System.Array]) {
+        return @($audit)
+    }
+
+    return @($audit)
+}
+
+function Get-AuditSignatureVector {
+    param([Parameter(Mandatory = $true)]$AuditItem)
+
+    $signatureHitsProperty = @($AuditItem.PSObject.Properties | Where-Object { [string]::Equals($_.Name, 'SignatureHits', [System.StringComparison]::Ordinal) } | Select-Object -First 1)
+    if ($signatureHitsProperty.Count -ne 1 -or $null -eq $signatureHitsProperty[0].Value -or -not ($signatureHitsProperty[0].Value -is [System.Array])) {
+        return @()
+    }
+
+    $vector = [System.Collections.Generic.List[string]]::new()
+    foreach ($hit in @($signatureHitsProperty[0].Value)) {
+        if (-not ($hit.PSObject.Properties.Name -contains 'Name') -or [string]::IsNullOrWhiteSpace([string]$hit.Name)) {
+            return @()
+        }
+
+        if (-not ($hit.PSObject.Properties.Name -contains 'Count') -or -not (Test-NativeJsonIntegerValue -Value $hit.Count)) {
+            return @()
+        }
+
+        $vector.Add("$([string]$hit.Name)=$([long]$hit.Count)") | Out-Null
+    }
+
+    return @($vector.ToArray() | Sort-Object)
+}
+
+function Test-StringArrayEquals {
+    param(
+        [string[]]$Actual,
+        [string[]]$Expected
+    )
+
+    $actualValues = @($Actual)
+    $expectedValues = @($Expected)
+    if ($actualValues.Count -ne $expectedValues.Count) {
         return $false
     }
 
-    foreach ($item in $items) {
-        if (-not [bool](Get-PropertyValue -Object $item -Name 'Clean' -Default $false)) {
+    for ($i = 0; $i -lt $actualValues.Count; $i++) {
+        if (-not [string]::Equals($actualValues[$i], $expectedValues[$i], [System.StringComparison]::Ordinal)) {
             return $false
         }
+    }
+
+    return $true
+}
+
+function Test-ReleaseRowTargetManifest {
+    param(
+        [Parameter(Mandatory = $true)][string]$TargetManifestPath,
+        [Parameter(Mandatory = $true)][string]$RowId,
+        [Parameter(Mandatory = $true)][System.Collections.Generic.List[string]]$Failures,
+        [Parameter(Mandatory = $true)][string]$ExpectedPackageVersion,
+        [Parameter(Mandatory = $true)][string]$ExpectedPackagePath,
+        [Parameter(Mandatory = $true)][string]$ExpectedPackageFullPath,
+        [Parameter(Mandatory = $true)][string]$ExpectedPackageSha256,
+        [Parameter(Mandatory = $true)][string]$ExpectedGameVersion,
+        [Parameter(Mandatory = $true)][string]$ExpectedRitsuLibVersion,
+        [Parameter(Mandatory = $true)][string]$ExpectedRitsuCompatBranch,
+        [Parameter(Mandatory = $true)][int]$ExpectedPatchCount
+    )
+
+    try {
+        $targetManifest = Get-Content -LiteralPath $TargetManifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
+    } catch {
+        Add-Failure -Failures $Failures -Message "Row $RowId run-manifest.json is not valid JSON: $TargetManifestPath."
+        return
+    }
+
+    if ($null -eq $targetManifest -or $targetManifest -is [System.Array]) {
+        Add-Failure -Failures $Failures -Message "Row $RowId run-manifest.json must be a single JSON object: $TargetManifestPath."
+        return
+    }
+
+    $expectedStringFields = [ordered]@{
+        EvidenceKind = 'release-evidence'
+        EvidenceBoundary = 'live-release-row-required'
+        RowId = $RowId
+        PackageVersion = $ExpectedPackageVersion
+        PackageSha256 = $ExpectedPackageSha256
+        ExpectedGameVersion = $ExpectedGameVersion
+        ExpectedRitsuLibVersion = $ExpectedRitsuLibVersion
+        ExpectedRitsuCompatBranch = $ExpectedRitsuCompatBranch
+        ModId = 'EZMicroBalance'
+        ModName = 'Spire Plus'
+        PackageAnchorMode = 'canonical-repo-publish'
+        TrustAnchorMode = 'canonical-current-release-target'
+    }
+
+    foreach ($entry in $expectedStringFields.GetEnumerator()) {
+        $actual = [string](Get-PropertyValue -Object $targetManifest -Name $entry.Key -Default '')
+        if (-not [string]::Equals($actual, [string]$entry.Value, [System.StringComparison]::OrdinalIgnoreCase)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId run-manifest.json $($entry.Key) must be '$($entry.Value)' for current release evidence. Current value: '$actual'."
+        }
+    }
+
+    $packagePathValue = [string](Get-PropertyValue -Object $targetManifest -Name 'PackagePath' -Default '')
+    if ([string]::IsNullOrWhiteSpace($packagePathValue)) {
+        Add-Failure -Failures $Failures -Message "Row $RowId run-manifest.json PackagePath is missing."
+    } else {
+        $resolvedPackagePath = Resolve-WorkspacePath -Path $packagePathValue
+        if (-not [string]::Equals($resolvedPackagePath, $ExpectedPackageFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId run-manifest.json PackagePath must resolve to the canonical current package '$ExpectedPackagePath'. Current value: '$packagePathValue'."
+        }
+    }
+
+    $patchCountValue = Get-PropertyValue -Object $targetManifest -Name 'ExpectedPatchCount' -Default $null
+    if (-not (Test-NativeJsonIntegerValue -Value $patchCountValue) -or [int64]$patchCountValue -ne [int64]$ExpectedPatchCount) {
+        Add-Failure -Failures $Failures -Message "Row $RowId run-manifest.json ExpectedPatchCount must be native integer $ExpectedPatchCount for current release evidence. Current value: '$patchCountValue'."
+    }
+}
+
+function Get-ExpectedLogFileForAuditFile {
+    param([Parameter(Mandatory = $true)][string]$AuditFile)
+
+    return [regex]::Replace($AuditFile, '(?i)-log-audit\.json$', '.log')
+}
+
+function Read-CleanLogAudit {
+    param(
+        [Parameter(Mandatory = $true)][string]$AuditPath,
+        [Parameter(Mandatory = $true)][string]$ExpectedLogPath
+    )
+
+    if (-not (Test-Path -LiteralPath $ExpectedLogPath -PathType Leaf)) {
+        return $false
+    }
+
+    $raw = Get-Content -LiteralPath $AuditPath -Raw -Encoding UTF8
+    $items = @(Get-AuditJsonItems -RawJson $raw)
+    if ($items.Count -ne 1) {
+        return $false
+    }
+
+    $item = $items[0]
+    $resolvedExpectedLog = (Resolve-Path -LiteralPath $ExpectedLogPath).Path
+    $expectedFile = Get-Item -LiteralPath $resolvedExpectedLog
+    $expectedSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $resolvedExpectedLog).Hash.ToLowerInvariant()
+
+    if (-not ($item.PSObject.Properties.Name -contains 'AuditSchemaVersion') -or
+        -not (Test-NativeJsonIntegerValue -Value $item.AuditSchemaVersion) -or
+        [long]$item.AuditSchemaVersion -ne 2) {
+        return $false
+    }
+
+    if (-not ($item.PSObject.Properties.Name -contains 'SignatureSetSha256') -or
+        [string]::IsNullOrWhiteSpace([string]$item.SignatureSetSha256) -or
+        -not ([string]$item.SignatureSetSha256 -match '^[A-Fa-f0-9]{64}$')) {
+        return $false
+    }
+
+    if (-not ($item.PSObject.Properties.Name -contains 'Clean') -or -not ($item.Clean -is [bool]) -or -not [bool]$item.Clean) {
+        return $false
+    }
+
+    if (-not ($item.PSObject.Properties.Name -contains 'Path') -or [string]::IsNullOrWhiteSpace([string]$item.Path)) {
+        return $false
+    }
+
+    $retainedLogPath = [System.IO.Path]::GetFullPath([string]$item.Path)
+    if (-not [string]::Equals($retainedLogPath, [System.IO.Path]::GetFullPath($resolvedExpectedLog), [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $false
+    }
+
+    if (-not ($item.PSObject.Properties.Name -contains 'Length') -or -not (Test-NativeJsonIntegerValue -Value $item.Length) -or [long]$item.Length -ne [long]$expectedFile.Length) {
+        return $false
+    }
+
+    if (-not ($item.PSObject.Properties.Name -contains 'Sha256') -or
+        [string]::IsNullOrWhiteSpace([string]$item.Sha256) -or
+        -not ([string]$item.Sha256 -match '^[A-Fa-f0-9]{64}$') -or
+        -not [string]::Equals(([string]$item.Sha256).ToLowerInvariant(), $expectedSha256, [System.StringComparison]::Ordinal)) {
+        return $false
+    }
+
+    $retainedSignatureVector = @(Get-AuditSignatureVector -AuditItem $item)
+    if ($retainedSignatureVector.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($entry in $retainedSignatureVector) {
+        if (-not $entry.EndsWith('=0', [System.StringComparison]::Ordinal)) {
+            return $false
+        }
+    }
+
+    $auditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
+    try {
+        $recomputedRaw = & $auditScript -Path $resolvedExpectedLog
+    } catch {
+        return $false
+    }
+
+    $recomputedItems = @(Get-AuditJsonItems -RawJson ($recomputedRaw -join [Environment]::NewLine))
+    if ($recomputedItems.Count -ne 1) {
+        return $false
+    }
+
+    $recomputed = $recomputedItems[0]
+    if (-not ($recomputed.PSObject.Properties.Name -contains 'AuditSchemaVersion') -or
+        -not (Test-NativeJsonIntegerValue -Value $recomputed.AuditSchemaVersion) -or
+        [long]$recomputed.AuditSchemaVersion -ne [long]$item.AuditSchemaVersion) {
+        return $false
+    }
+
+    if (-not ($recomputed.PSObject.Properties.Name -contains 'Clean') -or -not ($recomputed.Clean -is [bool]) -or -not [bool]$recomputed.Clean) {
+        return $false
+    }
+
+    $recomputedSignatureVector = @(Get-AuditSignatureVector -AuditItem $recomputed)
+    if ($recomputedSignatureVector.Count -eq 0) {
+        return $false
+    }
+
+    if (-not [string]::Equals(([string]$item.SignatureSetSha256).ToLowerInvariant(), ([string]$recomputed.SignatureSetSha256).ToLowerInvariant(), [System.StringComparison]::Ordinal)) {
+        return $false
+    }
+
+    if (-not (Test-StringArrayEquals -Actual $retainedSignatureVector -Expected $recomputedSignatureVector)) {
+        return $false
     }
 
     return $true
@@ -440,7 +1099,8 @@ function Test-PackageHashesEvidence {
         return
     }
 
-    $rowsByPath = @{}
+    $rowsByPath = [System.Collections.Generic.Dictionary[string, object]]::new([System.StringComparer]::Ordinal)
+    $rowPathCaseMap = [System.Collections.Generic.Dictionary[string, string]]::new([System.StringComparer]::OrdinalIgnoreCase)
     foreach ($file in $files) {
         $rowPath = [string](Get-PropertyValue -Object $file -Name 'Path' -Default '')
         if ([string]::IsNullOrWhiteSpace($rowPath)) {
@@ -448,12 +1108,29 @@ function Test-PackageHashesEvidence {
             continue
         }
 
-        $rowsByPath[$rowPath] = $file
+        if ($rowsByPath.ContainsKey($rowPath)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json contains duplicate file row path: $rowPath."
+            continue
+        }
+
+        if ($rowPathCaseMap.ContainsKey($rowPath)) {
+            $previousPath = $rowPathCaseMap[$rowPath]
+            if (-not [string]::Equals($previousPath, $rowPath, [System.StringComparison]::Ordinal)) {
+                Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json contains case-drifted duplicate file row path: $rowPath conflicts with $previousPath."
+                continue
+            }
+        } else {
+            $rowPathCaseMap.Add($rowPath, $rowPath)
+        }
+
+        $rowsByPath.Add($rowPath, $file)
     }
 
     foreach ($stalePath in @('publish\EZMicroBalance.dll', 'publish\EZMicroBalance.pck', 'publish\EZMicroBalance.json')) {
         if ($rowsByPath.ContainsKey($stalePath)) {
             Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json still records stale root publish artifact path: $stalePath."
+        } elseif ($rowPathCaseMap.ContainsKey($stalePath)) {
+            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json still records case-drifted stale root publish artifact path: $($rowPathCaseMap[$stalePath])."
         }
     }
 
@@ -461,7 +1138,11 @@ function Test-PackageHashesEvidence {
 
     foreach ($expectedPath in $expectedPaths) {
         if (-not $rowsByPath.ContainsKey($expectedPath)) {
-            Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json is missing current package artifact row: $expectedPath."
+            if ($rowPathCaseMap.ContainsKey($expectedPath)) {
+                Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json uses case-drifted current package artifact row: expected $expectedPath but found $($rowPathCaseMap[$expectedPath])."
+            } else {
+                Add-Failure -Failures $Failures -Message "Row $RowId package-hashes.json is missing current package artifact row: $expectedPath."
+            }
             continue
         }
 
@@ -827,8 +1508,10 @@ function New-TemplateManifest {
             Kind = $required.Kind
             Status = 'pending'
             EvidenceDir = ''
+            EvidenceBoundary = 'live-release-row-required'
             RequiredFiles = @(Get-RequiredEvidenceFilesForRow -RequiredRow $required)
             ScreenshotFile = if ($required.Kind -eq 'clicked-ui') { '' } else { $null }
+            LogOriginProofStatus = 'pending-owner-live-release-log'
             ResultNote = ''
             ReleaseNote = ''
             ExplicitOwnerDecision = $false
@@ -930,6 +1613,25 @@ if (-not (Test-Path -LiteralPath $manifestFull)) {
 $manifest = Get-Content -LiteralPath $manifestFull -Raw -Encoding UTF8 | ConvertFrom-Json
 $failures = [System.Collections.Generic.List[string]]::new()
 $warnings = [System.Collections.Generic.List[string]]::new()
+$protectedEvidencePaths = [System.Collections.Generic.List[string]]::new()
+[void]$protectedEvidencePaths.Add($manifestFull)
+
+Add-NoReparsePointInPathFailures -Path $evidenceRootFull -Label 'EvidenceRoot' -Failures $failures
+Add-NoReparsePointInPathFailures -Path $manifestFull -Label 'ManifestPath' -Failures $failures
+Add-OrdinaryEvidenceFileFailures -Path $manifestFull -Label 'Release evidence manifest' -Failures $failures
+Add-NoReparsePointInPathFailures -Path $passMarkerFull -Label 'PassMarkerPath' -Failures $failures
+Add-OutputAliasFailures -OutputPath $passMarkerFull -ProtectedPaths @($manifestFull) -Label 'Pass marker' -Failures $failures
+
+$packageFullFromArgument = Resolve-SpirePlusPackagePath -RepoRoot $repoRoot -PackagePath $PackagePath
+if (-not [string]::Equals($packageFullFromArgument, $canonicalPackageFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+    Add-Failure -Failures $failures -Message "PackagePath must be the canonical current Spire Plus package '$canonicalPackagePath' for release evidence verification. Current value: '$PackagePath'."
+}
+
+if ([string]::IsNullOrWhiteSpace($canonicalPackageSha256)) {
+    Add-Failure -Failures $failures -Message "Canonical current Spire Plus package does not exist or has no hash: $canonicalPackageFullPath."
+} elseif (-not [string]::Equals($PackageSha256, $canonicalPackageSha256, [System.StringComparison]::OrdinalIgnoreCase)) {
+    Add-Failure -Failures $failures -Message "PackageSha256 must match the canonical current Spire Plus package '$canonicalPackagePath'. Current value: '$PackageSha256'. Expected: '$canonicalPackageSha256'."
+}
 
 $manifestPackageSha256 = Get-PropertyValue -Object $manifest -Name 'PackageSha256' -Default ''
 if ($manifestPackageSha256 -ne $PackageSha256) {
@@ -942,6 +1644,10 @@ if ([string]::IsNullOrWhiteSpace($manifestPackagePath)) {
 }
 
 $packageFull = Resolve-WorkspacePath -Path $manifestPackagePath
+if (-not [string]::Equals($packageFull, $canonicalPackageFullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+    Add-Failure -Failures $failures -Message "Manifest PackagePath must resolve to canonical current Spire Plus package '$canonicalPackagePath'. Current value: '$manifestPackagePath'."
+}
+
 $actualPackageSha256 = ''
 if (-not (Test-Path -LiteralPath $packageFull -PathType Leaf)) {
     Add-Failure -Failures $failures -Message "Package under test does not exist: $packageFull."
@@ -1010,6 +1716,16 @@ foreach ($required in $requiredReleaseRows) {
         continue
     }
 
+    $rowEvidenceBoundary = [string](Get-PropertyValue -Object $row -Name 'EvidenceBoundary' -Default '')
+    if (-not [string]::Equals($rowEvidenceBoundary, 'live-release-row-required', [System.StringComparison]::OrdinalIgnoreCase)) {
+        Add-Failure -Failures $failures -Message "Row $($required.Id) EvidenceBoundary must be live-release-row-required for release pass rows. Current value: '$rowEvidenceBoundary'."
+    }
+
+    $rowLogOriginProofStatus = [string](Get-PropertyValue -Object $row -Name 'LogOriginProofStatus' -Default '')
+    if (-not [string]::Equals($rowLogOriginProofStatus, $requiredReleaseLogOriginProofStatus, [System.StringComparison]::OrdinalIgnoreCase)) {
+        Add-Failure -Failures $failures -Message "Row $($required.Id) LogOriginProofStatus must be $requiredReleaseLogOriginProofStatus for release pass rows. Current value: '$rowLogOriginProofStatus'."
+    }
+
     $evidenceDirRaw = [string](Get-PropertyValue -Object $row -Name 'EvidenceDir' -Default '')
     if ([string]::IsNullOrWhiteSpace($evidenceDirRaw)) {
         Add-Failure -Failures $failures -Message "Row $($required.Id) has pass status but no EvidenceDir."
@@ -1024,6 +1740,13 @@ foreach ($required in $requiredReleaseRows) {
 
     if (-not (Test-Path -LiteralPath $evidenceDir -PathType Container)) {
         Add-Failure -Failures $failures -Message "Row $($required.Id) EvidenceDir does not exist: $evidenceDir."
+        continue
+    }
+    Add-NoReparsePointInPathFailures -Path $evidenceDir -Label "Row $($required.Id) EvidenceDir" -Failures $failures
+
+    $markerOnlyRuntimeBaselineReasons = @(Get-MarkerOnlyRuntimeBaselineEvidenceReasons -Row $row -EvidenceDir $evidenceDir)
+    if ($markerOnlyRuntimeBaselineReasons.Count -gt 0) {
+        Add-Failure -Failures $failures -Message "Row $($required.Id) uses marker-only runtime baseline evidence, which cannot satisfy release required rows: $($markerOnlyRuntimeBaselineReasons -join '; ')."
         continue
     }
 
@@ -1042,10 +1765,12 @@ foreach ($required in $requiredReleaseRows) {
             continue
         }
 
+        [void]$protectedEvidencePaths.Add($filePath)
         if (-not (Test-Path -LiteralPath $filePath -PathType Leaf)) {
             Add-Failure -Failures $failures -Message "Row $($required.Id) missing required evidence file: $filePath."
             continue
         }
+        Add-OrdinaryEvidenceFileFailures -Path $filePath -Label "Row $($required.Id) required evidence file '$requiredFileString'" -Failures $failures
 
         if ((Get-Item -LiteralPath $filePath).Length -eq 0) {
             Add-Failure -Failures $failures -Message "Row $($required.Id) required evidence file is empty: $filePath."
@@ -1069,16 +1794,50 @@ foreach ($required in $requiredReleaseRows) {
                 Add-Failure -Failures $failures -Message "Row $($required.Id) evidence note '$requiredFileString' describes invalid or non-counting evidence."
             }
         }
+
+        if ([string]::Equals($requiredFileString, 'log-origin-note.md', [System.StringComparison]::OrdinalIgnoreCase)) {
+            Test-ReleaseLogOriginNote -NotePath $filePath -RowId $required.Id -Failures $failures
+        }
+    }
+
+    $rowTargetManifestPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path 'run-manifest.json'
+    if ((Test-PathWithin -BasePath $evidenceDir -ChildPath $rowTargetManifestPath) -and
+        (Test-Path -LiteralPath $rowTargetManifestPath -PathType Leaf)) {
+        Test-ReleaseRowTargetManifest `
+            -TargetManifestPath $rowTargetManifestPath `
+            -RowId $required.Id `
+            -Failures $failures `
+            -ExpectedPackageVersion $currentPackageVersion `
+            -ExpectedPackagePath $canonicalPackagePath `
+            -ExpectedPackageFullPath $canonicalPackageFullPath `
+            -ExpectedPackageSha256 $PackageSha256 `
+            -ExpectedGameVersion $ExpectedGameVersion `
+            -ExpectedRitsuLibVersion $ExpectedRitsuLibVersion `
+            -ExpectedRitsuCompatBranch $ExpectedRitsuCompatBranch `
+            -ExpectedPatchCount $ExpectedPatchCount
     }
 
     $logAuditFiles = @($requiredFiles | Where-Object { ([string]$_).EndsWith('godot-log-audit.json', [System.StringComparison]::OrdinalIgnoreCase) })
     foreach ($logAuditFile in $logAuditFiles) {
-        $auditPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path ([string]$logAuditFile)
+        $logAuditFileString = [string]$logAuditFile
+        $auditPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path $logAuditFileString
         if (-not (Test-PathWithin -BasePath $evidenceDir -ChildPath $auditPath)) {
             continue
         }
 
-        if ((Test-Path -LiteralPath $auditPath -PathType Leaf) -and -not (Read-CleanLogAudit -AuditPath $auditPath)) {
+        $expectedLogFile = Get-ExpectedLogFileForAuditFile -AuditFile $logAuditFileString
+        if ([string]::Equals($expectedLogFile, $logAuditFileString, [System.StringComparison]::OrdinalIgnoreCase)) {
+            Add-Failure -Failures $failures -Message "Row $($required.Id) log audit file does not use the expected *-log-audit.json name: $logAuditFileString."
+            continue
+        }
+
+        $expectedLogPath = Resolve-EvidenceFilePath -EvidenceDir $evidenceDir -Path $expectedLogFile
+        if (-not (Test-PathWithin -BasePath $evidenceDir -ChildPath $expectedLogPath)) {
+            Add-Failure -Failures $failures -Message "Row $($required.Id) log audit expected log path escapes EvidenceDir: $expectedLogFile."
+            continue
+        }
+
+        if ((Test-Path -LiteralPath $auditPath -PathType Leaf) -and -not (Read-CleanLogAudit -AuditPath $auditPath -ExpectedLogPath $expectedLogPath)) {
             Add-Failure -Failures $failures -Message "Row $($required.Id) log audit is not clean: $auditPath."
         }
     }
@@ -1095,16 +1854,26 @@ foreach ($required in $requiredReleaseRows) {
             if (-not (Test-PathWithin -BasePath $evidenceDir -ChildPath $screenshotPath)) {
                 Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot path escapes EvidenceDir: $screenshotFile."
             } elseif (-not (Test-Path -LiteralPath $screenshotPath -PathType Leaf)) {
+                [void]$protectedEvidencePaths.Add($screenshotPath)
                 Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot file is missing: $screenshotPath."
             } elseif ((Get-Item -LiteralPath $screenshotPath).Length -eq 0) {
+                [void]$protectedEvidencePaths.Add($screenshotPath)
                 Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot file is empty: $screenshotPath."
-            } elseif (-not (Test-PngSignature -Path $screenshotPath)) {
-                Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot file is not a valid PNG: $screenshotPath."
-            } elseif (-not (Test-PngMinimumDimensions -Path $screenshotPath)) {
-                Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot file is too small: $screenshotPath. Minimum is ${MinScreenshotWidth}x${MinScreenshotHeight}."
+            } else {
+                [void]$protectedEvidencePaths.Add($screenshotPath)
+                Add-OrdinaryEvidenceFileFailures -Path $screenshotPath -Label "Row $($required.Id) screenshot file '$screenshotFile'" -Failures $failures
+                if (-not (Test-PngSignature -Path $screenshotPath)) {
+                    Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot file is not a valid PNG: $screenshotPath."
+                } elseif (-not (Test-PngMinimumDimensions -Path $screenshotPath)) {
+                    Add-Failure -Failures $failures -Message "Row $($required.Id) screenshot file is too small: $screenshotPath. Minimum is ${MinScreenshotWidth}x${MinScreenshotHeight}."
+                }
             }
         } else {
             $screenshots = @(Get-ChildItem -LiteralPath $evidenceDir -Filter '*.png' -File -ErrorAction SilentlyContinue)
+            foreach ($screenshot in $screenshots) {
+                [void]$protectedEvidencePaths.Add($screenshot.FullName)
+                Add-OrdinaryEvidenceFileFailures -Path $screenshot.FullName -Label "Row $($required.Id) discovered screenshot '$($screenshot.Name)'" -Failures $failures
+            }
             if ($screenshots.Count -eq 0) {
                 Add-Failure -Failures $failures -Message "Row $($required.Id) needs a PNG screenshot or ScreenshotFile."
             } elseif (-not ($screenshots | Where-Object { $_.Length -gt 0 } | Select-Object -First 1)) {
@@ -1249,6 +2018,12 @@ foreach ($required in $requiredReleaseRows) {
         }
     }
 }
+
+Add-OutputAliasFailures `
+    -OutputPath $passMarkerFull `
+    -ProtectedPaths @($protectedEvidencePaths.ToArray()) `
+    -Label 'Pass marker' `
+    -Failures $failures
 
 $summary = [ordered]@{
     ManifestPath = $manifestFull

@@ -29,6 +29,17 @@ $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $sts1EnabledModeLogVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
 $checks = [System.Collections.Generic.List[object]]::new()
 $mismatches = [System.Collections.Generic.List[string]]::new()
+$expectedAuditSignatureNames = @(
+    'Creature.get_ShowsInfiniteHp',
+    'DependencyFramework.Patches.UI.HealthBarForecastPatch',
+    'dependency framework patch failure',
+    'DamageMeter',
+    'RouteSuggest',
+    'Spire Plus error/exception',
+    'TypeLoadException',
+    'MissingMethodException',
+    'Godot ERROR line'
+) | Sort-Object
 
 function Resolve-RepoPath {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -38,6 +49,268 @@ function Resolve-RepoPath {
     }
 
     return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
+}
+
+function Initialize-WindowsFileIdentityType {
+    if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+        return $false
+    }
+
+    if ('SpirePlusRuntimeMonkeyFileIdentity' -as [type]) {
+        return $true
+    }
+
+    try {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+
+public static class SpirePlusRuntimeMonkeyFileIdentity
+{
+    private const uint FileReadAttributes = 0x00000080;
+    private const uint FileShareRead = 0x00000001;
+    private const uint FileShareWrite = 0x00000002;
+    private const uint FileShareDelete = 0x00000004;
+    private const uint OpenExisting = 3;
+    private const uint FileFlagBackupSemantics = 0x02000000;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct FileTime
+    {
+        public uint LowDateTime;
+        public uint HighDateTime;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ByHandleFileInformation
+    {
+        public uint FileAttributes;
+        public FileTime CreationTime;
+        public FileTime LastAccessTime;
+        public FileTime LastWriteTime;
+        public uint VolumeSerialNumber;
+        public uint FileSizeHigh;
+        public uint FileSizeLow;
+        public uint NumberOfLinks;
+        public uint FileIndexHigh;
+        public uint FileIndexLow;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern SafeFileHandle CreateFileW(
+        string fileName,
+        uint desiredAccess,
+        uint shareMode,
+        IntPtr securityAttributes,
+        uint creationDisposition,
+        uint flagsAndAttributes,
+        IntPtr templateFile);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool GetFileInformationByHandle(
+        SafeFileHandle fileHandle,
+        out ByHandleFileInformation fileInformation);
+
+    public static string GetIdentity(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return string.Empty;
+        }
+
+        using (SafeFileHandle handle = CreateFileW(
+            path,
+            FileReadAttributes,
+            FileShareRead | FileShareWrite | FileShareDelete,
+            IntPtr.Zero,
+            OpenExisting,
+            FileFlagBackupSemantics,
+            IntPtr.Zero))
+        {
+            if (handle.IsInvalid)
+            {
+                return string.Empty;
+            }
+
+            ByHandleFileInformation information;
+            if (!GetFileInformationByHandle(handle, out information))
+            {
+                return string.Empty;
+            }
+
+            return string.Format(
+                "{0:x8}:{1:x8}:{2:x8}",
+                information.VolumeSerialNumber,
+                information.FileIndexHigh,
+                information.FileIndexLow);
+        }
+    }
+
+    public static long GetLinkCount(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return -1;
+        }
+
+        using (SafeFileHandle handle = CreateFileW(
+            path,
+            FileReadAttributes,
+            FileShareRead | FileShareWrite | FileShareDelete,
+            IntPtr.Zero,
+            OpenExisting,
+            FileFlagBackupSemantics,
+            IntPtr.Zero))
+        {
+            if (handle.IsInvalid)
+            {
+                return -1;
+            }
+
+            ByHandleFileInformation information;
+            if (!GetFileInformationByHandle(handle, out information))
+            {
+                return -1;
+            }
+
+            return information.NumberOfLinks;
+        }
+    }
+}
+'@ -ErrorAction Stop
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Get-ExistingPathPhysicalIdentity {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path)) {
+        return ''
+    }
+
+    if (-not (Initialize-WindowsFileIdentityType)) {
+        return ''
+    }
+
+    try {
+        return [SpirePlusRuntimeMonkeyFileIdentity]::GetIdentity([System.IO.Path]::GetFullPath($Path))
+    } catch {
+        return ''
+    }
+}
+
+function Test-SameExistingPathPhysicalIdentity {
+    param(
+        [AllowEmptyString()][string]$Left,
+        [AllowEmptyString()][string]$Right
+    )
+
+    $leftIdentity = Get-ExistingPathPhysicalIdentity -Path $Left
+    if ([string]::IsNullOrWhiteSpace($leftIdentity)) {
+        return $false
+    }
+
+    $rightIdentity = Get-ExistingPathPhysicalIdentity -Path $Right
+    return -not [string]::IsNullOrWhiteSpace($rightIdentity) -and
+        [string]::Equals($leftIdentity, $rightIdentity, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Get-ExistingPathHardlinkCount {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $null
+    }
+
+    if (-not (Initialize-WindowsFileIdentityType)) {
+        return $null
+    }
+
+    try {
+        $count = [SpirePlusRuntimeMonkeyFileIdentity]::GetLinkCount([System.IO.Path]::GetFullPath($Path))
+        if ($count -lt 1) {
+            return $null
+        }
+
+        return [long]$count
+    } catch {
+        return $null
+    }
+}
+
+function Test-PathInsideDirectory {
+    param(
+        [AllowEmptyString()][string]$Path,
+        [AllowEmptyString()][string]$Directory
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($Directory)) {
+        return $false
+    }
+
+    try {
+        $fullPath = [System.IO.Path]::GetFullPath($Path)
+        $fullDirectory = [System.IO.Path]::GetFullPath($Directory).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+        return $fullPath.StartsWith($fullDirectory, [System.StringComparison]::OrdinalIgnoreCase)
+    } catch {
+        return $false
+    }
+}
+
+function Assert-OutFileDoesNotOverwriteCanonicalEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$ResolvedOutFile,
+        [Parameter(Mandatory = $true)][string]$EvidenceRoot
+    )
+
+    $canonicalNames = @(
+        'monkey-plan.json',
+        'monkey-summary.json',
+        'iteration-result.json',
+        'godot.log.before',
+        'godot.log.after-launch',
+        'godot.log.current-iteration',
+        'godot-log-audit.json',
+        'sts1-mode-log-check.json',
+        'runtime-probe-samples.json',
+        'prepare-output.json',
+        'session-state.json',
+        'restore-state.json',
+        'command.txt',
+        'command-corpus.txt',
+        'local-godot-source-workspace-check.json'
+    )
+
+    $canonicalRoots = [System.Collections.Generic.List[string]]::new()
+    $canonicalRoots.Add([System.IO.Path]::GetFullPath($EvidenceRoot)) | Out-Null
+    try {
+        foreach ($child in @(Get-ChildItem -LiteralPath $EvidenceRoot -Directory -Force -ErrorAction Stop)) {
+            if (($child.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+                continue
+            }
+
+            $canonicalRoots.Add($child.FullName) | Out-Null
+        }
+    } catch {
+    }
+
+    foreach ($root in @($canonicalRoots)) {
+        foreach ($canonicalName in $canonicalNames) {
+            $canonicalPath = Join-Path ([string]$root) $canonicalName
+            if (Test-SameExistingPathPhysicalIdentity -Left $ResolvedOutFile -Right $canonicalPath) {
+                throw "Refusing to write OutFile over canonical runtime monkey evidence: $ResolvedOutFile"
+            }
+        }
+    }
+
+    if ((Test-PathInsideDirectory -Path $ResolvedOutFile -Directory $EvidenceRoot) -and
+        $canonicalNames -contains [System.IO.Path]::GetFileName($ResolvedOutFile)) {
+        throw "Refusing to write OutFile over canonical runtime monkey evidence: $ResolvedOutFile"
+    }
 }
 
 function Add-Check {
@@ -58,23 +331,29 @@ function Add-Check {
     }
 }
 
-function Test-JsonProperty {
+function Get-JsonProperty {
     param(
         [AllowNull()]$Object,
         [Parameter(Mandatory = $true)][string]$Name
     )
 
     if ($null -eq $Object) {
-        return $false
+        return @()
     }
 
-    foreach ($property in @($Object.PSObject.Properties)) {
-        if ([string]::Equals($property.Name, $Name, [System.StringComparison]::Ordinal)) {
-            return $true
-        }
-    }
+    return @($Object.PSObject.Properties | Where-Object {
+        $_.MemberType -eq [System.Management.Automation.PSMemberTypes]::NoteProperty -and
+            [string]::Equals($_.Name, $Name, [System.StringComparison]::Ordinal)
+    })
+}
 
-    return $false
+function Test-JsonProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    return @(Get-JsonProperty -Object $Object -Name $Name).Count -gt 0
 }
 
 function Get-JsonValue {
@@ -97,7 +376,7 @@ function ConvertTo-IntOrDefault {
         [int]$DefaultValue = 0
     )
 
-    if ($null -eq $Value) {
+    if (-not (Test-NativeJsonIntegerValue -Value $Value)) {
         return $DefaultValue
     }
 
@@ -114,7 +393,7 @@ function ConvertTo-LongOrDefault {
         [long]$DefaultValue = 0
     )
 
-    if ($null -eq $Value) {
+    if (-not (Test-NativeJsonIntegerValue -Value $Value)) {
         return $DefaultValue
     }
 
@@ -131,7 +410,7 @@ function ConvertTo-DoubleOrDefault {
         [double]$DefaultValue = 0.0
     )
 
-    if ($null -eq $Value) {
+    if (-not (Test-NativeJsonNumberValue -Value $Value)) {
         return $DefaultValue
     }
 
@@ -319,15 +598,86 @@ function ConvertTo-AuditSummary {
         [Parameter(Mandatory = $true)][string]$Path
     )
 
-    $items = @($Json | ConvertFrom-Json)
+    $rootIsArray = Test-RawJsonRootArray -Json $Json
+    try {
+        $convertedJson = $Json | ConvertFrom-Json
+    } catch {
+        return [pscustomobject]@{
+            Path = $Path
+            Items = 0
+            ItemPaths = @()
+            ItemLengths = @()
+            ItemSha256s = @()
+            AuditSchemaVersions = @()
+            SignatureSetSha256s = @()
+            SignatureHitNames = @()
+            SignatureHitVector = @()
+            DirtyItems = 0
+            SignatureHitCount = 0
+            MalformedNumericValues = 1
+            MalformedBoolValues = 1
+            MalformedArrayValues = 1
+            MalformedSchemaValues = 1
+            Clean = $false
+        }
+    }
+
+    [object[]]$items = @(
+        if ($rootIsArray -and $convertedJson -is [System.Array]) {
+            foreach ($entry in $convertedJson) {
+                $entry
+            }
+        } else {
+            $convertedJson
+        }
+    )
     $dirtyItems = 0
     $hitCount = 0
+    $malformedNumericValues = 0
+    $malformedArrayValues = 0
     $itemPaths = [System.Collections.Generic.List[string]]::new()
     $itemLengths = [System.Collections.Generic.List[long]]::new()
     $itemSha256s = [System.Collections.Generic.List[string]]::new()
+    $auditSchemaVersions = [System.Collections.Generic.List[string]]::new()
+    $signatureSetSha256s = [System.Collections.Generic.List[string]]::new()
+    $signatureHitNames = [System.Collections.Generic.List[string]]::new()
+    $signatureHitVector = [System.Collections.Generic.List[string]]::new()
+    $malformedSchemaValues = 0
+    $malformedBoolValues = 0
+    if (-not $rootIsArray) {
+        $malformedArrayValues++
+    }
 
     foreach ($item in $items) {
-        if (-not (Test-JsonProperty -Object $item -Name 'Clean') -or -not (ConvertTo-BoolOrDefault -Value $item.Clean -DefaultValue $false)) {
+        if (-not (Test-JsonProperty -Object $item -Name 'AuditSchemaVersion')) {
+            $malformedSchemaValues++
+        } elseif (Test-NativeJsonInt32Value -Value $item.AuditSchemaVersion) {
+            $auditSchemaVersion = ConvertTo-IntOrDefault -Value $item.AuditSchemaVersion -DefaultValue -1
+            $auditSchemaVersions.Add([string]$auditSchemaVersion) | Out-Null
+            if ($auditSchemaVersion -ne 2) {
+                $malformedSchemaValues++
+            }
+        } else {
+            $malformedSchemaValues++
+        }
+
+        if (-not (Test-JsonProperty -Object $item -Name 'SignatureSetSha256')) {
+            $malformedSchemaValues++
+        } else {
+            $signatureSetSha256 = [string]$item.SignatureSetSha256
+            if (Test-Sha256Text -Value $signatureSetSha256) {
+                $signatureSetSha256s.Add($signatureSetSha256.ToLowerInvariant()) | Out-Null
+            } else {
+                $malformedSchemaValues++
+            }
+        }
+
+        $cleanValue = Get-JsonValue -Object $item -Name 'Clean' -DefaultValue $null
+        if (-not (Test-JsonBoolProperty -Object $item -Name 'Clean')) {
+            $malformedBoolValues++
+        }
+
+        if (-not (ConvertTo-BoolOrDefault -Value $cleanValue -DefaultValue $false)) {
             $dirtyItems++
         }
 
@@ -335,21 +685,48 @@ function ConvertTo-AuditSummary {
             $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
         }
 
-        if (Test-JsonProperty -Object $item -Name 'Length') {
+        if (-not (Test-JsonProperty -Object $item -Name 'Length')) {
+            $malformedNumericValues++
+        } elseif (Test-NativeJsonInt64Value -Value $item.Length) {
             $itemLengths.Add((ConvertTo-LongOrDefault -Value $item.Length -DefaultValue -1)) | Out-Null
+        } else {
+            $malformedNumericValues++
         }
 
         if ((Test-JsonProperty -Object $item -Name 'Sha256') -and -not [string]::IsNullOrWhiteSpace([string]$item.Sha256)) {
             $itemSha256s.Add(([string]$item.Sha256).ToLowerInvariant()) | Out-Null
         }
 
-        if (-not (Test-JsonProperty -Object $item -Name 'SignatureHits')) {
+        $signatureHitsProperty = @(Get-JsonProperty -Object $item -Name 'SignatureHits' | Select-Object -First 1)
+        if ($signatureHitsProperty.Count -ne 1 -or $null -eq $signatureHitsProperty[0].Value -or -not ($signatureHitsProperty[0].Value -is [System.Array])) {
+            $malformedArrayValues++
             continue
         }
 
-        foreach ($hit in @($item.SignatureHits)) {
-            if (Test-JsonProperty -Object $hit -Name 'Count') {
-                $hitCount += ConvertTo-IntOrDefault -Value $hit.Count -DefaultValue 0
+        foreach ($hit in @($signatureHitsProperty[0].Value)) {
+            $hitName = ''
+            if (Test-JsonProperty -Object $hit -Name 'Name') {
+                $hitName = [string]$hit.Name
+            }
+
+            if ([string]::IsNullOrWhiteSpace($hitName)) {
+                $malformedSchemaValues++
+            }
+
+            if (-not (Test-JsonProperty -Object $hit -Name 'Count')) {
+                $malformedNumericValues++
+                continue
+            }
+
+            if (Test-NativeJsonInt32Value -Value $hit.Count) {
+                $hitCountValue = ConvertTo-IntOrDefault -Value $hit.Count -DefaultValue 0
+                $hitCount += $hitCountValue
+                if (-not [string]::IsNullOrWhiteSpace($hitName)) {
+                    $signatureHitNames.Add($hitName) | Out-Null
+                    $signatureHitVector.Add("$hitName=$hitCountValue") | Out-Null
+                }
+            } else {
+                $malformedNumericValues++
             }
         }
     }
@@ -360,9 +737,17 @@ function ConvertTo-AuditSummary {
         ItemPaths = @($itemPaths)
         ItemLengths = @($itemLengths)
         ItemSha256s = @($itemSha256s)
+        AuditSchemaVersions = @($auditSchemaVersions.ToArray() | Sort-Object -Unique)
+        SignatureSetSha256s = @($signatureSetSha256s.ToArray() | Sort-Object -Unique)
+        SignatureHitNames = @($signatureHitNames.ToArray() | Sort-Object -Unique)
+        SignatureHitVector = @($signatureHitVector.ToArray() | Sort-Object)
         DirtyItems = $dirtyItems
         SignatureHitCount = $hitCount
-        Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0)
+        MalformedNumericValues = $malformedNumericValues
+        MalformedBoolValues = $malformedBoolValues
+        MalformedArrayValues = $malformedArrayValues
+        MalformedSchemaValues = $malformedSchemaValues
+        Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0 -and $signatureHitVector.Count -gt 0 -and $malformedNumericValues -eq 0 -and $malformedBoolValues -eq 0 -and $malformedArrayValues -eq 0 -and $malformedSchemaValues -eq 0)
     }
 }
 
@@ -572,8 +957,18 @@ function Test-CurrentSliceBinding {
         $currentBytes = [System.IO.File]::ReadAllBytes($CurrentPath)
         $result.PrefixMatches = Test-BytePrefix -Prefix $beforeBytes -Content $afterBytes
         if (-not $result.PrefixMatches) {
-            if ($ScanOffsetBytes -lt 0 -or $ScanOffsetBytes -gt $afterBytes.Length) {
-                $result.Detail = "godot.log.after-launch does not have godot.log.before as a byte prefix and LogScanOffsetBytes is invalid; offset=$ScanOffsetBytes, afterLength=$($afterBytes.Length)"
+            if ($beforeBytes.Length -gt 0) {
+                $result.Detail = "godot.log.after-launch does not have non-empty godot.log.before as a byte prefix; beforeLength=$($beforeBytes.Length), offset=$ScanOffsetBytes"
+                return [pscustomobject]$result
+            }
+
+            if ($ScanOffsetBytes -ne 0) {
+                $result.Detail = "godot.log.before is empty after a launch-log reset, so LogScanOffsetBytes must be 0; offset=$ScanOffsetBytes"
+                return [pscustomobject]$result
+            }
+
+            if ($ScanOffsetBytes -gt $afterBytes.Length) {
+                $result.Detail = "LogScanOffsetBytes is outside godot.log.after-launch; offset=$ScanOffsetBytes, afterLength=$($afterBytes.Length)"
                 return [pscustomobject]$result
             }
 
@@ -592,7 +987,7 @@ function Test-CurrentSliceBinding {
 
             $result.PrefixMatches = $true
             $result.SliceMatches = $true
-            $result.Detail = 'godot.log.current-iteration matches godot.log.after-launch from LogScanOffsetBytes after a log reset'
+            $result.Detail = 'godot.log.current-iteration matches godot.log.after-launch from offset 0 after an empty-before log reset'
             return [pscustomobject]$result
         }
 
@@ -637,6 +1032,79 @@ function Test-PathUnderDirectory {
     }
 }
 
+function Test-ExistingPathChainHasNoReparsePoint {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    try {
+        $current = [System.IO.Path]::GetFullPath($Path)
+        if (-not (Test-Path -LiteralPath $current -ErrorAction SilentlyContinue)) {
+            $parent = [System.IO.Directory]::GetParent($current)
+            if ($null -eq $parent) {
+                return $false
+            }
+
+            $current = $parent.FullName
+        }
+
+        while (-not [string]::IsNullOrWhiteSpace($current)) {
+            if (Test-Path -LiteralPath $current -ErrorAction SilentlyContinue) {
+                $item = Get-Item -LiteralPath $current -Force -ErrorAction Stop
+                if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+                    return $false
+                }
+            }
+
+            $parent = [System.IO.Directory]::GetParent($current)
+            if ($null -eq $parent -or [string]::Equals($parent.FullName, $current, [System.StringComparison]::OrdinalIgnoreCase)) {
+                break
+            }
+
+            $current = $parent.FullName
+        }
+
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Test-AllExistingPathChainsHaveNoReparsePoint {
+    param([AllowEmptyCollection()][string[]]$Paths)
+
+    foreach ($path in @($Paths)) {
+        if ([string]::IsNullOrWhiteSpace($path)) {
+            continue
+        }
+
+        if (-not (Test-ExistingPathChainHasNoReparsePoint -Path $path)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-AllExistingLeafFilesHaveSingleHardlink {
+    param([AllowEmptyCollection()][string[]]$Paths)
+
+    foreach ($path in @($Paths)) {
+        if ([string]::IsNullOrWhiteSpace($path) -or -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            continue
+        }
+
+        $linkCount = Get-ExistingPathHardlinkCount -Path $path
+        if ($null -eq $linkCount -or $linkCount -ne 1) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
 function Get-ArrayCount {
     param([AllowNull()]$Value)
 
@@ -645,6 +1113,16 @@ function Get-ArrayCount {
     }
 
     return @($Value).Count
+}
+
+function Test-RawJsonRootArray {
+    param([AllowNull()][string]$Json)
+
+    if ([string]::IsNullOrWhiteSpace($Json)) {
+        return $false
+    }
+
+    return $Json.TrimStart().StartsWith('[', [System.StringComparison]::Ordinal)
 }
 
 function Get-JsonArrayProperty {
@@ -679,6 +1157,222 @@ function Get-JsonArrayProperty {
         Count = $value.Count
         Value = $value
     }
+}
+
+function ConvertTo-CheckNameSegment {
+    param([Parameter(Mandatory = $true)][string]$Name)
+
+    return ([regex]::Replace($Name, '([a-z0-9])([A-Z])', '$1_$2')).ToLowerInvariant()
+}
+
+function Test-NativeJsonNumberValue {
+    param([AllowNull()]$Value)
+
+    if ($null -eq $Value -or $Value -is [bool] -or $Value -is [string]) {
+        return $false
+    }
+
+    return (
+        $Value -is [byte] -or
+        $Value -is [sbyte] -or
+        $Value -is [int16] -or
+        $Value -is [uint16] -or
+        $Value -is [int] -or
+        $Value -is [uint32] -or
+        $Value -is [long] -or
+        $Value -is [uint64] -or
+        $Value -is [decimal] -or
+        $Value -is [double] -or
+        $Value -is [single]
+    )
+}
+
+function Test-NativeJsonIntegerValue {
+    param([AllowNull()]$Value)
+
+    if ($null -eq $Value -or $Value -is [bool] -or $Value -is [string]) {
+        return $false
+    }
+
+    return (
+        $Value -is [byte] -or
+        $Value -is [sbyte] -or
+        $Value -is [int16] -or
+        $Value -is [uint16] -or
+        $Value -is [int] -or
+        $Value -is [uint32] -or
+        $Value -is [long] -or
+        $Value -is [uint64]
+    )
+}
+
+function Test-NativeJsonInt32Value {
+    param([AllowNull()]$Value)
+
+    if (-not (Test-NativeJsonIntegerValue -Value $Value)) {
+        return $false
+    }
+
+    try {
+        $decimalValue = [decimal]$Value
+        return $decimalValue -ge [int]::MinValue -and $decimalValue -le [int]::MaxValue
+    } catch {
+        return $false
+    }
+}
+
+function Test-NativeJsonInt64Value {
+    param([AllowNull()]$Value)
+
+    if (-not (Test-NativeJsonIntegerValue -Value $Value)) {
+        return $false
+    }
+
+    try {
+        $decimalValue = [decimal]$Value
+        return $decimalValue -ge [long]::MinValue -and $decimalValue -le [long]::MaxValue
+    } catch {
+        return $false
+    }
+}
+
+function Test-JsonNumberProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if (-not (Test-JsonProperty -Object $Object -Name $Name)) {
+        return $false
+    }
+
+    return Test-NativeJsonNumberValue -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $null)
+}
+
+function Test-JsonIntegerProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if (-not (Test-JsonProperty -Object $Object -Name $Name)) {
+        return $false
+    }
+
+    return Test-NativeJsonIntegerValue -Value (Get-JsonValue -Object $Object -Name $Name -DefaultValue $null)
+}
+
+function Test-JsonBoolProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    if (-not (Test-JsonProperty -Object $Object -Name $Name)) {
+        return $false
+    }
+
+    return (Get-JsonValue -Object $Object -Name $Name -DefaultValue $null) -is [bool]
+}
+
+function Test-AllJsonIntegerProperties {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    $itemsArray = @($Items)
+    if ($itemsArray.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($item in $itemsArray) {
+        if (-not (Test-JsonIntegerProperty -Object $item -Name $Name)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-AllJsonBoolProperties {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name
+    )
+
+    $itemsArray = @($Items)
+    if ($itemsArray.Count -eq 0) {
+        return $false
+    }
+
+    foreach ($item in $itemsArray) {
+        if (-not (Test-JsonBoolProperty -Object $item -Name $Name)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Add-IntegerPropertyCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Prefix,
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Detail
+    )
+
+    $segment = ConvertTo-CheckNameSegment -Name $Name
+    Add-Check -Name "${Prefix}_${segment}_integer" -Passed (Test-JsonIntegerProperty -Object $Object -Name $Name) -Detail $Detail
+}
+
+function Add-NumberPropertyCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Prefix,
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Detail
+    )
+
+    $segment = ConvertTo-CheckNameSegment -Name $Name
+    Add-Check -Name "${Prefix}_${segment}_number" -Passed (Test-JsonNumberProperty -Object $Object -Name $Name) -Detail $Detail
+}
+
+function Add-BoolPropertyCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Prefix,
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Detail
+    )
+
+    $segment = ConvertTo-CheckNameSegment -Name $Name
+    Add-Check -Name "${Prefix}_${segment}_bool" -Passed (Test-JsonBoolProperty -Object $Object -Name $Name) -Detail $Detail
+}
+
+function Add-AllIntegerPropertiesCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Prefix,
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Detail
+    )
+
+    $segment = ConvertTo-CheckNameSegment -Name $Name
+    Add-Check -Name "${Prefix}_${segment}_integer" -Passed (Test-AllJsonIntegerProperties -Items $Items -Name $Name) -Detail $Detail
+}
+
+function Add-AllBoolPropertiesCheck {
+    param(
+        [Parameter(Mandatory = $true)][string]$Prefix,
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string]$Name,
+        [Parameter(Mandatory = $true)][string]$Detail
+    )
+
+    $segment = ConvertTo-CheckNameSegment -Name $Name
+    Add-Check -Name "${Prefix}_${segment}_bool" -Passed (Test-AllJsonBoolProperties -Items $Items -Name $Name) -Detail $Detail
 }
 
 function Get-FileSha256OrEmpty {
@@ -852,6 +1546,80 @@ function Test-NoJsonPropertyFalse {
     }
 
     return $true
+}
+
+function Test-AllJsonRespondingPropertiesValid {
+    param([AllowNull()]$Items)
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Responding')) {
+            return $false
+        }
+
+        $responding = Get-JsonValue -Object $item -Name 'Responding' -DefaultValue $null
+        if ($null -eq $responding) {
+            $mainWindowObserved = Get-JsonValue -Object $item -Name 'MainWindowObserved' -DefaultValue $null
+            if (-not (Test-JsonProperty -Object $item -Name 'MainWindowObserved') -or $mainWindowObserved -isnot [bool] -or [bool]$mainWindowObserved) {
+                return $false
+            }
+
+            continue
+        }
+
+        if ($responding -isnot [bool]) {
+            return $false
+        }
+    }
+
+    return @($Items).Count -gt 0
+}
+
+function Test-NoJsonRespondingFalse {
+    param([AllowNull()]$Items)
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Responding')) {
+            continue
+        }
+
+        $responding = Get-JsonValue -Object $item -Name 'Responding' -DefaultValue $null
+        if ($null -eq $responding) {
+            $mainWindowObserved = Get-JsonValue -Object $item -Name 'MainWindowObserved' -DefaultValue $null
+            if ((Test-JsonProperty -Object $item -Name 'MainWindowObserved') -and $mainWindowObserved -is [bool] -and -not [bool]$mainWindowObserved) {
+                continue
+            }
+
+            return $false
+        }
+
+        if ($responding -isnot [bool] -or -not [bool]$responding) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-MaxConsecutiveUnresponsiveProbeSamples {
+    param([AllowNull()]$Items)
+
+    $maxConsecutive = 0
+    $currentConsecutive = 0
+    foreach ($item in @($Items)) {
+        $hungWindow = Get-JsonBoolValue -Object $item -Name 'HungWindow' -DefaultValue $false
+        $responding = Get-JsonValue -Object $item -Name 'Responding' -DefaultValue $null
+        $sampleUnresponsive = $hungWindow -or ($null -ne $responding -and $responding -is [bool] -and -not [bool]$responding)
+        if ($sampleUnresponsive) {
+            $currentConsecutive++
+            if ($currentConsecutive -gt $maxConsecutive) {
+                $maxConsecutive = $currentConsecutive
+            }
+        } else {
+            $currentConsecutive = 0
+        }
+    }
+
+    return $maxConsecutive
 }
 
 function Get-ValueCounts {
@@ -1045,6 +1813,9 @@ Write-Output "evidence_dir=$resolvedEvidenceDir"
 
 $planExists = Test-Path -LiteralPath $planPath -PathType Leaf
 $summaryExists = Test-Path -LiteralPath $summaryPath -PathType Leaf
+Add-Check -Name 'evidence_dir_reparse_point_free' -Passed (Test-ExistingPathChainHasNoReparsePoint -Path $resolvedEvidenceDir) -Detail 'EvidenceDir and its existing parent chain must not contain symlinks, junctions, or other reparse points'
+Add-Check -Name 'top_level_canonical_artifact_paths_reparse_point_free' -Passed (Test-AllExistingPathChainsHaveNoReparsePoint -Paths @($planPath, $summaryPath)) -Detail 'top-level canonical evidence artifact paths must not cross symlinks, junctions, or other reparse points'
+Add-Check -Name 'top_level_canonical_artifact_files_single_hardlink' -Passed (Test-AllExistingLeafFilesHaveSingleHardlink -Paths @($planPath, $summaryPath)) -Detail 'top-level canonical runtime monkey artifact files must not be hardlinked or have unknown hardlink counts'
 Add-Check -Name 'monkey_plan_exists' -Passed $planExists -Detail 'requires monkey-plan.json'
 Add-Check -Name 'monkey_summary_exists' -Passed $summaryExists -Detail 'requires monkey-summary.json from a launched monkey run'
 
@@ -1096,7 +1867,19 @@ Add-Check -Name 'expected_ritsu_compat_branch_parameter_provided' -Passed (-not 
 Add-Check -Name 'expected_patch_count_parameter_provided' -Passed (-not $FailOnMismatch -or $ExpectedPatchCount -gt 0) -Detail 'Runtime monkey proof packets must be checked with -ExpectedPatchCount'
 
 if ($null -ne $plan) {
+    foreach ($fieldName in @(
+            'HangProbeSchemaVersion',
+            'Iterations',
+            'ObservationIntervalSeconds',
+            'UnresponsiveSampleThreshold',
+            'NoLogGrowthTimeoutSeconds',
+            'ExpectedPatchCount',
+            'PlannedVakuuFightIterationCount')) {
+        Add-IntegerPropertyCheck -Prefix 'plan' -Object $plan -Name $fieldName -Detail "monkey-plan.json $fieldName must be retained as a native JSON integer, not a string or null."
+    }
+
     Add-Check -Name 'plan_hang_probe_schema_version' -Passed ((Get-JsonIntValue -Object $plan -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'HangProbeSchemaVersion must be 1'
+    Add-BoolPropertyCheck -Prefix 'plan' -Object $plan -Name 'Launch' -Detail 'monkey-plan.json Launch must be retained as a native JSON boolean, not a string or null.'
     Add-Check -Name 'plan_launch_true' -Passed ((Get-JsonBoolValue -Object $plan -Name 'Launch' -DefaultValue $false)) -Detail 'monkey packets require a launched run; dry-run plans have no runtime evidence'
     Add-Check -Name 'plan_iterations_positive' -Passed ($planIterations -gt 0) -Detail "plan Iterations must be positive; found $planIterations"
     Add-Check -Name 'plan_scenario_present' -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $plan -Name 'Scenario' -DefaultValue ''))) -Detail 'Scenario must identify the planned risk lane'
@@ -1110,6 +1893,8 @@ if ($null -ne $plan) {
     Add-Check -Name 'plan_command_corpus_array' -Passed ([bool]$planCommandCorpus.IsArray) -Detail 'CommandCorpus must be retained as an array, even when empty'
     Add-Check -Name 'plan_command_corpus_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($planCommandCorpusPath)) -Detail 'CommandCorpusPath must bind the retained command-corpus.txt file'
     Add-Check -Name 'plan_command_corpus_path_under_evidence_dir' -Passed ($planCommandCorpusPath -and (Test-PathUnderDirectory -Path $planCommandCorpusPath -Directory $resolvedEvidenceDir)) -Detail 'CommandCorpusPath must stay inside the evidence directory'
+    Add-Check -Name 'plan_command_corpus_path_reparse_point_free' -Passed ($planCommandCorpusPath -and (Test-ExistingPathChainHasNoReparsePoint -Path $planCommandCorpusPath)) -Detail 'CommandCorpusPath must not cross symlinks, junctions, or other reparse points'
+    Add-Check -Name 'plan_command_corpus_path_single_hardlink' -Passed (Test-AllExistingLeafFilesHaveSingleHardlink -Paths @($planCommandCorpusPath)) -Detail 'CommandCorpusPath must not be hardlinked or have an unknown hardlink count'
     Add-Check -Name 'plan_command_corpus_leaf_expected' -Passed ([string]::Equals([System.IO.Path]::GetFileName($planCommandCorpusPath), 'command-corpus.txt', [System.StringComparison]::OrdinalIgnoreCase)) -Detail 'CommandCorpusPath must point at command-corpus.txt'
     Add-Check -Name 'plan_command_corpus_exists' -Passed $planCommandCorpusExists -Detail 'command-corpus.txt must be retained'
     Add-Check -Name 'plan_command_corpus_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($planCommandCorpusSha256)) -Detail 'CommandCorpusSha256 must bind the retained command corpus'
@@ -1164,6 +1949,8 @@ if ($null -ne $plan) {
     $sourceWorkspaceCheckExists = $sourceWorkspaceCheckPath -and (Test-Path -LiteralPath $sourceWorkspaceCheckPath -PathType Leaf)
     Add-Check -Name 'plan_source_workspace_check_path_present' -Passed (-not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckPath)) -Detail 'SourceWorkspaceCheckPath must bind the packet to the local recovered-source workspace check'
     Add-Check -Name 'plan_source_workspace_check_under_evidence_dir' -Passed ($sourceWorkspaceCheckPath -and (Test-PathUnderDirectory -Path $sourceWorkspaceCheckPath -Directory $resolvedEvidenceDir)) -Detail 'SourceWorkspaceCheckPath must stay inside the evidence directory'
+    Add-Check -Name 'plan_source_workspace_check_reparse_point_free' -Passed ($sourceWorkspaceCheckPath -and (Test-ExistingPathChainHasNoReparsePoint -Path $sourceWorkspaceCheckPath)) -Detail 'SourceWorkspaceCheckPath must not cross symlinks, junctions, or other reparse points'
+    Add-Check -Name 'plan_source_workspace_check_single_hardlink' -Passed (Test-AllExistingLeafFilesHaveSingleHardlink -Paths @($sourceWorkspaceCheckPath)) -Detail 'SourceWorkspaceCheckPath must not be hardlinked or have an unknown hardlink count'
     Add-Check -Name 'plan_source_workspace_check_exists' -Passed $sourceWorkspaceCheckExists -Detail 'requires retained local-godot-source-workspace-check.json'
     Add-Check -Name 'plan_source_workspace_check_hash_present' -Passed (-not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckSha256)) -Detail 'SourceWorkspaceCheckSha256 must be retained for packet/source snapshot binding'
     if ($sourceWorkspaceCheckExists -and -not [string]::IsNullOrWhiteSpace($sourceWorkspaceCheckSha256)) {
@@ -1302,7 +2089,40 @@ if ($null -ne $summary) {
     $summaryWindowCaptureMissingCount = Get-JsonIntValue -Object $summary -Name 'WindowCaptureMissingCount' -DefaultValue -1
     $expectedSummaryPassed = $summaryResults.Count -gt 0 -and $failedSummaryResults.Count -eq 0 -and $summaryCompletedIterations -eq $summaryRequestedIterations
 
+    foreach ($fieldName in @(
+            'HangProbeSchemaVersion',
+            'RequestedIterations',
+            'CompletedIterations',
+            'ExpectedPatchCount',
+            'FailedIterations',
+            'ProcessExitCount',
+            'MainWindowMissingCount',
+            'LiveSessionBindingMissingCount',
+            'GodotLogBeforeMissingCount',
+            'CurrentIterationLogMissingCount',
+            'UnresponsiveIterationCount',
+            'StaleProcessObservedCount',
+            'LogStallIterationCount',
+            'CommandAckMissingCount',
+            'LiveSessionRestoreItemCountMismatchCount',
+            'LiveSessionPreservedCurrentRunManifestMissingCount',
+            'LiveSessionRestoreLeakCount',
+            'LiveSessionRestoreHashMismatchCount',
+            'LiveSessionSelectedProcessNotStoppedCount',
+            'VakuuFightIterationCount',
+            'MaxSecondsWithoutLogGrowth',
+            'MaxConsecutiveUnresponsiveSamples')) {
+        Add-IntegerPropertyCheck -Prefix 'summary' -Object $summary -Name $fieldName -Detail "monkey-summary.json $fieldName must be retained as a native JSON integer, not a string or null."
+    }
+
+    if (Test-JsonProperty -Object $summary -Name 'WindowCaptureMissingCount') {
+        Add-IntegerPropertyCheck -Prefix 'summary' -Object $summary -Name 'WindowCaptureMissingCount' -Detail 'monkey-summary.json WindowCaptureMissingCount must be retained as a native JSON integer when present.'
+    }
+
+    Add-NumberPropertyCheck -Prefix 'summary' -Object $summary -Name 'MaxMainMenuElapsedSeconds' -Detail 'monkey-summary.json MaxMainMenuElapsedSeconds must be retained as a native JSON number, not a string or null.'
+
     Add-Check -Name 'summary_hang_probe_schema_version' -Passed ((Get-JsonIntValue -Object $summary -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'summary HangProbeSchemaVersion must be 1'
+    Add-BoolPropertyCheck -Prefix 'summary' -Object $summary -Name 'Passed' -Detail 'monkey-summary.json Passed must be retained as a native JSON boolean, not a string or null.'
     if ($null -ne $plan) {
         Add-Check -Name 'summary_scenario_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'Scenario' -DefaultValue ''), $planScenario, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Scenario must match monkey-plan.json Scenario'
         Add-Check -Name 'summary_command_selection_mode_matches_plan' -Passed ([string]::Equals([string](Get-JsonValue -Object $summary -Name 'CommandSelectionMode' -DefaultValue ''), $planCommandSelectionMode, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json CommandSelectionMode must match monkey-plan.json CommandSelectionMode'
@@ -1446,6 +2266,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
     $iterationDir = Resolve-EvidenceFile $iterationName
     $iterationDirExists = Test-Path -LiteralPath $iterationDir -PathType Container
     Add-Check -Name "${iterationName}_directory_exists" -Passed $iterationDirExists -Detail "requires $iterationName directory"
+    Add-Check -Name "${iterationName}_directory_reparse_point_free" -Passed ($iterationDirExists -and (Test-ExistingPathChainHasNoReparsePoint -Path $iterationDir)) -Detail "$iterationName and its existing parent chain must not contain symlinks, junctions, or other reparse points"
 
     if (-not $iterationDirExists) {
         continue
@@ -1482,6 +2303,19 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
     $currentIterationLogExists = Test-Path -LiteralPath $currentIterationLogPath -PathType Leaf
     $auditExists = Test-Path -LiteralPath $auditPath -PathType Leaf
     $sts1ModeCheckExists = Test-Path -LiteralPath $sts1ModeCheckPath -PathType Leaf
+    $canonicalIterationArtifactPaths = @(
+        $resultPath,
+        $prepareOutputPath,
+        $sessionStatePath,
+        $restoreStatePath,
+        $commandFilePath,
+        $beforeLogPath,
+        $logPath,
+        $currentIterationLogPath,
+        $auditPath,
+        $probeSamplesCandidate,
+        $sts1ModeCheckPath
+    )
 
     Add-Check -Name "${iterationName}_iteration_result_exists" -Passed $resultExists -Detail 'requires iteration-result.json'
     Add-Check -Name "${iterationName}_prepare_output_exists" -Passed $prepareOutputExists -Detail 'requires retained prepare-output.json from the launched prepare phase'
@@ -1493,6 +2327,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
     Add-Check -Name "${iterationName}_current_iteration_log_exists" -Passed $currentIterationLogExists -Detail 'requires godot.log.current-iteration sliced from the accepted scan offset'
     Add-Check -Name "${iterationName}_audit_json_exists" -Passed $auditExists -Detail 'requires godot-log-audit.json'
     Add-Check -Name "${iterationName}_sts1_mode_log_check_exists" -Passed $sts1ModeCheckExists -Detail 'requires retained sts1-mode-log-check.json'
+    Add-Check -Name "${iterationName}_canonical_artifact_paths_reparse_point_free" -Passed (Test-AllExistingPathChainsHaveNoReparsePoint -Paths $canonicalIterationArtifactPaths) -Detail 'canonical per-iteration artifact paths must not cross symlinks, junctions, or other reparse points'
+    Add-Check -Name "${iterationName}_canonical_artifact_files_single_hardlink" -Passed (Test-AllExistingLeafFilesHaveSingleHardlink -Paths $canonicalIterationArtifactPaths) -Detail 'canonical per-iteration artifact files must not be hardlinked or have unknown hardlink counts'
     Add-Check -Name "${iterationName}_plan_entry_exists" -Passed ($null -ne $plannedForIteration) -Detail 'monkey-plan.json must include a PlannedCommands row for this iteration'
     Add-Check -Name "${iterationName}_summary_result_exists" -Passed ($null -ne $summaryForIteration) -Detail 'monkey-summary.json Results must include a row for this iteration'
 
@@ -1528,6 +2364,37 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
         $iterationResult = Read-JsonOrNull -Path $resultPath -CheckName "${iterationName}_iteration_result_json_valid"
         if ($null -ne $iterationResult) {
             Add-Check -Name "${iterationName}_iteration_result_json_valid" -Passed $true -Detail 'iteration-result.json parsed'
+            foreach ($fieldName in @(
+                    'HangProbeSchemaVersion',
+                    'Iteration',
+                    'CommandIndex',
+                    'LiveSessionLaunchedProcessId',
+                    'LiveSessionPidAttributionSchemaVersion',
+                    'LiveSessionPreLaunchSlayProcessCount',
+                    'LiveSessionSelectedGameProcessId',
+                    'LiveSessionSelectedGameProcessParentProcessId',
+                    'LiveSessionRestoreSchemaVersion',
+                    'LiveSessionMovedModCount',
+                    'LiveSessionMovedCurrentRunCount',
+                    'LiveSessionRestoredModCount',
+                    'LiveSessionRestoredCurrentRunCount',
+                    'LiveSessionPreservedNewCurrentRunCount',
+                    'LiveSessionPostRestoreSlayProcessCount',
+                    'LiveSessionPostRestoreGodotProcessCount',
+                    'GameProcessId',
+                    'MaxSecondsWithoutLogGrowth',
+                    'MaxConsecutiveUnresponsiveSamples',
+                    'StaleProcessCount',
+                    'GodotLogBeforeLengthBytes',
+                    'GodotLogAfterLaunchLengthBytes',
+                    'GodotLogCurrentIterationLengthBytes',
+                    'PreLaunchLogLengthBytes',
+                    'LogScanOffsetBytes')) {
+                Add-IntegerPropertyCheck -Prefix $iterationName -Object $iterationResult -Name $fieldName -Detail "iteration-result.json $fieldName must be retained as a native JSON integer, not a string or null."
+            }
+
+            Add-NumberPropertyCheck -Prefix $iterationName -Object $iterationResult -Name 'MainMenuElapsedSeconds' -Detail 'iteration-result.json MainMenuElapsedSeconds must be retained as a native JSON number, not a string or null.'
+
             $resultIterationNumber = Get-JsonIntValue -Object $iterationResult -Name 'Iteration' -DefaultValue 0
             Add-Check -Name "${iterationName}_iteration_number_matches_directory" -Passed ($resultIterationNumber -eq $iteration) -Detail "iteration-result.json Iteration must match directory $iterationName; found $resultIterationNumber"
             Add-Check -Name "${iterationName}_hang_probe_schema_version" -Passed ((Get-JsonIntValue -Object $iterationResult -Name 'HangProbeSchemaVersion' -DefaultValue 0) -eq 1) -Detail 'iteration HangProbeSchemaVersion must be 1'
@@ -1535,6 +2402,24 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_scenario_tag_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'ScenarioTag' -DefaultValue ''))) -Detail 'ScenarioTag must be retained for triage'
             Add-Check -Name "${iterationName}_owner_area_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'OwnerArea' -DefaultValue ''))) -Detail 'OwnerArea must be retained for triage'
             Add-Check -Name "${iterationName}_command_selection_mode_present" -Passed (-not [string]::IsNullOrWhiteSpace([string](Get-JsonValue -Object $iterationResult -Name 'CommandSelectionMode' -DefaultValue ''))) -Detail 'CommandSelectionMode must be retained for triage'
+            foreach ($fieldName in @(
+                    'Passed',
+                    'MainMenuReached',
+                    'MainMenuObservationPassed',
+                    'RuntimeObservationPassed',
+                    'StartupLogProbePassed',
+                    'PostCommandLogProbePassed',
+                    'ResponsivenessProbePassed',
+                    'CommandAckRequired',
+                    'CommandAckObserved',
+                    'MainWindowObserved',
+                    'StaleProcessObserved',
+                    'AuditClean',
+                    'ExpectationPassed',
+                    'Sts1ModeVerifierPassed',
+                    'RestoreSucceeded')) {
+                Add-BoolPropertyCheck -Prefix $iterationName -Object $iterationResult -Name $fieldName -Detail "iteration-result.json $fieldName must be retained as a native JSON boolean, not a string or null."
+            }
             Add-Check -Name "${iterationName}_main_menu_reached" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuReached must be true; false means main-menu timeout or launch failure'
             Add-Check -Name "${iterationName}_main_menu_observation_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'MainMenuObservationPassed' -DefaultValue $false)) -Detail 'MainMenuObservationPassed must be true'
             Add-Check -Name "${iterationName}_runtime_observation_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'RuntimeObservationPassed' -DefaultValue $false)) -Detail 'RuntimeObservationPassed must be true'
@@ -1689,6 +2574,15 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_result_game_process_start_time_after_live_session_launch" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'GameProcessStartTimeAfterLiveSessionLaunch' -DefaultValue $false) -and $gameProcessStartAfterLiveSessionLaunch) -Detail 'GameProcessStartTimeUtc must be at or after LiveSessionLaunchedAt'
 
             if ($null -ne $prepareOutput) {
+                foreach ($fieldName in @(
+                        'LaunchedProcessId',
+                        'PidAttributionSchemaVersion',
+                        'PreLaunchSlayProcessCount',
+                        'SelectedGameProcessId',
+                        'SelectedGameProcessParentProcessId')) {
+                    Add-IntegerPropertyCheck -Prefix "${iterationName}_prepare_output" -Object $prepareOutput -Name $fieldName -Detail "prepare-output.json $fieldName must be retained as a native JSON integer, not a string or null."
+                }
+
                 $prepareOutputEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $prepareOutput -Name 'EvidenceDir' -DefaultValue ''))
                 $prepareLaunchFilePathFull = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $prepareOutput -Name 'LaunchFilePath' -DefaultValue ''))
                 $prepareLaunchArgumentList = @(ConvertTo-StringArray -Value (Get-JsonValue -Object $prepareOutput -Name 'LaunchArgumentList' -DefaultValue @()))
@@ -1820,8 +2714,12 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     $afterHasBeforePrefix = Test-BytePrefix -Prefix ([System.IO.File]::ReadAllBytes($beforeLogPath)) -Content ([System.IO.File]::ReadAllBytes($logPath))
                 }
 
-                $offsetMatchesAcceptedStart = if ($afterHasBeforePrefix) { $resultLogScanOffsetBytes -eq $beforeLogLength } else { $resultLogScanOffsetBytes -eq 0 }
-                Add-Check -Name "${iterationName}_log_scan_offset_matches_before_length" -Passed $offsetMatchesAcceptedStart -Detail "LogScanOffsetBytes must equal retained godot.log.before length when the launch log appends, or 0 when Godot rewrites the launch log; offset=$resultLogScanOffsetBytes, beforeLength=$beforeLogLength, afterHasBeforePrefix=$afterHasBeforePrefix"
+                $offsetMatchesAcceptedStart = if ($afterHasBeforePrefix) {
+                    $resultLogScanOffsetBytes -eq $beforeLogLength
+                } else {
+                    $beforeLogLength -eq 0 -and $resultLogScanOffsetBytes -eq 0
+                }
+                Add-Check -Name "${iterationName}_log_scan_offset_matches_before_length" -Passed $offsetMatchesAcceptedStart -Detail "LogScanOffsetBytes must equal retained godot.log.before length when the launch log appends; a reset is valid only with zero-byte godot.log.before and offset 0; offset=$resultLogScanOffsetBytes, beforeLength=$beforeLogLength, afterHasBeforePrefix=$afterHasBeforePrefix"
             }
 
             if ($beforeLogExists -and $logExists -and $currentIterationLogExists) {
@@ -1889,6 +2787,16 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             Add-Check -Name "${iterationName}_iteration_passed" -Passed ((Get-JsonBoolValue -Object $iterationResult -Name 'Passed' -DefaultValue $false)) -Detail 'Passed must be true'
 
             if ($null -ne $restoreState) {
+                foreach ($fieldName in @(
+                        'RestoreSchemaVersion',
+                        'RestoredModCount',
+                        'RestoredCurrentRunCount',
+                        'PreservedNewCurrentRunCount',
+                        'PostRestoreSlayProcessCount',
+                        'PostRestoreGodotProcessCount')) {
+                    Add-IntegerPropertyCheck -Prefix "${iterationName}_restore_state" -Object $restoreState -Name $fieldName -Detail "restore-state.json $fieldName must be retained as a native JSON integer, not a string or null."
+                }
+
                 $restoreStateEvidenceDir = Resolve-ChildOrAbsolutePath -BaseDir $iterationDir -Path ([string](Get-JsonValue -Object $restoreState -Name 'EvidenceDir' -DefaultValue ''))
                 $restoreStateRestoredAtUtc = ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $restoreState -Name 'RestoredAt' -DefaultValue $null)
             $restoreStateSchemaVersion = Get-JsonIntValue -Object $restoreState -Name 'RestoreSchemaVersion' -DefaultValue 0
@@ -1992,6 +2900,15 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             }
 
             if ($null -ne $summaryForIteration) {
+                foreach ($fieldName in @(
+                        'Iteration',
+                        'MaxSecondsWithoutLogGrowth',
+                        'MaxConsecutiveUnresponsiveSamples')) {
+                    Add-IntegerPropertyCheck -Prefix "${iterationName}_summary_result" -Object $summaryForIteration -Name $fieldName -Detail "monkey-summary.json Results $fieldName must be retained as a native JSON integer, not a string or null."
+                }
+
+                Add-NumberPropertyCheck -Prefix "${iterationName}_summary_result" -Object $summaryForIteration -Name 'MainMenuElapsedSeconds' -Detail 'monkey-summary.json Results MainMenuElapsedSeconds must be retained as a native JSON number, not a string or null.'
+
                 $resultScenario = [string](Get-JsonValue -Object $iterationResult -Name 'Scenario' -DefaultValue '')
                 $summaryScenario = [string](Get-JsonValue -Object $summaryForIteration -Name 'Scenario' -DefaultValue '')
                 $resultCommand = [string](Get-JsonValue -Object $iterationResult -Name 'Command' -DefaultValue '')
@@ -2030,6 +2947,9 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 $summaryFailureReasonCodes = @(ConvertTo-StringArray -Value $summaryFailureReasonCodesProperty.Value)
                 $resultHangSignals = @(ConvertTo-StringArray -Value $resultHangSignalsForSummaryProperty.Value)
                 $summaryHangSignals = @(ConvertTo-StringArray -Value $summaryHangSignalsProperty.Value)
+                foreach ($fieldName in @('Passed', 'CommandAckRequired', 'CommandAckObserved')) {
+                    Add-BoolPropertyCheck -Prefix "${iterationName}_summary_result" -Object $summaryForIteration -Name $fieldName -Detail "monkey-summary.json Results[] $fieldName must be retained as a native JSON boolean, not a string or null."
+                }
                 Add-Check -Name "${iterationName}_summary_result_scenario_matches_iteration" -Passed ([string]::Equals($summaryScenario, $resultScenario, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results Scenario must match iteration-result.json'
                 Add-Check -Name "${iterationName}_summary_result_command_matches_iteration" -Passed ([string]::Equals($summaryCommand, $resultCommand, [System.StringComparison]::Ordinal)) -Detail 'monkey-summary.json Results Command must match iteration-result.json'
                 if ($commandFileExists) {
@@ -2077,7 +2997,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 try {
                     $probeSamplesJson = [System.IO.File]::ReadAllText($probeSamplesPath)
                     $probeSamplesParsed = $probeSamplesJson | ConvertFrom-Json
-                    $probeSamplesIsArray = $probeSamplesParsed -is [System.Array]
+                    $probeSamplesIsArray = Test-RawJsonRootArray -Json $probeSamplesJson
                     $probeSamples = @(if ($probeSamplesIsArray) { @($probeSamplesParsed) } else { @() })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_array" -Passed $probeSamplesIsArray -Detail 'runtime-probe-samples.json must be retained as a native JSON array'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_non_empty" -Passed ($probeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must contain samples'
@@ -2102,9 +3022,49 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_post_command_runtime_phase_observed" -Passed ($postCommandRuntimeProbeSamples.Count -gt 0) -Detail 'runtime-probe-samples.json must retain at least one PostCommandRuntime sample'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_startup_count_matches_main_menu_observation" -Passed ($mainMenuObservationSampleCount -ge 0 -and $startupMainMenuProbeSamples.Count -eq $mainMenuObservationSampleCount) -Detail "StartupMainMenu sample count must match MainMenuObservation.Samples; expected=$mainMenuObservationSampleCount actual=$($startupMainMenuProbeSamples.Count)"
                     Add-Check -Name "${iterationName}_runtime_probe_samples_runtime_count_matches_runtime_observation" -Passed ($runtimeObservationSampleCount -ge 0 -and $postCommandRuntimeProbeSamples.Count -eq $runtimeObservationSampleCount) -Detail "PostCommandRuntime sample count must match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)"
+                    $startupMaxUnresponsiveFromProbeSamples = Get-MaxConsecutiveUnresponsiveProbeSamples -Items $startupMainMenuProbeSamples
+                    $runtimeMaxUnresponsiveFromProbeSamples = Get-MaxConsecutiveUnresponsiveProbeSamples -Items $postCommandRuntimeProbeSamples
+                    $probeSamplesMaxUnresponsive = [Math]::Max($startupMaxUnresponsiveFromProbeSamples, $runtimeMaxUnresponsiveFromProbeSamples)
+                    $mainMenuObservationMaxUnresponsive = if ($null -ne $mainMenuObservationForProbeSamples) { Get-JsonIntValue -Object $mainMenuObservationForProbeSamples -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1 } else { -1 }
+                    $runtimeObservationMaxUnresponsive = if ($null -ne $runtimeObservationForProbeSamples) { Get-JsonIntValue -Object $runtimeObservationForProbeSamples -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1 } else { -1 }
+                    $mainMenuObservationHungWindowDetected = if ($null -ne $mainMenuObservationForProbeSamples) { Get-JsonBoolValue -Object $mainMenuObservationForProbeSamples -Name 'HungWindowDetected' -DefaultValue $true } else { $true }
+                    $runtimeObservationHungWindowDetected = if ($null -ne $runtimeObservationForProbeSamples) { Get-JsonBoolValue -Object $runtimeObservationForProbeSamples -Name 'HungWindowDetected' -DefaultValue $true } else { $true }
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_startup_max_unresponsive_matches_main_menu_observation" -Passed ($mainMenuObservationMaxUnresponsive -eq $startupMaxUnresponsiveFromProbeSamples) -Detail "StartupMainMenu raw probe samples must bind to MainMenuObservation.MaxConsecutiveUnresponsiveSamples; expected=$mainMenuObservationMaxUnresponsive actual=$startupMaxUnresponsiveFromProbeSamples"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_runtime_max_unresponsive_matches_runtime_observation" -Passed ($runtimeObservationMaxUnresponsive -eq $runtimeMaxUnresponsiveFromProbeSamples) -Detail "PostCommandRuntime raw probe samples must bind to RuntimeObservation.MaxConsecutiveUnresponsiveSamples; expected=$runtimeObservationMaxUnresponsive actual=$runtimeMaxUnresponsiveFromProbeSamples"
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_max_unresponsive_matches_iteration" -Passed ($iterationMaxUnresponsive -eq $probeSamplesMaxUnresponsive) -Detail "Raw runtime-probe-samples.json MaxConsecutiveUnresponsiveSamples must match iteration-result.json; expected=$iterationMaxUnresponsive actual=$probeSamplesMaxUnresponsive"
+                    if ($planUnresponsiveSampleThreshold -gt 0) {
+                        $startupUnresponsiveThresholdExceeded = $startupMaxUnresponsiveFromProbeSamples -ge $planUnresponsiveSampleThreshold
+                        $runtimeUnresponsiveThresholdExceeded = $runtimeMaxUnresponsiveFromProbeSamples -ge $planUnresponsiveSampleThreshold
+                        Add-Check -Name "${iterationName}_runtime_probe_samples_startup_threshold_matches_main_menu_observation" -Passed ($mainMenuObservationHungWindowDetected -eq $startupUnresponsiveThresholdExceeded) -Detail "StartupMainMenu raw probe threshold state must match MainMenuObservation.HungWindowDetected; threshold=$planUnresponsiveSampleThreshold expected=$mainMenuObservationHungWindowDetected actual=$startupUnresponsiveThresholdExceeded max=$startupMaxUnresponsiveFromProbeSamples"
+                        Add-Check -Name "${iterationName}_runtime_probe_samples_runtime_threshold_matches_runtime_observation" -Passed ($runtimeObservationHungWindowDetected -eq $runtimeUnresponsiveThresholdExceeded) -Detail "PostCommandRuntime raw probe threshold state must match RuntimeObservation.HungWindowDetected; threshold=$planUnresponsiveSampleThreshold expected=$runtimeObservationHungWindowDetected actual=$runtimeUnresponsiveThresholdExceeded max=$runtimeMaxUnresponsiveFromProbeSamples"
+                        Add-Check -Name "${iterationName}_runtime_probe_samples_max_unresponsive_below_threshold" -Passed ($probeSamplesMaxUnresponsive -lt $planUnresponsiveSampleThreshold) -Detail "Raw runtime-probe-samples.json MaxConsecutiveUnresponsiveSamples must stay below threshold $planUnresponsiveSampleThreshold; found $probeSamplesMaxUnresponsive"
+                    }
                     Add-Check -Name "${iterationName}_runtime_probe_samples_sampled_at_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'SampledAt') -Detail 'every probe sample must retain SampledAt'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_exists_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogExists') -Detail 'every probe sample must retain LogExists'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_length_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'LogLengthBytes') -Detail 'every probe sample must retain LogLengthBytes'
+                    foreach ($fieldName in @(
+                            'LogExists',
+                            'ProcessIdMatchesExpected',
+                            'ProcessStartTimeMatchesExpected',
+                            'ProcessPathMatchesExpected',
+                            'ProcessIdentityMatchesExpected',
+                            'ProcessObserved',
+                            'MainWindowObserved',
+                            'HungWindow')) {
+                        Add-AllBoolPropertiesCheck -Prefix "${iterationName}_runtime_probe_samples" -Items $probeSamples -Name $fieldName -Detail "runtime-probe-samples.json $fieldName must be retained as a native JSON boolean in every sample, not a string or null."
+                    }
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_responding_bool" -Passed (Test-AllJsonRespondingPropertiesValid -Items $probeSamples) -Detail 'runtime-probe-samples.json Responding must be retained as a native JSON boolean when MainWindowObserved=true; null is allowed only before a main window is observed.'
+                    foreach ($fieldName in @(
+                            'LogLengthBytes',
+                            'ProcessId',
+                            'ExpectedGameProcessId',
+                            'StaleProcessCount',
+                            'CurrentProcessCount',
+                            'UnknownStartTimeProcessCount',
+                            'AmbiguousCurrentProcessCount')) {
+                        Add-AllIntegerPropertiesCheck -Prefix "${iterationName}_runtime_probe_samples" -Items $probeSamples -Name $fieldName -Detail "every retained probe sample $fieldName must be a native JSON integer, not a string or null."
+                    }
+
                     Add-Check -Name "${iterationName}_runtime_probe_samples_log_last_write_field_present" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'LogLastWriteTimeUtc') -Detail 'every probe sample must retain LogLastWriteTimeUtc, even when the value is null before log creation'
                     $invalidSampledAtProbeSamples = @($probeSamples | Where-Object {
                         $null -eq (ConvertTo-DateTimeUtcOrNull -Value (Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue $null))
@@ -2208,7 +3168,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_process_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'ProcessObserved') -Detail 'every probe sample must retain ProcessObserved'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_main_window_observed_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'MainWindowObserved') -Detail 'every probe sample must retain MainWindowObserved'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_hung_window_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'HungWindow') -Detail 'every probe sample must retain HungWindow'
-                    Add-Check -Name "${iterationName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding; null is allowed before a main window is available'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_responding_field_present" -Passed (Test-AllJsonPropertiesRetained -Items $probeSamples -Name 'Responding') -Detail 'every probe sample must retain Responding; null is allowed only before a main window is observed'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_stale_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'StaleProcessCount') -Detail 'every probe sample must retain StaleProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_current_process_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'CurrentProcessCount') -Detail 'every probe sample must retain CurrentProcessCount'
                     Add-Check -Name "${iterationName}_runtime_probe_samples_unknown_start_time_count_field_present" -Passed (Test-AllJsonPropertiesPresent -Items $probeSamples -Name 'UnknownStartTimeProcessCount') -Detail 'every probe sample must retain UnknownStartTimeProcessCount'
@@ -2217,7 +3177,7 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                     Add-Check -Name "${iterationName}_runtime_probe_samples_main_window_observed" -Passed (Test-AnyJsonPropertyTrue -Items $probeSamples -Name 'MainWindowObserved') -Detail 'at least one probe sample must observe the main game window'
                     $postCommandProbeSamples = @($probeSamples | Where-Object { [string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue '') -eq 'PostCommandRuntime' })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_hung_window" -Passed (Test-NoJsonPropertyTrue -Items $postCommandProbeSamples -Name 'HungWindow') -Detail 'post-command runtime probe samples must not report hung windows; startup transients are governed by MaxConsecutiveUnresponsiveSamples'
-                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonPropertyFalse -Items $postCommandProbeSamples -Name 'Responding') -Detail 'post-command runtime probe samples must not report Responding=false; startup transients are governed by MaxConsecutiveUnresponsiveSamples'
+                    Add-Check -Name "${iterationName}_runtime_probe_samples_no_not_responding" -Passed (Test-NoJsonRespondingFalse -Items $postCommandProbeSamples) -Detail 'post-command runtime probe samples must not report Responding=false; null is allowed only before a main window is observed'
                     $staleProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
                     Add-Check -Name "${iterationName}_runtime_probe_samples_no_stale_processes" -Passed ($staleProcessSamples.Count -eq 0) -Detail 'probe samples must record StaleProcessCount=0 so shared godot.log evidence cannot come from a pre-existing process'
                     $unknownStartTimeSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'UnknownStartTimeProcessCount' -DefaultValue -1) -ne 0 })
@@ -2283,6 +3243,20 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $mainMenuObservation = Get-JsonValue -Object $iterationResult -Name 'MainMenuObservation' -DefaultValue $null
             Add-Check -Name "${iterationName}_main_menu_observation_exists" -Passed ($null -ne $mainMenuObservation) -Detail 'requires MainMenuObservation telemetry'
             if ($null -ne $mainMenuObservation) {
+                foreach ($fieldName in @('MaxStaleProcessCount', 'LogInitialLengthBytes', 'LogFinalLength', 'Samples', 'MaxConsecutiveUnresponsiveSamples')) {
+                    Add-IntegerPropertyCheck -Prefix "${iterationName}_main_menu_observation" -Object $mainMenuObservation -Name $fieldName -Detail "MainMenuObservation.$fieldName must be retained as a native JSON integer, not a string or null."
+                }
+
+                foreach ($fieldName in @(
+                        'MainMenuReached',
+                        'ProcessObserved',
+                        'ProcessExitedAfterObservation',
+                        'HungWindowDetected',
+                        'StaleProcessObserved',
+                        'NoLogGrowthTimeoutExceeded',
+                        'LogObserved')) {
+                    Add-BoolPropertyCheck -Prefix "${iterationName}_main_menu_observation" -Object $mainMenuObservation -Name $fieldName -Detail "MainMenuObservation.$fieldName must be retained as a native JSON boolean, not a string or null."
+                }
                 Add-Check -Name "${iterationName}_main_menu_observation_main_menu_reached" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'MainMenuReached' -DefaultValue $false)) -Detail 'MainMenuObservation.MainMenuReached must be true'
                 Add-Check -Name "${iterationName}_main_menu_observation_process_observed" -Passed ((Get-JsonBoolValue -Object $mainMenuObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'MainMenuObservation.ProcessObserved must be true'
                 Add-Check -Name "${iterationName}_main_menu_observation_no_process_exit" -Passed (-not (Get-JsonBoolValue -Object $mainMenuObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear before main menu'
@@ -2296,6 +3270,22 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $runtimeObservation = Get-JsonValue -Object $iterationResult -Name 'RuntimeObservation' -DefaultValue $null
             Add-Check -Name "${iterationName}_runtime_observation_exists" -Passed ($null -ne $runtimeObservation) -Detail 'requires RuntimeObservation telemetry'
             if ($null -ne $runtimeObservation) {
+                foreach ($fieldName in @('MaxStaleProcessCount', 'LogInitialLengthBytes', 'LogFinalLengthBytes', 'Samples', 'MaxConsecutiveUnresponsiveSamples')) {
+                    Add-IntegerPropertyCheck -Prefix "${iterationName}_runtime_observation" -Object $runtimeObservation -Name $fieldName -Detail "RuntimeObservation.$fieldName must be retained as a native JSON integer, not a string or null."
+                }
+
+                foreach ($fieldName in @(
+                        'Passed',
+                        'ProcessObserved',
+                        'ProcessExitedAfterObservation',
+                        'HungWindowDetected',
+                        'StaleProcessObserved',
+                        'LogObserved',
+                        'RuntimeLogGrowthRequired',
+                        'LogGrew',
+                        'NoLogGrowthTimeoutExceeded')) {
+                    Add-BoolPropertyCheck -Prefix "${iterationName}_runtime_observation" -Object $runtimeObservation -Name $fieldName -Detail "RuntimeObservation.$fieldName must be retained as a native JSON boolean, not a string or null."
+                }
                 Add-Check -Name "${iterationName}_runtime_observation_passed_detail" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'Passed' -DefaultValue $false)) -Detail 'RuntimeObservation.Passed must be true'
                 Add-Check -Name "${iterationName}_runtime_observation_process_observed" -Passed ((Get-JsonBoolValue -Object $runtimeObservation -Name 'ProcessObserved' -DefaultValue $false)) -Detail 'RuntimeObservation.ProcessObserved must be true'
                 Add-Check -Name "${iterationName}_runtime_observation_no_process_exit" -Passed (-not (Get-JsonBoolValue -Object $runtimeObservation -Name 'ProcessExitedAfterObservation' -DefaultValue $true)) -Detail 'process must not disappear during runtime observation'
@@ -2372,13 +3362,24 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
     if ($auditExists) {
         try {
             $auditSummary = Read-AuditSummary -Path $auditPath
-            Add-Check -Name "${iterationName}_audit_clean" -Passed ([bool]$auditSummary.Clean) -Detail "audit must have zero dirty items and zero signature hits; dirty=$($auditSummary.DirtyItems), hits=$($auditSummary.SignatureHitCount)"
+            Add-Check -Name "${iterationName}_audit_clean_bool" -Passed ([int]$auditSummary.MalformedBoolValues -eq 0) -Detail 'godot-log-audit.json Clean must be retained as a native JSON boolean'
+            Add-Check -Name "${iterationName}_audit_array_fields_native" -Passed ([int]$auditSummary.MalformedArrayValues -eq 0) -Detail 'godot-log-audit.json root and SignatureHits must be retained as native JSON arrays'
+            Add-Check -Name "${iterationName}_audit_numeric_fields_native" -Passed ([int]$auditSummary.MalformedNumericValues -eq 0) -Detail "godot-log-audit.json Length and SignatureHits[].Count must be native JSON integers; malformed=$($auditSummary.MalformedNumericValues)"
+            Add-Check -Name "${iterationName}_audit_schema_fields_current" -Passed ([int]$auditSummary.MalformedSchemaValues -eq 0) -Detail "godot-log-audit.json must retain AuditSchemaVersion=2, valid SignatureSetSha256, and named SignatureHits; malformedSchema=$($auditSummary.MalformedSchemaValues)"
+            Add-Check -Name "${iterationName}_audit_clean" -Passed ([bool]$auditSummary.Clean) -Detail "audit must have zero dirty items, zero signature hits, and native array/numeric/bool/schema fields; dirty=$($auditSummary.DirtyItems), hits=$($auditSummary.SignatureHitCount), malformedArray=$($auditSummary.MalformedArrayValues), malformedNumeric=$($auditSummary.MalformedNumericValues), malformedBool=$($auditSummary.MalformedBoolValues), malformedSchema=$($auditSummary.MalformedSchemaValues)"
             $auditItemPaths = @($auditSummary.ItemPaths)
             $auditItemLengths = @($auditSummary.ItemLengths)
             $auditItemSha256s = @($auditSummary.ItemSha256s)
+            $auditSchemaVersions = @($auditSummary.AuditSchemaVersions)
+            $auditSignatureSetSha256s = @($auditSummary.SignatureSetSha256s)
+            $auditSignatureHitNames = @($auditSummary.SignatureHitNames)
+            $auditSignatureHitVector = @($auditSummary.SignatureHitVector)
             $expectedAuditPath = [System.IO.Path]::GetFullPath($currentIterationLogPath)
             $expectedAuditLength = if ($currentIterationLogExists) { [long](Get-Item -LiteralPath $currentIterationLogPath).Length } else { -1L }
             $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogPath
+            Add-Check -Name "${iterationName}_audit_has_single_schema_version" -Passed ($auditSchemaVersions.Count -eq 1 -and [string]$auditSchemaVersions[0] -eq '2') -Detail "audit JSON must retain exactly one current AuditSchemaVersion=2; found $($auditSchemaVersions -join ',')"
+            Add-Check -Name "${iterationName}_audit_has_single_signature_set_sha256" -Passed ($auditSignatureSetSha256s.Count -eq 1) -Detail "audit JSON must retain exactly one SignatureSetSha256; found $($auditSignatureSetSha256s.Count)"
+            Add-Check -Name "${iterationName}_audit_signature_names_current" -Passed (Test-StringArrayEquals -Actual $auditSignatureHitNames -Expected $expectedAuditSignatureNames) -Detail "audit JSON must retain the current audit signature names; expected=$($expectedAuditSignatureNames -join ',') actual=$($auditSignatureHitNames -join ',')"
             Add-Check -Name "${iterationName}_audit_has_single_scanned_path" -Passed ($auditItemPaths.Count -eq 1) -Detail "audit JSON must retain exactly one scanned Path; found $($auditItemPaths.Count)"
             Add-Check -Name "${iterationName}_audit_path_matches_current_iteration_log" -Passed ($auditItemPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath)) -Detail 'godot-log-audit.json must be produced from the retained godot.log.current-iteration slice'
             Add-Check -Name "${iterationName}_audit_has_single_length" -Passed ($auditItemLengths.Count -eq 1) -Detail "audit JSON must retain exactly one Length; found $($auditItemLengths.Count)"
@@ -2394,9 +3395,14 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
                 $recomputedAuditSummary = Invoke-RecomputedAuditSummary -LogPath $currentIterationLogPath
                 $recomputedPaths = @($recomputedAuditSummary.ItemPaths)
                 $recomputedSha256s = @($recomputedAuditSummary.ItemSha256s)
+                $recomputedSchemaVersions = @($recomputedAuditSummary.AuditSchemaVersions)
+                $recomputedSignatureSetSha256s = @($recomputedAuditSummary.SignatureSetSha256s)
+                $recomputedSignatureHitVector = @($recomputedAuditSummary.SignatureHitVector)
                 Add-Check -Name "${iterationName}_audit_recomputed_from_current_iteration_log" -Passed ($recomputedPaths.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$recomputedPaths[0], $expectedAuditPath)) -Detail 'packet checker must recompute the audit from the retained current-iteration log'
                 Add-Check -Name "${iterationName}_audit_recomputed_clean" -Passed ([bool]$recomputedAuditSummary.Clean) -Detail "recomputed audit must have zero dirty items and zero signature hits; dirty=$($recomputedAuditSummary.DirtyItems), hits=$($recomputedAuditSummary.SignatureHitCount)"
-                Add-Check -Name "${iterationName}_audit_signature_counts_match_recomputed" -Passed ($auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount) -Detail "retained audit signature counts must match recomputed counts; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)"
+                Add-Check -Name "${iterationName}_audit_schema_version_matches_recomputed" -Passed (Test-StringArrayEquals -Actual $auditSchemaVersions -Expected $recomputedSchemaVersions) -Detail "retained audit schema versions must match recomputed versions; retained=$($auditSchemaVersions -join ',') recomputed=$($recomputedSchemaVersions -join ',')"
+                Add-Check -Name "${iterationName}_audit_signature_set_matches_recomputed" -Passed (Test-StringArrayEquals -Actual $auditSignatureSetSha256s -Expected $recomputedSignatureSetSha256s) -Detail 'retained audit SignatureSetSha256 must match the recomputed audit rule set hash'
+                Add-Check -Name "${iterationName}_audit_signature_counts_match_recomputed" -Passed ($auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount -and (Test-StringArrayEquals -Actual $auditSignatureHitVector -Expected $recomputedSignatureHitVector)) -Detail "retained audit signature vector must match recomputed Name/Count pairs; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)"
                 Add-Check -Name "${iterationName}_audit_sha256_matches_recomputed" -Passed ($auditItemSha256s.Count -eq 1 -and $recomputedSha256s.Count -eq 1 -and [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedSha256s[0])) -Detail 'retained audit Sha256 must match the recomputed audit Sha256'
             }
         } catch {
@@ -2426,6 +3432,8 @@ for ($iteration = 1; $iteration -le $expectedIterationCount; $iteration++) {
             $expectedSts1LogPath = ConvertTo-NormalizedPathOrEmpty -Path $currentIterationLogPath
             $expectedSts1LogLength = if ($currentIterationLogExists) { [long](Get-Item -LiteralPath $currentIterationLogPath).Length } else { -1L }
             $expectedSts1LogSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogPath
+            Add-IntegerPropertyCheck -Prefix "${iterationName}_sts1_mode_log_check" -Object $sts1ModeCheck -Name 'LogLength' -Detail 'sts1-mode-log-check.json LogLength must be retained as a native JSON integer, not a string or null.'
+            Add-AllBoolPropertiesCheck -Prefix "${iterationName}_sts1_mode_log_check_checks" -Items $sts1Checks -Name 'Passed' -Detail 'sts1-mode-log-check.json Checks[].Passed must be retained as native JSON booleans, not strings or nulls.'
             Add-Check -Name "${iterationName}_sts1_mode_log_check_mismatches_empty" -Passed ($sts1Mismatches.Count -eq 0) -Detail "sts1-mode-log-check.json must have zero mismatches; found $($sts1Mismatches.Count)"
             Add-Check -Name "${iterationName}_sts1_mode_log_check_all_checks_passed" -Passed ($sts1FailedChecks.Count -eq 0) -Detail "sts1-mode-log-check.json contains $($sts1FailedChecks.Count) failed checks"
             Add-Check -Name "${iterationName}_sts1_mode_log_check_mode_matches_plan" -Passed (-not [string]::IsNullOrWhiteSpace($expectedSts1Mode) -and $sts1Mode -eq $expectedSts1Mode) -Detail "sts1-mode-log-check.json Mode must match monkey-plan Sts1EventMode '$expectedSts1Mode'; found '$sts1Mode'"
@@ -2505,6 +3513,7 @@ foreach ($mismatch in $mismatches) {
 
 if ($OutFile) {
     $resolvedOutFile = Resolve-RepoPath $OutFile
+    Assert-OutFileDoesNotOverwriteCanonicalEvidence -ResolvedOutFile $resolvedOutFile -EvidenceRoot $resolvedEvidenceDir
     $outDir = [System.IO.Path]::GetDirectoryName($resolvedOutFile)
     if ($outDir -and -not (Test-Path -LiteralPath $outDir)) {
         [void][System.IO.Directory]::CreateDirectory($outDir)

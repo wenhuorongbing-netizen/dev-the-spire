@@ -20,6 +20,17 @@ Set-StrictMode -Version 3.0
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $logAuditScript = Join-Path $PSScriptRoot 'audit-godot-log.ps1'
 $sts1EnabledModeLogVerifierScript = Join-Path $PSScriptRoot 'check-sts1-enabled-mode-runtime-log.ps1'
+$expectedAuditSignatureNames = @(
+    'Creature.get_ShowsInfiniteHp',
+    'DependencyFramework.Patches.UI.HealthBarForecastPatch',
+    'dependency framework patch failure',
+    'DamageMeter',
+    'RouteSuggest',
+    'Spire Plus error/exception',
+    'TypeLoadException',
+    'MissingMethodException',
+    'Godot ERROR line'
+) | Sort-Object
 
 function Resolve-RepoPath {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -31,13 +42,176 @@ function Resolve-RepoPath {
     return [System.IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
 }
 
+function Test-OutputPathInsideDirectory {
+    param(
+        [AllowEmptyString()][string]$Path,
+        [AllowEmptyString()][string]$Directory
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or [string]::IsNullOrWhiteSpace($Directory)) {
+        return $false
+    }
+
+    try {
+        $fullPath = [System.IO.Path]::GetFullPath($Path)
+        $fullDirectory = [System.IO.Path]::GetFullPath($Directory).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar) + [System.IO.Path]::DirectorySeparatorChar
+        return $fullPath.StartsWith($fullDirectory, [System.StringComparison]::OrdinalIgnoreCase)
+    } catch {
+        return $false
+    }
+}
+
+function Assert-OutFileDoesNotOverwriteCanonicalEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$ResolvedOutFile,
+        [Parameter(Mandatory = $true)][string]$EvidenceRoot
+    )
+
+    $canonicalNames = @(
+        'monkey-plan.json',
+        'monkey-summary.json',
+        'autoslay-plan.json',
+        'autoslay-summary.json',
+        'direct-smoke-summary.json',
+        'iteration-result.json',
+        'run-result.json',
+        'godot.log.before',
+        'godot.log.after-launch',
+        'godot.log.current-iteration',
+        'godot-log-audit.json',
+        'sts1-mode-log-check.json',
+        'sts1-off-runtime-log-check.json',
+        'enabled-mode-log-check.json',
+        'runtime-evidence-packet-check.json',
+        'runtime-probe-samples.json',
+        'prepare-output.json',
+        'session-state.json',
+        'restore-state.json',
+        'command.txt',
+        'command-corpus.txt',
+        'autoslay.log',
+        'local-godot-source-workspace-check.json'
+    )
+
+    if ((Test-OutputPathInsideDirectory -Path $ResolvedOutFile -Directory $EvidenceRoot) -and
+        $canonicalNames -contains [System.IO.Path]::GetFileName($ResolvedOutFile)) {
+        throw "Refusing to write OutFile over canonical runtime evidence: $ResolvedOutFile"
+    }
+}
+
+function Add-ProtectedOutputRoot {
+    param(
+        [Parameter(Mandatory = $true)]$Roots,
+        [AllowEmptyString()][string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return
+    }
+
+    try {
+        $fullPath = [System.IO.Path]::GetFullPath($Path)
+    } catch {
+        return
+    }
+
+    foreach ($existing in @($Roots)) {
+        if ([string]::Equals([string]$existing, $fullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return
+        }
+    }
+
+    [void]$Roots.Add($fullPath)
+}
+
+function Add-ProtectedOutputPath {
+    param(
+        [Parameter(Mandatory = $true)]$Paths,
+        [AllowEmptyString()][string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return
+    }
+
+    try {
+        $fullPath = [System.IO.Path]::GetFullPath($Path)
+    } catch {
+        return
+    }
+
+    foreach ($existing in @($Paths)) {
+        if ([string]::Equals([string]$existing, $fullPath, [System.StringComparison]::OrdinalIgnoreCase)) {
+            return
+        }
+    }
+
+    [void]$Paths.Add($fullPath)
+}
+
+function Add-ProtectedOutputRootsForEvidenceFile {
+    param(
+        [Parameter(Mandatory = $true)]$Roots,
+        [AllowEmptyString()][string]$Path
+    )
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return
+    }
+
+    $directory = [System.IO.Path]::GetDirectoryName($Path)
+    if ([string]::IsNullOrWhiteSpace($directory)) {
+        return
+    }
+
+    Add-ProtectedOutputRoot -Roots $Roots -Path $directory
+    $directoryInfo = [System.IO.DirectoryInfo]::new($directory)
+    if ($directoryInfo.Name -match '^(?:iteration|run)-\d+$' -and $null -ne $directoryInfo.Parent) {
+        Add-ProtectedOutputRoot -Roots $Roots -Path $directoryInfo.Parent.FullName
+    }
+}
+
+function Assert-OutFileDoesNotOverwriteExplicitEvidence {
+    param(
+        [Parameter(Mandatory = $true)][string]$ResolvedOutFile,
+        [Parameter(Mandatory = $true)]$ProtectedPaths
+    )
+
+    $resolvedFullPath = [System.IO.Path]::GetFullPath($ResolvedOutFile)
+    foreach ($path in @($ProtectedPaths)) {
+        if ([string]::Equals($resolvedFullPath, [System.IO.Path]::GetFullPath([string]$path), [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Refusing to write OutFile over input runtime evidence: $ResolvedOutFile"
+        }
+    }
+}
+
 function Test-JsonProperty {
     param(
         [AllowNull()]$Object,
         [Parameter(Mandatory = $true)][string]$Name
     )
 
-    return $null -ne $Object -and $Object.PSObject.Properties.Name -contains $Name
+    if ($null -eq $Object) {
+        return $false
+    }
+
+    foreach ($property in @($Object.PSObject.Properties)) {
+        if ([string]::Equals($property.Name, $Name, [System.StringComparison]::Ordinal)) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Test-RawJsonRootArray {
+    param([AllowNull()][string]$Json)
+
+    if ([string]::IsNullOrWhiteSpace($Json)) {
+        return $false
+    }
+
+    return $Json.TrimStart().StartsWith('[', [System.StringComparison]::Ordinal)
 }
 
 function Get-JsonValue {
@@ -54,13 +228,54 @@ function Get-JsonValue {
     return $DefaultValue
 }
 
+function Test-NativeJsonNumberValue {
+    param([AllowNull()]$Value)
+
+    if ($null -eq $Value -or $Value -is [bool] -or $Value -is [string]) {
+        return $false
+    }
+
+    return (
+        $Value -is [byte] -or
+        $Value -is [sbyte] -or
+        $Value -is [int16] -or
+        $Value -is [uint16] -or
+        $Value -is [int] -or
+        $Value -is [uint32] -or
+        $Value -is [long] -or
+        $Value -is [uint64] -or
+        $Value -is [decimal] -or
+        $Value -is [double] -or
+        $Value -is [single]
+    )
+}
+
+function Test-NativeJsonIntegerValue {
+    param([AllowNull()]$Value)
+
+    if ($null -eq $Value -or $Value -is [bool] -or $Value -is [string]) {
+        return $false
+    }
+
+    return (
+        $Value -is [byte] -or
+        $Value -is [sbyte] -or
+        $Value -is [int16] -or
+        $Value -is [uint16] -or
+        $Value -is [int] -or
+        $Value -is [uint32] -or
+        $Value -is [long] -or
+        $Value -is [uint64]
+    )
+}
+
 function ConvertTo-IntOrDefault {
     param(
         [AllowNull()]$Value,
         [int]$DefaultValue = 0
     )
 
-    if ($null -eq $Value) {
+    if (-not (Test-NativeJsonIntegerValue -Value $Value)) {
         return $DefaultValue
     }
 
@@ -77,7 +292,7 @@ function ConvertTo-LongOrDefault {
         [long]$DefaultValue = 0
     )
 
-    if ($null -eq $Value) {
+    if (-not (Test-NativeJsonIntegerValue -Value $Value)) {
         return $DefaultValue
     }
 
@@ -146,6 +361,68 @@ function Test-JsonBoolProperty {
         $Object.$Name -is [bool]
 }
 
+function Get-MalformedJsonBoolPropertyLabels {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string[]]$Names,
+        [string]$Prefix = '',
+        [switch]$RequirePresent
+    )
+
+    $details = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($item in @($Object)) {
+        foreach ($name in $Names) {
+            if (-not (Test-JsonProperty -Object $item -Name $name)) {
+                if ($RequirePresent) {
+                    $label = if ([string]::IsNullOrWhiteSpace($Prefix)) { $name } else { "$Prefix.$name" }
+                    $details.Add("$label missing") | Out-Null
+                }
+
+                continue
+            }
+
+            if (-not (Test-JsonBoolProperty -Object $item -Name $name)) {
+                $label = if ([string]::IsNullOrWhiteSpace($Prefix)) { $name } else { "$Prefix.$name" }
+                $details.Add("$label must be retained as a native JSON boolean") | Out-Null
+            }
+        }
+    }
+
+    return @($details | Sort-Object)
+}
+
+function Get-MalformedJsonRespondingPropertyLabels {
+    param(
+        [AllowNull()]$Object,
+        [string]$Prefix = ''
+    )
+
+    $details = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    $label = if ([string]::IsNullOrWhiteSpace($Prefix)) { 'Responding' } else { "$Prefix.Responding" }
+    foreach ($item in @($Object)) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Responding')) {
+            continue
+        }
+
+        $responding = Get-JsonValue -Object $item -Name 'Responding' -DefaultValue $null
+        if ($null -eq $responding) {
+            $mainWindowObserved = Get-JsonValue -Object $item -Name 'MainWindowObserved' -DefaultValue $null
+            if ((Test-JsonProperty -Object $item -Name 'MainWindowObserved') -and $mainWindowObserved -is [bool] -and -not [bool]$mainWindowObserved) {
+                continue
+            }
+
+            $details.Add("$label may be null only when MainWindowObserved=false") | Out-Null
+            continue
+        }
+
+        if ($responding -isnot [bool]) {
+            $details.Add("$label must be retained as a native JSON boolean when not null") | Out-Null
+        }
+    }
+
+    return @($details | Sort-Object)
+}
+
 function Test-JsonArrayProperty {
     param(
         [AllowNull()]$Object,
@@ -155,6 +432,34 @@ function Test-JsonArrayProperty {
     return (Test-JsonProperty -Object $Object -Name $Name) -and
         $null -ne $Object.$Name -and
         $Object.$Name -is [System.Array]
+}
+
+function Get-JsonArrayPropertyShapeDetails {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string[]]$Names,
+        [Parameter(Mandatory = $true)][string]$Prefix,
+        [switch]$RequirePresent
+    )
+
+    $details = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($item in @($Object)) {
+        foreach ($name in $Names) {
+            if (-not (Test-JsonProperty -Object $item -Name $name)) {
+                if ($RequirePresent) {
+                    $details.Add("$Prefix.$name missing") | Out-Null
+                }
+
+                continue
+            }
+
+            if (-not (Test-JsonArrayProperty -Object $item -Name $name)) {
+                $details.Add("$Prefix.$name must be retained as a native JSON array") | Out-Null
+            }
+        }
+    }
+
+    return @($details | Sort-Object)
 }
 
 function Get-JsonArrayValues {
@@ -319,6 +624,14 @@ function Get-RuntimeMonkeySummaryMismatchDetails {
     }
 
     $summaryResults = @(Get-JsonArrayValues -Object $Summary -Name 'Results')
+    $malformedSummaryBooleanFields = @(
+        Get-MalformedJsonBoolPropertyLabels -Object $Summary -Names @('Passed') -Prefix 'Summary' -RequirePresent
+        Get-MalformedJsonBoolPropertyLabels -Object $summaryResults -Names @('Passed') -Prefix 'Summary.Results[]' -RequirePresent
+    )
+    if ($malformedSummaryBooleanFields.Count -gt 0) {
+        $details.Add("BooleanFieldsMalformed fields=$($malformedSummaryBooleanFields -join ',')") | Out-Null
+    }
+
     $failedSummaryResults = @($summaryResults | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     $summaryRequestedIterations = Get-JsonIntValue -Object $Summary -Name 'RequestedIterations' -DefaultValue 0
     $summaryCompletedIterations = Get-JsonIntValue -Object $Summary -Name 'CompletedIterations' -DefaultValue 0
@@ -373,6 +686,18 @@ function Get-RuntimeMonkeySummaryMismatchDetails {
         [pscustomobject]@{ Name = 'CommandAckMissingCount'; Codes = @('command_ack_missing') }
     )
 
+    $malformedSummaryNumericFields = @(
+        Get-MalformedJsonIntegerPropertyLabels -Object $Summary -Names (@(
+                'RequestedIterations',
+                'CompletedIterations',
+                'FailedIterations'
+            ) + @($summaryCounterChecks | ForEach-Object { [string]$_.Name })) -Prefix 'Summary'
+        Get-MalformedJsonIntegerMapValueLabels -Map $failureReasonCounts -Prefix 'FailureReasonCounts'
+    )
+    if ($malformedSummaryNumericFields.Count -gt 0) {
+        $details.Add("NumericFieldsMalformed fields=$($malformedSummaryNumericFields -join ',')") | Out-Null
+    }
+
     foreach ($counterCheck in $summaryCounterChecks) {
         $actualCounter = Get-JsonIntValue -Object $Summary -Name ([string]$counterCheck.Name) -DefaultValue -1
         $expectedCounter = Get-FailureCodeGroupCount -Items $summaryResults -FailureCodes ([string[]]$counterCheck.Codes)
@@ -421,6 +746,15 @@ function Get-RuntimeMonkeySummaryResultMismatchDetails {
     }
 
     foreach ($fieldName in @('Passed', 'CommandAckRequired', 'CommandAckObserved')) {
+        $malformedBooleanFields = @(
+            Get-MalformedJsonBoolPropertyLabels -Object $Result -Names @($fieldName) -Prefix 'iteration-result.json' -RequirePresent
+            Get-MalformedJsonBoolPropertyLabels -Object $SummaryResult -Names @($fieldName) -Prefix 'monkey-summary.json.Results[]' -RequirePresent
+        )
+        if ($malformedBooleanFields.Count -gt 0) {
+            $details.Add("BooleanFieldsMalformed fields=$($malformedBooleanFields -join ',')") | Out-Null
+            continue
+        }
+
         $resultValue = (Get-JsonBoolValue -Object $Result -Name $fieldName -DefaultValue $false)
         $summaryValue = (Get-JsonBoolValue -Object $SummaryResult -Name $fieldName -DefaultValue $false)
         if ($resultValue -ne $summaryValue) {
@@ -476,6 +810,13 @@ function Get-RuntimeMonkeySummaryPlanMismatchDetails {
     $summaryHasPatchCount = Test-JsonProperty -Object $Summary -Name 'ExpectedPatchCount'
     $planPatchCount = Get-JsonIntValue -Object $Plan -Name 'ExpectedPatchCount' -DefaultValue 0
     $summaryPatchCount = Get-JsonIntValue -Object $Summary -Name 'ExpectedPatchCount' -DefaultValue 0
+    $malformedPatchCountFields = @(
+        Get-MalformedJsonIntegerPropertyLabels -Object $Plan -Names @('ExpectedPatchCount') -Prefix 'Plan'
+        Get-MalformedJsonIntegerPropertyLabels -Object $Summary -Names @('ExpectedPatchCount') -Prefix 'Summary'
+    )
+    if ($malformedPatchCountFields.Count -gt 0) {
+        $details.Add("NumericFieldsMalformed fields=$($malformedPatchCountFields -join ',')") | Out-Null
+    }
     if (-not $planHasPatchCount -or -not $summaryHasPatchCount -or
         $planPatchCount -le 0 -or $summaryPatchCount -le 0 -or
         $summaryPatchCount -ne $planPatchCount) {
@@ -512,6 +853,13 @@ function Get-AutoSlaySummaryPlanMismatchDetails {
     $summaryHasPatchCount = Test-JsonProperty -Object $Summary -Name 'ExpectedPatchCount'
     $planPatchCount = Get-JsonIntValue -Object $Plan -Name 'ExpectedPatchCount' -DefaultValue 0
     $summaryPatchCount = Get-JsonIntValue -Object $Summary -Name 'ExpectedPatchCount' -DefaultValue 0
+    $malformedPatchCountFields = @(
+        Get-MalformedJsonIntegerPropertyLabels -Object $Plan -Names @('ExpectedPatchCount') -Prefix 'Plan'
+        Get-MalformedJsonIntegerPropertyLabels -Object $Summary -Names @('ExpectedPatchCount') -Prefix 'Summary'
+    )
+    if ($malformedPatchCountFields.Count -gt 0) {
+        $details.Add("NumericFieldsMalformed fields=$($malformedPatchCountFields -join ',')") | Out-Null
+    }
     if (-not $planHasPatchCount -or -not $summaryHasPatchCount -or
         $planPatchCount -le 0 -or $summaryPatchCount -le 0 -or
         $summaryPatchCount -ne $planPatchCount) {
@@ -520,6 +868,13 @@ function Get-AutoSlaySummaryPlanMismatchDetails {
 
     $planHasExpectedAncientIds = Test-JsonProperty -Object $Plan -Name 'ExpectedAncientIds'
     $summaryHasExpectedAncientIds = Test-JsonProperty -Object $Summary -Name 'ExpectedAncientIds'
+    $malformedExpectedAncientIdArrayFields = @(
+        Get-JsonArrayPropertyShapeDetails -Object $Plan -Names @('ExpectedAncientIds') -Prefix 'Plan' -RequirePresent
+        Get-JsonArrayPropertyShapeDetails -Object $Summary -Names @('ExpectedAncientIds') -Prefix 'Summary' -RequirePresent
+    )
+    if ($malformedExpectedAncientIdArrayFields.Count -gt 0) {
+        $details.Add("ExpectedAncientIdsArrayFieldsMalformed fields=$($malformedExpectedAncientIdArrayFields -join ',')") | Out-Null
+    }
     $planExpectedAncientIds = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $Plan -Name 'ExpectedAncientIds' -DefaultValue @()) | Sort-Object -Unique)
     $summaryExpectedAncientIds = @(Get-NormalizedAncientIdTokens -Value (Get-JsonValue -Object $Summary -Name 'ExpectedAncientIds' -DefaultValue @()) | Sort-Object -Unique)
     $missingExpectedAncientIds = @($planExpectedAncientIds | Where-Object { $summaryExpectedAncientIds -notcontains $_ })
@@ -545,6 +900,28 @@ function Get-AutoSlaySummaryAggregateMismatchDetails {
     }
 
     $summaryRuns = @(Get-JsonArrayValues -Object $Summary -Name 'Runs')
+    $malformedSummaryBooleanFields = @(
+        Get-MalformedJsonBoolPropertyLabels -Object $Summary -Names @('Passed') -Prefix 'Summary' -RequirePresent
+        Get-MalformedJsonBoolPropertyLabels -Object $summaryRuns -Names @('Passed') -Prefix 'Summary.Runs[]' -RequirePresent
+    )
+    if ($malformedSummaryBooleanFields.Count -gt 0) {
+        $details.Add("BooleanFieldsMalformed fields=$($malformedSummaryBooleanFields -join ',')") | Out-Null
+    }
+
+    $malformedSummarySignalArrayFields = @(
+        Get-JsonArrayPropertyShapeDetails -Object $summaryRuns -Names @('FailureReasonCodes', 'HangSignals') -Prefix 'Summary.Runs[]' -RequirePresent
+    )
+    if ($malformedSummarySignalArrayFields.Count -gt 0) {
+        $details.Add("SignalArrayFieldsMalformed fields=$($malformedSummarySignalArrayFields -join ',')") | Out-Null
+    }
+
+    $malformedSummaryNumericFields = @(
+        Get-MalformedJsonIntegerPropertyLabels -Object $Summary -Names @('TotalRuns', 'FailedRuns') -Prefix 'Summary'
+        Get-MalformedJsonIntegerMapValueLabels -Map (Get-JsonValue -Object $Summary -Name 'AncientIdCounts' -DefaultValue $null) -Prefix 'AncientIdCounts'
+    )
+    if ($malformedSummaryNumericFields.Count -gt 0) {
+        $details.Add("NumericFieldsMalformed fields=$($malformedSummaryNumericFields -join ',')") | Out-Null
+    }
     $failedSummaryRunRows = @($summaryRuns | Where-Object { -not (Get-JsonBoolValue -Object $_ -Name 'Passed' -DefaultValue $false) })
     $summaryRunsWithFailureReasonCodes = @($summaryRuns | Where-Object { @(Get-JsonArrayValues -Object $_ -Name 'FailureReasonCodes').Count -gt 0 })
     $summaryRunsWithHangSignals = @($summaryRuns | Where-Object { @(Get-JsonArrayValues -Object $_ -Name 'HangSignals').Count -gt 0 })
@@ -797,6 +1174,128 @@ function ConvertTo-NormalizedPathOrEmpty {
     }
 }
 
+function Initialize-WindowsFileIdentityType {
+    if ([System.Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+        return $false
+    }
+
+    if ('SpirePlusRuntimeAnalyzerFileIdentity' -as [type]) {
+        return $true
+    }
+
+    try {
+        Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+
+public static class SpirePlusRuntimeAnalyzerFileIdentity
+{
+    private const uint FileReadAttributes = 0x00000080;
+    private const uint FileShareRead = 0x00000001;
+    private const uint FileShareWrite = 0x00000002;
+    private const uint FileShareDelete = 0x00000004;
+    private const uint OpenExisting = 3;
+    private const uint FileFlagBackupSemantics = 0x02000000;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct FileTime
+    {
+        public uint LowDateTime;
+        public uint HighDateTime;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct ByHandleFileInformation
+    {
+        public uint FileAttributes;
+        public FileTime CreationTime;
+        public FileTime LastAccessTime;
+        public FileTime LastWriteTime;
+        public uint VolumeSerialNumber;
+        public uint FileSizeHigh;
+        public uint FileSizeLow;
+        public uint NumberOfLinks;
+        public uint FileIndexHigh;
+        public uint FileIndexLow;
+    }
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern SafeFileHandle CreateFileW(
+        string fileName,
+        uint desiredAccess,
+        uint shareMode,
+        IntPtr securityAttributes,
+        uint creationDisposition,
+        uint flagsAndAttributes,
+        IntPtr templateFile);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    private static extern bool GetFileInformationByHandle(
+        SafeFileHandle fileHandle,
+        out ByHandleFileInformation fileInformation);
+
+    public static long GetLinkCount(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return -1;
+        }
+
+        using (SafeFileHandle handle = CreateFileW(
+            path,
+            FileReadAttributes,
+            FileShareRead | FileShareWrite | FileShareDelete,
+            IntPtr.Zero,
+            OpenExisting,
+            FileFlagBackupSemantics,
+            IntPtr.Zero))
+        {
+            if (handle.IsInvalid)
+            {
+                return -1;
+            }
+
+            ByHandleFileInformation information;
+            if (!GetFileInformationByHandle(handle, out information))
+            {
+                return -1;
+            }
+
+            return information.NumberOfLinks;
+        }
+    }
+}
+'@ -ErrorAction Stop
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Get-ExistingPathHardlinkCount {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path) -or -not (Test-Path -LiteralPath $Path -PathType Leaf)) {
+        return $null
+    }
+
+    if (-not (Initialize-WindowsFileIdentityType)) {
+        return $null
+    }
+
+    try {
+        $count = [SpirePlusRuntimeAnalyzerFileIdentity]::GetLinkCount([System.IO.Path]::GetFullPath($Path))
+        if ($count -lt 1) {
+            return $null
+        }
+
+        return [long]$count
+    } catch {
+        return $null
+    }
+}
+
 function Test-PathInsideDirectory {
     param(
         [AllowEmptyString()][string]$Path,
@@ -818,6 +1317,79 @@ function Test-PathInsideDirectory {
     } catch {
         return $false
     }
+}
+
+function Test-ExistingPathChainHasNoReparsePoint {
+    param([AllowEmptyString()][string]$Path)
+
+    if ([string]::IsNullOrWhiteSpace($Path)) {
+        return $false
+    }
+
+    try {
+        $current = [System.IO.Path]::GetFullPath($Path)
+        if (-not (Test-Path -LiteralPath $current -ErrorAction SilentlyContinue)) {
+            $parent = [System.IO.Directory]::GetParent($current)
+            if ($null -eq $parent) {
+                return $false
+            }
+
+            $current = $parent.FullName
+        }
+
+        while (-not [string]::IsNullOrWhiteSpace($current)) {
+            if (Test-Path -LiteralPath $current -ErrorAction SilentlyContinue) {
+                $item = Get-Item -LiteralPath $current -Force -ErrorAction Stop
+                if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+                    return $false
+                }
+            }
+
+            $parent = [System.IO.Directory]::GetParent($current)
+            if ($null -eq $parent -or [string]::Equals($parent.FullName, $current, [System.StringComparison]::OrdinalIgnoreCase)) {
+                break
+            }
+
+            $current = $parent.FullName
+        }
+
+        return $true
+    } catch {
+        return $false
+    }
+}
+
+function Test-AllExistingPathChainsHaveNoReparsePoint {
+    param([AllowEmptyCollection()][string[]]$Paths)
+
+    foreach ($path in @($Paths)) {
+        if ([string]::IsNullOrWhiteSpace($path)) {
+            continue
+        }
+
+        if (-not (Test-ExistingPathChainHasNoReparsePoint -Path $path)) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Test-AllExistingLeafFilesHaveSingleHardlink {
+    param([AllowEmptyCollection()][string[]]$Paths)
+
+    foreach ($path in @($Paths)) {
+        if ([string]::IsNullOrWhiteSpace($path) -or -not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            continue
+        }
+
+        $linkCount = Get-ExistingPathHardlinkCount -Path $path
+        if ($null -eq $linkCount -or $linkCount -ne 1) {
+            return $false
+        }
+    }
+
+    return $true
 }
 
 function Test-BytePrefix {
@@ -1051,6 +1623,61 @@ function Test-AllJsonPropertiesRetained {
     return @($Items).Count -gt 0
 }
 
+function Get-MalformedJsonIntegerPropertyNames {
+    param(
+        [AllowNull()]$Items,
+        [Parameter(Mandatory = $true)][string[]]$Names
+    )
+
+    $malformedNames = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+    foreach ($item in @($Items)) {
+        foreach ($name in $Names) {
+            if ((Test-JsonProperty -Object $item -Name $name) -and -not (Test-NativeJsonIntegerValue -Value (Get-JsonValue -Object $item -Name $name -DefaultValue $null))) {
+                $malformedNames.Add($name) | Out-Null
+            }
+        }
+    }
+
+    return @($malformedNames | Sort-Object)
+}
+
+function Get-MalformedJsonIntegerPropertyLabels {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string[]]$Names,
+        [string]$Prefix = ''
+    )
+
+    $malformedNames = @(Get-MalformedJsonIntegerPropertyNames -Items @($Object) -Names $Names)
+    foreach ($name in $malformedNames) {
+        if ([string]::IsNullOrWhiteSpace($Prefix)) {
+            $name
+        } else {
+            "$Prefix.$name"
+        }
+    }
+}
+
+function Get-MalformedJsonIntegerMapValueLabels {
+    param(
+        [AllowNull()]$Map,
+        [Parameter(Mandatory = $true)][string]$Prefix
+    )
+
+    if ($null -eq $Map) {
+        return @()
+    }
+
+    $malformedNames = [System.Collections.Generic.List[string]]::new()
+    foreach ($property in @($Map.PSObject.Properties)) {
+        if (-not (Test-NativeJsonIntegerValue -Value $property.Value)) {
+            $malformedNames.Add("$Prefix.$($property.Name)") | Out-Null
+        }
+    }
+
+    return @($malformedNames | Sort-Object)
+}
+
 function Test-AnyJsonPropertyTrue {
     param(
         [AllowNull()]$Items,
@@ -1094,6 +1721,54 @@ function Test-NoJsonPropertyFalse {
     }
 
     return $true
+}
+
+function Test-NoJsonRespondingFalse {
+    param([AllowNull()]$Items)
+
+    foreach ($item in @($Items)) {
+        if (-not (Test-JsonProperty -Object $item -Name 'Responding')) {
+            continue
+        }
+
+        $responding = Get-JsonValue -Object $item -Name 'Responding' -DefaultValue $null
+        if ($null -eq $responding) {
+            $mainWindowObserved = Get-JsonValue -Object $item -Name 'MainWindowObserved' -DefaultValue $null
+            if ((Test-JsonProperty -Object $item -Name 'MainWindowObserved') -and $mainWindowObserved -is [bool] -and -not [bool]$mainWindowObserved) {
+                continue
+            }
+
+            return $false
+        }
+
+        if ($responding -isnot [bool] -or -not [bool]$responding) {
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function Get-MaxConsecutiveUnresponsiveProbeSamples {
+    param([AllowNull()]$Items)
+
+    $maxConsecutive = 0
+    $currentConsecutive = 0
+    foreach ($item in @($Items)) {
+        $hungWindow = Get-JsonBoolValue -Object $item -Name 'HungWindow' -DefaultValue $false
+        $responding = Get-JsonValue -Object $item -Name 'Responding' -DefaultValue $null
+        $sampleUnresponsive = $hungWindow -or ($null -ne $responding -and $responding -is [bool] -and -not [bool]$responding)
+        if ($sampleUnresponsive) {
+            $currentConsecutive++
+            if ($currentConsecutive -gt $maxConsecutive) {
+                $maxConsecutive = $currentConsecutive
+            }
+        } else {
+            $currentConsecutive = 0
+        }
+    }
+
+    return $maxConsecutive
 }
 
 function Test-AnyJsonPropertyStringEquals {
@@ -1471,16 +2146,57 @@ function Get-DependencyFrameworkFailureDetails {
 }
 
 function ConvertTo-AuditSummary {
-    param([AllowNull()]$Audit)
+    param(
+        [AllowNull()]$Audit,
+        [AllowNull()][string]$RawJson = ''
+    )
 
     $items = @($Audit)
     $dirtyItems = 0
     $hitCount = 0
+    $malformedNumericValues = 0
+    $malformedBoolValues = 0
+    $malformedArrayValues = 0
     $itemPaths = [System.Collections.Generic.List[string]]::new()
     $itemLengths = [System.Collections.Generic.List[long]]::new()
     $itemSha256s = [System.Collections.Generic.List[string]]::new()
+    $auditSchemaVersions = [System.Collections.Generic.List[string]]::new()
+    $signatureSetSha256s = [System.Collections.Generic.List[string]]::new()
+    $signatureHitNames = [System.Collections.Generic.List[string]]::new()
+    $signatureHitVector = [System.Collections.Generic.List[string]]::new()
+    $malformedSchemaValues = 0
+    if (-not [string]::IsNullOrWhiteSpace($RawJson) -and -not (Test-RawJsonRootArray -Json $RawJson)) {
+        $malformedArrayValues++
+    }
 
     foreach ($item in $items) {
+        if (-not (Test-JsonProperty -Object $item -Name 'AuditSchemaVersion')) {
+            $malformedSchemaValues++
+        } elseif (Test-NativeJsonIntegerValue -Value $item.AuditSchemaVersion) {
+            $auditSchemaVersion = ConvertTo-IntOrDefault -Value $item.AuditSchemaVersion -DefaultValue -1
+            $auditSchemaVersions.Add([string]$auditSchemaVersion) | Out-Null
+            if ($auditSchemaVersion -ne 2) {
+                $malformedSchemaValues++
+            }
+        } else {
+            $malformedSchemaValues++
+        }
+
+        if (-not (Test-JsonProperty -Object $item -Name 'SignatureSetSha256')) {
+            $malformedSchemaValues++
+        } else {
+            $signatureSetSha256 = [string]$item.SignatureSetSha256
+            if (Test-Sha256Text -Value $signatureSetSha256) {
+                $signatureSetSha256s.Add($signatureSetSha256.ToLowerInvariant()) | Out-Null
+            } else {
+                $malformedSchemaValues++
+            }
+        }
+
+        if (-not (Test-JsonBoolProperty -Object $item -Name 'Clean')) {
+            $malformedBoolValues++
+        }
+
         if (-not (Get-JsonBoolValue -Object $item -Name 'Clean' -DefaultValue $false)) {
             $dirtyItems++
         }
@@ -1489,17 +2205,48 @@ function ConvertTo-AuditSummary {
             $itemPaths.Add([System.IO.Path]::GetFullPath([string]$item.Path)) | Out-Null
         }
 
-        if (Test-JsonProperty -Object $item -Name 'Length') {
+        if (-not (Test-JsonProperty -Object $item -Name 'Length')) {
+            $malformedNumericValues++
+        } elseif (Test-NativeJsonIntegerValue -Value $item.Length) {
             $itemLengths.Add((ConvertTo-LongOrDefault -Value $item.Length -DefaultValue -1)) | Out-Null
+        } else {
+            $malformedNumericValues++
         }
 
         if ((Test-JsonProperty -Object $item -Name 'Sha256') -and -not [string]::IsNullOrWhiteSpace([string]$item.Sha256)) {
             $itemSha256s.Add(([string]$item.Sha256).ToLowerInvariant()) | Out-Null
         }
 
-        foreach ($hit in (Get-JsonArrayValues -Object $item -Name 'SignatureHits')) {
-            if (Test-JsonProperty -Object $hit -Name 'Count') {
-                $hitCount += ConvertTo-IntOrDefault -Value $hit.Count -DefaultValue 0
+        $signatureHitsProperty = @($item.PSObject.Properties | Where-Object { [string]::Equals($_.Name, 'SignatureHits', [System.StringComparison]::Ordinal) } | Select-Object -First 1)
+        if ($signatureHitsProperty.Count -ne 1 -or $null -eq $signatureHitsProperty[0].Value -or -not ($signatureHitsProperty[0].Value -is [System.Array])) {
+            $malformedArrayValues++
+            continue
+        }
+
+        foreach ($hit in @($signatureHitsProperty[0].Value)) {
+            $hitName = ''
+            if (Test-JsonProperty -Object $hit -Name 'Name') {
+                $hitName = [string]$hit.Name
+            }
+
+            if ([string]::IsNullOrWhiteSpace($hitName)) {
+                $malformedSchemaValues++
+            }
+
+            if (-not (Test-JsonProperty -Object $hit -Name 'Count')) {
+                $malformedNumericValues++
+                continue
+            }
+
+            if (Test-NativeJsonIntegerValue -Value $hit.Count) {
+                $hitCountValue = ConvertTo-IntOrDefault -Value $hit.Count -DefaultValue 0
+                $hitCount += $hitCountValue
+                if (-not [string]::IsNullOrWhiteSpace($hitName)) {
+                    $signatureHitNames.Add($hitName) | Out-Null
+                    $signatureHitVector.Add("$hitName=$hitCountValue") | Out-Null
+                }
+            } else {
+                $malformedNumericValues++
             }
         }
     }
@@ -1509,9 +2256,17 @@ function ConvertTo-AuditSummary {
         ItemPaths = @($itemPaths)
         ItemLengths = @($itemLengths)
         ItemSha256s = @($itemSha256s)
+        AuditSchemaVersions = @($auditSchemaVersions.ToArray() | Sort-Object -Unique)
+        SignatureSetSha256s = @($signatureSetSha256s.ToArray() | Sort-Object -Unique)
+        SignatureHitNames = @($signatureHitNames.ToArray() | Sort-Object -Unique)
+        SignatureHitVector = @($signatureHitVector.ToArray() | Sort-Object)
         DirtyItems = $dirtyItems
         SignatureHitCount = $hitCount
-        Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0)
+        MalformedNumericValues = $malformedNumericValues
+        MalformedBoolValues = $malformedBoolValues
+        MalformedArrayValues = $malformedArrayValues
+        MalformedSchemaValues = $malformedSchemaValues
+        Clean = ($items.Count -gt 0 -and $dirtyItems -eq 0 -and $hitCount -eq 0 -and $signatureHitVector.Count -gt 0 -and $malformedNumericValues -eq 0 -and $malformedBoolValues -eq 0 -and $malformedArrayValues -eq 0 -and $malformedSchemaValues -eq 0)
     }
 }
 
@@ -1523,7 +2278,10 @@ function Invoke-RecomputedAudit {
         throw "audit-godot-log.ps1 returned empty output for $LogPath"
     }
 
-    return $auditJson | ConvertFrom-Json
+    return [pscustomobject]@{
+        RawJson = $auditJson
+        Data = ($auditJson | ConvertFrom-Json)
+    }
 }
 
 function Get-CheckSignatureArray {
@@ -1539,6 +2297,200 @@ function Get-CheckSignatureArray {
         $detail = [string](Get-JsonValue -Object $_ -Name 'Detail' -DefaultValue '')
         "${name}|${passed}|${detail}"
     })
+}
+
+function Test-AnyJsonProperty {
+    param(
+        [AllowNull()]$Object,
+        [Parameter(Mandatory = $true)][string[]]$Names
+    )
+
+    foreach ($name in $Names) {
+        if (Test-JsonProperty -Object $Object -Name $name) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
+function Test-JsonObjectValue {
+    param([AllowNull()]$Object)
+
+    return $null -ne $Object -and -not ($Object -is [System.Array])
+}
+
+function Get-DirectSmokeVerifierReportBinding {
+    param(
+        [AllowNull()]$Summary,
+        [Parameter(Mandatory = $true)][string]$Kind,
+        [Parameter(Mandatory = $true)][string]$EvidenceRoot,
+        [Parameter(Mandatory = $true)][AllowEmptyString()][string]$ReportPath,
+        [AllowEmptyString()][string]$CurrentIterationLogPath,
+        [Parameter(Mandatory = $true)][bool]$CurrentIterationLogExists,
+        [Parameter(Mandatory = $true)][string]$Mode,
+        [Parameter(Mandatory = $true)][string]$ReportPathField,
+        [Parameter(Mandatory = $true)][string]$ReportSha256Field,
+        [Parameter(Mandatory = $true)][string]$MismatchesField,
+        [Parameter(Mandatory = $true)][string]$CheckCountField,
+        [Parameter(Mandatory = $true)][string]$FailedCheckCountField,
+        [Parameter(Mandatory = $true)][string[]]$AllowedLeafNames,
+        [switch]$BindCurrentLog,
+        [switch]$BindEvidenceRoot
+    )
+
+    $details = [System.Collections.Generic.List[string]]::new()
+    $fields = @($ReportPathField, $ReportSha256Field, $MismatchesField, $CheckCountField, $FailedCheckCountField)
+    $required = Test-AnyJsonProperty -Object $Summary -Names $fields
+    $reportMismatchCount = 0
+    $reportCheckCount = 0
+    $reportFailedCheckCount = 0
+
+    if (-not $required) {
+        return [pscustomobject]@{
+            Required = $false
+            Trusted = $true
+            Details = @()
+            MismatchCount = 0
+            CheckCount = 0
+            FailedCheckCount = 0
+            ReportPath = $ReportPath
+        }
+    }
+
+    foreach ($fieldName in @($MismatchesField, $CheckCountField, $FailedCheckCountField)) {
+        if (-not (Test-JsonProperty -Object $Summary -Name $fieldName)) {
+            $details.Add("$fieldName missing") | Out-Null
+        } elseif (-not (Test-NativeJsonIntegerValue -Value (Get-JsonValue -Object $Summary -Name $fieldName -DefaultValue $null))) {
+            $details.Add("$fieldName must be retained as a native JSON integer") | Out-Null
+        }
+    }
+
+    $summaryMismatchCount = Get-JsonIntValue -Object $Summary -Name $MismatchesField -DefaultValue 0
+    $summaryCheckCount = Get-JsonIntValue -Object $Summary -Name $CheckCountField -DefaultValue 0
+    $summaryFailedCheckCount = Get-JsonIntValue -Object $Summary -Name $FailedCheckCountField -DefaultValue 0
+    $reportPathRaw = [string](Get-JsonValue -Object $Summary -Name $ReportPathField -DefaultValue '')
+    $reportSha256 = [string](Get-JsonValue -Object $Summary -Name $ReportSha256Field -DefaultValue '')
+
+    if ([string]::IsNullOrWhiteSpace($reportPathRaw)) {
+        $details.Add("$ReportPathField missing") | Out-Null
+    }
+
+    if ([string]::IsNullOrWhiteSpace($reportSha256)) {
+        $details.Add("$ReportSha256Field missing") | Out-Null
+    } elseif (-not (Test-Sha256Text -Value $reportSha256)) {
+        $details.Add("$ReportSha256Field must be a 64-character SHA256 hex string") | Out-Null
+    }
+
+    $reportExists = -not [string]::IsNullOrWhiteSpace($ReportPath) -and (Test-Path -LiteralPath $ReportPath -PathType Leaf)
+    if (-not [string]::IsNullOrWhiteSpace($reportPathRaw)) {
+        if (-not (Test-PathInsideDirectory -Path $ReportPath -Directory $EvidenceRoot)) {
+            $details.Add("$ReportPathField must stay inside the DirectSmoke evidence root") | Out-Null
+        } elseif (-not $reportExists) {
+            $details.Add("$ReportPathField must point at a retained verifier report") | Out-Null
+        } else {
+            $leaf = [System.IO.Path]::GetFileName($ReportPath)
+            if ($AllowedLeafNames -notcontains $leaf) {
+                $details.Add("$ReportPathField leaf '$leaf' is not an accepted DirectSmoke $Kind verifier report name") | Out-Null
+            }
+
+            if ((Test-Sha256Text -Value $reportSha256) -and
+                -not [System.StringComparer]::OrdinalIgnoreCase.Equals((Get-FileSha256OrEmpty -Path $ReportPath), $reportSha256)) {
+                $details.Add("$ReportSha256Field must match the retained verifier report bytes") | Out-Null
+            }
+
+            $report = Read-JsonOrNull -Path $ReportPath
+            if (-not (Test-JsonObjectValue -Object $report)) {
+                $details.Add("$ReportPathField must parse as a JSON object") | Out-Null
+            } else {
+                $reportMode = [string](Get-JsonValue -Object $report -Name 'Mode' -DefaultValue '')
+                if ([string]::IsNullOrWhiteSpace($Mode)) {
+                    $details.Add('DirectSmoke summary Mode missing') | Out-Null
+                } elseif (-not [string]::Equals($reportMode, $Mode, [System.StringComparison]::Ordinal)) {
+                    $details.Add("$ReportPathField Mode '$reportMode' must match direct-smoke-summary.json Mode '$Mode'") | Out-Null
+                }
+
+                if (-not (Test-JsonArrayProperty -Object $report -Name 'Mismatches')) {
+                    $details.Add("$ReportPathField Mismatches must be retained as a native JSON array") | Out-Null
+                } else {
+                    $reportMismatchCount = @(Get-JsonArrayValues -Object $report -Name 'Mismatches').Count
+                }
+
+                if (-not (Test-JsonArrayProperty -Object $report -Name 'Checks')) {
+                    $details.Add("$ReportPathField Checks must be retained as a native JSON array") | Out-Null
+                } else {
+                    $checks = @(Get-JsonArrayValues -Object $report -Name 'Checks')
+                    $reportCheckCount = $checks.Count
+                    foreach ($check in $checks) {
+                        if (-not (Test-JsonBoolProperty -Object $check -Name 'Passed')) {
+                            $details.Add("$ReportPathField Checks[].Passed must be retained as native JSON booleans") | Out-Null
+                            continue
+                        }
+
+                        if (-not (Get-JsonBoolValue -Object $check -Name 'Passed' -DefaultValue $false)) {
+                            $reportFailedCheckCount++
+                        }
+                    }
+                }
+
+                if ($BindCurrentLog) {
+                    if (-not $CurrentIterationLogExists) {
+                        $details.Add("$ReportPathField cannot bind LogPath/LogLength/LogSha256 because godot.log.current-iteration is missing") | Out-Null
+                    } else {
+                        $expectedLogPath = ConvertTo-NormalizedPathOrEmpty -Path $CurrentIterationLogPath
+                        $expectedLogLength = [long](Get-Item -LiteralPath $CurrentIterationLogPath).Length
+                        $expectedLogSha256 = Get-FileSha256OrEmpty -Path $CurrentIterationLogPath
+                        $reportLogPath = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $report -Name 'LogPath' -DefaultValue ''))
+                        $reportLogLengthValue = Get-JsonValue -Object $report -Name 'LogLength' -DefaultValue $null
+                        $reportLogLengthMatches = $false
+                        if ($null -ne $reportLogLengthValue -and (Test-NativeJsonIntegerValue -Value $reportLogLengthValue)) {
+                            $reportLogLengthMatches = (ConvertTo-LongOrDefault -Value $reportLogLengthValue -DefaultValue -1) -eq $expectedLogLength
+                        }
+
+                        $reportLogSha256 = [string](Get-JsonValue -Object $report -Name 'LogSha256' -DefaultValue '')
+                        if ([string]::IsNullOrWhiteSpace($reportLogPath) -or
+                            -not [System.StringComparer]::OrdinalIgnoreCase.Equals($reportLogPath, $expectedLogPath) -or
+                            -not $reportLogLengthMatches -or
+                            [string]::IsNullOrWhiteSpace($reportLogSha256) -or
+                            -not [System.StringComparer]::OrdinalIgnoreCase.Equals($reportLogSha256, $expectedLogSha256)) {
+                            $details.Add("$ReportPathField LogPath, LogLength, or LogSha256 does not bind to godot.log.current-iteration") | Out-Null
+                        }
+                    }
+                }
+
+                if ($BindEvidenceRoot) {
+                    $reportEvidenceDir = ConvertTo-NormalizedPathOrEmpty -Path ([string](Get-JsonValue -Object $report -Name 'EvidenceDir' -DefaultValue ''))
+                    $expectedEvidenceDir = ConvertTo-NormalizedPathOrEmpty -Path $EvidenceRoot
+                    if ([string]::IsNullOrWhiteSpace($reportEvidenceDir) -or
+                        -not [System.StringComparer]::OrdinalIgnoreCase.Equals($reportEvidenceDir, $expectedEvidenceDir)) {
+                        $details.Add("$ReportPathField EvidenceDir must match the DirectSmoke evidence root") | Out-Null
+                    }
+                }
+            }
+        }
+    }
+
+    if ($summaryMismatchCount -ne $reportMismatchCount) {
+        $details.Add("$MismatchesField must match retained report Mismatches.Count; summary=$summaryMismatchCount report=$reportMismatchCount") | Out-Null
+    }
+
+    if ($summaryCheckCount -ne $reportCheckCount) {
+        $details.Add("$CheckCountField must match retained report Checks.Count; summary=$summaryCheckCount report=$reportCheckCount") | Out-Null
+    }
+
+    if ($summaryFailedCheckCount -ne $reportFailedCheckCount) {
+        $details.Add("$FailedCheckCountField must match retained report failed check count; summary=$summaryFailedCheckCount report=$reportFailedCheckCount") | Out-Null
+    }
+
+    return [pscustomobject]@{
+        Required = $true
+        Trusted = ($details.Count -eq 0)
+        Details = @($details.ToArray())
+        MismatchCount = $reportMismatchCount
+        CheckCount = $reportCheckCount
+        FailedCheckCount = $reportFailedCheckCount
+        ReportPath = $ReportPath
+    }
 }
 
 function Invoke-RecomputedSts1ModeLogCheck {
@@ -1614,7 +2566,8 @@ function Analyze-Iteration {
         [string[]]$AutoSlaySummaryInvalidDetails = @(),
         [bool]$RequireRuntimeMonkeyPlanBinding = $false,
         [AllowNull()]$Summary = $null,
-        [AllowNull()]$Plan = $null
+        [AllowNull()]$Plan = $null,
+        [string[]]$AdditionalPathChainCandidates = @()
     )
 
     $resultPath = Join-Path $Directory $ResultFileName
@@ -1682,6 +2635,23 @@ function Analyze-Iteration {
     $effectiveExpectedRitsuLibVersion = Get-FirstJsonString -Object $analysisPlan -Names @('ExpectedRitsuLibVersion', 'RitsuLibVersion')
     $effectiveExpectedRitsuCompatBranch = Get-FirstJsonString -Object $analysisPlan -Names @('ExpectedRitsuCompatBranch', 'RitsuCompatBranch')
 
+    $directoryLeaf = [System.IO.Path]::GetFileName(([System.IO.Path]::GetFullPath($Directory)).TrimEnd([System.IO.Path]::DirectorySeparatorChar, [System.IO.Path]::AltDirectorySeparatorChar))
+    $topLevelEvidenceDir = $Directory
+    if ($directoryLeaf -match '^(iteration|run)-\d+$') {
+        $topLevelParent = [System.IO.Directory]::GetParent($Directory)
+        if ($null -ne $topLevelParent) {
+            $topLevelEvidenceDir = $topLevelParent.FullName
+        }
+    }
+    $topLevelPathChainCandidates = @(
+        $topLevelEvidenceDir,
+        (Join-Path $topLevelEvidenceDir 'monkey-plan.json'),
+        (Join-Path $topLevelEvidenceDir 'monkey-summary.json'),
+        (Join-Path $topLevelEvidenceDir 'autoslay-plan.json'),
+        (Join-Path $topLevelEvidenceDir 'autoslay-summary.json'),
+        (Join-Path $topLevelEvidenceDir 'direct-smoke-summary.json')
+    )
+
     $canonicalBeforeLogCandidate = Join-Path $Directory 'godot.log.before'
     $canonicalFullLogCandidate = Join-Path $Directory 'godot.log.after-launch'
     $canonicalCurrentIterationLogCandidate = Join-Path $Directory 'godot.log.current-iteration'
@@ -1696,6 +2666,8 @@ function Analyze-Iteration {
     $sessionStateCandidate = $canonicalSessionStateCandidate
     $restoreStateCandidate = $canonicalRestoreStateCandidate
     $sts1ModeCandidate = Join-Path $Directory 'sts1-mode-log-check.json'
+    $directSmokeModeVerifierReportCandidate = ''
+    $directSmokePacketVerifierReportCandidate = ''
     if ($result) {
         $beforeLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogBeforePath' -DefaultValue 'godot.log.before'))
         $fullLogCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAfterLaunchPath' -DefaultValue 'godot.log.after-launch'))
@@ -1711,6 +2683,10 @@ function Analyze-Iteration {
         } else {
             ''
         }
+    }
+    if ($isDirectSmoke -and $result) {
+        $directSmokeModeVerifierReportCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'ModeVerifierReportPath' -DefaultValue ''))
+        $directSmokePacketVerifierReportCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'PacketVerifierReportPath' -DefaultValue ''))
     }
     if ($isGameNativeAutoSlay -and $result) {
         $auditCandidate = Resolve-AnalysisPath -BaseDir $Directory -Path ([string](Get-JsonValue -Object $result -Name 'GodotLogAuditPath' -DefaultValue 'godot-log-audit.json'))
@@ -1728,8 +2704,10 @@ function Analyze-Iteration {
     } else {
         Join-Path $Directory 'autoslay.log'
     }
+    $auditExists = -not [string]::IsNullOrWhiteSpace($auditCandidate) -and (Test-Path -LiteralPath $auditCandidate -PathType Leaf)
     $findings = [System.Collections.Generic.List[object]]::new()
     $candidateEvidenceFiles = @(
+        $AdditionalPathChainCandidates,
         $resultPath,
         $beforeLogCandidate,
         $currentIterationLogCandidate,
@@ -1739,6 +2717,8 @@ function Analyze-Iteration {
         $sessionStateCandidate,
         $restoreStateCandidate,
         $sts1ModeCandidate,
+        $directSmokeModeVerifierReportCandidate,
+        $directSmokePacketVerifierReportCandidate,
         $autoSlayLogCandidate
     )
     $evidenceFiles = @($candidateEvidenceFiles | Where-Object {
@@ -1752,6 +2732,46 @@ function Analyze-Iteration {
     $autoSlaySts1ModeArtifactTrustedForOwner = -not $isGameNativeAutoSlay
     $autoSlaySidecarPathTrustedForOwner = -not $isGameNativeAutoSlay
     $sts1ModeLogCheckTrustedForOwner = $true
+    $artifactPathChainTrustedForOwner = $true
+    $canonicalPathChainCandidates = @($topLevelPathChainCandidates) + @($AdditionalPathChainCandidates) + @(
+        $Directory,
+        $resultPath,
+        $canonicalBeforeLogCandidate,
+        $canonicalFullLogCandidate,
+        $canonicalCurrentIterationLogCandidate,
+        $canonicalProbeSamplesCandidate,
+        $canonicalSessionStateCandidate,
+        $canonicalRestoreStateCandidate,
+        $auditCandidate,
+        $sts1ModeCandidate,
+        $directSmokeModeVerifierReportCandidate,
+        $directSmokePacketVerifierReportCandidate,
+        $autoSlayLogCandidate
+    )
+    if (-not (Test-AllExistingPathChainsHaveNoReparsePoint -Paths $canonicalPathChainCandidates)) {
+        $artifactPathChainTrustedForOwner = $false
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+        $autoSlayRunArtifactsTrustedForOwner = $false
+        $autoSlayProbeArtifactTrustedForOwner = $false
+        $autoSlayAuditArtifactTrustedForOwner = $false
+        $autoSlaySts1ModeArtifactTrustedForOwner = $false
+        $autoSlaySidecarPathTrustedForOwner = $false
+        $sts1ModeLogCheckTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_evidence_reparse_point_path' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'EvidenceDir, the iteration/run directory, or a canonical artifact path crosses a symlink, junction, or other reparse point.' -NextStep 'Recapture or copy the runtime evidence into ordinary directories before trusting hashes, audit recomputation, probe telemetry, or owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    if (-not (Test-AllExistingLeafFilesHaveSingleHardlink -Paths $canonicalPathChainCandidates)) {
+        $artifactPathChainTrustedForOwner = $false
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+        $autoSlayRunArtifactsTrustedForOwner = $false
+        $autoSlayProbeArtifactTrustedForOwner = $false
+        $autoSlayAuditArtifactTrustedForOwner = $false
+        $autoSlaySts1ModeArtifactTrustedForOwner = $false
+        $autoSlaySidecarPathTrustedForOwner = $false
+        $sts1ModeLogCheckTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_evidence_hardlinked_artifact_path' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'A canonical retained runtime evidence artifact is hardlinked or its hardlink count could not be determined.' -NextStep 'Recapture or copy the runtime evidence into ordinary files before trusting hashes, audit recomputation, probe telemetry, or owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
     if (-not $runnerKindMatchesExpectedTarget) {
         $signal = if ([string]::Equals($ExpectedRunnerKind, 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) {
             'autoslay_run_result_runner_kind_mismatch'
@@ -1759,6 +2779,36 @@ function Analyze-Iteration {
             'analysis_target_runner_kind_mismatch'
         }
         Add-Finding -Findings $findings -Signal $signal -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Evidence target was selected as '$ExpectedRunnerKind' but the retained run result reported RunnerKind='$observedRunnerKind'." -NextStep 'Regenerate or reject the packet; summary target type and retained per-run result type must agree before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    $runtimeMonkeySignalArrayShapeDetails = [System.Collections.Generic.List[string]]::new()
+    if (-not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
+        if ($result -and -not $iterationResultMissing) {
+            foreach ($detail in Get-JsonArrayPropertyShapeDetails -Object $result -Names @('FailureReasonCodes', 'HangSignals') -Prefix $ResultFileName -RequirePresent) {
+                $runtimeMonkeySignalArrayShapeDetails.Add($detail) | Out-Null
+            }
+        }
+
+        if ($SummaryResult) {
+            foreach ($detail in Get-JsonArrayPropertyShapeDetails -Object $SummaryResult -Names @('FailureReasonCodes', 'HangSignals') -Prefix 'monkey-summary.json.Results[]' -RequirePresent) {
+                $runtimeMonkeySignalArrayShapeDetails.Add($detail) | Out-Null
+            }
+        }
+    }
+    if ($runtimeMonkeySignalArrayShapeDetails.Count -gt 0) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+        $logTextTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_signal_array_shape_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey retained signal fields are malformed: $($runtimeMonkeySignalArrayShapeDetails -join '; ')." -NextStep 'Regenerate or reject the packet; FailureReasonCodes and HangSignals must be native JSON arrays before retained signals can route owner findings.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+    }
+    $runtimeMonkeyResultBooleanMalformedDetails = if (-not $isGameNativeAutoSlay -and -not $isDirectSmoke -and $result -and -not $iterationResultMissing) {
+        @(Get-MalformedJsonBoolPropertyLabels -Object $result -Names @('Passed', 'CommandAckRequired', 'CommandAckObserved') -Prefix $ResultFileName -RequirePresent)
+    } else {
+        @()
+    }
+    if (($runtimeMonkeyResultBooleanMalformedDetails | Measure-Object).Count -gt 0) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $logTextTrustedForOwner = $false
+        Add-Finding -Findings $findings -Signal 'runtime_monkey_result_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey $ResultFileName pass/fail or command-ack boolean evidence is malformed: $($runtimeMonkeyResultBooleanMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; iteration-result pass and command-ack fields must be retained as native JSON booleans before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
     $autoSlaySummaryInvalidDetailArray = @($AutoSlaySummaryInvalidDetails)
     if (($autoSlaySummaryInvalidDetailArray | Measure-Object).Count -gt 0 -and $isGameNativeAutoSlay) {
@@ -1776,6 +2826,20 @@ function Analyze-Iteration {
     $summaryMismatchDetailCount = ($summaryMismatchDetailArray | Measure-Object).Count
     if ($summaryMismatchDetailCount -gt 0 -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
         $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $summaryNumericMalformedDetails = @($summaryMismatchDetailArray | Where-Object { [string]$_ -like 'NumericFieldsMalformed*' })
+        if (($summaryNumericMalformedDetails | Measure-Object).Count -gt 0) {
+            $logTextTrustedForOwner = $false
+            Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_numeric_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json top-level integer evidence is malformed: $($summaryNumericMalformedDetails -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; summary counters must be retained as native JSON integers before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+        $summaryBooleanMalformedDetails = @($summaryMismatchDetailArray | Where-Object { [string]$_ -like 'BooleanFieldsMalformed*' })
+        if (($summaryBooleanMalformedDetails | Measure-Object).Count -gt 0) {
+            $logTextTrustedForOwner = $false
+            Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json pass/fail boolean evidence is malformed: $($summaryBooleanMalformedDetails -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; summary pass/fail fields must be retained as native JSON booleans before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
+        $summaryOmittedRetainedIterationDetails = @($summaryMismatchDetailArray | Where-Object { [string]$_ -like 'RetainedIterationDirectories*' })
+        if (($summaryOmittedRetainedIterationDetails | Measure-Object).Count -gt 0) {
+            $logTextTrustedForOwner = $false
+        }
         Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_counter_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json top-level counters do not match Results[] aggregation: $($summaryMismatchDetailArray -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; top-level summary counters must match Results[] before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
     $summaryResultMismatchDetails = if ($null -ne $SummaryResult -and -not $iterationResultMissing -and $result -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
@@ -1785,6 +2849,10 @@ function Analyze-Iteration {
     }
     if (($summaryResultMismatchDetails | Measure-Object).Count -gt 0) {
         $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $summaryResultBooleanMalformedDetails = @($summaryResultMismatchDetails | Where-Object { [string]$_ -like 'BooleanFieldsMalformed*' })
+        if (($summaryResultBooleanMalformedDetails | Measure-Object).Count -gt 0) {
+            Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_result_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json Results[] or iteration-result.json boolean evidence is malformed: $($summaryResultBooleanMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; summary/result pass and command-ack booleans must be retained as native JSON booleans before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
         Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_result_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json Results[] row does not match iteration-result.json: $($summaryResultMismatchDetails -join '; ')." -NextStep 'Regenerate or reject monkey-summary.json; summary Results rows must match canonical iteration-result.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
     if ($RequireRuntimeMonkeyPlanBinding -and $result -and -not $iterationResultMissing -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke -and
@@ -1799,6 +2867,11 @@ function Analyze-Iteration {
     }
     if (($summaryPlanMismatchDetails | Measure-Object).Count -gt 0) {
         $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $summaryPlanNumericMalformedDetails = @($summaryPlanMismatchDetails | Where-Object { [string]$_ -like 'NumericFieldsMalformed*' })
+        if (($summaryPlanNumericMalformedDetails | Measure-Object).Count -gt 0) {
+            $logTextTrustedForOwner = $false
+            Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_plan_numeric_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json or monkey-plan.json batch integer evidence is malformed: $($summaryPlanNumericMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; summary and plan patch-count metadata must be native JSON integers before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+        }
         Add-Finding -Findings $findings -Signal 'runtime_monkey_summary_plan_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-summary.json batch metadata does not match monkey-plan.json: $($summaryPlanMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; summary batch metadata must match retained monkey-plan.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
     }
     $planResultMismatchDetails = if ($result -and -not $iterationResultMissing -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke) {
@@ -1899,24 +2972,56 @@ function Analyze-Iteration {
         }
     }
     if ($isGameNativeAutoSlay -and $result) {
-        $autoSlayRunArtifactsTrustedForOwner = $RunResultPathInsideEvidenceDir -and $RunResultPathMatchesExpectedPerSeedDir -and -not $iterationResultMissing -and $runnerKindMatchesExpectedTarget
-        $autoSlayProbeArtifactTrustedForOwner = $true
-        $autoSlayAuditArtifactTrustedForOwner = $true
-        $autoSlaySts1ModeArtifactTrustedForOwner = $true
-        $autoSlaySidecarPathTrustedForOwner = $true
+        $autoSlayRunArtifactsTrustedForOwner = $artifactPathChainTrustedForOwner -and $RunResultPathInsideEvidenceDir -and $RunResultPathMatchesExpectedPerSeedDir -and -not $iterationResultMissing -and $runnerKindMatchesExpectedTarget
+        $autoSlayProbeArtifactTrustedForOwner = $artifactPathChainTrustedForOwner
+        $autoSlayAuditArtifactTrustedForOwner = $artifactPathChainTrustedForOwner
+        $autoSlaySts1ModeArtifactTrustedForOwner = $artifactPathChainTrustedForOwner
+        $autoSlaySidecarPathTrustedForOwner = $artifactPathChainTrustedForOwner
         if (($autoSlaySummaryInvalidDetailArray | Measure-Object).Count -gt 0) {
             $autoSlayRunArtifactsTrustedForOwner = $false
             $autoSlayProbeArtifactTrustedForOwner = $false
+            $autoSlayAuditArtifactTrustedForOwner = $false
+            $autoSlaySts1ModeArtifactTrustedForOwner = $false
+            $autoSlaySidecarPathTrustedForOwner = $false
+            $sts1ModeLogCheckTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
         }
         $autoSlaySummaryPlanMismatchDetails = @(Get-AutoSlaySummaryPlanMismatchDetails -Summary $analysisSummary -Plan $analysisPlan)
         if (($autoSlaySummaryPlanMismatchDetails | Measure-Object).Count -gt 0) {
             $autoSlayRunArtifactsTrustedForOwner = $false
+            $autoSlayProbeArtifactTrustedForOwner = $false
+            $autoSlayAuditArtifactTrustedForOwner = $false
+            $autoSlaySts1ModeArtifactTrustedForOwner = $false
+            $autoSlaySidecarPathTrustedForOwner = $false
+            $sts1ModeLogCheckTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
+            $autoSlaySummaryPlanNumericMalformedDetails = @($autoSlaySummaryPlanMismatchDetails | Where-Object { [string]$_ -like 'NumericFieldsMalformed*' })
+            if (($autoSlaySummaryPlanNumericMalformedDetails | Measure-Object).Count -gt 0) {
+                Add-Finding -Findings $findings -Signal 'autoslay_summary_plan_numeric_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json or autoslay-plan.json batch integer evidence is malformed: $($autoSlaySummaryPlanNumericMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; AutoSlay summary and plan patch-count metadata must be native JSON integers before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            $autoSlayExpectedAncientIdsArrayMalformedDetails = @($autoSlaySummaryPlanMismatchDetails | Where-Object { [string]$_ -like 'ExpectedAncientIdsArrayFieldsMalformed*' })
+            if (($autoSlayExpectedAncientIdsArrayMalformedDetails | Measure-Object).Count -gt 0) {
+                Add-Finding -Findings $findings -Signal 'autoslay_expected_ancient_ids_array_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json or autoslay-plan.json ExpectedAncientIds evidence is malformed: $($autoSlayExpectedAncientIdsArrayMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; ExpectedAncientIds must be retained as native JSON arrays before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
             Add-Finding -Findings $findings -Signal 'autoslay_summary_plan_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json batch metadata does not match autoslay-plan.json: $($autoSlaySummaryPlanMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; AutoSlay summary batch metadata must match retained autoslay-plan.json before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
         $autoSlaySummaryAggregateMismatchDetails = @(Get-AutoSlaySummaryAggregateMismatchDetails -Summary $analysisSummary)
         if (($autoSlaySummaryAggregateMismatchDetails | Measure-Object).Count -gt 0) {
             $autoSlayRunArtifactsTrustedForOwner = $false
             $autoSlayProbeArtifactTrustedForOwner = $false
+            $autoSlayAuditArtifactTrustedForOwner = $false
+            $autoSlaySts1ModeArtifactTrustedForOwner = $false
+            $autoSlaySidecarPathTrustedForOwner = $false
+            $sts1ModeLogCheckTrustedForOwner = $false
+            $logTextTrustedForOwner = $false
+            $autoSlaySummaryNumericMalformedDetails = @($autoSlaySummaryAggregateMismatchDetails | Where-Object { [string]$_ -like 'NumericFieldsMalformed*' })
+            if (($autoSlaySummaryNumericMalformedDetails | Measure-Object).Count -gt 0) {
+                Add-Finding -Findings $findings -Signal 'autoslay_summary_numeric_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json top-level integer evidence is malformed: $($autoSlaySummaryNumericMalformedDetails -join '; ')." -NextStep 'Regenerate or reject autoslay-summary.json; total/failed run counters and AncientIdCounts must be native JSON integers before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+            $autoSlaySummaryBooleanMalformedDetails = @($autoSlaySummaryAggregateMismatchDetails | Where-Object { [string]$_ -like 'BooleanFieldsMalformed*' })
+            if (($autoSlaySummaryBooleanMalformedDetails | Measure-Object).Count -gt 0) {
+                Add-Finding -Findings $findings -Signal 'autoslay_summary_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json pass/fail boolean evidence is malformed: $($autoSlaySummaryBooleanMalformedDetails -join '; ')." -NextStep 'Regenerate or reject autoslay-summary.json; top-level and per-run Passed fields must be native JSON booleans before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
             Add-Finding -Findings $findings -Signal 'autoslay_summary_counter_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json top-level counters do not match Runs[] aggregation: $($autoSlaySummaryAggregateMismatchDetails -join '; ')." -NextStep 'Regenerate or reject autoslay-summary.json; top-level pass/fail counters and AncientIdCounts must match Runs[] before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
         $autoSlayEvidenceRoot = $Directory
@@ -1944,6 +3049,37 @@ function Analyze-Iteration {
             Add-Finding -Findings $findings -Signal 'autoslay_run_result_path_not_per_seed_dir' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json RunResultPath must resolve exactly to run-####/run-result.json for that summary row.' -NextStep 'Regenerate or reject the packet; each AutoSlay run-result.json must be retained under its expected per-seed run directory before owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
         }
 
+        if ($null -eq $SummaryResult -and -not $iterationResultMissing) {
+            $passedBooleanMalformedDetails = @(
+                Get-MalformedJsonBoolPropertyLabels -Object $result -Names @('Passed') -Prefix 'run-result.json' -RequirePresent
+            )
+            if ($passedBooleanMalformedDetails.Count -gt 0) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'autoslay_passed_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay Passed fields must be native JSON booleans: $($passedBooleanMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; string/null pass-fail fields cannot be used for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+        }
+
+        if (-not $iterationResultMissing) {
+            $autoSlaySignalArrayMalformedDetails = @(
+                if ($null -ne $SummaryResult) {
+                    Get-JsonArrayPropertyShapeDetails -Object $SummaryResult -Names @('FailureReasonCodes', 'HangSignals') -Prefix 'autoslay-summary.json.Runs[]' -RequirePresent
+                }
+
+                Get-JsonArrayPropertyShapeDetails -Object $result -Names @('FailureReasonCodes', 'HangSignals') -Prefix 'run-result.json' -RequirePresent
+            )
+            if ($autoSlaySignalArrayMalformedDetails.Count -gt 0) {
+                $autoSlayRunArtifactsTrustedForOwner = $false
+                $autoSlayProbeArtifactTrustedForOwner = $false
+                $autoSlayAuditArtifactTrustedForOwner = $false
+                $autoSlaySts1ModeArtifactTrustedForOwner = $false
+                $autoSlaySidecarPathTrustedForOwner = $false
+                $sts1ModeLogCheckTrustedForOwner = $false
+                $logTextTrustedForOwner = $false
+                Add-Finding -Findings $findings -Signal 'autoslay_signal_array_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay retained signal fields are malformed: $($autoSlaySignalArrayMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; FailureReasonCodes and HangSignals must be retained as native JSON arrays before AutoSlay owner routing is trusted.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+            }
+        }
+
         if ($null -ne $SummaryResult) {
             $summaryRunResultSha256 = [string](Get-JsonValue -Object $SummaryResult -Name 'RunResultSha256' -DefaultValue '')
             if (-not (Test-JsonProperty -Object $SummaryResult -Name 'RunResultSha256') -or -not (Test-Sha256Text -Value $summaryRunResultSha256)) {
@@ -1955,19 +3091,35 @@ function Analyze-Iteration {
             }
 
             if (-not $iterationResultMissing) {
-                if (Test-JsonProperty -Object $SummaryResult -Name 'Passed') {
-                    $summaryPassedIsBool = Test-JsonBoolProperty -Object $SummaryResult -Name 'Passed'
-                    $resultPassedIsBool = Test-JsonBoolProperty -Object $result -Name 'Passed'
-                    if (-not $summaryPassedIsBool -or -not $resultPassedIsBool) {
+                $summaryRunIdentityMismatchDetails = [System.Collections.Generic.List[string]]::new()
+                foreach ($fieldName in @('Seed', 'EventKind', 'AncientId')) {
+                    $summaryIdentityValue = [string](Get-JsonValue -Object $SummaryResult -Name $fieldName -DefaultValue '')
+                    $resultIdentityValue = [string](Get-JsonValue -Object $result -Name $fieldName -DefaultValue '')
+                    if (-not [string]::Equals($summaryIdentityValue, $resultIdentityValue, [System.StringComparison]::Ordinal)) {
+                        $summaryRunIdentityMismatchDetails.Add("${fieldName}:summary='$summaryIdentityValue' result='$resultIdentityValue'") | Out-Null
+                    }
+                }
+
+                if ($summaryRunIdentityMismatchDetails.Count -gt 0) {
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    $logTextTrustedForOwner = $false
+                    Add-Finding -Findings $findings -Signal 'autoslay_summary_run_identity_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay autoslay-summary.json Runs[] identity fields disagree with the retained run-result.json: $($summaryRunIdentityMismatchDetails -join '; ')." -NextStep 'Regenerate or reject the packet; per-run Seed, EventKind, and AncientId must match the hash-bound run-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                }
+
+                $passedBooleanMalformedDetails = @(
+                    Get-MalformedJsonBoolPropertyLabels -Object $SummaryResult -Names @('Passed') -Prefix 'autoslay-summary.json.Runs[]' -RequirePresent
+                    Get-MalformedJsonBoolPropertyLabels -Object $result -Names @('Passed') -Prefix 'run-result.json' -RequirePresent
+                )
+                if ($passedBooleanMalformedDetails.Count -gt 0) {
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    $logTextTrustedForOwner = $false
+                    Add-Finding -Findings $findings -Signal 'autoslay_passed_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay Passed fields must be native JSON booleans: $($passedBooleanMalformedDetails -join '; ')." -NextStep 'Regenerate or reject the packet; string/null pass-fail fields cannot be used for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } else {
+                    $summaryPassed = (Get-JsonBoolValue -Object $SummaryResult -Name 'Passed' -DefaultValue $false)
+                    $resultPassed = (Get-JsonBoolValue -Object $result -Name 'Passed' -DefaultValue $false)
+                    if ($summaryPassed -ne $resultPassed) {
                         $autoSlayRunArtifactsTrustedForOwner = $false
-                        Add-Finding -Findings $findings -Signal 'autoslay_passed_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay Passed fields must be native JSON booleans; summary=$summaryPassedIsBool result=$resultPassedIsBool." -NextStep 'Regenerate or reject the packet; string/null pass-fail fields cannot be used for owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
-                    } else {
-                        $summaryPassed = (Get-JsonBoolValue -Object $SummaryResult -Name 'Passed' -DefaultValue $false)
-                        $resultPassed = (Get-JsonBoolValue -Object $result -Name 'Passed' -DefaultValue $false)
-                        if ($summaryPassed -ne $resultPassed) {
-                            $autoSlayRunArtifactsTrustedForOwner = $false
-                            Add-Finding -Findings $findings -Signal 'autoslay_summary_passed_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json Runs[] Passed disagrees with the retained run-result.json.' -NextStep 'Regenerate or reject the packet; summary pass/fail state must match the retained run-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
-                        }
+                        Add-Finding -Findings $findings -Signal 'autoslay_summary_passed_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'GameNativeAutoSlay autoslay-summary.json Runs[] Passed disagrees with the retained run-result.json.' -NextStep 'Regenerate or reject the packet; summary pass/fail state must match the retained run-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
                 }
 
@@ -2190,6 +3342,20 @@ function Analyze-Iteration {
     }
     $logText = ''
     $logTextTrustedForOwner = $false
+    if ($result -and -not $isGameNativeAutoSlay -and -not $isDirectSmoke -and -not $auditExists) {
+        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+        $logTextTrustedForOwner = $false
+        Add-Finding `
+            -Findings $findings `
+            -Signal 'runtime_monkey_godot_log_audit_missing' `
+            -Severity 'blocking' `
+            -OwnerArea 'RuntimeHarness' `
+            -Rationale 'Runtime monkey evidence is missing canonical godot-log-audit.json, so current-iteration log text cannot be trusted for owner routing without retained audit and recomputed signature proof.' `
+            -NextStep 'Retain godot-log-audit.json generated from godot.log.current-iteration before using runtime-monkey evidence for owner attribution.' `
+            -Confidence 'high' `
+            -EvidenceFiles $evidenceFiles
+    }
+
     if ($result -and $currentIterationLogExists) {
         if (-not ($beforeLogExists -and $fullLogExists)) {
             Add-Finding `
@@ -2288,7 +3454,9 @@ function Analyze-Iteration {
 
                 if ($missingLogMetadata.Count -gt 0) {
                     $godotLogMetadataMatches = $false
-                    if (-not $isGameNativeAutoSlay) {
+                    if ($isGameNativeAutoSlay) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                    } else {
                         $runtimeMonkeyRunArtifactsTrustedForOwner = $false
                     }
 
@@ -2297,7 +3465,9 @@ function Analyze-Iteration {
 
                 if ($mismatchedLogMetadata.Count -gt 0) {
                     $godotLogMetadataMatches = $false
-                    if (-not $isGameNativeAutoSlay) {
+                    if ($isGameNativeAutoSlay) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                    } else {
                         $runtimeMonkeyRunArtifactsTrustedForOwner = $false
                     }
 
@@ -2305,7 +3475,7 @@ function Analyze-Iteration {
                 }
             }
 
-            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength -and $godotLogMetadataMatches -and $autoSlayRunArtifactsTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner
+            $logTextTrustedForOwner = [bool]$sliceBinding.SliceMatches -and $offsetMatchesBeforeLength -and $godotLogMetadataMatches -and $artifactPathChainTrustedForOwner -and $autoSlayRunArtifactsTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner
             if (-not [bool]$sliceBinding.SliceMatches) {
                 $nextStep = if ($isGameNativeAutoSlay) {
                     'Use only byte-bound current-iteration slices for AutoSlay source routing, then fix evidence retention before trusting packet evidence.'
@@ -2427,8 +3597,10 @@ function Analyze-Iteration {
             # The containment finding above is enough; do not classify probe health from a shared/root artifact.
         } else {
             try {
-                $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
-                $probeSamples = @($probeSamplesParsed)
+                $probeSamplesRawJson = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8
+                $probeSamplesParsed = $probeSamplesRawJson | ConvertFrom-Json
+                $probeSamplesIsArray = Test-RawJsonRootArray -Json $probeSamplesRawJson
+                $probeSamples = @(if ($probeSamplesIsArray) { @($probeSamplesParsed) } else { @() })
                 $requiredProbeFields = @(
                     'Phase',
                     'SampledAt',
@@ -2438,7 +3610,6 @@ function Analyze-Iteration {
                     'ProcessObserved',
                     'MainWindowObserved',
                     'HungWindow',
-                    'Responding',
                     'ProcessStartTimeUtc',
                     'ProcessPath',
                     'ExpectedGameProcessId',
@@ -2452,10 +3623,41 @@ function Analyze-Iteration {
                     'CurrentProcessCount',
                     'UnknownStartTimeProcessCount',
                     'AmbiguousCurrentProcessCount')
+                $booleanProbeFields = @(
+                    'LogExists',
+                    'ProcessIdMatchesExpected',
+                    'ProcessStartTimeMatchesExpected',
+                    'ProcessPathMatchesExpected',
+                    'ProcessIdentityMatchesExpected',
+                    'ProcessObserved',
+                    'MainWindowObserved',
+                    'HungWindow')
                 $requiredRetainedProbeFields = @(
-                    'LogLastWriteTimeUtc')
+                    'LogLastWriteTimeUtc',
+                    'Responding')
+                $numericProbeFields = @(
+                    'LogLengthBytes',
+                    'ProcessId',
+                    'ExpectedGameProcessId',
+                    'StaleProcessCount',
+                    'CurrentProcessCount',
+                    'UnknownStartTimeProcessCount',
+                    'AmbiguousCurrentProcessCount')
 
-                if ($probeSamples.Count -eq 0) {
+                if (-not $probeSamplesIsArray) {
+                    $autoSlayRunArtifactsTrustedForOwner = $false
+                    $autoSlayProbeArtifactTrustedForOwner = $false
+                    $logTextTrustedForOwner = $false
+                    Add-Finding `
+                        -Findings $findings `
+                        -Signal 'autoslay_runtime_probe_samples_shape_invalid' `
+                        -Severity 'blocking' `
+                        -OwnerArea 'RuntimeHarness' `
+                        -Rationale 'GameNativeAutoSlay runtime-probe-samples.json must be a native JSON array; object, scalar, or null roots are malformed retained evidence.' `
+                        -NextStep 'Regenerate runtime-probe-samples.json as an array of process/window/log samples before routing this packet to gameplay source.' `
+                        -Confidence 'high' `
+                        -EvidenceFiles $evidenceFiles
+                } elseif ($probeSamples.Count -eq 0) {
                     $autoSlayRunArtifactsTrustedForOwner = $false
                     $autoSlayProbeArtifactTrustedForOwner = $false
                     $logTextTrustedForOwner = $false
@@ -2491,6 +3693,25 @@ function Analyze-Iteration {
                         -Confidence 'high' `
                         -EvidenceFiles $evidenceFiles
                 } else {
+                    $malformedProbeNumericFields = @(Get-MalformedJsonIntegerPropertyNames -Items $probeSamples -Names $numericProbeFields)
+                    if ($malformedProbeNumericFields.Count -gt 0) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_numeric_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json has non-native integer telemetry fields: $($malformedProbeNumericFields -join ', ')." -NextStep 'Regenerate runtime-probe-samples.json with native JSON integer log/process count fields before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $malformedProbeBooleanFields = @(
+                        Get-MalformedJsonBoolPropertyLabels -Object $probeSamples -Names $booleanProbeFields -Prefix 'runtime-probe-samples.json[]' -RequirePresent
+                        Get-MalformedJsonRespondingPropertyLabels -Object $probeSamples -Prefix 'runtime-probe-samples.json[]'
+                    )
+                    if ($malformedProbeBooleanFields.Count -gt 0) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json has non-native boolean telemetry fields: $($malformedProbeBooleanFields -join ', ')." -NextStep 'Regenerate runtime-probe-samples.json with native JSON boolean process/window/log fields before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
                     $invalidTimestampProbeSamples = @($probeSamples | Where-Object {
                         $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
                         $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
@@ -2504,6 +3725,76 @@ function Analyze-Iteration {
                         $autoSlayProbeArtifactTrustedForOwner = $false
                         $logTextTrustedForOwner = $false
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_timestamp_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json has invalid probe timestamps; invalidCount=$($invalidTimestampProbeSamples.Count)." -NextStep 'Regenerate runtime-probe-samples.json with parseable SampledAt values, parseable LogLastWriteTimeUtc values when LogExists=true, and no log write time later than the sample timestamp.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $sampledAtRegressionCount = 0
+                    $phaseOrderDefectCount = 0
+                    $logLengthRegressionCount = 0
+                    $negativeLogLengthProbeSamples = @($probeSamples | Where-Object {
+                        $logLengthValue = Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue $null
+                        (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                            (Test-NativeJsonIntegerValue -Value $logLengthValue) -and
+                            $logLengthValue -lt 0
+                    })
+                    $previousSampledAt = $null
+                    $previousLogLengthBytes = $null
+                    $runtimePhaseSeen = $false
+                    foreach ($probeSample in $probeSamples) {
+                        $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $probeSample -Name 'SampledAt' -DefaultValue ''))
+                        if ([bool]$sampledAtParse.Parsed) {
+                            if ($null -ne $previousSampledAt -and $sampledAtParse.Value -lt $previousSampledAt) {
+                                $sampledAtRegressionCount++
+                            }
+
+                            $previousSampledAt = $sampledAtParse.Value
+                        }
+
+                        $phase = [string](Get-JsonValue -Object $probeSample -Name 'Phase' -DefaultValue '')
+                        if ([string]::Equals($phase, 'runtime', [System.StringComparison]::Ordinal)) {
+                            $runtimePhaseSeen = $true
+                        } elseif ([string]::Equals($phase, 'main-menu', [System.StringComparison]::Ordinal) -and $runtimePhaseSeen) {
+                            $phaseOrderDefectCount++
+                        }
+
+                        if (Get-JsonBoolValue -Object $probeSample -Name 'LogExists' -DefaultValue $false) {
+                            $logLengthValue = Get-JsonValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue $null
+                            if ((Test-NativeJsonIntegerValue -Value $logLengthValue) -and $logLengthValue -ge 0) {
+                                $logLengthBytes = Get-JsonLongValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1
+                                if ($null -ne $previousLogLengthBytes -and $logLengthBytes -lt $previousLogLengthBytes) {
+                                    $logLengthRegressionCount++
+                                }
+
+                                $previousLogLengthBytes = $logLengthBytes
+                            }
+                        }
+                    }
+
+                    if ($sampledAtRegressionCount -gt 0) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_sampled_at_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json SampledAt values go backward; regressionCount=$sampledAtRegressionCount." -NextStep 'Regenerate runtime-probe-samples.json with samples retained in chronological order before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($phaseOrderDefectCount -gt 0) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_phase_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json has main-menu samples after runtime samples; defectCount=$phaseOrderDefectCount." -NextStep 'Regenerate runtime-probe-samples.json with main-menu samples before runtime samples before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($negativeLogLengthProbeSamples.Count -gt 0) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_log_length_negative' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json has negative LogLengthBytes while LogExists=true; invalidCount=$($negativeLogLengthProbeSamples.Count)." -NextStep 'Regenerate runtime-probe-samples.json with non-negative log lengths before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($logLengthRegressionCount -gt 0) {
+                        $autoSlayRunArtifactsTrustedForOwner = $false
+                        $autoSlayProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_log_length_regression' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "GameNativeAutoSlay runtime-probe-samples.json LogLengthBytes values regress across LogExists=true samples; regressionCount=$logLengthRegressionCount." -NextStep 'Regenerate runtime-probe-samples.json with nondecreasing retained log lengths before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     if (-not (Test-AnyJsonPropertyStringEquals -Items $probeSamples -Name 'Phase' -Value 'main-menu')) {
@@ -2541,11 +3832,11 @@ function Analyze-Iteration {
                         Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_hung_window' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples report a hung game window.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
-                    if (-not (Test-NoJsonPropertyFalse -Items $probeSamples -Name 'Responding')) {
+                    if (-not (Test-NoJsonRespondingFalse -Items $probeSamples)) {
                         $autoSlayRunArtifactsTrustedForOwner = $false
                         $autoSlayProbeArtifactTrustedForOwner = $false
                         $logTextTrustedForOwner = $false
-                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_not_responding' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples include Responding=false.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        Add-Finding -Findings $findings -Signal 'autoslay_runtime_probe_not_responding' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime probe samples include Responding=false or an invalid Responding=null sample after the main window was observed.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     $staleProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
@@ -2870,24 +4161,54 @@ function Analyze-Iteration {
         } else {
             try {
                 $probeSamplesParsed = Get-Content -LiteralPath $probeSamplesCandidate -Raw -Encoding UTF8 | ConvertFrom-Json
-                $probeSamples = @($probeSamplesParsed)
+                $probeSamplesIsArray = $probeSamplesParsed -is [System.Array]
+                $probeSamples = @(if ($probeSamplesIsArray) { @($probeSamplesParsed) } else { @() })
                 $requiredProbeFields = @(
                     'Phase',
                     'SampledAt',
                     'LogExists',
                     'LogLengthBytes',
                     'ProcessId',
+                    'ProcessIdMatchesExpected',
+                    'ProcessStartTimeMatchesExpected',
+                    'ProcessPathMatchesExpected',
+                    'ProcessIdentityMatchesExpected',
+                    'ExpectedGameProcessId',
+                    'ExpectedGameProcessStartTimeUtc',
+                    'ExpectedGameProcessPath',
                     'ProcessObserved',
                     'MainWindowObserved',
                     'HungWindow',
-                    'Responding',
                     'StaleProcessCount',
                     'CurrentProcessCount',
                     'UnknownStartTimeProcessCount',
                     'AmbiguousCurrentProcessCount')
-                $requiredRetainedProbeFields = @('LogLastWriteTimeUtc')
+                $requiredRetainedProbeFields = @('LogLastWriteTimeUtc', 'Responding')
+                $booleanProbeFields = @(
+                    'LogExists',
+                    'ProcessIdMatchesExpected',
+                    'ProcessStartTimeMatchesExpected',
+                    'ProcessPathMatchesExpected',
+                    'ProcessIdentityMatchesExpected',
+                    'ProcessObserved',
+                    'MainWindowObserved',
+                    'HungWindow')
+                $numericProbeFields = @(
+                    'LogLengthBytes',
+                    'ProcessId',
+                    'ExpectedGameProcessId',
+                    'StaleProcessCount',
+                    'CurrentProcessCount',
+                    'UnknownStartTimeProcessCount',
+                    'AmbiguousCurrentProcessCount')
 
-                if ($probeSamples.Count -eq 0) {
+                if (-not $probeSamplesIsArray) {
+                    $runtimeMonkeyProbeEvidenceInvalid = $true
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                    $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                    $logTextTrustedForOwner = $false
+                    Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_samples_shape_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey runtime-probe-samples.json must be a native JSON array; object, scalar, or null roots are malformed retained evidence.' -NextStep 'Regenerate runtime-probe-samples.json as an array of process/window/log samples before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                } elseif ($probeSamples.Count -eq 0) {
                     $runtimeMonkeyProbeEvidenceInvalid = $true
                     Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_samples_empty' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey runtime-probe-samples.json has no process/window/log samples.' -NextStep 'Retain the sampled process/window/log timeline before classifying gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                 } else {
@@ -2900,32 +4221,67 @@ function Analyze-Iteration {
                         })
                     )
                     if ($missingProbeFields.Count -gt 0) {
-                    $runtimeMonkeyProbeEvidenceInvalid = $true
-                    Add-Finding `
-                        -Findings $findings `
-                        -Signal 'runtime_monkey_probe_samples_incomplete' `
-                        -Severity 'blocking' `
-                        -OwnerArea 'RuntimeHarness' `
-                        -Rationale "Runtime monkey runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
-                        -NextStep 'Record Phase, timestamp, log telemetry, process identity, window state, responsiveness, and process-count fields for every runtime monkey probe sample.' `
-                        -Confidence 'high' `
-                        -EvidenceFiles $evidenceFiles
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding `
+                            -Findings $findings `
+                            -Signal 'runtime_monkey_probe_samples_incomplete' `
+                            -Severity 'blocking' `
+                            -OwnerArea 'RuntimeHarness' `
+                            -Rationale "Runtime monkey runtime-probe-samples.json is missing required fields: $($missingProbeFields -join ', ')." `
+                            -NextStep 'Record Phase, timestamp, log telemetry, process identity, window state, responsiveness, and process-count fields for every runtime monkey probe sample.' `
+                            -Confidence 'high' `
+                            -EvidenceFiles $evidenceFiles
                     } else {
-                    $startupMainMenuProbeSamples = @($probeSamples | Where-Object {
-                        [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'StartupMainMenu', [System.StringComparison]::Ordinal)
-                    })
-                    $postCommandRuntimeProbeSamples = @($probeSamples | Where-Object {
-                        [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'PostCommandRuntime', [System.StringComparison]::Ordinal)
-                    })
-                    $unknownRuntimeProbePhaseSamples = @($probeSamples | Where-Object {
-                        $phase = [string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue '')
-                        -not ([string]::Equals($phase, 'StartupMainMenu', [System.StringComparison]::Ordinal) -or
-                            [string]::Equals($phase, 'PostCommandRuntime', [System.StringComparison]::Ordinal))
-                    })
-                    $mainMenuObservation = Get-JsonValue -Object $result -Name 'MainMenuObservation' -DefaultValue $null
-                    $runtimeObservation = Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null
-                    $mainMenuObservationSampleCount = if ($null -ne $mainMenuObservation) { Get-JsonIntValue -Object $mainMenuObservation -Name 'Samples' -DefaultValue -1 } else { -1 }
-                    $runtimeObservationSampleCount = if ($null -ne $runtimeObservation) { Get-JsonIntValue -Object $runtimeObservation -Name 'Samples' -DefaultValue -1 } else { -1 }
+                        $malformedProbeNumericFields = @(Get-MalformedJsonIntegerPropertyNames -Items $probeSamples -Names $numericProbeFields)
+                        if ($malformedProbeNumericFields.Count -gt 0) {
+                            $runtimeMonkeyProbeEvidenceInvalid = $true
+                            $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                            $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                            $logTextTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_numeric_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json has non-native integer telemetry fields: $($malformedProbeNumericFields -join ', ')." -NextStep 'Regenerate runtime-probe-samples.json with native JSON integer log/process count fields before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        }
+
+                        $malformedProbeBooleanFields = @(
+                            Get-MalformedJsonBoolPropertyLabels -Object $probeSamples -Names $booleanProbeFields -Prefix 'runtime-probe-samples.json[]' -RequirePresent
+                            Get-MalformedJsonRespondingPropertyLabels -Object $probeSamples -Prefix 'runtime-probe-samples.json[]'
+                        )
+                        if ($malformedProbeBooleanFields.Count -gt 0) {
+                            $runtimeMonkeyProbeEvidenceInvalid = $true
+                            $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                            $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                            $logTextTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_boolean_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json has non-native boolean telemetry fields: $($malformedProbeBooleanFields -join ', ')." -NextStep 'Regenerate runtime-probe-samples.json with native JSON boolean process/window/log fields before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        }
+
+                        $startupMainMenuProbeSamples = @($probeSamples | Where-Object {
+                            [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'StartupMainMenu', [System.StringComparison]::Ordinal)
+                        })
+                        $postCommandRuntimeProbeSamples = @($probeSamples | Where-Object {
+                            [string]::Equals([string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue ''), 'PostCommandRuntime', [System.StringComparison]::Ordinal)
+                        })
+                        $unknownRuntimeProbePhaseSamples = @($probeSamples | Where-Object {
+                            $phase = [string](Get-JsonValue -Object $_ -Name 'Phase' -DefaultValue '')
+                            -not ([string]::Equals($phase, 'StartupMainMenu', [System.StringComparison]::Ordinal) -or
+                                [string]::Equals($phase, 'PostCommandRuntime', [System.StringComparison]::Ordinal))
+                        })
+                        $mainMenuObservation = Get-JsonValue -Object $result -Name 'MainMenuObservation' -DefaultValue $null
+                        $runtimeObservation = Get-JsonValue -Object $result -Name 'RuntimeObservation' -DefaultValue $null
+                        $mainMenuObservationSampleCount = if ($null -ne $mainMenuObservation) { Get-JsonIntValue -Object $mainMenuObservation -Name 'Samples' -DefaultValue -1 } else { -1 }
+                        $runtimeObservationSampleCount = if ($null -ne $runtimeObservation) { Get-JsonIntValue -Object $runtimeObservation -Name 'Samples' -DefaultValue -1 } else { -1 }
+                        $startupMaxUnresponsiveFromProbeSamples = Get-MaxConsecutiveUnresponsiveProbeSamples -Items $startupMainMenuProbeSamples
+                        $runtimeMaxUnresponsiveFromProbeSamples = Get-MaxConsecutiveUnresponsiveProbeSamples -Items $postCommandRuntimeProbeSamples
+                        $probeSamplesMaxUnresponsive = [Math]::Max($startupMaxUnresponsiveFromProbeSamples, $runtimeMaxUnresponsiveFromProbeSamples)
+                        $mainMenuObservationMaxUnresponsive = if ($null -ne $mainMenuObservation) { Get-JsonIntValue -Object $mainMenuObservation -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1 } else { -1 }
+                        $runtimeObservationMaxUnresponsive = if ($null -ne $runtimeObservation) { Get-JsonIntValue -Object $runtimeObservation -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1 } else { -1 }
+                        $resultMaxUnresponsive = if ($null -ne $result) { Get-JsonIntValue -Object $result -Name 'MaxConsecutiveUnresponsiveSamples' -DefaultValue -1 } else { -1 }
+                        $planUnresponsiveSampleThresholdValue = if ($null -ne $analysisPlan) { Get-JsonValue -Object $analysisPlan -Name 'UnresponsiveSampleThreshold' -DefaultValue $null } else { $null }
+                        $planUnresponsiveSampleThresholdNative = ($null -ne $analysisPlan) -and
+                            (Test-JsonProperty -Object $analysisPlan -Name 'UnresponsiveSampleThreshold') -and
+                            (Test-NativeJsonIntegerValue -Value $planUnresponsiveSampleThresholdValue)
+                        $planUnresponsiveSampleThreshold = if ($planUnresponsiveSampleThresholdNative) { Get-JsonIntValue -Object $analysisPlan -Name 'UnresponsiveSampleThreshold' -DefaultValue 0 } else { 0 }
+                        $planUnresponsiveSampleThresholdMalformed = (-not $planUnresponsiveSampleThresholdNative) -or $planUnresponsiveSampleThreshold -le 0
+                        $mainMenuObservationHungWindowDetected = if ($null -ne $mainMenuObservation) { Get-JsonBoolValue -Object $mainMenuObservation -Name 'HungWindowDetected' -DefaultValue $true } else { $true }
+                        $runtimeObservationHungWindowDetected = if ($null -ne $runtimeObservation) { Get-JsonBoolValue -Object $runtimeObservation -Name 'HungWindowDetected' -DefaultValue $true } else { $true }
 
                     if ($unknownRuntimeProbePhaseSamples.Count -gt 0) {
                         $runtimeMonkeyProbeEvidenceInvalid = $true
@@ -2952,6 +4308,74 @@ function Analyze-Iteration {
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_sample_count_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime probe count does not match RuntimeObservation.Samples; expected=$runtimeObservationSampleCount actual=$($postCommandRuntimeProbeSamples.Count)." -NextStep 'Regenerate the packet with retained runtime probe samples that bind to RuntimeObservation.Samples.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
+                    if ($mainMenuObservationMaxUnresponsive -ne $startupMaxUnresponsiveFromProbeSamples) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_startup_unresponsive_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "StartupMainMenu raw probe samples do not match MainMenuObservation.MaxConsecutiveUnresponsiveSamples; expected=$mainMenuObservationMaxUnresponsive actual=$startupMaxUnresponsiveFromProbeSamples." -NextStep 'Regenerate or reject the packet; startup raw probe responsiveness must bind to MainMenuObservation before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($runtimeObservationMaxUnresponsive -ne $runtimeMaxUnresponsiveFromProbeSamples) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_unresponsive_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime raw probe samples do not match RuntimeObservation.MaxConsecutiveUnresponsiveSamples; expected=$runtimeObservationMaxUnresponsive actual=$runtimeMaxUnresponsiveFromProbeSamples." -NextStep 'Regenerate or reject the packet; runtime raw probe responsiveness must bind to RuntimeObservation before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($resultMaxUnresponsive -ne $probeSamplesMaxUnresponsive) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_max_unresponsive_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Raw runtime-probe-samples.json max consecutive unresponsive count does not match iteration-result.json; expected=$resultMaxUnresponsive actual=$probeSamplesMaxUnresponsive." -NextStep 'Regenerate or reject the packet; raw probe responsiveness must bind to iteration-result.json before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($planUnresponsiveSampleThresholdMalformed) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_plan_unresponsive_threshold_malformed' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "monkey-plan.json UnresponsiveSampleThreshold is missing, non-native, or non-positive; value=$planUnresponsiveSampleThresholdValue." -NextStep 'Regenerate or reject monkey-plan.json with a positive native JSON integer UnresponsiveSampleThreshold before trusting hung-window threshold evidence.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($planUnresponsiveSampleThreshold -gt 0) {
+                        $startupUnresponsiveThresholdExceeded = $startupMaxUnresponsiveFromProbeSamples -ge $planUnresponsiveSampleThreshold
+                        $runtimeUnresponsiveThresholdExceeded = $runtimeMaxUnresponsiveFromProbeSamples -ge $planUnresponsiveSampleThreshold
+                        if ($mainMenuObservationHungWindowDetected -ne $startupUnresponsiveThresholdExceeded) {
+                            $runtimeMonkeyProbeEvidenceInvalid = $true
+                            $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                            $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                            $logTextTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_startup_threshold_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "StartupMainMenu raw probe threshold state does not match MainMenuObservation.HungWindowDetected; threshold=$planUnresponsiveSampleThreshold expected=$mainMenuObservationHungWindowDetected actual=$startupUnresponsiveThresholdExceeded max=$startupMaxUnresponsiveFromProbeSamples." -NextStep 'Regenerate or reject the packet; startup hung-window threshold evidence must bind to MainMenuObservation before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        }
+
+                        if ($runtimeObservationHungWindowDetected -ne $runtimeUnresponsiveThresholdExceeded) {
+                            $runtimeMonkeyProbeEvidenceInvalid = $true
+                            $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                            $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                            $logTextTrustedForOwner = $false
+                            Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_runtime_threshold_mismatch' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "PostCommandRuntime raw probe threshold state does not match RuntimeObservation.HungWindowDetected; threshold=$planUnresponsiveSampleThreshold expected=$runtimeObservationHungWindowDetected actual=$runtimeUnresponsiveThresholdExceeded max=$runtimeMaxUnresponsiveFromProbeSamples." -NextStep 'Regenerate or reject the packet; runtime hung-window threshold evidence must bind to RuntimeObservation before owner routing.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                        }
+                    }
+
+                    if (-not (Test-NoJsonPropertyTrue -Items $postCommandRuntimeProbeSamples -Name 'HungWindow')) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_hung_window' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey PostCommandRuntime probe samples report a hung game window.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if (-not (Test-NoJsonRespondingFalse -Items $postCommandRuntimeProbeSamples)) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                        $runtimeMonkeyProbeArtifactTrustedForOwner = $false
+                        $logTextTrustedForOwner = $false
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_not_responding' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale 'Runtime monkey PostCommandRuntime probe samples include Responding=false or an invalid Responding=null sample after the main window was observed.' -NextStep 'Inspect the retained runtime probe timeline and current-iteration log before assigning gameplay ownership.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
                     $invalidTimestampProbeSamples = @($probeSamples | Where-Object {
                         $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $_ -Name 'SampledAt' -DefaultValue ''))
                         $logExists = (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false)
@@ -2963,6 +4387,67 @@ function Analyze-Iteration {
                     if ($invalidTimestampProbeSamples.Count -gt 0) {
                         $runtimeMonkeyProbeEvidenceInvalid = $true
                         Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_timestamp_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json has invalid probe timestamps; invalidCount=$($invalidTimestampProbeSamples.Count)." -NextStep 'Regenerate runtime-probe-samples.json with parseable SampledAt values, parseable LogLastWriteTimeUtc values when LogExists=true, and no log write time later than the sample timestamp.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    $sampledAtRegressionCount = 0
+                    $phaseOrderDefectCount = 0
+                    $logLengthRegressionCount = 0
+                    $negativeLogLengthProbeSamples = @($probeSamples | Where-Object {
+                        $logLengthValue = Get-JsonValue -Object $_ -Name 'LogLengthBytes' -DefaultValue $null
+                        (Get-JsonBoolValue -Object $_ -Name 'LogExists' -DefaultValue $false) -and
+                            (Test-NativeJsonIntegerValue -Value $logLengthValue) -and
+                            $logLengthValue -lt 0
+                    })
+                    $previousSampledAt = $null
+                    $previousLogLengthBytes = $null
+                    $runtimePhaseSeen = $false
+                    foreach ($probeSample in $probeSamples) {
+                        $sampledAtParse = ConvertTo-DateTimeOffsetParseResult -Text ([string](Get-JsonValue -Object $probeSample -Name 'SampledAt' -DefaultValue ''))
+                        if ([bool]$sampledAtParse.Parsed) {
+                            if ($null -ne $previousSampledAt -and $sampledAtParse.Value -lt $previousSampledAt) {
+                                $sampledAtRegressionCount++
+                            }
+
+                            $previousSampledAt = $sampledAtParse.Value
+                        }
+
+                        $phase = [string](Get-JsonValue -Object $probeSample -Name 'Phase' -DefaultValue '')
+                        if ([string]::Equals($phase, 'PostCommandRuntime', [System.StringComparison]::Ordinal)) {
+                            $runtimePhaseSeen = $true
+                        } elseif ([string]::Equals($phase, 'StartupMainMenu', [System.StringComparison]::Ordinal) -and $runtimePhaseSeen) {
+                            $phaseOrderDefectCount++
+                        }
+
+                        if (Get-JsonBoolValue -Object $probeSample -Name 'LogExists' -DefaultValue $false) {
+                            $logLengthBytes = Get-JsonLongValue -Object $probeSample -Name 'LogLengthBytes' -DefaultValue -1
+                            if ($logLengthBytes -ge 0) {
+                                if ($null -ne $previousLogLengthBytes -and $logLengthBytes -lt $previousLogLengthBytes) {
+                                    $logLengthRegressionCount++
+                                }
+
+                                $previousLogLengthBytes = $logLengthBytes
+                            }
+                        }
+                    }
+
+                    if ($sampledAtRegressionCount -gt 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_sampled_at_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json SampledAt values go backward; regressionCount=$sampledAtRegressionCount." -NextStep 'Regenerate runtime-probe-samples.json with samples retained in chronological order before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($phaseOrderDefectCount -gt 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_phase_order_invalid' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json has StartupMainMenu samples after PostCommandRuntime samples; defectCount=$phaseOrderDefectCount." -NextStep 'Regenerate runtime-probe-samples.json with startup samples before runtime samples before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($negativeLogLengthProbeSamples.Count -gt 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_log_length_negative' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json has negative LogLengthBytes while LogExists=true; invalidCount=$($negativeLogLengthProbeSamples.Count)." -NextStep 'Regenerate runtime-probe-samples.json with non-negative log lengths before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
+                    }
+
+                    if ($logLengthRegressionCount -gt 0) {
+                        $runtimeMonkeyProbeEvidenceInvalid = $true
+                        Add-Finding -Findings $findings -Signal 'runtime_monkey_probe_log_length_regression' -Severity 'blocking' -OwnerArea 'RuntimeHarness' -Rationale "Runtime monkey runtime-probe-samples.json LogLengthBytes values regress across LogExists=true samples; regressionCount=$logLengthRegressionCount." -NextStep 'Regenerate runtime-probe-samples.json with nondecreasing retained log lengths before routing this packet to gameplay source.' -Confidence 'high' -EvidenceFiles $evidenceFiles
                     }
 
                     $staleProcessSamples = @($probeSamples | Where-Object { (Get-JsonIntValue -Object $_ -Name 'StaleProcessCount' -DefaultValue -1) -ne 0 })
@@ -3149,14 +4634,19 @@ function Analyze-Iteration {
         @()
     }
 
-    $auditExists = -not [string]::IsNullOrWhiteSpace($auditCandidate) -and (Test-Path -LiteralPath $auditCandidate -PathType Leaf)
     $auditJsonValid = (-not $auditExists) -or (Test-JsonFileParses -Path $auditCandidate)
+    $auditRawJson = if ($auditExists -and $auditJsonValid) { Get-Content -LiteralPath $auditCandidate -Raw -Encoding UTF8 } else { '' }
     $auditData = if ($auditExists -and $auditJsonValid) { Read-JsonOrNull -Path $auditCandidate } else { $null }
-    $auditSummary = if ($null -ne $auditData) { ConvertTo-AuditSummary -Audit $auditData } else { $null }
+    $auditSummary = if ($null -ne $auditData) { ConvertTo-AuditSummary -Audit $auditData -RawJson $auditRawJson } else { $null }
     $auditTrustedForOwner = $false
     $auditHits = [System.Collections.Generic.List[object]]::new()
     $failureCodes = @(if ($result) { Get-JsonArrayValues -Object $result -Name 'FailureReasonCodes' } else { @() })
     $hangSignals = @(if ($result) { Get-JsonArrayValues -Object $result -Name 'HangSignals' } else { @() })
+    $directSmokeModeVerifierMismatches = 0
+    $directSmokePacketVerifierMismatches = 0
+    $directSmokeModeVerifierReportMismatches = 0
+    $directSmokePacketVerifierReportMismatches = 0
+    $directSmokeVerifierReportBindingTrusted = $true
 
     if ($result -and -not $currentIterationLogExists -and -not (@($failureCodes) -contains 'current_iteration_log_missing')) {
         Add-Finding `
@@ -3175,10 +4665,61 @@ function Analyze-Iteration {
         $directSmokeAuditClean = (Get-JsonBoolValue -Object $result -Name 'AuditClean' -DefaultValue $false)
         $directSmokeModeVerifierMismatches = Get-JsonIntValue -Object $result -Name 'ModeVerifierMismatches' -DefaultValue 0
         $directSmokePacketVerifierMismatches = Get-JsonIntValue -Object $result -Name 'PacketVerifierMismatches' -DefaultValue 0
+        $directSmokeModeVerifierBinding = Get-DirectSmokeVerifierReportBinding `
+            -Summary $result `
+            -Kind 'mode' `
+            -EvidenceRoot $Directory `
+            -ReportPath $directSmokeModeVerifierReportCandidate `
+            -CurrentIterationLogPath $currentIterationLogCandidate `
+            -CurrentIterationLogExists $currentIterationLogExists `
+            -Mode ([string](Get-JsonValue -Object $result -Name 'Mode' -DefaultValue '')) `
+            -ReportPathField 'ModeVerifierReportPath' `
+            -ReportSha256Field 'ModeVerifierReportSha256' `
+            -MismatchesField 'ModeVerifierMismatches' `
+            -CheckCountField 'ModeVerifierCheckCount' `
+            -FailedCheckCountField 'ModeVerifierFailedCheckCount' `
+            -AllowedLeafNames @('sts1-off-runtime-log-check.json', 'enabled-mode-log-check.json') `
+            -BindCurrentLog
+        $directSmokePacketVerifierBinding = Get-DirectSmokeVerifierReportBinding `
+            -Summary $result `
+            -Kind 'packet' `
+            -EvidenceRoot $Directory `
+            -ReportPath $directSmokePacketVerifierReportCandidate `
+            -CurrentIterationLogPath $currentIterationLogCandidate `
+            -CurrentIterationLogExists $currentIterationLogExists `
+            -Mode ([string](Get-JsonValue -Object $result -Name 'Mode' -DefaultValue '')) `
+            -ReportPathField 'PacketVerifierReportPath' `
+            -ReportSha256Field 'PacketVerifierReportSha256' `
+            -MismatchesField 'PacketVerifierMismatches' `
+            -CheckCountField 'PacketVerifierCheckCount' `
+            -FailedCheckCountField 'PacketVerifierFailedCheckCount' `
+            -AllowedLeafNames @('runtime-evidence-packet-check.json') `
+            -BindEvidenceRoot
+        $directSmokeModeVerifierReportMismatches = [int]$directSmokeModeVerifierBinding.MismatchCount
+        $directSmokePacketVerifierReportMismatches = [int]$directSmokePacketVerifierBinding.MismatchCount
+        $directSmokeVerifierReportBindingDetails = @($directSmokeModeVerifierBinding.Details) + @($directSmokePacketVerifierBinding.Details)
+        $directSmokeVerifierReportBindingTrusted =
+            (-not [bool]$directSmokeModeVerifierBinding.Required -or [bool]$directSmokeModeVerifierBinding.Trusted) -and
+            (-not [bool]$directSmokePacketVerifierBinding.Required -or [bool]$directSmokePacketVerifierBinding.Trusted)
         $directSmokeFailedOrDirty = (-not $directSmokePassed) -or
             (-not $directSmokeAuditClean) -or
             $directSmokeModeVerifierMismatches -gt 0 -or
-            $directSmokePacketVerifierMismatches -gt 0
+            $directSmokePacketVerifierMismatches -gt 0 -or
+            $directSmokeModeVerifierReportMismatches -gt 0 -or
+            $directSmokePacketVerifierReportMismatches -gt 0
+
+        if (($directSmokeVerifierReportBindingDetails | Measure-Object).Count -gt 0) {
+            $directSmokeVerifierReportBindingTrusted = $false
+            Add-Finding `
+                -Findings $findings `
+                -Signal 'direct_smoke_verifier_report_binding_invalid' `
+                -Severity 'blocking' `
+                -OwnerArea 'RuntimeHarness' `
+                -Rationale "DirectSmoke verifier counts are not bound to retained verifier reports: $($directSmokeVerifierReportBindingDetails -join '; ')." `
+                -NextStep 'Retain ModeVerifierReportPath/Sha256 and PacketVerifierReportPath/Sha256 beside direct-smoke-summary.json, and require summary counts to match report arrays before package/runtime drift routing.' `
+                -Confidence 'high' `
+                -EvidenceFiles $evidenceFiles
+        }
 
         if ($directSmokeFailedOrDirty -and -not $currentIterationLogExists) {
             Add-Finding `
@@ -3204,17 +4745,6 @@ function Analyze-Iteration {
                 -EvidenceFiles $evidenceFiles
         }
 
-        if ($directSmokeModeVerifierMismatches -gt 0 -or $directSmokePacketVerifierMismatches -gt 0) {
-            Add-Finding `
-                -Findings $findings `
-                -Signal 'direct_smoke_verifier_mismatch' `
-                -Severity 'blocking' `
-                -OwnerArea 'PackageRuntimeDrift' `
-                -Rationale "DirectSmoke verifier mismatch counts are nonzero; modeMismatches=$directSmokeModeVerifierMismatches packetMismatches=$directSmokePacketVerifierMismatches." `
-                -NextStep 'Inspect the retained direct smoke verifier reports and package/runtime markers before treating the failure as gameplay source behavior.' `
-                -Confidence 'high' `
-                -EvidenceFiles $evidenceFiles
-        }
     }
 
     if ($iterationResultMissing) {
@@ -3281,12 +4811,97 @@ function Analyze-Iteration {
                 -Confidence 'high' `
                 -EvidenceFiles $evidenceFiles
         } else {
+            $auditMalformedArrayValues = [int]$auditSummary.MalformedArrayValues
+            $auditMalformedNumericValues = [int]$auditSummary.MalformedNumericValues
+            $auditMalformedBoolValues = [int]$auditSummary.MalformedBoolValues
+            $auditMalformedSchemaValues = [int]$auditSummary.MalformedSchemaValues
+            if ($auditMalformedArrayValues -gt 0) {
+                if ($isGameNativeAutoSlay) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                } elseif (-not $isDirectSmoke) {
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                }
+
+                $logTextTrustedForOwner = $false
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_array_malformed' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "godot-log-audit.json array evidence is malformed; root and SignatureHits must be retained as native JSON arrays, malformedArray=$auditMalformedArrayValues." `
+                    -NextStep 'Regenerate godot-log-audit.json from the retained godot.log.current-iteration slice before routing runtime ownership.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
+            if ($auditMalformedBoolValues -gt 0) {
+                if ($isGameNativeAutoSlay) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                } elseif (-not $isDirectSmoke) {
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                }
+
+                $logTextTrustedForOwner = $false
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_boolean_malformed' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "godot-log-audit.json boolean evidence is malformed; Clean must be retained as a native JSON boolean, malformedBool=$auditMalformedBoolValues." `
+                    -NextStep 'Regenerate godot-log-audit.json from the retained godot.log.current-iteration slice before routing runtime ownership.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
+            if ($auditMalformedNumericValues -gt 0) {
+                if ($isGameNativeAutoSlay) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                } elseif (-not $isDirectSmoke) {
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                }
+
+                $logTextTrustedForOwner = $false
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_numeric_malformed' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "godot-log-audit.json numeric evidence is malformed; Length and SignatureHits[].Count must be retained as native JSON integers, malformedNumeric=$auditMalformedNumericValues." `
+                    -NextStep 'Regenerate godot-log-audit.json from the retained godot.log.current-iteration slice before routing runtime ownership.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
+            if ($auditMalformedSchemaValues -gt 0) {
+                if ($isGameNativeAutoSlay) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                } elseif (-not $isDirectSmoke) {
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                }
+
+                $logTextTrustedForOwner = $false
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_schema_malformed' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "godot-log-audit.json schema evidence is malformed; AuditSchemaVersion must be native integer 2, SignatureSetSha256 must be a SHA256, and SignatureHits[].Name must be retained, malformedSchema=$auditMalformedSchemaValues." `
+                    -NextStep 'Regenerate godot-log-audit.json with the current audit-godot-log.ps1 before routing runtime ownership.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            }
+
             $expectedAuditPath = [System.IO.Path]::GetFullPath($currentIterationLogCandidate)
             $expectedAuditLength = [long](Get-Item -LiteralPath $currentIterationLogCandidate).Length
             $expectedAuditSha256 = Get-FileSha256OrEmpty -Path $currentIterationLogCandidate
             $auditItemPaths = @($auditSummary.ItemPaths)
             $auditItemLengths = @($auditSummary.ItemLengths)
             $auditItemSha256s = @($auditSummary.ItemSha256s)
+            $auditSchemaVersions = @($auditSummary.AuditSchemaVersions)
+            $auditSignatureSetSha256s = @($auditSummary.SignatureSetSha256s)
+            $auditSignatureHitNames = @($auditSummary.SignatureHitNames)
+            $auditSignatureHitVector = @($auditSummary.SignatureHitVector)
+            $auditSignatureNamesCurrent = Test-StringArrayEquals -Actual $auditSignatureHitNames -Expected $expectedAuditSignatureNames
             $auditMetadataMatches =
                 $auditItemPaths.Count -eq 1 -and
                 [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemPaths[0], $expectedAuditPath) -and
@@ -3298,8 +4913,11 @@ function Analyze-Iteration {
             if (-not $auditMetadataMatches) {
                 if ($isGameNativeAutoSlay) {
                     $autoSlayAuditArtifactTrustedForOwner = $false
+                } elseif (-not $isDirectSmoke) {
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
                 }
 
+                $logTextTrustedForOwner = $false
                 Add-Finding `
                     -Findings $findings `
                     -Signal 'godot_log_audit_current_iteration_binding_mismatch' `
@@ -3307,6 +4925,23 @@ function Analyze-Iteration {
                     -OwnerArea 'RuntimeHarness' `
                     -Rationale 'godot-log-audit.json Path, Length, or Sha256 does not bind to the retained godot.log.current-iteration slice.' `
                     -NextStep 'Use only the packet checker recomputed audit or rerun the packet; do not route ownership from stale audit JSON.' `
+                    -Confidence 'high' `
+                    -EvidenceFiles $evidenceFiles
+            } elseif (-not $auditSignatureNamesCurrent) {
+                if ($isGameNativeAutoSlay) {
+                    $autoSlayAuditArtifactTrustedForOwner = $false
+                } elseif (-not $isDirectSmoke) {
+                    $runtimeMonkeyRunArtifactsTrustedForOwner = $false
+                }
+
+                $logTextTrustedForOwner = $false
+                Add-Finding `
+                    -Findings $findings `
+                    -Signal 'godot_log_audit_signature_names_drift' `
+                    -Severity 'blocking' `
+                    -OwnerArea 'RuntimeHarness' `
+                    -Rationale "godot-log-audit.json signature names do not match the current audit rule set; expected=$($expectedAuditSignatureNames -join ',') actual=$($auditSignatureHitNames -join ',')." `
+                    -NextStep 'Regenerate godot-log-audit.json with the current audit-godot-log.ps1 before routing runtime ownership.' `
                     -Confidence 'high' `
                     -EvidenceFiles $evidenceFiles
             } elseif (-not (Test-Path -LiteralPath $logAuditScript -PathType Leaf)) {
@@ -3325,18 +4960,38 @@ function Analyze-Iteration {
                     -EvidenceFiles $evidenceFiles
             } else {
                 try {
-                    $recomputedAudit = Invoke-RecomputedAudit -LogPath $currentIterationLogCandidate
-                    $recomputedAuditSummary = ConvertTo-AuditSummary -Audit $recomputedAudit
+                    $recomputedAuditResult = Invoke-RecomputedAudit -LogPath $currentIterationLogCandidate
+                    $recomputedAudit = $recomputedAuditResult.Data
+                    $recomputedAuditSummary = ConvertTo-AuditSummary -Audit $recomputedAudit -RawJson $recomputedAuditResult.RawJson
                     $recomputedAuditSha256s = @($recomputedAuditSummary.ItemSha256s)
+                    $recomputedAuditMalformedArrayValues = [int]$recomputedAuditSummary.MalformedArrayValues
+                    $recomputedAuditMalformedNumericValues = [int]$recomputedAuditSummary.MalformedNumericValues
+                    $recomputedAuditMalformedBoolValues = [int]$recomputedAuditSummary.MalformedBoolValues
+                    $recomputedAuditMalformedSchemaValues = [int]$recomputedAuditSummary.MalformedSchemaValues
+                    $recomputedAuditSchemaVersions = @($recomputedAuditSummary.AuditSchemaVersions)
+                    $recomputedAuditSignatureSetSha256s = @($recomputedAuditSummary.SignatureSetSha256s)
+                    $recomputedAuditSignatureHitVector = @($recomputedAuditSummary.SignatureHitVector)
                     $auditMatchesRecomputed =
                         $auditSummary.DirtyItems -eq $recomputedAuditSummary.DirtyItems -and
                         $auditSummary.SignatureHitCount -eq $recomputedAuditSummary.SignatureHitCount -and
+                        (Test-StringArrayEquals -Actual $auditSchemaVersions -Expected $recomputedAuditSchemaVersions) -and
+                        (Test-StringArrayEquals -Actual $auditSignatureSetSha256s -Expected $recomputedAuditSignatureSetSha256s) -and
+                        (Test-StringArrayEquals -Actual $auditSignatureHitVector -Expected $recomputedAuditSignatureHitVector) -and
                         $auditItemSha256s.Count -eq 1 -and
                         $recomputedAuditSha256s.Count -eq 1 -and
                         [System.StringComparer]::OrdinalIgnoreCase.Equals([string]$auditItemSha256s[0], [string]$recomputedAuditSha256s[0])
 
-                    if ($auditMatchesRecomputed) {
-                        if ($autoSlayRunArtifactsTrustedForOwner -and $autoSlayAuditArtifactTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner) {
+                    if (
+                        $auditMatchesRecomputed -and
+                        $auditMalformedArrayValues -eq 0 -and
+                        $auditMalformedNumericValues -eq 0 -and
+                        $auditMalformedBoolValues -eq 0 -and
+                        $auditMalformedSchemaValues -eq 0 -and
+                        $recomputedAuditMalformedArrayValues -eq 0 -and
+                        $recomputedAuditMalformedNumericValues -eq 0 -and
+                        $recomputedAuditMalformedBoolValues -eq 0 -and
+                        $recomputedAuditMalformedSchemaValues -eq 0) {
+                        if ($artifactPathChainTrustedForOwner -and $autoSlayRunArtifactsTrustedForOwner -and $autoSlayAuditArtifactTrustedForOwner -and $runtimeMonkeyRunArtifactsTrustedForOwner) {
                             $auditTrustedForOwner = $true
                             $auditHits.Clear()
                             foreach ($hit in @(Get-AuditHits -AuditItems @($recomputedAudit))) {
@@ -3346,14 +5001,17 @@ function Analyze-Iteration {
                     } else {
                         if ($isGameNativeAutoSlay) {
                             $autoSlayAuditArtifactTrustedForOwner = $false
+                        } elseif (-not $isDirectSmoke) {
+                            $runtimeMonkeyRunArtifactsTrustedForOwner = $false
                         }
 
+                        $logTextTrustedForOwner = $false
                         Add-Finding `
                             -Findings $findings `
                             -Signal 'godot_log_audit_recomputed_mismatch' `
                             -Severity 'blocking' `
                             -OwnerArea 'RuntimeHarness' `
-                            -Rationale "Retained audit signature counts do not match a fresh audit of godot.log.current-iteration; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)." `
+                            -Rationale "Retained audit schema, rule-set hash, or signature vector does not match a fresh audit of godot.log.current-iteration; retained dirty=$($auditSummary.DirtyItems), retained hits=$($auditSummary.SignatureHitCount), recomputed dirty=$($recomputedAuditSummary.DirtyItems), recomputed hits=$($recomputedAuditSummary.SignatureHitCount)." `
                             -NextStep 'Treat the retained audit JSON as stale or hand-edited; rerun the packet or regenerate the audit from the current-iteration log before owner routing.' `
                             -Confidence 'high' `
                             -EvidenceFiles $evidenceFiles
@@ -3375,6 +5033,29 @@ function Analyze-Iteration {
                 }
             }
         }
+    }
+
+    if ($isDirectSmoke -and $result -and (
+            $directSmokeModeVerifierMismatches -gt 0 -or
+            $directSmokePacketVerifierMismatches -gt 0 -or
+            $directSmokeModeVerifierReportMismatches -gt 0 -or
+            $directSmokePacketVerifierReportMismatches -gt 0)) {
+        $directSmokeVerifierEvidenceTrusted = $auditTrustedForOwner -and $directSmokeVerifierReportBindingTrusted
+        $directSmokeVerifierOwner = if ($directSmokeVerifierEvidenceTrusted) { 'PackageRuntimeDrift' } else { 'RuntimeHarness' }
+        $directSmokeVerifierNextStep = if ($directSmokeVerifierEvidenceTrusted) {
+            'Inspect the retained direct smoke verifier reports and package/runtime markers before treating the failure as gameplay source behavior.'
+        } else {
+            'Bind DirectSmoke verifier mismatch counts to retained verifier report paths, SHA256 hashes, report counts, godot.log.current-iteration, and recomputed godot-log-audit.json trust before assigning package/runtime drift.'
+        }
+        Add-Finding `
+            -Findings $findings `
+            -Signal 'direct_smoke_verifier_mismatch' `
+            -Severity 'blocking' `
+            -OwnerArea $directSmokeVerifierOwner `
+            -Rationale "DirectSmoke verifier mismatch counts are nonzero; summaryModeMismatches=$directSmokeModeVerifierMismatches summaryPacketMismatches=$directSmokePacketVerifierMismatches reportModeMismatches=$directSmokeModeVerifierReportMismatches reportPacketMismatches=$directSmokePacketVerifierReportMismatches." `
+            -NextStep $directSmokeVerifierNextStep `
+            -Confidence 'high' `
+            -EvidenceFiles $evidenceFiles
     }
 
     $retainedSignalItems = [System.Collections.Generic.List[object]]::new()
@@ -3585,7 +5266,7 @@ function Analyze-Iteration {
         -not [string]::IsNullOrWhiteSpace($sts1ModeCandidate) -and
         $sts1ModeReportExists) {
         $sts1Report = Read-JsonOrNull -Path $sts1ModeCandidate
-        $sts1ModeReportTrustedForOwner = $true
+        $sts1ModeReportTrustedForOwner = $artifactPathChainTrustedForOwner
         if ($null -eq $sts1Report) {
             $sts1ModeReportTrustedForOwner = $false
             Add-Finding `
@@ -3725,7 +5406,12 @@ function Analyze-Iteration {
         -not $autoSlayAuditArtifactTrustedForOwner -or
         -not $autoSlaySts1ModeArtifactTrustedForOwner)) {
         $logTextTrustedForOwner = $false
+    }
+
+    if (-not $logTextTrustedForOwner) {
+        $ownerLogText = ''
         $logOwnerArea = 'Runtime.Unknown'
+        $dependencyFrameworkFailures = @()
     }
 
     $autoSlayEvidenceInvalidForOwner = $isGameNativeAutoSlay -and (
@@ -3810,12 +5496,27 @@ function Analyze-Iteration {
 
 $analysisTargets = @()
 $summary = $null
+$summaryExists = $false
+$summaryJsonValid = $false
+$summaryPath = ''
 $summaryResultsByIteration = @{}
 $summaryMismatchDetails = @()
 $evidenceFull = ''
+$outFileEvidenceRoots = [System.Collections.Generic.List[string]]::new()
+$outFileProtectedPaths = [System.Collections.Generic.List[string]]::new()
+$directInputPathChainCandidates = [System.Collections.Generic.List[string]]::new()
+$runtimeMonkeySummaryRequestedIterations = 0
+$runtimeMonkeySummaryResultCount = 0
+$runtimeMonkeySummaryClaimsWork = $false
+$runtimeMonkeyAnalysisTargetCount = 0
 
 if ($IterationDir) {
     $resolvedIterationDir = Resolve-RepoPath -Path $IterationDir
+    Add-ProtectedOutputRoot -Roots $outFileEvidenceRoots -Path $resolvedIterationDir
+    $iterationParent = [System.IO.Directory]::GetParent($resolvedIterationDir)
+    if ($null -ne $iterationParent) {
+        Add-ProtectedOutputRoot -Roots $outFileEvidenceRoots -Path $iterationParent.FullName
+    }
     $resultFileName = if (Test-Path -LiteralPath (Join-Path $resolvedIterationDir 'run-result.json') -PathType Leaf) {
         'run-result.json'
     } else {
@@ -3830,19 +5531,50 @@ if ($IterationDir) {
     })
 } elseif ($EvidenceDir) {
     $evidenceFull = Resolve-RepoPath -Path $EvidenceDir
+    Add-ProtectedOutputRoot -Roots $outFileEvidenceRoots -Path $evidenceFull
     $summaryPath = Join-Path $evidenceFull 'monkey-summary.json'
     $autoSlaySummaryPath = Join-Path $evidenceFull 'autoslay-summary.json'
     $directSmokeSummaryPath = Join-Path $evidenceFull 'direct-smoke-summary.json'
-    $autoSlaySummary = Read-JsonOrNull -Path $autoSlaySummaryPath
-    $summary = Read-JsonOrNull -Path $summaryPath
-    $directSmokeSummary = Read-JsonOrNull -Path $directSmokeSummaryPath
+    $autoSlaySummaryExists = Test-Path -LiteralPath $autoSlaySummaryPath -PathType Leaf
+    $summaryExists = Test-Path -LiteralPath $summaryPath -PathType Leaf
+    $directSmokeSummaryExists = Test-Path -LiteralPath $directSmokeSummaryPath -PathType Leaf
+    $autoSlaySummaryJsonValid = $autoSlaySummaryExists -and (Test-JsonFileParses -Path $autoSlaySummaryPath)
+    $summaryJsonValid = $summaryExists -and (Test-JsonFileParses -Path $summaryPath)
+    $directSmokeSummaryJsonValid = $directSmokeSummaryExists -and (Test-JsonFileParses -Path $directSmokeSummaryPath)
+    $autoSlaySummary = if ($autoSlaySummaryJsonValid) { Read-JsonOrNull -Path $autoSlaySummaryPath } else { $null }
+    $summary = if ($summaryJsonValid) { Read-JsonOrNull -Path $summaryPath } else { $null }
+    $directSmokeSummary = if ($directSmokeSummaryJsonValid) { Read-JsonOrNull -Path $directSmokeSummaryPath } else { $null }
+    if ($summary) {
+        $runtimeMonkeySummaryRequestedIterations = Get-JsonIntValue -Object $summary -Name 'RequestedIterations' -DefaultValue 0
+        $runtimeMonkeySummaryResults = if (Test-JsonArrayProperty -Object $summary -Name 'Results') {
+            @(Get-JsonArrayValues -Object $summary -Name 'Results')
+        } else {
+            @()
+        }
+        $runtimeMonkeySummaryResultCount = @($runtimeMonkeySummaryResults).Count
+        $runtimeMonkeySummaryClaimsWork = $runtimeMonkeySummaryRequestedIterations -gt 0 -or $runtimeMonkeySummaryResultCount -gt 0
+    }
+    $autoSlaySummaryInvalidDetails = [System.Collections.Generic.List[string]]::new()
+    if ($autoSlaySummaryExists -and -not $autoSlaySummaryJsonValid) {
+        $autoSlaySummaryInvalidDetails.Add('autoslay-summary.json must parse as JSON') | Out-Null
+    }
+
+    $autoSlayRunnerKind = if ($autoSlaySummary) { [string](Get-JsonValue -Object $autoSlaySummary -Name 'RunnerKind' -DefaultValue '') } else { '' }
+    if ($autoSlaySummaryExists -and $autoSlaySummaryJsonValid -and
+        -not [string]::Equals($autoSlayRunnerKind, 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)) {
+        $autoSlaySummaryInvalidDetails.Add("RunnerKind must be GameNativeAutoSlay; found '$autoSlayRunnerKind'") | Out-Null
+    }
+
+    $autoSlaySummaryHasInvalidRoot = $autoSlaySummaryInvalidDetails.Count -gt 0
     $autoSlaySummaryIsGameNative = $autoSlaySummary -and
-        [string]::Equals([string](Get-JsonValue -Object $autoSlaySummary -Name 'RunnerKind' -DefaultValue ''), 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)
-    $autoSlaySummaryRunsIsArray = $autoSlaySummaryIsGameNative -and (Test-JsonArrayProperty -Object $autoSlaySummary -Name 'Runs')
+        [string]::Equals($autoSlayRunnerKind, 'GameNativeAutoSlay', [System.StringComparison]::Ordinal)
+    $autoSlaySummaryRunsShapeIsArray = $autoSlaySummary -and (Test-JsonArrayProperty -Object $autoSlaySummary -Name 'Runs')
+    $autoSlaySummaryRunsIsArray = $autoSlaySummaryIsGameNative -and $autoSlaySummaryRunsShapeIsArray
     if ($autoSlaySummaryIsGameNative -and
         $autoSlaySummaryRunsIsArray -and
         @($autoSlaySummary.Runs).Count -gt 0) {
         $runIndex = 0
+        $autoSlayTargetDirectorySet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
         foreach ($run in @($autoSlaySummary.Runs)) {
             $runIndex++
             if ($Iteration -gt 0 -and $runIndex -ne $Iteration) {
@@ -3863,6 +5595,7 @@ if ($IterationDir) {
             if ([string]::IsNullOrWhiteSpace($runDirectory)) {
                 $runDirectory = $expectedRunDirectory
             }
+            [void]$autoSlayTargetDirectorySet.Add((ConvertTo-NormalizedPathOrEmpty -Path $runDirectory))
             $runResultFileName = if ($runResultPathInsideEvidenceDir) { [System.IO.Path]::GetFileName($runResultPath) } else { 'run-result.json' }
 
             $analysisTargets += [pscustomobject]@{
@@ -3876,11 +5609,32 @@ if ($IterationDir) {
                 Summary = $autoSlaySummary
             }
         }
-    } elseif ($autoSlaySummaryIsGameNative) {
-        $autoSlaySummaryInvalidDetails = [System.Collections.Generic.List[string]]::new()
-        if (-not $autoSlaySummaryRunsIsArray) {
+
+        if ($Iteration -le 0) {
+            $retainedRunDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'run-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
+            foreach ($dir in $retainedRunDirs) {
+                $normalizedDir = ConvertTo-NormalizedPathOrEmpty -Path $dir
+                if ([string]::IsNullOrWhiteSpace($normalizedDir) -or $autoSlayTargetDirectorySet.Contains($normalizedDir)) {
+                    continue
+                }
+
+                $runNumber = if ($dir -match 'run-(\d+)$') { [int]$Matches[1] } else { 0 }
+                $runName = [System.IO.Path]::GetFileName($dir)
+                $analysisTargets += [pscustomobject]@{
+                    Directory = $dir
+                    SummaryResult = $null
+                    ResultFileName = 'run-result.json'
+                    DefaultIteration = $runNumber
+                    ExpectedRunnerKind = 'GameNativeAutoSlay'
+                    Summary = $autoSlaySummary
+                    AutoSlaySummaryInvalidDetails = @("autoslay-summary.json omitted retained run directory $runName")
+                }
+            }
+        }
+    } elseif ($autoSlaySummaryIsGameNative -or $autoSlaySummaryHasInvalidRoot) {
+        if (-not $autoSlaySummaryRunsShapeIsArray) {
             $autoSlaySummaryInvalidDetails.Add('Runs must be retained as a native JSON array') | Out-Null
-        } else {
+        } elseif ($autoSlaySummaryIsGameNative) {
             $autoSlaySummaryInvalidDetails.Add('Runs must contain at least one run') | Out-Null
         }
 
@@ -3902,10 +5656,14 @@ if ($IterationDir) {
             }
         }
     } else {
-        if ($summary -and (Test-JsonProperty -Object $summary -Name 'Results')) {
+        if ($summaryExists -and -not $summaryJsonValid) {
+            $summaryMismatchDetails = @('monkey-summary.json must parse as JSON')
+        } elseif ($summary) {
             $summaryMismatchDetails = @(Get-RuntimeMonkeySummaryMismatchDetails -Summary $summary)
-            foreach ($result in @($summary.Results)) {
-                $summaryResultsByIteration[(Get-JsonIntValue -Object $result -Name 'Iteration' -DefaultValue 0)] = $result
+            if (Test-JsonArrayProperty -Object $summary -Name 'Results') {
+                foreach ($result in @($summary.Results)) {
+                    $summaryResultsByIteration[(Get-JsonIntValue -Object $result -Name 'Iteration' -DefaultValue 0)] = $result
+                }
             }
         }
 
@@ -3941,20 +5699,37 @@ if ($IterationDir) {
             $iterationDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'iteration-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
         }
 
-        if (($iterationDirs | Measure-Object).Count -eq 0 -and
-            $Iteration -le 0 -and
-            $directSmokeSummary) {
-            $analysisTargets += [pscustomobject]@{
-                Directory = $evidenceFull
-                SummaryResult = $null
-                ResultFileName = 'direct-smoke-summary.json'
-                DefaultIteration = 0
+        if (($iterationDirs | Measure-Object).Count -eq 0 -and ($summaryMismatchDetails | Measure-Object).Count -gt 0) {
+            $iterationDirs = @($evidenceFull)
+        }
+
+        if ($Iteration -le 0 -and $summary) {
+            $selectedIterationDirSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+            foreach ($dir in @($iterationDirs)) {
+                [void]$selectedIterationDirSet.Add((ConvertTo-NormalizedPathOrEmpty -Path $dir))
+            }
+
+            $retainedIterationDirs = @(Get-ChildItem -LiteralPath $evidenceFull -Directory -Filter 'iteration-*' -ErrorAction SilentlyContinue | Sort-Object Name | ForEach-Object { $_.FullName })
+            $omittedIterationDirs = @()
+            foreach ($dir in $retainedIterationDirs) {
+                $normalizedDir = ConvertTo-NormalizedPathOrEmpty -Path $dir
+                if (-not [string]::IsNullOrWhiteSpace($normalizedDir) -and -not $selectedIterationDirSet.Contains($normalizedDir)) {
+                    $omittedIterationDirs += $dir
+                    [void]$selectedIterationDirSet.Add($normalizedDir)
+                }
+            }
+
+            if (($omittedIterationDirs | Measure-Object).Count -gt 0) {
+                $omittedNames = @($omittedIterationDirs | ForEach-Object { [System.IO.Path]::GetFileName($_) })
+                $summaryMismatchDetails = @($summaryMismatchDetails) + "RetainedIterationDirectories omitted=$($omittedNames -join ',')"
+                $iterationDirs = @($iterationDirs) + @($omittedIterationDirs)
             }
         }
 
         foreach ($dir in $iterationDirs) {
             $iterationNumber = if ($dir -match 'iteration-(\d+)$') { [int]$Matches[1] } else { 0 }
             $summaryResult = if ($summaryResultsByIteration.ContainsKey($iterationNumber)) { $summaryResultsByIteration[$iterationNumber] } else { $null }
+            $runtimeMonkeyAnalysisTargetCount++
             $analysisTargets += [pscustomobject]@{
                 Directory = $dir
                 SummaryResult = $summaryResult
@@ -3967,14 +5742,31 @@ if ($IterationDir) {
             }
         }
     }
+
+    if ($Iteration -le 0 -and $directSmokeSummaryExists) {
+        $analysisTargets += [pscustomobject]@{
+            Directory = $evidenceFull
+            SummaryResult = $null
+            ResultFileName = 'direct-smoke-summary.json'
+            DefaultIteration = 0
+        }
+    }
 } elseif ($LogPath -or $AuditPath) {
     $tempDir = Join-Path $env:TEMP ('spire-plus-runtime-analysis-' + [guid]::NewGuid().ToString('N'))
     [void][System.IO.Directory]::CreateDirectory($tempDir)
     if ($LogPath) {
-        Copy-Item -LiteralPath (Resolve-RepoPath -Path $LogPath) -Destination (Join-Path $tempDir 'godot.log.after-launch') -Force
+        $resolvedLogPath = Resolve-RepoPath -Path $LogPath
+        Add-ProtectedOutputPath -Paths $outFileProtectedPaths -Path $resolvedLogPath
+        Add-ProtectedOutputRootsForEvidenceFile -Roots $outFileEvidenceRoots -Path $resolvedLogPath
+        [void]$directInputPathChainCandidates.Add($resolvedLogPath)
+        Copy-Item -LiteralPath $resolvedLogPath -Destination (Join-Path $tempDir 'godot.log.after-launch') -Force
     }
     if ($AuditPath) {
-        Copy-Item -LiteralPath (Resolve-RepoPath -Path $AuditPath) -Destination (Join-Path $tempDir 'godot-log-audit.json') -Force
+        $resolvedAuditPath = Resolve-RepoPath -Path $AuditPath
+        Add-ProtectedOutputPath -Paths $outFileProtectedPaths -Path $resolvedAuditPath
+        Add-ProtectedOutputRootsForEvidenceFile -Roots $outFileEvidenceRoots -Path $resolvedAuditPath
+        [void]$directInputPathChainCandidates.Add($resolvedAuditPath)
+        Copy-Item -LiteralPath $resolvedAuditPath -Destination (Join-Path $tempDir 'godot-log-audit.json') -Force
     }
 
     $analysisTargets = @([pscustomobject]@{
@@ -3982,6 +5774,7 @@ if ($IterationDir) {
         SummaryResult = $null
         ResultFileName = 'iteration-result.json'
         DefaultIteration = 0
+        AdditionalPathChainCandidates = @($directInputPathChainCandidates.ToArray())
     })
 } else {
     throw 'Pass -EvidenceDir, -IterationDir, or -LogPath/-AuditPath.'
@@ -3996,12 +5789,36 @@ $iterationReports = foreach ($target in $analysisTargets) {
     $autoSlaySummaryInvalidDetails = if ($null -ne $target.PSObject.Properties['AutoSlaySummaryInvalidDetails']) { @($target.AutoSlaySummaryInvalidDetails) } else { @() }
     $requireRuntimeMonkeyPlanBinding = if ($null -ne $target.PSObject.Properties['RequireRuntimeMonkeyPlanBinding']) { [bool]$target.RequireRuntimeMonkeyPlanBinding } else { $false }
     $analysisSummary = if ($null -ne $target.PSObject.Properties['Summary']) { $target.Summary } else { $null }
+    $additionalPathChainCandidates = if ($null -ne $target.PSObject.Properties['AdditionalPathChainCandidates']) { @($target.AdditionalPathChainCandidates) } else { @() }
     try {
-        Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir -RunResultPathMatchesExpectedPerSeedDir $runResultPathMatchesExpectedPerSeedDir -ExpectedRunnerKind $expectedRunnerKind -SummaryFailedIterationIdsInvalidDetails $summaryFailedIterationIdsInvalidDetails -SummaryMismatchDetails $summaryMismatchDetails -AutoSlaySummaryInvalidDetails $autoSlaySummaryInvalidDetails -RequireRuntimeMonkeyPlanBinding $requireRuntimeMonkeyPlanBinding -Summary $analysisSummary
+        Analyze-Iteration -Directory $target.Directory -SummaryResult $target.SummaryResult -ResultFileName $target.ResultFileName -DefaultIteration $target.DefaultIteration -RunResultPathInsideEvidenceDir $runResultPathInsideEvidenceDir -RunResultPathMatchesExpectedPerSeedDir $runResultPathMatchesExpectedPerSeedDir -ExpectedRunnerKind $expectedRunnerKind -SummaryFailedIterationIdsInvalidDetails $summaryFailedIterationIdsInvalidDetails -SummaryMismatchDetails $summaryMismatchDetails -AutoSlaySummaryInvalidDetails $autoSlaySummaryInvalidDetails -RequireRuntimeMonkeyPlanBinding $requireRuntimeMonkeyPlanBinding -Summary $analysisSummary -AdditionalPathChainCandidates $additionalPathChainCandidates
     } catch {
         $scriptStack = if ([string]::IsNullOrWhiteSpace([string]$_.ScriptStackTrace)) { '<no script stack>' } else { [string]$_.ScriptStackTrace }
         throw "Analyze-Iteration failed for '$($target.Directory)' result '$($target.ResultFileName)': $($_.Exception.Message)`n$scriptStack"
     }
+}
+
+if ($runtimeMonkeySummaryClaimsWork -and $runtimeMonkeyAnalysisTargetCount -eq 0) {
+    $summaryEvidenceFile = if ([string]::IsNullOrWhiteSpace([string]$summaryPath)) { $evidenceFull } else { $summaryPath }
+    $missingRuntimeMonkeyTargetsReport = [pscustomobject]@{
+        Iteration = 0
+        ScenarioTag = ''
+        OwnerAreaHint = 'RuntimeHarness'
+        OwnerAreaFromLog = ''
+        OwnerAreaFromCommand = ''
+        Passed = $false
+        Command = ''
+        Findings = @([pscustomobject]@{
+                Signal = 'runtime_monkey_no_iteration_targets'
+                Severity = 'blocking'
+                OwnerArea = 'RuntimeHarness'
+                Rationale = "monkey-summary.json claims runtime monkey work but no iteration-* directories or analysis targets were retained; requestedIterations=$runtimeMonkeySummaryRequestedIterations results=$runtimeMonkeySummaryResultCount."
+                NextStep = 'Regenerate or reject the packet; monkey-summary.json must be backed by retained iteration directories before owner routing is trusted.'
+                Confidence = 'high'
+                EvidenceFiles = @($summaryEvidenceFile)
+            })
+    }
+    $iterationReports = @($iterationReports) + $missingRuntimeMonkeyTargetsReport
 }
 
 $allFindings = @($iterationReports | ForEach-Object { @($_.Findings) })
@@ -4059,6 +5876,10 @@ Write-Output "owner_areas=$($ownerAreas -join ',')"
 
 if ($OutFile) {
     $resolvedOutFile = Resolve-RepoPath -Path $OutFile
+    foreach ($protectedRoot in @($outFileEvidenceRoots)) {
+        Assert-OutFileDoesNotOverwriteCanonicalEvidence -ResolvedOutFile $resolvedOutFile -EvidenceRoot ([string]$protectedRoot)
+    }
+    Assert-OutFileDoesNotOverwriteExplicitEvidence -ResolvedOutFile $resolvedOutFile -ProtectedPaths $outFileProtectedPaths
     $outDir = [System.IO.Path]::GetDirectoryName($resolvedOutFile)
     if ($outDir -and -not (Test-Path -LiteralPath $outDir)) {
         [void][System.IO.Directory]::CreateDirectory($outDir)
