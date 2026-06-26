@@ -87,6 +87,148 @@ If the owner already has a captured log, pass it without launching the game:
   -ScreenshotPath "<owner-captured>\main-menu-screenshot.png"
 ```
 
+## Turnkey Owner Capture Runbook
+
+This is the one-stop owner sequence: a minimal `StartupOnly` smoke captures the
+runtime log, then the evidence packet assembles and verifies automatically. Only
+the smoke step (Step 2) launches the game; it is `pending-owner-run`. Everything
+else is no-launch.
+
+Prerequisites, already confirmed by this lane's no-launch preflight on
+2026-06-26 (re-run if anything changed):
+
+- `Directory.Build.props` `Sts2Path` is set to the installed game root
+  (`E:\Steam\steamapps\common\Slay the Spire 2`).
+- Package `v0.1.0-private-beta.135` is packaged
+  (`publish\SpirePlus-v0.1.0-private-beta.135.zip`) and installed under
+  `<GameRoot>\mods\EZMicroBalance` with matching DLL/JSON/PCK/README hashes.
+- Versions match: game `0.107.1`, RitsuLib `0.4.34` (direct-NuGet layout),
+  package `v0.1.0-private-beta.135`; STS2-RitsuLib present under
+  `<GameRoot>\mods\STS2-RitsuLib`.
+
+Re-confirm any time with these no-launch checks (both must exit 0):
+
+```powershell
+.\scripts\check-sts1-runtime-preflight.ps1 -FailOnMismatch
+.\scripts\check-installed-spire-plus-package.ps1 `
+  -ModDirectory "E:\Steam\steamapps\common\Slay the Spire 2\mods\EZMicroBalance" `
+  -GameRoot "E:\Steam\steamapps\common\Slay the Spire 2" `
+  -ExpectedPackageVersion v0.1.0-private-beta.135
+```
+
+### Step 1 — (Optional) preview the empty scaffold (no launch)
+
+This step is optional and only previews what the packet will contain. Skip it if
+you want the shortest path; Step 3 creates the real evidence directory in one go.
+
+```powershell
+.\scripts\new-beta135-runtime-baseline-evidence.ps1
+```
+
+It prints `runtime_baseline_scaffold status=pending-owner-run evidence_dir=<DIR>`
+and writes `command.txt` / `preflight.json` / `run-manifest.json` /
+`runtime-baseline-notes.md` into a fresh timestamped `<DIR>`. Do NOT later point
+Step 3's `-GodotLogAfterLaunchPath` at this same `<DIR>`: the assembler refuses to
+reuse a non-empty evidence directory (it fails closed rather than overwrite). For
+the real packet, let Step 3 create its own directory.
+
+### Step 2 — Capture the runtime log (OWNER-RUN: launches the game)
+
+> `pending-owner-run`. This is the only step that starts Slay the Spire 2. Run it
+> yourself; the dev lane must not launch the game.
+
+`StartupOnly` sends no DevConsole commands; it launches with only STS2-RitsuLib
+and Spire Plus enabled, waits for the main menu, watches for startup hangs / log
+stalls / unresponsive window, then restores the session. Isolate the game's
+shared `godot.log` first by closing any running Slay the Spire 2 instance.
+
+```powershell
+.\scripts\run-spire-plus-monkey-stability.ps1 `
+  -Iterations 1 `
+  -Scenario StartupOnly `
+  -NoDevConsoleCommands `
+  -Launch `
+  -MoveOtherMods `
+  -MoveCurrentRuns `
+  -MainMenuTimeoutSeconds 240 `
+  -NoLogGrowthTimeoutSeconds 120 `
+  -ObservationIntervalSeconds 2 `
+  -ExpectedPackageVersion v0.1.0-private-beta.135 `
+  -ExpectedGameVersion 0.107.1 `
+  -ExpectedRitsuLibVersion 0.4.34 `
+  -ExpectedRitsuCompatBranch 0.107.1
+```
+
+Without `-Launch` the runner is a dry run (it prints
+`Status: planned … Re-run with -Launch to start Steam sessions.` and exits without
+touching Steam) — use that to preview the plan safely.
+
+The launched run writes its own evidence root under `.tools\runtime-evidence\`
+(`monkey-stability-YYYYMMDD-HHMMSS\iteration-0001\`). The log to feed forward is
+that iteration's full post-launch log:
+
+```text
+.tools\runtime-evidence\monkey-stability-YYYYMMDD-HHMMSS\iteration-0001\godot.log.after-launch
+```
+
+Call it `<CAPTURED-LOG>`. If you also grab a main-menu screenshot, call it
+`<CAPTURED-SHOT>` (PNG). A screenshot is optional; the baseline can pass on log
+markers alone.
+
+> Patch-count note: the `StartupOnly` smoke is only the LOG SOURCE here. Do not
+> reuse the runtime-monkey packet checker's historical `-ExpectedPatchCount`
+> values (`25` runner default, `144`, or `152` from beta.128) for this baseline.
+> The beta.135 baseline lane uses `-ExpectedPatchCount 168` (Step 4), which the
+> checker self-test confirms (`expected=168 applied=168 total=168`). If you later
+> also want a monkey packet, derive its `-ExpectedPatchCount` fresh from the
+> captured `ModPatcher applied N patches (N registered)` log line.
+
+### Step 3 — Assemble + verify the evidence packet (no launch)
+
+Run the assembler ONCE with the captured log (and optional screenshot). With no
+`-EvidenceDir`, it creates a fresh timestamped `.tools\runtime-evidence\beta135-runtime-baseline-*`
+directory, copies the artifacts into it, then — because a log was provided —
+automatically runs `check-beta135-runtime-baseline-log.ps1` (with
+`-ExpectedPatchCount 168` and the configured game root/zip) and refreshes
+`run-manifest.json`:
+
+```powershell
+.\scripts\new-beta135-runtime-baseline-evidence.ps1 `
+  -GodotLogAfterLaunchPath "<CAPTURED-LOG>" `
+  -ScreenshotPath "<CAPTURED-SHOT>"   # omit this line if no screenshot
+```
+
+On success it prints
+`runtime_baseline_scaffold status=runtime-baseline-log-markers-checked evidence_dir=<EVIDENCE-DIR>`.
+Copy that reported `<EVIDENCE-DIR>` for the optional re-check below. If the log
+markers do not pass, the assembler surfaces the checker failure and the status is
+not `runtime-baseline-log-markers-checked`.
+
+### Step 4 — (Optional) re-verify (no launch; idempotent)
+
+Step 3 already ran the checker. To re-verify the assembled packet at any later
+time, point `-EvidenceDir` at the directory Step 3 reported:
+
+```powershell
+.\scripts\check-beta135-runtime-baseline-log.ps1 `
+  -EvidenceDir "<EVIDENCE-DIR>" `
+  -LogPath "<EVIDENCE-DIR>\godot.log.after-launch" `
+  -ExpectedPackageVersion v0.1.0-private-beta.135 `
+  -ExpectedGameVersion 0.107.1 `
+  -ExpectedRitsuLibVersion 0.4.34 `
+  -ExpectedRitsuCompatBranch 0.107.1 `
+  -ExpectedPatchCount 168 `
+  -GameRoot "E:\Steam\steamapps\common\Slay the Spire 2" `
+  -FailOnMismatch
+```
+
+`status=pass` with all `check … status=pass` rows means the beta.135 runtime
+baseline markers are present. This remains marker-only evidence
+(`LogOriginProofStatus = marker-only-origin-not-proven-by-offline-checker`) and a
+production baseline claim still requires `TrustAnchorMode = canonical-configured`
+(default game root + repo `publish\` zip). It does NOT prove release, gameplay,
+save-load, or co-op readiness.
+
 ## Owner Smoke Command
 
 The owner should:

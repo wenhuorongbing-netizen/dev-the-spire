@@ -114,6 +114,68 @@ public sealed partial class Sts1EventFeatureGuardTests
     }
 
     [Fact]
+    public void RegisterCanaryOnlyRegistersExactlyFourDistinctEventTypesMatchingCanaryEventIds()
+    {
+        // CanaryOnly must register exactly 4 DISTINCT event types (Big Fish + Golden Idol are
+        // each registered into both Act 1 buckets, producing 6 calls but only 4 types). This
+        // guard binds the registration body's distinct-type set to the canonical CanaryEventIds
+        // list so the two cannot silently drift apart, and proves CanaryOnly == exactly 4 events.
+        var source = ReadSts1RuntimeSources();
+        var canaryMethod = SliceBetween(source, "RegisterCanaryOnly(string modId)", "content.Apply()");
+
+        var distinctEventTypes = ExtractRegisteredEventTypeNames(canaryMethod);
+        Assert.Equal(
+            new[] { "Sts1BigFish", "Sts1DivineFountain", "Sts1GoldenIdol", "Sts1TheLab" },
+            distinctEventTypes);
+        Assert.Equal(4, distinctEventTypes.Length);
+
+        // The 4 distinct registered types must map 1:1 onto the canonical canary event-id list.
+        var canaryIdsBlock = SliceBetween(source, "CanaryEventIds { get; } =", "]");
+        var canaryIds = ExtractSts1EventIds(canaryIdsBlock);
+        Assert.Equal(
+            new[] { "sts1_big_fish", "sts1_divine_fountain", "sts1_golden_idol", "sts1_the_lab" },
+            canaryIds);
+        Assert.Equal(canaryIds, distinctEventTypes.Select(EventTypeNameToEventId).OrderBy(id => id, StringComparer.Ordinal).ToArray());
+    }
+
+    private static string[] ExtractRegisteredEventTypeNames(string registrationBody)
+    {
+        var names = new SortedSet<string>(StringComparer.Ordinal);
+
+        foreach (System.Text.RegularExpressions.Match match in
+            System.Text.RegularExpressions.Regex.Matches(
+                registrationBody, @"content\.ActEvent<\s*[A-Za-z0-9_]+\s*,\s*([A-Za-z0-9_]+)\s*>"))
+        {
+            names.Add(match.Groups[1].Value);
+        }
+
+        foreach (System.Text.RegularExpressions.Match match in
+            System.Text.RegularExpressions.Regex.Matches(
+                registrationBody, @"content\.SharedEvent<\s*([A-Za-z0-9_]+)\s*>"))
+        {
+            names.Add(match.Groups[1].Value);
+        }
+
+        return names.ToArray();
+    }
+
+    private static string[] ExtractSts1EventIds(string block)
+    {
+        return System.Text.RegularExpressions.Regex.Matches(block, "\"(sts1_[^\"]+)\"")
+            .Select(match => match.Groups[1].Value)
+            .Distinct(StringComparer.Ordinal)
+            .OrderBy(id => id, StringComparer.Ordinal)
+            .ToArray();
+    }
+
+    private static string EventTypeNameToEventId(string typeName)
+    {
+        var trimmed = typeName.StartsWith("Sts1", StringComparison.Ordinal) ? typeName["Sts1".Length..] : typeName;
+        var snake = System.Text.RegularExpressions.Regex.Replace(trimmed, "([a-z0-9])([A-Z])", "$1_$2");
+        return "sts1_" + snake.ToLowerInvariant();
+    }
+
+    [Fact]
     public void RegisterAdditiveBatch1RegistersOnlyVerifiedScope()
     {
         var source = ReadSts1RuntimeSources();
