@@ -227,5 +227,14 @@
   "EZ_MICRO_BALANCE_RELIC_LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.title": "Public Evidence",
   "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.description": "Fight Vakuu in a greed trial. Break [blue]1[/blue] or more [gold]Stolen Locks[/gold] to cash out loot Gold and extra blessing choices. On turns [blue]1[/blue], [blue]3[/blue], and [blue]5[/blue], choose [blue]1[/blue] of [blue]3[/blue] [gold]Contracts[/gold] to help break locks at the cost of increasing [gold]Blood Debt[/gold]. You may cash out after breaking any lock. No normal combat rewards. Death ends the run.",
   "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.flavor": "A warning and an invitation etched on the same blade.",
-  "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.title": "Vakuu Trial"
+  "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.title": "Vakuu Trial",
+  "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.description": "A relic shaped like a golden idol. Worth a small fortune to the right collector.",
+  "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.flavor": "Pried from its pedestal, trap and all.",
+  "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.title": "Golden Idol",
+  "EZMICROBALANCE-Sts1GoldenIdolRelic.description": "A relic shaped like a golden idol. Worth a small fortune to the right collector.",
+  "EZMICROBALANCE-Sts1GoldenIdolRelic.flavor": "Pried from its pedestal, trap and all.",
+  "EZMICROBALANCE-Sts1GoldenIdolRelic.title": "Golden Idol",
+  "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.description": "A relic shaped like a golden idol. Worth a small fortune to the right collector.",
+  "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.flavor": "Pried from its pedestal, trap and all.",
+  "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.title": "Golden Idol"
 }

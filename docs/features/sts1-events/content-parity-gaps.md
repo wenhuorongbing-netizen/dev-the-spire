@@ -20,7 +20,7 @@
 | # | Event | Act | Status | Gap Type | Dependency |
 |---|-------|-----|--------|----------|------------|
 | 1 | BigFish | Act1 | **OK** | `native-equivalent` | Regret curse, random relic |
-| 2 | GoldenIdol | Act1 | **GAP** | `temporary-substitute` | Golden Idol relic model/effect is missing; Take currently grants a random relic. Injury curse is native-equivalent. |
+| 2 | GoldenIdol | Act1 | **OK (art pending)** | `custom-required` (resolved) | Custom `Sts1GoldenIdolRelic` now implemented; Take grants the named Golden Idol relic (not a random relic). Injury curse is native-equivalent. Relic uses a placeholder icon (art pending). |
 | 3 | LivingWall | Shared | **OK** | `native-equivalent` | Card removal/transform/upgrade |
 | 4 | Duplicator | Shared | **GAP** | `blocked` | Compile-excluded; card duplication selection APIs not available |
 | 5 | DivineFountain | Shared | **OK** | `native-equivalent` | Curse removal; curse prerequisite now source-guarded, runtime selection proof pending |
@@ -70,7 +70,7 @@
 
 **Dependency table totals:** 35 native-equivalent / 4 direct game-object substitutes / 7 blocked / 1 custom-required, plus Mind Bloom as a partial blocked row. Current release-gate blocker handling is authoritative in `status-board.md`, `registry-reconciliation.md`, and the static parity checker.
 
-**Current release-gate non-parity rows:** `status-board.md` intentionally groups six non-parity rows under Temporary Substitutes: Golden Idol, Face Trader, Nest, Vampires, Mind Bloom, and Winding Halls. Vampires still needs a Bite card for parity; Mind Bloom still needs War combat proof. Do not call any of these parity-complete until their missing model or encounter proof is closed.
+**Current release-gate non-parity rows:** `status-board.md` historically grouped six non-parity rows under Temporary Substitutes: Golden Idol, Face Trader, Nest, Vampires, Mind Bloom, and Winding Halls. **Golden Idol is now content-closed** via the custom `Sts1GoldenIdolRelic` (icon art pending only). The remaining non-parity rows are Face Trader, Nest, Vampires, Mind Bloom, and Winding Halls. Vampires still needs a Bite card for parity; Mind Bloom still needs War combat proof. Do not call any of these parity-complete until their missing model or encounter proof is closed.
 
 Static reproduction:
 
@@ -82,17 +82,30 @@ Static reproduction:
 
 ## 2. Per-Event Gap Analysis
 
-### 2.0 GoldenIdol (Act 1) - `temporary-substitute`
+### 2.0 GoldenIdol (Act 1) - `custom-required` (RESOLVED, art pending)
 
-**Source:** `EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1GoldenIdol.cs`
+**Source:** `EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1GoldenIdol.cs`,
+`EZMicroBalanceCode/Sts1Events/Models/Shared/Sts1GoldenIdolRelic.cs`
 
 **StS1 behavior:** Take obtains the Golden Idol relic, then the trap branch offers Outrun, Smash, and Hide.
 
-**Gap:** The trap branch source/localization now uses Outrun / Smash / Hide, with Smash dealing 25%/35% max HP as HP damage and Hide losing 8%/10% max HP. The Take branch still grants `RelicFactory.PullNextRelicFromFront(owner)` instead of a Golden Idol relic model/effect.
+**Resolution (2026-06-26):** A custom `Sts1GoldenIdolRelic : ModRelicTemplate` was added, mirroring the
+existing Spire Plus Ancient option-relic pattern (`RelicRarity.Event`; not allowed in pools, shops, or
+Neow — only obtainable through the event). `TakeIdol()` now grants it via
+`ModelDb.Relic<Sts1GoldenIdolRelic>().ToMutable()` + `RelicCmd.Obtain(...)` (the established grant
+pattern), replacing `RelicFactory.PullNextRelicFromFront(owner)`. The relic is registered through the
+**same RitsuLib content pack** as the canary events (`Sts1EventRegistrationService.RegisterCanaryOnly`
+and `RegisterAll`) via `content.Relic<SharedRelicPool, Sts1GoldenIdolRelic>()`, so it stays behind the
+existing StS1 event gate (default `Off` => not registered => zero impact). EN + ZHS localization added in
+`EZMicroBalance/localization/{eng,zhs}/relics.json`. The trap branch (Outrun / Smash 25%/35% max HP HP
+damage / Hide 8%/10% max HP loss) was already parity-correct and is unchanged.
 
-**Impact:** Medium-high. The event grants a generic relic instead of the named Golden Idol reward.
+**Remaining:** **Art pending.** The relic reuses the shared generic relic placeholder textures under
+`res://EZMicroBalance/images/relics/` (`relic.png` / `relic_outline.png` / `big/relic.png`). No original
+game art is copied. Drop a dedicated Golden Idol icon at `Sts1GoldenIdolRelicAssetPaths` when
+redistributable art is available — no code change required.
 
-**Resolution path:** Create a source-safe `Sts1GoldenIdolRelic` only after the current StS2 gold-reward hook surface is proven. Do not add a marker-only relic and call it parity.
+**Impact:** Closed. The event now grants the named Golden Idol reward instead of a generic random relic.
 
 ---
 

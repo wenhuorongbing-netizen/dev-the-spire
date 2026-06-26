@@ -1,10 +1,12 @@
 using STS2RitsuLib;
 using STS2RitsuLib.Content;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Content;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act1;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act2;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Act3;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 using MegaCrit.Sts2.Core.Models.Acts;
+using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
@@ -93,6 +95,11 @@ internal static partial class Sts1EventRegistrationService
         content.ActEvent<Glory, Sts1MysteriousSphere>();
         content.ActEvent<Glory, Sts1TombOfLordRedMask>();
         content.ActEvent<Glory, Sts1WindingHalls>();
+
+        // Golden Idol's Take branch grants this custom relic (StS1 parity).
+        // Event-only marker relic (never in pools/shops/Neow); registered here
+        // so the all-draft mode matches CanaryOnly.
+        content.Relic<SharedRelicPool, Sts1GoldenIdolRelic>();
 
         content.Apply();
 

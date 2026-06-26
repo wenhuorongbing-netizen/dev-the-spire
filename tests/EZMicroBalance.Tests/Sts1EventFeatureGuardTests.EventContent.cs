@@ -103,6 +103,73 @@ public sealed partial class Sts1EventFeatureGuardTests
     }
 
     [Fact]
+    public void GoldenIdolTakeGrantsCustomGoldenIdolRelicNotRandomRelic()
+    {
+        var eventSource = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Models", "Shared", "Sts1GoldenIdol.cs");
+        var relicSource = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Content", "Sts1GoldenIdolRelic.cs");
+
+        // Take must grant the named Golden Idol relic model via ModelDb, matching StS1...
+        AssertSourceContains(eventSource,
+            "private async Task TakeIdol()",
+            "var relic = ModelDb.Relic<Sts1GoldenIdolRelic>().ToMutable();",
+            "await RelicCmd.Obtain(relic, owner);");
+
+        // ...and must NOT fall back to a random relic anymore.
+        Assert.DoesNotContain("RelicFactory.PullNextRelicFromFront", eventSource, StringComparison.Ordinal);
+
+        // The custom relic must be an event-only marker relic: never in pools, shops, or Neow.
+        AssertSourceContains(relicSource,
+            "internal sealed class Sts1GoldenIdolRelic : ModRelicTemplate",
+            "public override RelicRarity Rarity => RelicRarity.Event;",
+            "public override bool IsAllowed(IRunState runState) => false;",
+            "public override bool IsAllowedAtNeow(Player player) => false;",
+            "public override bool IsAllowedInShops => false;");
+    }
+
+    [Fact]
+    public void GoldenIdolRelicRegisteredInCanaryAndAllDraftContentPacks()
+    {
+        var runtimeSources = ReadSts1RuntimeSources();
+
+        // Relic must ride the gated event content packs (CanaryOnly + AllDraft), never the
+        // always-on SpirePlusContentRegistrationService, so default Off keeps zero impact.
+        var canaryMethod = SliceBetween(runtimeSources, "RegisterCanaryOnly(string modId)", "content.Apply()");
+        AssertSourceContains(canaryMethod, "content.Relic<SharedRelicPool, Sts1GoldenIdolRelic>();");
+
+        var allMethod = SliceBetween(runtimeSources, "public static void RegisterAll(string modId)", "content.Apply();");
+        AssertSourceContains(allMethod, "content.Relic<SharedRelicPool, Sts1GoldenIdolRelic>();");
+
+        // Registering the relic must not change the canary event-type count: it is not an event.
+        var totalEventRegistrations =
+            CountOccurrences(canaryMethod, "content.ActEvent<") + CountOccurrences(canaryMethod, "content.SharedEvent<");
+        Assert.Equal(6, totalEventRegistrations);
+    }
+
+    [Fact]
+    public void GoldenIdolRelicHasEnglishAndSimplifiedChineseLocalization()
+    {
+        var english = JsonStringMap("EZMicroBalance", "localization", "eng", "relics.json");
+        var zhs = JsonStringMap("EZMicroBalance", "localization", "zhs", "relics.json");
+
+        var keys = new[]
+        {
+            "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.title",
+            "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.description",
+            "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.flavor",
+            "EZMICROBALANCE-Sts1GoldenIdolRelic.title",
+            "EZMICROBALANCE-Sts1GoldenIdolRelic.description",
+            "EZMICROBALANCE-Sts1GoldenIdolRelic.flavor",
+            "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.title",
+            "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.description",
+            "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.flavor",
+        };
+
+        AssertLocalizedKeys(keys, english, zhs, "Golden Idol relic localization");
+        AssertNoMojibake(zhs["EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.title"]);
+        Assert.Equal("Golden Idol", english["EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.title"]);
+    }
+
+    [Fact]
     public void GoldenShrineUsesWikiGoldAndRegretOptions()
     {
         var source = ReadRepoText("EZMicroBalanceCode", "Sts1Events", "Models", "Shared", "Sts1GoldenShrine.cs");

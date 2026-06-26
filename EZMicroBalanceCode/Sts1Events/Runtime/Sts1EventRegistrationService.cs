@@ -7,10 +7,10 @@ namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 /// and new event batches should extend the mode-specific partial registration
 /// files instead of adding dynamic registration loops here.
 ///
-/// StS2 act mapping (verified from UrdaAct1AncientService, MorviAct2AncientService, LothaAct3AncientService):
-///   StS1 Act 1 events -> Overgrowth + Underdocks (both acts)
-///   StS1 Act 2 events -> Hive
-///   StS1 Act 3 events -> Glory
+/// StS2 act mapping (verified from ActModel.Index):
+///   StS1 Act 1 events -> Overgrowth + Underdocks (both Index == 0)
+///   StS1 Act 2 events -> Hive (Index == 1)
+///   StS1 Act 3 events -> Glory (Index == 2)
 /// </summary>
 internal static partial class Sts1EventRegistrationService
 {

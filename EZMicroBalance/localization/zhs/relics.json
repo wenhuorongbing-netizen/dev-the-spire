@@ -227,5 +227,14 @@
   "EZ_MICRO_BALANCE_RELIC_LOTHA_PUBLIC_EVIDENCE_OPTION_RELIC.title": "公开罪证",
   "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.description": "与瓦库进行赃物试炼，打破[blue]1[/blue]把或更多[gold]赃物锁[/gold]以兑现金币与额外祝福选择。第[blue]1[/blue]、[blue]3[/blue]、[blue]5[/blue]回合可选择[blue]1[/blue]张[gold]契约[/gold]以协助破锁，但会增加[gold]血债[/gold]。破锁后可随时打出契约收手结算。本场没有普通战斗奖励；若死亡会直接结束本局。",
   "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.flavor": "同一把刀上刻着警告与邀请。",
-  "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.title": "瓦库试炼"
+  "EZ_MICRO_BALANCE_RELIC_VAKUU_FIGHT_OPTION_RELIC.title": "瓦库试炼",
+  "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.description": "一尊金质神像形状的遗物。卖给合适的收藏家能换得一笔小财。",
+  "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.flavor": "连同陷阱一起，从底座上撬了下来。",
+  "EZMICROBALANCE-STS1_GOLDEN_IDOL_RELIC.title": "黄金神像",
+  "EZMICROBALANCE-Sts1GoldenIdolRelic.description": "一尊金质神像形状的遗物。卖给合适的收藏家能换得一笔小财。",
+  "EZMICROBALANCE-Sts1GoldenIdolRelic.flavor": "连同陷阱一起，从底座上撬了下来。",
+  "EZMICROBALANCE-Sts1GoldenIdolRelic.title": "黄金神像",
+  "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.description": "一尊金质神像形状的遗物。卖给合适的收藏家能换得一笔小财。",
+  "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.flavor": "连同陷阱一起，从底座上撬了下来。",
+  "EZ_MICRO_BALANCE_RELIC_STS1_GOLDEN_IDOL_RELIC.title": "黄金神像"
 }

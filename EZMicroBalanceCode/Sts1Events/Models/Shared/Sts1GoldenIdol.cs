@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Content;
 using MegaCrit.Sts2.Core.Commands;
 using MegaCrit.Sts2.Core.Events;
 using MegaCrit.Sts2.Core.Localization.DynamicVars;
@@ -48,7 +49,10 @@ public sealed class Sts1GoldenIdol : EventModel
     private async Task TakeIdol()
     {
         if (Owner is not { } owner) return;
-        var relic = RelicFactory.PullNextRelicFromFront(owner).ToMutable();
+        // StS1 grants the named Golden Idol relic here (not a random relic).
+        // StS2 has no native Golden Idol relic, so we grant the custom
+        // Sts1GoldenIdolRelic model registered by the gated event content pack.
+        var relic = ModelDb.Relic<Sts1GoldenIdolRelic>().ToMutable();
         await RelicCmd.Obtain(relic, owner);
         SetEventState(
             L10NLookup("STS1_GOLDEN_IDOL.pages.TRAP.description"),

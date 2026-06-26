@@ -1,7 +1,9 @@
 using STS2RitsuLib;
 using STS2RitsuLib.Content;
+using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Content;
 using EZMicroBalance.EZMicroBalanceCode.Sts1Events.Models.Shared;
 using MegaCrit.Sts2.Core.Models.Acts;
+using MegaCrit.Sts2.Core.Models.RelicPools;
 
 namespace EZMicroBalance.EZMicroBalanceCode.Sts1Events.Runtime;
 
@@ -31,6 +33,12 @@ internal static partial class Sts1EventRegistrationService
         content.ActEvent<Underdocks, Sts1GoldenIdol>();
         content.SharedEvent<Sts1TheLab>();
         content.SharedEvent<Sts1DivineFountain>();
+
+        // Golden Idol's Take branch grants this custom relic (StS1 parity).
+        // It is an event-only marker relic (never in pools/shops/Neow), so it
+        // is registered alongside the gated canary events and has zero impact
+        // when the StS1 event mode is Off.
+        content.Relic<SharedRelicPool, Sts1GoldenIdolRelic>();
 
         content.Apply();
 
