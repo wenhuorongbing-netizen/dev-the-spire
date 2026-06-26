@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Include="..\..\EZMicroBalanceCode\Core\Integrations\AutoSlay\SpirePlusAutoSlayGate.cs" Link="Integrations\AutoSlay\SpirePlusAutoSlayGate.cs" />
         <Compile Include="..\..\EZMicroBalanceCode\Ascension\Map\A11MapGeometryProof.cs" Link="A11MapGeometryProof.cs" />
         <Compile Include="..\..\EZMicroBalanceCode\Ancients\Expansion\Urda\UrdaStateCodec.cs" Link="UrdaStateCodec.cs" />
         <Compile Include="..\..\EZMicroBalanceCode\Ancients\Expansion\Urda\UrdaBlessingService.StateSchema.cs" Link="UrdaBlessingService.StateSchema.cs" />

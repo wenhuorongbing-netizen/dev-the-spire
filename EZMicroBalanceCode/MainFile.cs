@@ -3,6 +3,7 @@ using EZMicroBalance.EZMicroBalanceCode.Ancients;
 using EZMicroBalance.EZMicroBalanceCode.Ascension;
 using EZMicroBalance.EZMicroBalanceCode.Config;
 using EZMicroBalance.EZMicroBalanceCode.Core.Features;
+using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.AutoSlay;
 using EZMicroBalance.EZMicroBalanceCode.Core.Integrations.RitsuLib;
 using EZMicroBalance.EZMicroBalanceCode.Diagnostics;
 using MegaCrit.Sts2.Core.Modding;
@@ -39,5 +40,14 @@ public partial class MainFile : Node
         registry.InitializeAll();
         registry.LogFeatureSummary();
         SpirePlusDebug.Log("Init", "Feature registry initialized.");
+
+        // Headless game-native AutoSlay smoke runner. Default-OFF: does nothing
+        // unless SPIREPLUS_ENABLE_AUTOSLAY is truthy. When armed, the gated driver
+        // subscribes to RitsuLib's MainMenuReadyEvent and starts the game-native
+        // AutoSlayer. All AutoSlay wiring lives in SpirePlusAutoSlayDriver.
+        if (SpirePlusAutoSlayDriver.TryArm())
+        {
+            SpirePlusDebug.Log("Init", "Headless AutoSlay driver armed (env-gated).");
+        }
     }
 }
